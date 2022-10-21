@@ -1,6 +1,6 @@
 from django.db import models
-# from user.models import User
-# from post.models import Post
+# from users.models import User
+# from posts.models import Post
 
 # class Comment(models.Model):
 #     post = models.ForeignKey(Post, on_delete=models.CASCADE, db_index=True)
