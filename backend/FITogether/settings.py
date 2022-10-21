@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'group',
     'post',
     'user',
-    'workout_log',
+    'workout',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
