@@ -2,7 +2,6 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from utils.getRandom import getRandomString
-from .models import Image
 
 @csrf_exempt
 def upload(request):
@@ -15,9 +14,7 @@ def upload(request):
             if image_type not in ['jpg', 'jpeg', 'png']:
                 return JsonResponse({"message": "jpg, jpeg, png 파일만 업로드 가능합니다."}, status=400)
 
-            title = getRandomString(36) + '.' + image_type
-            while Image.objects.filter(title=title).exists():
-                title = getRandomString(36) + '.' + image_type
+            title = getRandomString(30) + '.' + image_type
 
             FileSystemStorage().save(title, request.FILES['image'])
             return JsonResponse({'title': title}, status=200)
