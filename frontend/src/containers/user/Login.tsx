@@ -8,7 +8,7 @@ const BACKGROUND_LIST = [
   require('assets/images/main/background_image/3.jpg'),
 ];
 
-const Main = () => {
+const Login = () => {
   const [backgroundNum, setBackgroundNum] = useState(0);
   const [input, setInput] = useState({ username: '', password: '' });
   const backgroundElement = useRef<HTMLImageElement>(null);
@@ -103,7 +103,7 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default Login;
 
 const Wrapper = styled.div`
   width: 100%;
