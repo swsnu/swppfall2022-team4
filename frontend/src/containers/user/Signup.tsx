@@ -1,7 +1,10 @@
-import { useReducer } from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import { useEffect, useReducer } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { BsCheck2Circle, BsCircle } from 'react-icons/bs';
+import styled from 'styled-components';
+import { userActions } from 'store/slices/user';
+import { RootState } from 'index';
 
 type stateType = {
   username: string;
@@ -256,7 +259,24 @@ const reducer = (state: stateType, action: { name: string; value: string }) => {
 };
 
 const Signup = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [state, stateDispatch] = useReducer(reducer, initialState);
+  const { user } = useSelector(({ user }: RootState) => ({
+    user: user.user,
+  }));
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+      try {
+        localStorage.setItem('user', JSON.stringify(user));
+      } catch (e) {
+        console.log('localStorage is not working');
+      }
+    }
+  }, [navigate, user]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     stateDispatch({ name: e.target.name, value: e.target.value });
@@ -301,7 +321,7 @@ const Signup = () => {
       age: age,
     };
 
-    alert(JSON.stringify(request));
+    dispatch(userActions.signup(request));
   };
 
   return (

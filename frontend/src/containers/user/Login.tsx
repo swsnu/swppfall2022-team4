@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { userActions } from 'store/slices/user';
+import { RootState } from 'index';
 
 const BACKGROUND_LIST = [
   require('assets/images/main/background_image/1.jpg'),
@@ -9,9 +12,15 @@ const BACKGROUND_LIST = [
 ];
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [backgroundNum, setBackgroundNum] = useState(0);
   const [input, setInput] = useState({ username: '', password: '' });
   const backgroundElement = useRef<HTMLImageElement>(null);
+  const { user } = useSelector(({ user }: RootState) => ({
+    user: user.user,
+  }));
 
   let timer: NodeJS.Timeout | null = null;
   const changeBackground = () => {
@@ -35,12 +44,22 @@ const Login = () => {
       }
     };
   }, []);
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+      try {
+        localStorage.setItem('user', JSON.stringify(user));
+      } catch (e) {
+        console.log('localStorage is not working');
+      }
+    }
+  }, [navigate, user]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
   const onLogin = () => {
-    alert(input.username + ' / ' + input.password);
+    dispatch(userActions.login(input));
   };
   const onSocialLogin = (type: string) => {
     alert(type + ' 소셜 로그인');
