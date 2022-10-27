@@ -9,12 +9,10 @@ interface UserState {
     nickname: string;
     image: string;
   } | null;
-  loading: boolean;
   error: AxiosError | null;
 }
 const initialState: UserState = {
   user: null,
-  loading: false,
   error: null,
 };
 
@@ -23,26 +21,26 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     signup: (state, action: PayloadAction<userAPI.signupRequestType>) => {
-      state.loading = true;
+      state.user = null;
+      state.error = null;
     },
     signupSuccess: (state, { payload }) => {
       state.user = payload;
-      state.loading = false;
     },
     signupFailure: (state, { payload }) => {
       state.error = payload;
-      state.loading = false;
+      alert(payload.response?.data.message);
     },
     login: (state, action: PayloadAction<userAPI.loginRequestType>) => {
-      state.loading = true;
+      state.user = null;
+      state.error = null;
     },
     loginSuccess: (state, { payload }) => {
       state.user = payload;
-      state.loading = false;
     },
     loginFailure: (state, { payload }) => {
       state.error = payload;
-      state.loading = false;
+      alert(payload.response?.data.message);
     },
   },
 });
@@ -51,7 +49,7 @@ export const userActions = userSlice.actions;
 function* signupSaga(action: PayloadAction<userAPI.signupRequestType>) {
   try {
     const response: AxiosResponse = yield call(userAPI.signup, action.payload);
-    yield put(userActions.signupSuccess(response.data));
+    yield put(userActions.signupSuccess(response));
   } catch (error) {
     yield put(userActions.signupFailure(error));
   }
@@ -59,13 +57,13 @@ function* signupSaga(action: PayloadAction<userAPI.signupRequestType>) {
 function* loginSaga(action: PayloadAction<userAPI.loginRequestType>) {
   try {
     const response: AxiosResponse = yield call(userAPI.login, action.payload);
-    yield put(userActions.loginSuccess(response.data));
+    yield put(userActions.loginSuccess(response));
   } catch (error) {
     yield put(userActions.loginFailure(error));
   }
 }
 
 export default function* userSaga() {
-  yield takeLatest(userActions.signup.type, signupSaga);
-  yield takeLatest(userActions.login.type, loginSaga);
+  yield takeLatest(userActions.signup, signupSaga);
+  yield takeLatest(userActions.login, loginSaga);
 }

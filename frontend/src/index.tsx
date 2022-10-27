@@ -22,3 +22,5 @@ root.render(
     </Provider>
   </React.StrictMode>,
 );
+
+export type RootState = ReturnType<typeof rootReducer>;
