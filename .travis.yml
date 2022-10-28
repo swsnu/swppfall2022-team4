@@ -8,8 +8,11 @@ jobs:
         - pip install -r requirements.txt
       script:
         - pylint **/*.py --load-plugins pylint_django
+        - python manage.py test
+        - coverage run --source='.' manage.py test
+        - coverage xml
     - language: node_js
-      node_js: 14
+      node_js: 16
       addons:
         sonarcloud:
           organization: "swsnu"
