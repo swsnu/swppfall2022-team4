@@ -1,11 +1,11 @@
 import client from './client';
 
 export const signup = async (payload: signupRequestType) => {
-  const response = await client.post<userType>(`api/user/signup/`, payload);
+  const response = await client.post<userType>(`/api/user/signup/`, payload);
   return response.data;
 };
 export const login = async (payload: loginRequestType) => {
-  const response = await client.post<userType>(`api/user/login/`, payload);
+  const response = await client.post<userType>(`/api/user/login/`, payload);
   return response.data;
 };
 
