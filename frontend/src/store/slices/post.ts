@@ -27,7 +27,7 @@ export const postSlice = createSlice({
       state.error = null;
     },
     getPostsSuccess: (state, { payload }) => {
-      console.log(payload);
+      // console.log(payload);
       state.posts = payload.posts;
       state.pageNum = payload.page;
       state.pageSize = payload.page_size;
