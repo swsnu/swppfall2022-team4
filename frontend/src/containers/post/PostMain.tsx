@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { getPostsRequestType } from 'store/apis/post';
+import { timeAgoFormat } from 'utils/datetime';
 
 const PostMain = () => {
   const dispatch = useDispatch();
@@ -19,15 +20,25 @@ const PostMain = () => {
   return (
     <Wrapper>
       <ContentWrapper>
-        <span>Hi</span>
-        <button onClick={() => dispatch(postActions.getPosts(defaultPageConfig))}>Fetch</button>
+        <ArticleHeader>
+          <span>대표태그</span>
+          <span>제목</span>
+          <span>작성자</span>
+          <span>추천수</span>
+          <span>작성시간</span>
+        </ArticleHeader>
         {postList ? (
           postList.map((post, id) => {
             return (
-              <div className="articleItem" key={id}>
-                <p>{post.title}</p>
-                <p>{post.created}</p>
-              </div>
+              <ArticleItem key={id}>
+                <span>NONE</span>
+                <span>
+                  {post.title} <span>[{post.comments}]</span>
+                </span>
+                <span>ID : {post.author_id}</span>
+                <span>{post.like_num - post.dislike_num}</span>
+                <span>{timeAgoFormat(post.created)}</span>
+              </ArticleItem>
             );
           })
         ) : (
@@ -42,7 +53,7 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   min-height: 100vh;
-  background-color: #ffffff;
+  background-color: #22f2f2;
   display: flex;
 
   -ms-user-select: none;
@@ -66,4 +77,20 @@ const ContentWrapper = styled.div`
   }
 `;
 
+const ArticleHeader = styled.div`
+  padding: 25px;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  justify-content: space-between;
+`;
+const ArticleItem = styled.div`
+  padding: 25px;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  justify-content: space-between;
+`;
 export default PostMain;

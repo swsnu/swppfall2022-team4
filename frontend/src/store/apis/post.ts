@@ -17,6 +17,8 @@ export type Post = {
   like_num: number;
   dislike_num: number;
   scrap_num: number;
+  //   view_num: number;
+  comments: number;
 };
 
 export type getPostsRequestType = {

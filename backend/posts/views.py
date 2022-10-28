@@ -1,7 +1,7 @@
 import json
 from django.http import HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
 from math import ceil
-from . import models
+from .models import Post
 
 def postHome(request):
     """
@@ -19,10 +19,13 @@ def postHome(request):
         offset = (page_num - 1) * page_size
         limit = page_num * page_size
 
-        posts = models.Post.objects.all()[offset:limit]
+        posts = Post.objects.all()[offset:limit]
         posts_serializable = [post for post in posts.values()]
+        for index, _ in enumerate(posts_serializable):
+            posts_serializable[index]["comments"] = posts[index].get_comments_num()
+        
         # Total page number calculation.
-        totalPost = models.Post.objects.count()
+        totalPost = Post.objects.count()
         page_total = ceil(totalPost / page_size)
         response = JsonResponse({"page": page_num,
                                 "page_size": page_size,

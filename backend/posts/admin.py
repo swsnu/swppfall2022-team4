@@ -7,5 +7,6 @@ class PostAdmin(admin.ModelAdmin):
     """Post admin definition"""
 
     list_display = ("pk", "author", "title", "created", "get_eff_like", "scrap_num")
+    # list_display = ("pk", "author", "title", "view_num", "created", "get_eff_like", "scrap_num")
 
     inlines = (comment_admin.CommentInlineAdmin,)
