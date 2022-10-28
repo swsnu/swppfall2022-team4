@@ -10,7 +10,7 @@ jobs:
     - pylint **/*.py --load-plugins pylint_django
     - python manage.py test
     - coverage run --source='.' manage.py test
-    - coverage xml
+    - coverage report -m
   - language: node_js
     node_js: 16
     addons:
@@ -22,7 +22,7 @@ jobs:
     - cd frontend
     - yarn install
     script:
-    - "./node_modules/.bin/eslint src"
+    - ./node_modules/.bin/eslint src
     - yarn test --coverage --watchAll=false
     - cd .. && sonar-scanner
 before_install:
