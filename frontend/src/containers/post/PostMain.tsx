@@ -5,9 +5,11 @@ import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { getPostsRequestType } from 'store/apis/post';
 import { timeAgoFormat } from 'utils/datetime';
+import { useNavigate } from 'react-router';
 
 const PostMain = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const defaultPageConfig: getPostsRequestType = {
     pageNum: 1,
@@ -16,6 +18,7 @@ const PostMain = () => {
   useEffect(() => {
     dispatch(postActions.getPosts(defaultPageConfig));
   }, []);
+
   const postList = useSelector((rootState: RootState) => rootState.post.posts);
   return (
     <Wrapper>
@@ -38,7 +41,7 @@ const PostMain = () => {
                     <span>
                       {post.title} <span>[{post.comments}]</span>
                     </span>
-                    <span>ID : {post.author_id}</span>
+                    <span>{post.author_name}</span>
                     <span>{post.like_num - post.dislike_num}</span>
                     <span>{timeAgoFormat(post.created)}</span>
                   </ArticleItem>
@@ -51,7 +54,7 @@ const PostMain = () => {
           </ArticleListWrapper>
 
           <SideBarWrapper>
-            <CreatePostBtn onClick={() => console.log('hi')}>글 쓰기</CreatePostBtn>
+            <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
             <SideBarItem>사이드바 공간1</SideBarItem>
             <SideBarItem>사이드바 공간2</SideBarItem>
           </SideBarWrapper>

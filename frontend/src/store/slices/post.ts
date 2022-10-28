@@ -37,6 +37,15 @@ export const postSlice = createSlice({
       state.error = payload;
       alert(payload.response?.data.message);
     },
+    createPost: (state, action: PayloadAction<postAPI.createPostRequestType>) => {
+      //create!
+    },
+    createPostSuccess: (state, { payload }) => {
+      // console.log(payload);
+    },
+    createPostFailure: (state, { payload }) => {
+      // console.log(payload);
+    },
   },
 });
 export const postActions = postSlice.actions;
@@ -50,6 +59,16 @@ function* getPostsSaga(action: PayloadAction<postAPI.getPostsRequestType>) {
   }
 }
 
+function* createPostSaga(action: PayloadAction<postAPI.createPostRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(postAPI.createPost, action.payload);
+    yield put(postActions.createPostSuccess(response));
+  } catch (error) {
+    yield put(postActions.createPostFailure(error));
+  }
+}
+
 export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
+  yield takeLatest(postActions.createPost, createPostSaga);
 }

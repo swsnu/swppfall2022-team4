@@ -10,6 +10,7 @@ import Main from 'containers/Main';
 import Login from 'containers/user/Login';
 import Signup from 'containers/user/Signup';
 import PostMain from 'containers/post/PostMain';
+import PostCreate from 'containers/post/PostCreate';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -90,6 +91,7 @@ const InsideComponent = () => {
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
       <Route path="post" element={<PostMain />} />
+      <Route path="post/create" element={<PostCreate />} />
       <Route path="*" element={<div>After Login</div>} />
     </Routes>
   );
