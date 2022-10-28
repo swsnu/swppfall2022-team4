@@ -28,3 +28,4 @@ jobs:
 before_install:
 - openssl aes-256-cbc -K $encrypted_553718a0db78_key -iv $encrypted_553718a0db78_iv
   -in backend/env.tar.enc -out backend/env.tar -d
+- tar xvf backend/env.tar
