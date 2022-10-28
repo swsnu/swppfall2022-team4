@@ -79,7 +79,7 @@ def login(request):
                 response = JsonResponse({"username": user.username,
                                          "nickname": user.nickname,
                                          "image": user.image},
-                                        status=200);
+                                        status=200)
                 response.set_cookie('access_token',
                                     token,
                                     max_age=60 * 60 * 24 * 7,
