@@ -13,3 +13,6 @@ class User(models.Model):
 
     exp = models.IntegerField(null = False)
     level = models.IntegerField(null = False)
+
+    # Related_name : posts <- posts.Post
+    # Related_name : comments <- comments.Comment

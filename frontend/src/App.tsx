@@ -8,6 +8,9 @@ import IBMPlexSansThaiLooped from 'assets/fonts/IBMPlexSansThaiLooped.ttf';
 import Main from 'containers/Main';
 import Login from 'containers/user/Login';
 import Signup from 'containers/user/Signup';
+import PostMain from 'containers/post/PostMain';
+import PostCreate from 'containers/post/PostCreate';
+import PostDetail from 'containers/post/PostDetail';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -84,6 +87,9 @@ const InsideComponent = () => {
       <Route path="" element={<Main />} />
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
+      <Route path="post" element={<PostMain />} />
+      <Route path="post/create" element={<PostCreate />} />
+      <Route path="post/:id" element={<PostDetail />} />
       <Route path="*" element={<div>After Login</div>} />
     </Routes>
   );
