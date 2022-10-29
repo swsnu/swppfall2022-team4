@@ -43,7 +43,7 @@ const Login = () => {
         clearInterval(timer);
       }
     };
-  }, []);
+  }, [changeBackground, timer]);
   useEffect(() => {
     if (user) {
       navigate('/');

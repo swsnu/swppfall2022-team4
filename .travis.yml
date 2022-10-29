@@ -1,24 +1,36 @@
 dist: bionic
 jobs:
   include:
-    - language: python
-      python: "3.9.6"
-      install:
-        - cd backend
-        - pip install -r requirements.txt
-      script:
-        - pylint **/*.py --load-plugins pylint_django
-    - language: node_js
-      node_js: 14
-      addons:
-        sonarcloud:
-          organization: "swsnu"
-          token:
-            secure: "IfAl2D9LGXfw1SXL+eQttQ9l+QQAY2xf7exxXLupJB9tPh8hNht2v+nYt+DThbkrBx89huEK842GQuR+cSTqWkbpU1GB66rkfO4Y7kvqnlCYpfYYxdv8U0kFB04O1Tz09DzDeU4St9YhY3BtoHvNuZkAA8AruVaP5iIkoKWNL7AZ1+UW69CVA1Bzf2K8SpG33/aDF1sZhf7GkPXuB86b0ppJPG7yen+/75Ab2MO0YAIAfCpQidMHkpycZMEPBm2kC2yuzyFPnfLmpM2aONWDtTmvwQbGhK+lk9vJxtKd/WczyIB4ddOHKFyoHVJw/qA4ZWrghBtfgMTlzQHQVt0IrTHm5huL/fjAmnINhXj3luXzso32WaxPQ7bIy2bj2o1YC67SfcVwILEH0LN0bJv/gSga4SAJE22G1VsIloUepCYlJit+l5A/uBnwT3EroUvncsQ0G9T5Mesa0OMs5ta7rMOiNyuinHAPZP3q1VK68gasDTPsiAK3jwujl31yvETFQg0qBpzjhQ8TrE7l15HISeArwxwSJpvwq1mWhMwQ9OG+hDpd4w3tngvYAmil6E2Xo4L3Kz5YLsSgX76maP7MRvOxV999clhFQZgmE2WWouNxx6Raqk5AGije0zWLPfj9Bc+tsmARLFlMAC9OxRPtYLiWA9iNBRmyx4zfpKTM5F4="
-      install:
-        - cd frontend
-        - yarn install
-      script:
-        - ./node_modules/.bin/eslint src
-        - yarn test --coverage --watchAll=false
-        - cd .. && sonar-scanner
+  - language: python
+    node_js: 16
+    python: 3.9.6
+    addons:
+      sonarcloud:
+        organization: swsnu
+        token:
+          secure: IfAl2D9LGXfw1SXL+eQttQ9l+QQAY2xf7exxXLupJB9tPh8hNht2v+nYt+DThbkrBx89huEK842GQuR+cSTqWkbpU1GB66rkfO4Y7kvqnlCYpfYYxdv8U0kFB04O1Tz09DzDeU4St9YhY3BtoHvNuZkAA8AruVaP5iIkoKWNL7AZ1+UW69CVA1Bzf2K8SpG33/aDF1sZhf7GkPXuB86b0ppJPG7yen+/75Ab2MO0YAIAfCpQidMHkpycZMEPBm2kC2yuzyFPnfLmpM2aONWDtTmvwQbGhK+lk9vJxtKd/WczyIB4ddOHKFyoHVJw/qA4ZWrghBtfgMTlzQHQVt0IrTHm5huL/fjAmnINhXj3luXzso32WaxPQ7bIy2bj2o1YC67SfcVwILEH0LN0bJv/gSga4SAJE22G1VsIloUepCYlJit+l5A/uBnwT3EroUvncsQ0G9T5Mesa0OMs5ta7rMOiNyuinHAPZP3q1VK68gasDTPsiAK3jwujl31yvETFQg0qBpzjhQ8TrE7l15HISeArwxwSJpvwq1mWhMwQ9OG+hDpd4w3tngvYAmil6E2Xo4L3Kz5YLsSgX76maP7MRvOxV999clhFQZgmE2WWouNxx6Raqk5AGije0zWLPfj9Bc+tsmARLFlMAC9OxRPtYLiWA9iNBRmyx4zfpKTM5F4=
+    before_install:
+    - openssl aes-256-cbc -K $encrypted_373aa1f98b09_key -iv $encrypted_373aa1f98b09_iv -in frontend/env.tar.enc -out frontend/env.tar -d
+    - tar xvf frontend/env.tar -C frontend/
+    - openssl aes-256-cbc -K $encrypted_ad561db20640_key -iv $encrypted_ad561db20640_iv -in backend/env.tar.enc -out backend/env.tar -d
+    - tar xvf backend/env.tar -C backend/
+    - nvm install 16
+    - node --version && npm --version && nvm --version && python -V
+    install:
+    - gem install coveralls-lcov
+    - cd frontend
+    - yarn install
+    - cd ../backend
+    - pip install -r requirements.txt
+    script:
+    - cd ../frontend
+    - ./node_modules/.bin/eslint src
+    - yarn test --coverage --watchAll=false
+    - coveralls-lcov -v -n coverage/lcov.info > coverage.json
+    - cd ../backend
+    - pylint **/*.py --load-plugins pylint_django
+    - python manage.py test
+    - coverage run --source='.' manage.py test
+    - coverage xml
+    - COVERALLS_REPO_TOKEN=$coveralls_repo_token coveralls --merge=../frontend/coverage.json
+    - cd .. && sonar-scanner
