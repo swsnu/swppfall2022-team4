@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import styled, { css } from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
+import { FitElement } from "components/fitelement/FitElement";
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,27 @@ const WorkoutLog = () => {
     "OCT",
     "NOV",
     "DEC",
+  ];
+
+  const example_fitelements = [
+    {
+      type: "log",
+      workout_type: "스쿼트",
+      category: "leg",
+      weight: 100,
+      rep: 10,
+      set: 5,
+      time: 20,
+      },
+      {
+        type: "log",
+        workout_type: "데드리프트",
+        category: "leg",
+        weight: 80,
+        rep: 7,
+        set: 6,
+        time: 15,
+      },
   ];
 
   const today = new Date();
@@ -132,7 +154,22 @@ const WorkoutLog = () => {
                 <LogCategory>세트</LogCategory>
                 <LogCategory className="type2">시간</LogCategory>
               </LogHeader>
-              <LogBody></LogBody>
+              <LogBody>
+                {example_fitelements.map((fitelement, index) => (
+                  <FitElement
+                    key={index}
+                    id={index + 1}
+                    type={fitelement.type}
+                    workout_type={fitelement.workout_type}
+                    category={fitelement.category}
+                    weight={fitelement.weight}
+                    rep={fitelement.rep}
+                    set={fitelement.set}
+                    time={fitelement.time}
+                  />
+                ))}
+              </LogBody>
+              <LogFooter></LogFooter>
             </Frame>
           </LogWrapper>
         </RightWrapper>
@@ -150,18 +187,11 @@ const Wrapper = styled.div`
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-
-  -ms-user-select: none;
-  -moz-user-select: -moz-none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  user-select: none;
 `;
 
 const HeaderWrapper_temp = styled.div`
   width: 100%;
   height: 8%;
-  margin-bottom: 20px;
   min-width: 100vw;
   min-height: 8vh;
   display: flex;
@@ -181,9 +211,8 @@ const InnerWrapper = styled.div`
 
 const LeftWrapper = styled.div`
   width: 40%;
-  height: 100%;
+  height: 92vh;
   margin-left: 30px;
-  min-height: 92vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -193,10 +222,10 @@ const LeftWrapper = styled.div`
 const CalendarWrapper = styled.div`
   width: 100%;
   height: 80%;
+  margin-top: 10vh;
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
-  align-items: end;
 `;
 
 const Frame = styled.div`
@@ -291,6 +320,7 @@ const MemoWrapper = styled.div`
   width: 100%;
   height: 20%;
   min-height: 20vh;
+  margin-bottom: 10px;
   display: flex;
   justify-content: center;
 `;
@@ -309,7 +339,6 @@ const MemoTitleWrapper = styled.div`
 const MemoContentWrapper = styled.div`
   display: flex;
   margin: 10px;
-  margin-bottom: 20px;
   height: 80%;
   align-items: center;
   font-family: IBMPlexSansThaiLooped;
@@ -348,7 +377,9 @@ const RightWrapper = styled.div`
 const LogUpper = styled.div`
   width: 90%;
   height: 10%;
+  min-height: 10vh;
   display: flex;
+  align-items: end;
   justify-content: end;
 `;
 
@@ -367,10 +398,10 @@ const LogHeader = styled.div`
   width: 100%;
   height: 10%;
   border-bottom: 1px solid black;
-  padding: 10px 5px 5px 5px;
+  padding: 10px 0px 5px 0px;
   font-family: IBMPlexSansThaiLooped;
   display: flex;
-  
+
   justify-content: center;
   align-items: center;
 `;
@@ -395,11 +426,27 @@ const LogCategory = styled.div`
 `;
 
 const LogBody = styled.div`
-  width: 95%;
+  width: 100%;
   height: 90%;
-  min-height: 70vh;
+  min-height: 62vh;
   display: flex;
   flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
   margin: 5px;
   font-weight: normal;
+`;
+
+const LogFooter = styled.div`
+  width: 100%;
+  height: 10%;
+  min-height: 8vh;
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: normal;
+  background-color: #d7efe3;
+  border-top: 1px solid black;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 `;
