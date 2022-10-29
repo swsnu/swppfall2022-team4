@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/image/', include('images.urls')),
     path('api/user/', include('users.urls')),
+    path('api/fitelement/', include('workouts.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -29,7 +29,7 @@ class DailyLog(models.Model):
 
 
 class Routine(models.Model):
-    name = models.CharField(max_lenght=30, null=False)
+    name = models.CharField(max_length=30, null=False)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='routine')
     fit_element = models.ManyToManyField(FitElement, blank=True)

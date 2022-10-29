@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import FitElement, Routine, DailyLog
 
-# Register your models here.
+admin.site.register(FitElement)
+admin.site.register(Routine)
+admin.site.register(DailyLog)
