@@ -1,9 +1,9 @@
 import json
 from os import stat
 from django.http import HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponseNotFound, JsonResponse
-from django.core import serializers
 from math import ceil
 from .models import Post
+from comments.models import Comment
 from users import models as user_model
 
 def postHome(request):
@@ -67,7 +67,6 @@ def postDetail(request, id):
     """
     if request.method == "GET":
         try:
-            print(id)
             post_id = int(id)
             post_obj = Post.objects.get(pk=post_id)
 
@@ -95,3 +94,27 @@ def postDetail(request, id):
         pass
     else:
         return HttpResponseNotAllowed(['GET', 'PUT', "DELETE"])
+
+def postComment(request, id):
+    """
+        GET : get post comment list.
+    """
+    if request.method == "GET":
+        try:
+            post_id = int(id)
+            post_obj = Post.objects.get(pk=post_id)
+            
+            comments = post_obj.comments.all()
+            comment_response = [comment for comment in comments.values()]
+            for index, _ in enumerate(comment_response):
+                del comment_response[index]["author_id"]
+                comment_response[index]["author_name"] = comments[index].author.username
+            
+            return JsonResponse({"comments" : comment_response}, status=200)
+        except Post.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest()
+    else:
+        return HttpResponseNotAllowed(['GET'])

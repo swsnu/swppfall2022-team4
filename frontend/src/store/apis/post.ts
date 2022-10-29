@@ -52,10 +52,10 @@ export type createPostResponseType = {
 };
 
 export const getPostDetail = async (payload: getPostDetailRequestType) => {
-  const response = await client.get<getPostsResponseType>(`/api/post/${payload.id}`);
+  const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
   return response.data;
 };
 
 export type getPostDetailRequestType = {
-  id: string;
+  post_id: string;
 };

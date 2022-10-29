@@ -1,4 +1,3 @@
-from email.policy import default
 from django.db import models
 from core.models import AbstractTimeStampedModel
 from users.models import User
@@ -14,7 +13,7 @@ class Comment(AbstractTimeStampedModel):
     like_num = models.IntegerField(null=False, default=0)
     dislike_num = models.IntegerField(null=False, default=0)
 
-    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, blank=True)
+    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
 
     def get_eff_like(self):
         """ Get effective number of like """

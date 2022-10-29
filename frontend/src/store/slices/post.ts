@@ -2,6 +2,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as postAPI from 'store/apis/post';
+import * as commentAPI from 'store/apis/comment';
 
 interface PostState {
   postList: {
@@ -15,6 +16,10 @@ interface PostState {
     post: postAPI.Post | null;
     error: AxiosError | null;
   };
+  postComment: {
+    comments: commentAPI.Comment[] | null;
+    error: AxiosError | null;
+  };
 }
 const initialState: PostState = {
   postList: {
@@ -26,6 +31,10 @@ const initialState: PostState = {
   },
   postDetail: {
     post: null,
+    error: null,
+  },
+  postComment: {
+    comments: null,
     error: null,
   },
 };
@@ -69,6 +78,18 @@ export const postSlice = createSlice({
       state.postDetail.error = payload;
       alert(payload.response?.data.message);
     },
+    getPostComment: (state, action: PayloadAction<commentAPI.getPostCommentRequestType>) => {
+      state.postComment.comments = null;
+      state.postComment.error = null;
+    },
+    getPostCommentSuccess: (state, { payload }) => {
+      console.log(payload);
+      state.postComment.comments = payload.comments;
+    },
+    getPostCommentFailure: (state, { payload }) => {
+      state.postList.error = payload;
+      alert(payload.response?.data.message);
+    },
   },
 });
 export const postActions = postSlice.actions;
@@ -100,8 +121,18 @@ function* getPostDetailSaga(action: PayloadAction<postAPI.getPostDetailRequestTy
   }
 }
 
+function* getPostCommentSaga(action: PayloadAction<commentAPI.getPostCommentRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.getPostComment, action.payload);
+    yield put(postActions.getPostCommentSuccess(response));
+  } catch (error) {
+    yield put(postActions.getPostCommentFailure(error));
+  }
+}
+
 export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
   yield takeLatest(postActions.getPostDetail, getPostDetailSaga);
+  yield takeLatest(postActions.getPostComment, getPostCommentSaga);
 }
