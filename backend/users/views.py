@@ -2,11 +2,12 @@ import os
 import json
 import bcrypt
 import jwt
-from django.http import HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from http import HTTPStatus
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
+from django.core.exceptions import PermissionDenied
+from jwt.exceptions import ExpiredSignatureError
 from .models import User
 
-@csrf_exempt
 def signup(request):
     """
     회원가입
@@ -55,7 +56,6 @@ def signup(request):
 
     return HttpResponseNotAllowed(['POST'])
 
-@csrf_exempt
 def login(request):
     """
     로그인
@@ -94,3 +94,35 @@ def login(request):
             return HttpResponseBadRequest()
 
     return HttpResponseNotAllowed(['POST'])
+
+def check(request):
+    """
+    자동 로그인을 위한 토큰 확인
+    """
+    if request.method == 'GET':
+        try:
+            access_token = request.COOKIES.get("access_token", None)
+            if not access_token:
+                raise PermissionDenied()
+
+            payload = jwt.decode(
+                access_token,
+                os.environ.get("JWT_SECRET"),
+                os.environ.get("ALGORITHM")
+            )
+
+            username = payload.get("username", None)
+            if not username:
+                raise PermissionDenied()
+
+            User.objects.get(username=username)
+            return HttpResponse(status=200)
+
+        except (PermissionDenied, User.DoesNotExist):
+            return JsonResponse({"message": "토큰이 올바르지 않습니다."}, status=HTTPStatus.UNAUTHORIZED)
+
+        except ExpiredSignatureError:
+            return JsonResponse({"message": "토큰이 만료되었습니다."}, status=HTTPStatus.FORBIDDEN)
+
+    else:
+        return HttpResponseNotAllowed(['GET'])
