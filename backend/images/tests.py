@@ -20,8 +20,8 @@ class ImageTestCase(TestCase):
 
     def test_upload(self):
         client = Client()
-        tokenResponse = client.get('/api/user/token/')
-        csrftoken = tokenResponse.cookies['csrftoken'].value
+        token_response = client.get('/api/user/token/')
+        csrftoken = token_response.cookies['csrftoken'].value
         client.post(
             '/api/user/login/',
             {'username': 'username', 'password': 'password'},
