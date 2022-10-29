@@ -3,7 +3,7 @@ import json
 import bcrypt
 import jwt
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.core.exceptions import PermissionDenied
 from jwt.exceptions import ExpiredSignatureError
 from .models import User
