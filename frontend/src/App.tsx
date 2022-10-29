@@ -1,6 +1,5 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import styled, { createGlobalStyle } from 'styled-components';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
 import FugazOne from 'assets/fonts/FugazOne.ttf';
@@ -80,9 +79,6 @@ function App() {
 export default App;
 
 const InsideComponent = () => {
-  const dispatch = useDispatch();
-  const location = useLocation();
-
   return (
     <Routes>
       <Route path="" element={<Main />} />
