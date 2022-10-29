@@ -115,7 +115,7 @@ def check(request):
         return HttpResponse(status=200)
 
     except (PermissionDenied, User.DoesNotExist):
-        return JsonResponse({"message": "토큰이 올바르지 않습니다."}, status=401)
+        return HttpResponse(status=401)
 
     except ExpiredSignatureError:
-        return JsonResponse({"message": "토큰이 만료되었습니다."}, status=403)
+        return HttpResponse(status=403)
