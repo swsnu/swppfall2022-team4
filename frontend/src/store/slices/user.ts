@@ -11,10 +11,14 @@ interface UserState {
     image: string;
   } | null;
   error: AxiosError | null;
+
+  notice: string[];
 }
 const initialState: UserState = {
   user: null,
   error: null,
+
+  notice: [],
 };
 
 export const userSlice = createSlice({
