@@ -56,6 +56,9 @@ export const userSlice = createSlice({
     checkFailure: state => {
       state.user = null;
     },
+    logout: state => {
+      state.user = null;
+    },
   },
 });
 export const userActions = userSlice.actions;
@@ -87,10 +90,15 @@ function* checkSaga() {
     yield put(userActions.checkFailure());
   }
 }
+function* logoutSaga() {
+  yield call(userAPI.logout);
+  localStorage.removeItem('user');
+}
 
 export default function* userSaga() {
   yield takeLatest(userActions.token, tokenSaga);
   yield takeLatest(userActions.signup, signupSaga);
   yield takeLatest(userActions.login, loginSaga);
   yield takeLatest(userActions.check, checkSaga);
+  yield takeLatest(userActions.logout, logoutSaga);
 }
