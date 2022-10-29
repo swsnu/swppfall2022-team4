@@ -4,8 +4,10 @@ from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse, Http
 from datetime import datetime, date
 from .models import FitElement, Routine, DailyLog
 import json
+from django.views.decorators.http import require_http_methods
 
 
+@require_http_methods(["POST"])
 def create_fit_element(request):
     if request.method == 'POST':
         try:
@@ -27,10 +29,9 @@ def create_fit_element(request):
             return HttpResponse(status=201)
         except:
             return HttpResponseBadRequest()
-    else:
-        return HttpResponseNotAllowed(['POST'])
 
 
+@require_http_methods(["GET"])
 def fit_element(request, fit_element_id):
     if request.method == 'GET':
         try:
@@ -51,10 +52,9 @@ def fit_element(request, fit_element_id):
             return JsonResponse(return_json, safe=False, status=201)
         except:
             return HttpResponse(404)
-    else:
-        return HttpResponseNotAllowed(['GET'])
 
 
+@require_http_methods(["GET"])
 def get_calendar_info(request, year, month):
     if request.method == 'GET':
         req_data = json.loads(request.body.decode())
@@ -96,8 +96,6 @@ def get_calendar_info(request, year, month):
             return_json[int(workout_dict['date'].day) -
                         1]['workouts'].append(workout_dict)
         return JsonResponse(return_json, safe=False, status=200)
-    else:
-        return HttpResponseNotAllowed(['GET'])
 
 
 def routines(request):
