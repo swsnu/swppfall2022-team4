@@ -7,11 +7,6 @@ export const getPosts = async (payload: getPostsRequestType) => {
   return response.data;
 };
 
-export const createPost = async (payload: createPostRequestType) => {
-  const response = await client.post<createPostResponseType>(`/api/post/`, payload);
-  return response.data;
-};
-
 export type Post = {
   id: number;
   title: string;
@@ -23,7 +18,7 @@ export type Post = {
   dislike_num: number;
   scrap_num: number;
   //   view_num: number;
-  comments: number;
+  comments_num: number;
 };
 
 export type getPostsRequestType = {
@@ -38,6 +33,11 @@ export type getPostsResponseType = {
   posts: Post[];
 };
 
+export const createPost = async (payload: createPostRequestType) => {
+  const response = await client.post<createPostResponseType>(`/api/post/`, payload);
+  return response.data;
+};
+
 export type createPostRequestType = {
   title: string;
   content: string;
@@ -49,4 +49,13 @@ export type createPostResponseType = {
   page_size: number;
   page_total: number;
   posts: Post[];
+};
+
+export const getPostDetail = async (payload: getPostDetailRequestType) => {
+  const response = await client.get<getPostsResponseType>(`/api/post/${payload.id}`);
+  return response.data;
+};
+
+export type getPostDetailRequestType = {
+  id: string;
 };

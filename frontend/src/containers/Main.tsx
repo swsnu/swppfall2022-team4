@@ -8,7 +8,7 @@ const Main = () => {
     <div>
       <div>Main Page</div>
       <div>Login Success!</div>
-      <button onClick={e => navigate('/post')}>Go to post</button>
+      <button onClick={() => navigate('/post')}>Go to post</button>
     </div>
   );
 };

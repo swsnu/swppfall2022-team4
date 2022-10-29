@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { createPostRequestType, getPostsRequestType } from 'store/apis/post';
 import { useNavigate } from 'react-router';
 
 const PostCreate = () => {

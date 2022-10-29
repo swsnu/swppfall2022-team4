@@ -1,61 +1,58 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { getPostsRequestType } from 'store/apis/post';
-import { timeAgoFormat } from 'utils/datetime';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
-const PostMain = () => {
+const PostDetail = () => {
+  const { id } = useParams<{ id: string }>();
+
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(({ user }: RootState) => user.user);
 
-  const defaultPageConfig: getPostsRequestType = {
-    pageNum: 1,
-    pageSize: 10,
+  const cancelOnClick = () => {
+    alert('are you sure?');
+    //TODO;
   };
   useEffect(() => {
-    dispatch(postActions.getPosts(defaultPageConfig));
+    if (id) {
+      dispatch(
+        postActions.getPostDetail({
+          id: id,
+        }),
+      );
+    }
   }, []);
+  const post = useSelector(({ post }: RootState) => post.postDetail.post);
 
-  const postList = useSelector((rootState: RootState) => rootState.post.postList.posts);
   return (
     <Wrapper>
       <ContentWrapper>
         <SearchBarWrapper>Search Bar</SearchBarWrapper>
         <ArticleWrapper>
-          <ArticleListWrapper>
-            <ArticleHeader>
-              <span>대표태그</span>
-              <span>제목</span>
-              <span>작성자</span>
-              <span>추천수</span>
-              <span>작성시간</span>
-            </ArticleHeader>
-            {postList ? (
-              postList.map((post, id) => {
-                return (
-                  <ArticleItem key={id} onClick={() => navigate(`/post/${post.id}`)}>
-                    <span>NONE</span>
-                    <span>
-                      {post.title} <span>[{post.comments_num}]</span>
-                    </span>
-                    <span>{post.author_name}</span>
-                    <span>{post.like_num - post.dislike_num}</span>
-                    <span>{timeAgoFormat(post.created)}</span>
-                  </ArticleItem>
-                );
-              })
+          <ArticleDetailWrapper>
+            {post ? (
+              <ArticleItem>
+                <h1>{post.title}</h1>
+                <h2>{post.content}</h2>
+                <h2>작성자 {post.author_name}</h2>
+                <h3>{post.comments_num}</h3>
+              </ArticleItem>
             ) : (
-              <span></span>
+              <h1>Loading</h1>
             )}
-            <ArticleFooter>◀ 1 2 3 4 5 6 7 8 9 10 ▶︎</ArticleFooter>
-          </ArticleListWrapper>
+          </ArticleDetailWrapper>
 
           <SideBarWrapper>
             <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
-            <SideBarItem>사이드바 공간1</SideBarItem>
+            <SideBarItem>
+              <button onClick={() => navigate('/post')}>글 목록으로</button>
+            </SideBarItem>
             <SideBarItem>사이드바 공간2</SideBarItem>
           </SideBarWrapper>
         </ArticleWrapper>
@@ -107,7 +104,7 @@ const ArticleWrapper = styled.div`
   min-height: 600px;
   height: 70vh;
 `;
-const ArticleListWrapper = styled.div`
+const ArticleDetailWrapper = styled.div`
   border: 1px solid black;
   margin-right: 15px;
   width: 80%;
@@ -125,35 +122,15 @@ const SideBarItem = styled.div`
   width: 100%;
   height: 40%;
 `;
-const ArticleHeader = styled.div`
-  padding: 10px 20px;
-  font-size: 14px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid black;
-`;
-const ArticleFooter = styled.div`
-  padding: 10px 20px;
-  font-size: 16px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-top: 1px solid black;
-  position: absolute;
-  bottom: 0px;
-`;
 const ArticleItem = styled.div`
   padding: 10px 20px;
   font-size: 14px;
   width: 100%;
+  height: 80%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   border-bottom: 1px solid black;
-  cursor: pointer;
 `;
 const CreatePostBtn = styled.button`
   padding: 0px 20px;
@@ -166,4 +143,5 @@ const CreatePostBtn = styled.button`
     background-color: #45d9fa;
   }
 `;
-export default PostMain;
+
+export default PostDetail;
