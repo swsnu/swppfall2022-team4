@@ -17,7 +17,7 @@ const Login = () => {
 
   const [backgroundNum, setBackgroundNum] = useState(0);
   const [input, setInput] = useState({ username: '', password: '' });
-  const backgroundElement = useRef<HTMLImageElement>(null);
+  const backgroundRef = useRef<HTMLImageElement>(null);
   const { user } = useSelector(({ user }: RootState) => ({
     user: user.user,
   }));
@@ -27,7 +27,7 @@ const Login = () => {
     if (timer === null) {
       timer = setInterval(() => {
         setBackgroundNum(backgroundNum => (backgroundNum + 1) % BACKGROUND_LIST.length);
-        backgroundElement.current?.animate([{ opacity: 0 }, { opacity: 1 }], {
+        backgroundRef.current?.animate([{ opacity: 0 }, { opacity: 1 }], {
           duration: 1600,
           easing: 'linear',
           fill: 'forwards',
@@ -43,7 +43,7 @@ const Login = () => {
         clearInterval(timer);
       }
     };
-  }, [changeBackground, timer]);
+  }, []);
   useEffect(() => {
     if (user) {
       navigate('/');
@@ -67,7 +67,7 @@ const Login = () => {
 
   return (
     <Wrapper>
-      <BackgroundImage ref={backgroundElement} src={BACKGROUND_LIST[backgroundNum]} alt="background" />
+      <BackgroundImage ref={backgroundRef} src={BACKGROUND_LIST[backgroundNum]} alt="background" />
       <FakeBackgroundImage
         src={BACKGROUND_LIST[(backgroundNum + BACKGROUND_LIST.length - 1) % BACKGROUND_LIST.length]}
         alt="fake_background"
