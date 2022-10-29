@@ -9,7 +9,7 @@ from .models import User
 
 @ensure_csrf_cookie
 @require_http_methods(["GET"])
-def token(request):
+def set_csrf(request):
     """
     CSRF 설정
     """

@@ -1,4 +1,5 @@
-import jwt, os
+import jwt
+import os
 from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
 from jwt.exceptions import ExpiredSignatureError
