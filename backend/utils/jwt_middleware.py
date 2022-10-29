@@ -18,7 +18,7 @@ class JsonWebTokenMiddleWare:
 
     def __call__(self, request):
         try:
-            if request.path not in ("/api/user/login",
+            if request.path not in ("/api/user/login/",
                                     "/api/user/social_login/",
                                     "/api/user/signup/",
                                     "/api/user/token/"):
