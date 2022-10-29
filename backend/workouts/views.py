@@ -9,6 +9,7 @@ from django.views.decorators.http import require_http_methods
 
 @require_http_methods(["POST"])
 def create_fit_element(request):
+    """create fit element"""
     if request.method == 'POST':
         try:
             req_data = json.loads(request.body.decode())
@@ -33,6 +34,7 @@ def create_fit_element(request):
 
 @require_http_methods(["GET"])
 def fit_element(request, fit_element_id):
+    """get a fit element"""
     if request.method == 'GET':
         try:
             workout = FitElement.objects.get(id=fit_element_id)
@@ -56,6 +58,7 @@ def fit_element(request, fit_element_id):
 
 @require_http_methods(["GET"])
 def get_calendar_info(request, year, month):
+    """get fit elements for calendar"""
     if request.method == 'GET':
         req_data = json.loads(request.body.decode())
         user_id = req_data['user_id']
@@ -98,13 +101,64 @@ def get_calendar_info(request, year, month):
         return JsonResponse(return_json, safe=False, status=200)
 
 
+@require_http_methods(["GET"])
 def routines(request):
-    pass
+    """get routines"""
+    if request.method == 'GET':
+        req_data = json.loads(request.body.decode())
+        user_id = req_data['user_id']
+
+        return_json = []
+        routines = Routine.objects.all()
+        routines_mine = routines.filter(author_id=user_id)
+
+        for routine in routines_mine:
+            routine_dict = {
+                'id': routine.id,
+                'author': routine.author.id,  # id or name
+                'name': routine.name
+            }
+            return_json.append(routine_dict)
+        return JsonResponse(return_json, safe=False, status=200)
 
 
+@require_http_methods(["GET"])
 def routine(request, routine_id):
-    pass
+    """get a routine"""
+    if request.method == 'GET':
+        try:
+            routine = Routine.objects.get(id=routine_id)
+            return_json = {
+                'id': routine.id,
+                'author': routine.author.id,  # id or name
+                'name': routine.name,
+                'fitelements': list(routine.fit_element.values_list('id', flat=True))
+            }
+            return JsonResponse(return_json, safe=False, status=201)
+        except:
+            return HttpResponse(404)
 
 
+@require_http_methods(["GET"])
 def daily_log(request, year, month, date):
-    pass
+    """get daily log per day"""
+    if request.method == 'GET':
+        req_data = json.loads(request.body.decode())
+        user_id = req_data['user_id']
+
+        daily_logs = DailyLog.objects.filter(id=user_id)
+        daily_log = daily_logs.filter(date=datetime(year, month, date).date())
+
+        if daily_log is None:
+            daily_log_dict = DailyLog(
+                date=datetime(year, month, date).date()
+            )
+            daily_log_dict.save()
+        else:
+            daily_log_dict = {
+                'memo': daily_log.memo,
+                'date': daily_log.date,
+                'fitelements': list(daily_log.fit_element.values_list('id', flat=True))
+            }
+
+        return JsonResponse(daily_log_dict, safe=False, status=200)
