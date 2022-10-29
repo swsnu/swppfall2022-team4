@@ -4,9 +4,14 @@ import bcrypt
 import jwt
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from django.core.exceptions import PermissionDenied
-from jwt.exceptions import ExpiredSignatureError
 from .models import User
+
+@require_http_methods(["GET"])
+def token(request):
+    """
+    CSRF 설정
+    """
+    return HttpResponse(status=200)
 
 @require_http_methods(["POST"])
 def signup(request):
@@ -96,26 +101,4 @@ def check(request):
     """
     자동 로그인을 위한 토큰 확인
     """
-    try:
-        access_token = request.COOKIES.get("access_token", None)
-        if not access_token:
-            raise PermissionDenied()
-
-        payload = jwt.decode(
-            access_token,
-            os.environ.get("JWT_SECRET"),
-            os.environ.get("ALGORITHM")
-        )
-
-        username = payload.get("username", None)
-        if not username:
-            raise PermissionDenied()
-
-        User.objects.get(username=username)
-        return HttpResponse(status=200)
-
-    except (PermissionDenied, User.DoesNotExist):
-        return HttpResponse(status=401)
-
-    except ExpiredSignatureError:
-        return HttpResponse(status=403)
+    return HttpResponse(status=200)
