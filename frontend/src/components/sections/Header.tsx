@@ -5,6 +5,7 @@ import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
 import useCheckAuth from 'hooks/useCheckAuth';
 import { IoIosNotifications, IoIosNotificationsOutline } from 'react-icons/io';
+import { HiOutlineDocumentReport, HiUserGroup, HiOutlineAnnotation, HiInformationCircle } from 'react-icons/hi';
 import styled from 'styled-components';
 
 const Header = () => {
@@ -62,9 +63,27 @@ const Header = () => {
           <Category to="/record" className={({ isActive }) => (isActive ? 'active' : '')}>
             기록
           </Category>
-          <Category to="/group">그룹</Category>
-          <Category to="/post">커뮤니티</Category>
-          <Category to="/information">운동정보</Category>
+          <Category to="/group" className={({ isActive }) => (isActive ? 'active' : '')}>
+            그룹
+          </Category>
+          <Category to="/post" className={({ isActive }) => (isActive ? 'active' : '')}>
+            커뮤니티
+          </Category>
+          <Category to="/information" className={({ isActive }) => (isActive ? 'active' : '')}>
+            운동정보
+          </Category>
+          <CategoryIcon to="/record" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <HiOutlineDocumentReport />
+          </CategoryIcon>
+          <CategoryIcon to="/group" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <HiUserGroup />
+          </CategoryIcon>
+          <CategoryIcon to="/post" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <HiOutlineAnnotation />
+          </CategoryIcon>
+          <CategoryIcon to="/information" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <HiInformationCircle />
+          </CategoryIcon>
         </CategoryWrapper>
 
         <IconWrapper>
@@ -102,7 +121,6 @@ export default Header;
 
 const Wrapper = styled.div`
   width: 100%;
-  max-width: 1200px;
   height: 60px;
   display: flex;
   justify-content: space-between;
@@ -134,6 +152,10 @@ const TitleText2 = styled.div`
   font-size: 36px;
   letter-spacing: -2px;
   color: #349c66;
+
+  @media all and (max-width: 575px) {
+    display: none;
+  }
 `;
 
 const CategoryWrapper = styled.div`
@@ -142,7 +164,31 @@ const CategoryWrapper = styled.div`
   font-weight: 600;
   font-family: NanumSquareR;
   color: #404040;
+  svg {
+    width: 24px;
+    height: 24px;
+    color: #404040;
+  }
   gap: 80px;
+
+  @media all and (max-width: 875px) {
+    gap: 60px;
+  }
+  @media all and (max-width: 800px) {
+    gap: 40px;
+  }
+  @media all and (max-width: 700px) {
+    gap: 25px;
+  }
+  @media all and (max-width: 635px) {
+    gap: 10px;
+  }
+  @media all and (max-width: 460px) {
+    gap: 20px;
+  }
+  @media all and (max-width: 400px) {
+    gap: 10px;
+  }
 `;
 const Category = styled(NavLink)`
   transition: color 0.15s linear;
@@ -151,6 +197,28 @@ const Category = styled(NavLink)`
   }
   &.active {
     color: #1c6758;
+  }
+
+  @media all and (max-width: 460px) {
+    display: none;
+  }
+`;
+const CategoryIcon = styled(NavLink)`
+  display: none;
+  transition: color 0.15s linear;
+  &:hover {
+    svg {
+      color: #000000;
+    }
+  }
+  &.active {
+    svg {
+      color: #1c6758;
+    }
+  }
+
+  @media all and (max-width: 460px) {
+    display: block;
   }
 `;
 
