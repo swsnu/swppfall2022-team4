@@ -14,8 +14,9 @@ jobs:
     - tar xvf frontend/env.tar -C frontend/
     - openssl aes-256-cbc -K $encrypted_553718a0db78_key -iv $encrypted_553718a0db78_iv -in backend/env.tar.enc -out backend/env.tar -d
     - tar xvf backend/env.tar -C backend/
-    - python -V
     install:
+    - source ~/virtualenv/python3.9/bin/activate
+    - python -V
     - gem install coveralls-lcov
     - cd frontend
     - yarn install
