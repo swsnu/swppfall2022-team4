@@ -1,11 +1,20 @@
 import client from './client';
 
+export const token = async () => {
+  const response = await client.get<undefined>(`/api/user/token/`);
+  return response.data;
+};
+
 export const signup = async (payload: signupRequestType) => {
   const response = await client.post<userType>(`/api/user/signup/`, payload);
   return response.data;
 };
 export const login = async (payload: loginRequestType) => {
   const response = await client.post<userType>(`/api/user/login/`, payload);
+  return response.data;
+};
+export const check = async () => {
+  const response = await client.get<undefined>(`/api/user/check/`);
   return response.data;
 };
 

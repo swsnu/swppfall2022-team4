@@ -1,5 +1,6 @@
-import { AxiosError, AxiosResponse } from 'axios';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as userAPI from 'store/apis/user';
 
@@ -20,6 +21,11 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    setUser: (state, { payload }) => {
+      state.user = payload;
+    },
+    token: state => state,
+
     signup: (state, action: PayloadAction<userAPI.signupRequestType>) => {
       state.user = null;
       state.error = null;
@@ -42,9 +48,17 @@ export const userSlice = createSlice({
       state.error = payload;
       alert(payload.response?.data.message);
     },
+    check: state => state,
+    checkFailure: state => {
+      state.user = null;
+    },
   },
 });
 export const userActions = userSlice.actions;
+
+function* tokenSaga() {
+  yield call(userAPI.token);
+}
 
 function* signupSaga(action: PayloadAction<userAPI.signupRequestType>) {
   try {
@@ -62,8 +76,17 @@ function* loginSaga(action: PayloadAction<userAPI.loginRequestType>) {
     yield put(userActions.loginFailure(error));
   }
 }
+function* checkSaga() {
+  try {
+    yield call(userAPI.check);
+  } catch (error) {
+    yield put(userActions.checkFailure());
+  }
+}
 
 export default function* userSaga() {
+  yield takeLatest(userActions.token, tokenSaga);
   yield takeLatest(userActions.signup, signupSaga);
   yield takeLatest(userActions.login, loginSaga);
+  yield takeLatest(userActions.check, checkSaga);
 }
