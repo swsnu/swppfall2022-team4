@@ -1,9 +1,7 @@
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from utils.get_random import get_random_string
 
-@csrf_exempt
 def upload(request):
     """
     이미지를 백엔드 로컬 환경에 업로드합니다.
