@@ -12,7 +12,7 @@ jobs:
     before_install:
     - openssl aes-256-cbc -K $encrypted_373aa1f98b09_key -iv $encrypted_373aa1f98b09_iv -in frontend/env.tar.enc -out frontend/env.tar -d
     - tar xvf frontend/env.tar -C frontend/
-    - openssl aes-256-cbc -K $encrypted_553718a0db78_key -iv $encrypted_553718a0db78_iv -in backend/env.tar.enc -out backend/env.tar -d
+    - openssl aes-256-cbc -K $encrypted_ad561db20640_key -iv $encrypted_ad561db20640_iv -in backend/env.tar.enc -out backend/env.tar -d
     - tar xvf backend/env.tar -C backend/
     - nvm install 16
     - node --version && npm --version && nvm --version && python -V
