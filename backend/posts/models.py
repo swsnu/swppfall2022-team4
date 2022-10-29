@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import AbstractTimeStampedModel
+from utils.models import AbstractTimeStampedModel
 from users.models import User
 
 class Post(AbstractTimeStampedModel):

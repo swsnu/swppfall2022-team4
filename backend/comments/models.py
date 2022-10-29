@@ -1,8 +1,8 @@
 from django.db import models
-from core.models import AbstractTimeStampedModel
+from utils.models import AbstractTimeStampedModel
 from users.models import User
 from posts.models import Post
-
+ 
 
 class Comment(AbstractTimeStampedModel):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
