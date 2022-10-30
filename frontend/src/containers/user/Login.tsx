@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { userActions } from 'store/slices/user';
 import { RootState } from 'index';
+import { userActions } from 'store/slices/user';
+import styled from 'styled-components';
+
+import Input1 from 'components/common/inputs/Input1';
+import Button1 from 'components/common/buttons/Button1';
+import Button2 from 'components/common/buttons/Button2';
 
 const BACKGROUND_LIST = [
   require('assets/images/main/background_image/1.jpg'),
@@ -80,21 +84,21 @@ const Login = () => {
         </TitleWrapper>
 
         <LoginWrapper>
-          <LoginInput type="text" placeholder="ID" name="username" value={input.username} onChange={e => onChange(e)} />
-          <LoginInput
+          <Input1 type="text" placeholder="ID" name="username" value={input.username} changed={e => onChange(e)} />
+          <Input1
             type="password"
             placeholder="Password"
             name="password"
             value={input.password}
-            onChange={e => onChange(e)}
-            onKeyPress={e => {
+            changed={e => onChange(e)}
+            keyPressed={e => {
               if (e.key === 'Enter') {
                 onLogin();
               }
             }}
           />
-          <LoginButton onClick={onLogin}>Login</LoginButton>
-          <SignupButton to="/signup">Create New Account</SignupButton>
+          <Button1 content="Login" clicked={onLogin} style={{ margin: '20px 0' }} />
+          <Button2 content="Create New Account" clicked={() => navigate('/signup')} />
         </LoginWrapper>
 
         <SocialLoginWrapper>
@@ -202,39 +206,8 @@ const LoginWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 25px 0;
-`;
-const LoginInput = styled.input`
-  width: 300px;
-  height: 48px;
-  border: 2px solid #565656;
-  margin: 10px 0;
-  padding: 0px 8px;
-  font-size: 18px;
-`;
-const LoginButton = styled.button`
-  width: 120px;
-  height: 45px;
-  background-color: #349c66;
-  color: white;
-  border: 0;
-  border-radius: 5px;
-  margin: 20px 0;
-  font-family: FugazOne;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background-color 0.15s linear;
-  &:hover {
-    background-color: #3bb978;
-  }
-`;
-const SignupButton = styled(Link)`
-  color: #606060;
-  font-family: IBMPlexSansThaiLooped;
-  font-size: 21px;
-  letter-spacing: -0.5px;
-  transition: color 0.15s linear;
-  &:hover {
-    color: #000000;
+  input {
+    margin: 10px 0;
   }
 `;
 
