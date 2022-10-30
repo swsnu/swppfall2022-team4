@@ -51,7 +51,7 @@ const Mypage = () => {
         </LeftWrapper>
 
         <ProfileEtcWrapper>
-          <DateDiff>{dateDiff(profile.created) + 123}</DateDiff>
+          <DateDiff>{dateDiff(profile.created)}</DateDiff>
           <DateDiffText>일 째</DateDiffText>
           <EditButton onClick={() => navigate('/edit_profile')}>프로필 수정</EditButton>
         </ProfileEtcWrapper>
