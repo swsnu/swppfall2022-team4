@@ -25,3 +25,10 @@ export function timeAgoFormat(dateString: string) {
   }
   return '오래전';
 }
+
+export function dateDiff(dateString: string) {
+  const dateNow = new Date();
+  const date = new Date(dateString);
+  const timeDiff = dateNow.valueOf() - date.valueOf();
+  return Math.floor((timeDiff + 86399999) / 86400000);
+}
