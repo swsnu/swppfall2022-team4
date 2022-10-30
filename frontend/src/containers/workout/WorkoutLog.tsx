@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import styled from "styled-components";
-import { FitElement } from "components/fitelement/FitElement";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import { FitElement } from 'components/fitelement/FitElement';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -10,41 +10,28 @@ const WorkoutLog = () => {
 
   const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   const DAYS_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  const DAYS_OF_THE_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-  const MONTHS = [
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
-  ];
+  const DAYS_OF_THE_WEEK = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
   const example_fitelements = [
     {
-      type: "log",
-      workout_type: "스쿼트",
-      category: "leg",
+      type: 'log',
+      workout_type: '스쿼트',
+      category: 'leg',
       weight: 100,
       rep: 10,
       set: 5,
       time: 20,
-      },
-      {
-        type: "log",
-        workout_type: "데드리프트",
-        category: "leg",
-        weight: 80,
-        rep: 7,
-        set: 6,
-        time: 15,
-      },
+    },
+    {
+      type: 'log',
+      workout_type: '데드리프트',
+      category: 'leg',
+      weight: 80,
+      rep: 7,
+      set: 6,
+      time: 15,
+    },
   ];
 
   const today = new Date();
@@ -87,42 +74,35 @@ const WorkoutLog = () => {
           <CalendarWrapper>
             <Frame>
               <CalendarHeader>
-                <Button onClick={() => setDate(new Date(year, month - 1, day))}>
-                  {"<"}
-                </Button>
+                <Button onClick={() => setDate(new Date(year, month - 1, day))}>{'<'}</Button>
                 <YearMonth>
                   <Year>{year}</Year>
                   <Month>{MONTHS[month]}</Month>
                 </YearMonth>
 
-                <Button onClick={() => setDate(new Date(year, month + 1, day))}>
-                  {">"}
-                </Button>
+                <Button onClick={() => setDate(new Date(year, month + 1, day))}>{'>'}</Button>
               </CalendarHeader>
               <Body>
-                {DAYS_OF_THE_WEEK.map((d) =>
-                  d == "SUN" ? (
+                {DAYS_OF_THE_WEEK.map(d =>
+                  d == 'SUN' ? (
                     <Day className="sunday" key={d}>
                       {d}
                     </Day>
-                  ) : d == "SAT" ? (
+                  ) : d == 'SAT' ? (
                     <Day className="saturday" key={d}>
                       {d}
                     </Day>
                   ) : (
                     <Day key={d}>{d}</Day>
-                  )
+                  ),
                 )}
                 {Array(days[month] + (startDay - 1))
                   .fill(null)
                   .map((_, index) => {
                     const d = index - (startDay - 2);
                     return (
-                      <Day
-                        key={index}
-                        onClick={() => setDate(new Date(year, month, d))}
-                      >
-                        {d > 0 ? d : ""}
+                      <Day key={index} onClick={() => setDate(new Date(year, month, d))}>
+                        {d > 0 ? d : ''}
                       </Day>
                     );
                   })}
@@ -132,9 +112,7 @@ const WorkoutLog = () => {
           <MemoWrapper>
             <Frame className="memo">
               <MemoTitleWrapper>Notes</MemoTitleWrapper>
-              <MemoContentWrapper>
-                여기에 내용을 입력해주세요.
-              </MemoContentWrapper>
+              <MemoContentWrapper>여기에 내용을 입력해주세요.</MemoContentWrapper>
             </Frame>
           </MemoWrapper>
         </LeftWrapper>
