@@ -93,9 +93,6 @@ const InsideComponent = () => {
     <Routes>
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
-      <Route path="post" element={<PostMain />} />
-      <Route path="post/create" element={<PostCreate />} />
-      <Route path="post/:id" element={<PostDetail />} />
       <Route
         path="*"
         element={
@@ -103,6 +100,9 @@ const InsideComponent = () => {
             <Header />
             <Routes>
               <Route path="" element={<Main />} />
+              <Route path="post" element={<PostMain />} />
+              <Route path="post/create" element={<PostCreate />} />
+              <Route path="post/:id" element={<PostDetail />} />
             </Routes>
           </Wrapper>
         }

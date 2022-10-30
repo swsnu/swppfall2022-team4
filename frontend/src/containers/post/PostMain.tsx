@@ -21,7 +21,7 @@ const PostMain = () => {
 
   const postList = useSelector((rootState: RootState) => rootState.post.postList.posts);
   return (
-    <Wrapper>
+    <WrapperGreen>
       <ContentWrapper>
         <SearchBarWrapper>Search Bar</SearchBarWrapper>
         <ArticleWrapper>
@@ -60,23 +60,19 @@ const PostMain = () => {
           </SideBarWrapper>
         </ArticleWrapper>
       </ContentWrapper>
-    </Wrapper>
+    </WrapperGreen>
   );
 };
 
-const Wrapper = styled.div`
+const WrapperGreen = styled.div`
+  background-color: #d7efe3;
   width: 100%;
   height: 100%;
   min-height: 100vh;
-  background-color: #d7efe3;
   display: flex;
-  justify-content: center;
-
-  -ms-user-select: none;
-  -moz-user-select: -moz-none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  user-select: none;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
 `;
 
 const ContentWrapper = styled.div`
@@ -86,7 +82,6 @@ const ContentWrapper = styled.div`
   max-width: 1200px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 
   @media all and (max-width: 650px) {
@@ -95,9 +90,10 @@ const ContentWrapper = styled.div`
 `;
 const SearchBarWrapper = styled.div`
   padding: 20px;
-  margin-bottom: 15px;
+  margin: 40px 0px 15px 0px;
   border: 1px solid black;
   width: 100%;
+  background-color: #ffffff;
 `;
 const ArticleWrapper = styled.div`
   display: flex;
@@ -119,6 +115,7 @@ const ArticleListWrapper = styled.div`
 const SideBarWrapper = styled.div`
   border: 1px solid black;
   width: 20%;
+  background-color: #ffffff;
 `;
 const SideBarItem = styled.div`
   margin-top: 15px;

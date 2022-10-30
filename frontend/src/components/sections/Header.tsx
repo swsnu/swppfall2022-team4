@@ -130,6 +130,7 @@ const Wrapper = styled.div`
   z-index: 100;
   position: fixed;
   top: 0;
+  background-color: #ffffff;
 `;
 const FakeHeader = styled.div`
   width: 100%;
