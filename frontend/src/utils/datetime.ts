@@ -27,8 +27,8 @@ export function timeAgoFormat(dateString: string) {
 }
 
 export function dateDiff(dateString: string) {
-  const dateNow = new Date();
-  const date = new Date(dateString);
-  const timeDiff = dateNow.valueOf() - date.valueOf();
-  return Math.floor((timeDiff + 86399999) / 86400000);
+  const dateNow = Date.now();
+  const date = new Date(dateString + ' 00:00:00');
+  const timeDiff = dateNow - date.getTime();
+  return Math.floor(timeDiff / 86400000) + 1;
 }
