@@ -130,6 +130,12 @@ const Wrapper = styled.div`
   z-index: 100;
   position: fixed;
   top: 0;
+
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 `;
 const FakeHeader = styled.div`
   width: 100%;
