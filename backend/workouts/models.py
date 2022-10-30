@@ -1,9 +1,9 @@
-from unittest.util import _MAX_LENGTH
 from django.db import models
 from users.models import User
 
 
 class FitElement(models.Model):
+    """ fit element definition """
     TYPE_CHOICE = (
         ('goal', 'goal'),
         ('log', 'log')
@@ -23,12 +23,14 @@ class FitElement(models.Model):
 
 
 class DailyLog(models.Model):
+    """ daily log definition """
     date = models.DateField(null=False)
     memo = models.TextField(null=True)
     fit_element = models.ManyToManyField(FitElement, blank=True)
 
 
 class Routine(models.Model):
+    """ routine definition """
     name = models.CharField(max_length=30, null=False)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='routine')

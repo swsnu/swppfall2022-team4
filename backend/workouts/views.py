@@ -9,7 +9,9 @@ from django.views.decorators.http import require_http_methods
 
 @require_http_methods(["POST"])
 def create_fit_element(request):
-    """create fit element"""
+    """
+    POST: create fit element
+    """
     if request.method == 'POST':
         try:
             req_data = json.loads(request.body.decode())
@@ -28,13 +30,17 @@ def create_fit_element(request):
 
             new_fit_element.save()
             return HttpResponse(status=201)
-        except:
+        except (KeyError, json.JSONDecodeError):
             return HttpResponseBadRequest()
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "PUT", "DELETE"])
 def fit_element(request, fit_element_id):
-    """get a fit element"""
+    """
+    GET: get a fit element
+    PUT: edit a fit element
+    DELETE: delete a fit element
+    """
     if request.method == 'GET':
         try:
             workout = FitElement.objects.get(id=fit_element_id)
@@ -52,13 +58,15 @@ def fit_element(request, fit_element_id):
                 'date': workout.date
             }
             return JsonResponse(return_json, safe=False, status=201)
-        except:
+        except (KeyError, json.JSONDecodeError, FitElement.DoesNotExist):
             return HttpResponse(404)
 
 
 @require_http_methods(["GET"])
 def get_calendar_info(request, year, month):
-    """get fit elements for calendar"""
+    """
+    GET: get fit elements for month calendar
+    """
     if request.method == 'GET':
         req_data = json.loads(request.body.decode())
         user_id = req_data['user_id']
@@ -70,13 +78,13 @@ def get_calendar_info(request, year, month):
         else:
             next_month = datetime(year, month+1, 1).date()
         for i in range(1, 32):
-            dict = {
+            cal_dict = {
                 "year": year,
                 "month": month,
                 "date": i,
                 "workouts": []
             }
-            return_json.append(dict)
+            return_json.append(cal_dict)
         workouts_all = FitElement.objects.filter(
             date__gte=this_month, date__lt=next_month)
 
@@ -101,63 +109,75 @@ def get_calendar_info(request, year, month):
         return JsonResponse(return_json, safe=False, status=200)
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def routines(request):
-    """get routines"""
+    """
+    GET: get routines
+    POST: create a routine
+    """
     if request.method == 'GET':
         req_data = json.loads(request.body.decode())
         user_id = req_data['user_id']
 
         return_json = []
-        routines = Routine.objects.all()
-        routines_mine = routines.filter(author_id=user_id)
+        routines_all = Routine.objects.all()
+        routines_mine = routines_all.filter(author_id=user_id)
 
-        for routine in routines_mine:
+        for routine_single in routines_mine:
             routine_dict = {
-                'id': routine.id,
-                'author': routine.author.id,  # id or name
-                'name': routine.name
+                'id': routine_single.id,
+                'author': routine_single.author.id,  # id or name
+                'name': routine_single.name
             }
             return_json.append(routine_dict)
         return JsonResponse(return_json, safe=False, status=200)
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "PUT", "DELETE"])
 def routine(request, routine_id):
-    """get a routine"""
+    """
+    GET: get a routine
+    PUT: edit a routine / fit elements changed
+    DELETE: delete a routine
+    """
     if request.method == 'GET':
         try:
-            routine = Routine.objects.get(id=routine_id)
+            routine_single = Routine.objects.get(id=routine_id)
             return_json = {
-                'id': routine.id,
-                'author': routine.author.id,  # id or name
-                'name': routine.name,
-                'fitelements': list(routine.fit_element.values_list('id', flat=True))
+                'id': routine_single.id,
+                'author': routine_single.author.id,  # id or name
+                'name': routine_single.name,
+                'fitelements': list(routine_single.fit_element.values_list('id', flat=True))
             }
             return JsonResponse(return_json, safe=False, status=201)
-        except:
+        except (KeyError, json.JSONDecodeError, Routine.DoesNotExist):
             return HttpResponse(404)
 
 
-@require_http_methods(["GET"])
-def daily_log(request, year, month, date):
-    """get daily log per day"""
+@require_http_methods(["GET", "POST", "PUT"])
+def daily_log(request, year, month, specific_date):
+    """
+    GET: get a daily log
+    POST:  post a memo or add first fit element
+    PUT: edit memo or fit elements changed
+    """
     if request.method == 'GET':
         req_data = json.loads(request.body.decode())
         user_id = req_data['user_id']
 
         daily_logs = DailyLog.objects.filter(id=user_id)
-        daily_log = daily_logs.filter(date=datetime(year, month, date).date())
+        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())[0]
+        # 하나밖에 없도록 처리할 것
 
-        if daily_log is None:
+        if daily_log_single is None:
             daily_log_dict = DailyLog(
-                date=datetime(year, month, date).date()
+                date=datetime(year, month, specific_date).date()
             )
             daily_log_dict.save()
         else:
             daily_log_dict = {
-                'memo': daily_log.memo,
-                'date': daily_log.date,
+                'memo': daily_log_single.memo,
+                'date': daily_log_single.date,
                 'fitelements': list(daily_log.fit_element.values_list('id', flat=True))
             }
 
