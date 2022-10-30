@@ -5,6 +5,7 @@ import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
 import { timeAgoFormat } from 'utils/datetime';
+import { PostPageWithSearchBar } from './PostLayout';
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,98 +31,50 @@ const PostDetail = () => {
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
 
-  return (
-    <Wrapper>
-      <ContentWrapper>
-        <SearchBarWrapper>Search Bar</SearchBarWrapper>
-        <ArticleWrapper>
-          <ArticleDetailWrapper>
-            {post ? (
-              <ArticleItem>
-                <ArticleBody>
-                  <h1>{post.title}</h1>
-                  <h2>{post.content}</h2>
-                  <h2>작성자 {post.author_name}</h2>
-                  <h3>{post.comments_num}</h3>
-                </ArticleBody>
-                <ArticleCommentWrapper>
-                  {postComment ? (
-                    postComment.map((comment, id) => {
-                      return (
-                        <CommentItem key={id}>
-                          <span> {comment.content} </span>
-                          <span> {comment.author_name} </span>
-                          <span> {comment.created} </span>
-                        </CommentItem>
-                      );
-                    })
-                  ) : (
-                    <span> No Comment</span>
-                  )}
-                </ArticleCommentWrapper>
-              </ArticleItem>
+  const postDetailContent = (
+    <ArticleDetailWrapper>
+      {post ? (
+        <ArticleItem>
+          <ArticleBody>
+            <h1>{post.title}</h1>
+            <h2>{post.content}</h2>
+            <h2>작성자 {post.author_name}</h2>
+            <h3>{post.comments_num}</h3>
+          </ArticleBody>
+          <ArticleCommentWrapper>
+            {postComment ? (
+              postComment.map((comment, id) => {
+                return (
+                  <CommentItem key={id}>
+                    <span> {comment.content} </span>
+                    <span> {comment.author_name} </span>
+                    <span> {comment.created} </span>
+                  </CommentItem>
+                );
+              })
             ) : (
-              <h1>Loading</h1>
+              <span> No Comment</span>
             )}
-          </ArticleDetailWrapper>
-
-          <SideBarWrapper>
-            <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
-            <SideBarItem>
-              <button onClick={() => navigate('/post')}>글 목록으로</button>
-              {user?.username == post?.author_name ? <h1> AUTHOR! </h1> : <h2> NOT AUTHOR.</h2>}
-            </SideBarItem>
-            <SideBarItem>사이드바 공간2</SideBarItem>
-          </SideBarWrapper>
-        </ArticleWrapper>
-      </ContentWrapper>
-    </Wrapper>
+          </ArticleCommentWrapper>
+        </ArticleItem>
+      ) : (
+        <h1>Loading</h1>
+      )}
+    </ArticleDetailWrapper>
   );
+  const SideBar = (
+    <>
+      <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
+      <SideBarItem>
+        <button onClick={() => navigate('/post')}>글 목록으로</button>
+        {user?.username == post?.author_name ? <h1> AUTHOR! </h1> : <h2> NOT AUTHOR.</h2>}
+      </SideBarItem>
+      <SideBarItem>사이드바 공간2</SideBarItem>
+    </>
+  );
+  return PostPageWithSearchBar(postDetailContent, SideBar);
 };
 
-const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  background-color: #d7efe3;
-  display: flex;
-  justify-content: center;
-
-  -ms-user-select: none;
-  -moz-user-select: -moz-none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  user-select: none;
-`;
-
-const ContentWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  @media all and (max-width: 650px) {
-    width: 100%;
-  }
-`;
-const SearchBarWrapper = styled.div`
-  padding: 20px;
-  margin-bottom: 15px;
-  border: 1px solid black;
-  width: 100%;
-`;
-const ArticleWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  border: 1px solid black;
-  width: 100%;
-  min-height: 600px;
-  height: 70vh;
-`;
 const ArticleDetailWrapper = styled.div`
   border: 1px solid black;
   margin-right: 15px;
@@ -137,10 +90,7 @@ const ArticleCommentWrapper = styled.div`
   width: 100%;
   background-color: #ffffff;
 `;
-const SideBarWrapper = styled.div`
-  border: 1px solid black;
-  width: 20%;
-`;
+
 const SideBarItem = styled.div`
   margin-top: 15px;
   width: 100%;

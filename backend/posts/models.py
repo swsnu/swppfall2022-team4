@@ -27,3 +27,6 @@ class Post(AbstractTimeStampedModel):
     def __str__(self):
         """To string method"""
         return str(self.title)
+
+    class Meta:
+        ordering = ("-created",)
