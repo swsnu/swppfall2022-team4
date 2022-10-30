@@ -86,7 +86,6 @@ function App() {
     </>
   );
 }
-
 export default App;
 
 const InsideComponent = () => {
@@ -99,6 +98,7 @@ const InsideComponent = () => {
         element={
           <Wrapper>
             <Header />
+
             <Routes>
               <Route path="" element={<Main />} />
               <Route path="post/*">
@@ -109,6 +109,7 @@ const InsideComponent = () => {
               <Route path="mypage/:username" element={<Mypage />} />
               <Route path="*" element={<div>NOT FOUND</div>} />
             </Routes>
+
             <Footer />
           </Wrapper>
         }
