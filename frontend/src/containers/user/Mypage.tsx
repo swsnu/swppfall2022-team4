@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
 import { dateDiff } from 'utils/datetime';
-import Loading from 'components/sections/common/Loading';
+import Loading from 'components/common/Loading';
 
 const Mypage = () => {
   const navigate = useNavigate();
