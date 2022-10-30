@@ -13,6 +13,7 @@ interface UserState {
   error: AxiosError | null;
 
   profile: userAPI.profileType | null;
+  loading: boolean;
   editProfile: boolean;
   deleteProfile: boolean;
   profileError: AxiosError | null;
@@ -24,6 +25,7 @@ const initialState: UserState = {
   error: null,
 
   profile: null,
+  loading: false,
   editProfile: false,
   deleteProfile: false,
   profileError: null,
@@ -37,6 +39,13 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, { payload }) => {
       state.user = payload;
+    },
+    resetProfile: state => {
+      state.profile = null;
+      state.loading = false;
+      state.editProfile = false;
+      state.deleteProfile = false;
+      state.profileError = null;
     },
     token: state => state,
 
@@ -75,41 +84,50 @@ export const userSlice = createSlice({
     },
 
     getProfile: (state, action: PayloadAction<string>) => {
+      state.loading = true;
       state.profile = null;
       state.profileError = null;
     },
     getProfileSuccess: (state, { payload }) => {
+      state.loading = false;
       state.profile = payload;
       state.profileError = null;
     },
     getProfileFailure: (state, { payload }) => {
+      state.loading = false;
       state.profile = null;
       state.profileError = payload;
       alert(payload.response?.data.message);
     },
     editProfile: (state, action: PayloadAction<{ username: string; data: userAPI.editProfileRequestType }>) => {
+      state.loading = true;
       state.editProfile = false;
       state.profileError = null;
     },
     editProfileSuccess: (state, { payload }) => {
+      state.loading = false;
       state.user = payload;
       state.editProfile = true;
       state.profileError = null;
     },
     editProfileFailure: (state, { payload }) => {
+      state.loading = false;
       state.editProfile = false;
       state.profileError = payload;
       alert(payload.response?.data.message);
     },
     signout: (state, action: PayloadAction<string>) => {
+      state.loading = true;
       state.deleteProfile = false;
       state.profileError = null;
     },
-    signoutSuccess: (state, { payload }) => {
+    signoutSuccess: state => {
+      state.loading = false;
       state.deleteProfile = true;
       state.profileError = null;
     },
     signoutFailure: (state, { payload }) => {
+      state.loading = false;
       state.deleteProfile = false;
       state.profileError = payload;
       alert(payload.response?.data.message);
@@ -168,8 +186,8 @@ function* editProfileSaga(action: PayloadAction<{ username: string; data: userAP
 }
 function* signoutSaga(action: PayloadAction<string>) {
   try {
-    const response: AxiosResponse = yield call(userAPI.signout, action.payload);
-    yield put(userActions.signoutSuccess(response));
+    yield call(userAPI.signout, action.payload);
+    yield put(userActions.signoutSuccess());
   } catch (error) {
     yield put(userActions.signoutFailure(error));
   }
