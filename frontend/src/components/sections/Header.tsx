@@ -105,7 +105,7 @@ const Header = () => {
             <Info open={infoOpen}>
               {infoOpen && (
                 <>
-                  <MypageButton onClick={() => navigate(`/mypage/${user.username}`)}>Mypage</MypageButton>
+                  <MypageButton onClick={() => navigate(`/profile/${user.username}`)}>Mypage</MypageButton>
                   <LogoutButton onClick={() => dispatch(userActions.logout())}>Logout</LogoutButton>
                 </>
               )}

@@ -106,7 +106,7 @@ const InsideComponent = () => {
                 <Route path="create" element={<PostCreate />} />
                 <Route path=":id" element={<PostDetail />} />
               </Route>
-              <Route path="mypage/:username" element={<Mypage />} />
+              <Route path="profile/:username" element={<Mypage />} />
               <Route path="*" element={<div>NOT FOUND</div>} />
             </Routes>
 
