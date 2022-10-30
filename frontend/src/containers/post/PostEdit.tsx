@@ -38,7 +38,8 @@ const PostEdit = () => {
   const user = useSelector(({ user }: RootState) => user.user);
 
   const cancelOnClick = () => {
-    alert('are you sure?');
+    // alert('are you sure?');
+    navigate('/post');
     //TODO;
   };
   const confirmOnClick = async () => {
@@ -58,13 +59,13 @@ const PostEdit = () => {
     </>
   );
   const ContentInputWrapper = (
-    <>
+    <ContentWrapper>
       <ContentTextArea value={content} onChange={e => setContent(e.target.value)} />
       <CreateBtnWrapper>
         <CancelPostBtn onClick={cancelOnClick}>취소</CancelPostBtn>
         <CreatePostBtn onClick={confirmOnClick}>완료</CreatePostBtn>
       </CreateBtnWrapper>
-    </>
+    </ContentWrapper>
   );
   const SideBarWrapper = (
     <>
@@ -74,6 +75,11 @@ const PostEdit = () => {
   return PostPageLayout(TitleInputWrapper, ContentInputWrapper, SideBarWrapper);
 };
 
+const ContentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
 const TitleInput = styled.input`
   width: 100%;
   height: 100%;

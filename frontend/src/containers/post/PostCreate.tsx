@@ -15,7 +15,8 @@ const PostCreate = () => {
   const user = useSelector(({ user }: RootState) => user.user);
 
   const cancelOnClick = () => {
-    alert('are you sure?');
+    // alert('are you sure?');
+    navigate('/post');
     //TODO;
   };
   const confirmOnClick = () => {
@@ -36,13 +37,13 @@ const PostCreate = () => {
     </>
   );
   const ContentInputWrapper = (
-    <>
+    <ContentWrapper>
       <ContentTextArea value={content} onChange={e => setContent(e.target.value)} />
       <CreateBtnWrapper>
         <CancelPostBtn onClick={cancelOnClick}>취소</CancelPostBtn>
         <CreatePostBtn onClick={confirmOnClick}>완료</CreatePostBtn>
       </CreateBtnWrapper>
-    </>
+    </ContentWrapper>
   );
   const SideBarWrapper = (
     <>
@@ -74,6 +75,11 @@ const CreateBtnWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+`;
+const ContentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
 `;
 const CreatePostBtn = styled.button`
   padding: 0px 14px;
