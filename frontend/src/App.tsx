@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
 import FugazOne from 'assets/fonts/FugazOne.ttf';
 import IBMPlexSansThaiLooped from 'assets/fonts/IBMPlexSansThaiLooped.ttf';
+import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 
 import Main from 'containers/Main';
 import Login from 'containers/user/Login';
@@ -11,6 +12,7 @@ import Signup from 'containers/user/Signup';
 import PostMain from 'containers/post/PostMain';
 import PostCreate from 'containers/post/PostCreate';
 import PostDetail from 'containers/post/PostDetail';
+import Header from 'components/sections/Header';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -64,6 +66,10 @@ const GlobalStyles = createGlobalStyle`
     font-family: IBMPlexSansThaiLooped;
     src: url(${IBMPlexSansThaiLooped}) format("truetype");
   }
+  @font-face { 
+    font-family: NanumSquareR;
+    src: url(${NanumSquareR}) format("truetype");
+  }
 `;
 
 function App() {
@@ -84,13 +90,34 @@ export default App;
 const InsideComponent = () => {
   return (
     <Routes>
-      <Route path="" element={<Main />} />
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
-      <Route path="post" element={<PostMain />} />
-      <Route path="post/create" element={<PostCreate />} />
-      <Route path="post/:id" element={<PostDetail />} />
-      <Route path="*" element={<div>After Login</div>} />
+      <Route
+        path="*"
+        element={
+          <Wrapper>
+            <Header />
+            <Routes>
+              <Route path="" element={<Main />} />
+              <Route path="post" element={<PostMain />} />
+              <Route path="post/create" element={<PostCreate />} />
+              <Route path="post/:id" element={<PostDetail />} />
+              <Route path="*" element={<div>After Login</div>} />
+            </Routes>
+          </Wrapper>
+        }
+      />
     </Routes>
   );
 };
+
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+`;

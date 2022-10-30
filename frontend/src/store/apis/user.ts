@@ -17,6 +17,10 @@ export const check = async () => {
   const response = await client.get<undefined>(`/api/user/check/`);
   return response.data;
 };
+export const logout = async () => {
+  const response = await client.get<undefined>(`/api/user/logout/`);
+  return response.data;
+};
 
 export type userType = {
   username: string;

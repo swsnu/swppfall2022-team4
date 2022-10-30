@@ -11,14 +11,14 @@ from .models import User
 @require_http_methods(["GET"])
 def set_csrf(request):
     """
-    CSRF 설정
+    GET : csrf 설정
     """
     return HttpResponse(status=200)
 
 @require_http_methods(["POST"])
 def signup(request):
     """
-    회원가입
+    POST : 회원가입
     """
     try:
         data = json.loads(request.body.decode())
@@ -64,7 +64,7 @@ def signup(request):
 @require_http_methods(["POST"])
 def login(request):
     """
-    로그인
+    POST : 로그인
     """
     try:
         data = json.loads(request.body.decode())
@@ -101,6 +101,15 @@ def login(request):
 @require_http_methods(["GET"])
 def check(request):
     """
-    자동 로그인을 위한 토큰 확인
+    GET : 자동 로그인을 위한 토큰 확인
     """
     return HttpResponse(status=200)
+
+@require_http_methods(["GET"])
+def logout(request):
+    """
+    GET : 로그아웃, 쿠키 삭제
+    """
+    response = HttpResponse(status=204)
+    response.set_cookie('access_token', None, max_age=60 * 60 * 24 * 7, samesite='None', secure=True, httponly=True)
+    return response
