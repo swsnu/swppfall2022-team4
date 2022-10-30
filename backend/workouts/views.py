@@ -60,6 +60,10 @@ def fit_element(request, fit_element_id):
             return JsonResponse(return_json, safe=False, status=201)
         except (KeyError, json.JSONDecodeError, FitElement.DoesNotExist):
             return HttpResponse(404)
+    elif request.method == 'PUT':
+        pass
+    elif request.method == 'DELETE':
+        pass
 
 
 @require_http_methods(["GET"])
@@ -131,6 +135,8 @@ def routines(request):
             }
             return_json.append(routine_dict)
         return JsonResponse(return_json, safe=False, status=200)
+    elif request.method == 'POST':
+        pass
 
 
 @require_http_methods(["GET", "PUT", "DELETE"])
@@ -152,6 +158,10 @@ def routine(request, routine_id):
             return JsonResponse(return_json, safe=False, status=201)
         except (KeyError, json.JSONDecodeError, Routine.DoesNotExist):
             return HttpResponse(404)
+    elif request.method == 'PUT':
+        pass
+    elif request.method == 'DELETE':
+        pass
 
 
 @require_http_methods(["GET", "POST", "PUT"])
@@ -182,3 +192,9 @@ def daily_log(request, year, month, specific_date):
             }
 
         return JsonResponse(daily_log_dict, safe=False, status=200)
+    
+    elif request.method == 'POST':
+        pass
+
+    elif request.method == 'PUT':
+        pass
