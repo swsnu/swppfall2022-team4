@@ -12,11 +12,21 @@ interface UserState {
   } | null;
   error: AxiosError | null;
 
+  profile: userAPI.profileType | null;
+  editProfile: boolean;
+  deleteProfile: boolean;
+  profileError: AxiosError | null;
+
   notice: string[];
 }
 const initialState: UserState = {
   user: null,
   error: null,
+
+  profile: null,
+  editProfile: false,
+  deleteProfile: false,
+  profileError: null,
 
   notice: [],
 };
@@ -36,8 +46,10 @@ export const userSlice = createSlice({
     },
     signupSuccess: (state, { payload }) => {
       state.user = payload;
+      state.error = null;
     },
     signupFailure: (state, { payload }) => {
+      state.user = null;
       state.error = payload;
       alert(payload.response?.data.message);
     },
@@ -47,8 +59,10 @@ export const userSlice = createSlice({
     },
     loginSuccess: (state, { payload }) => {
       state.user = payload;
+      state.error = null;
     },
     loginFailure: (state, { payload }) => {
+      state.user = null;
       state.error = payload;
       alert(payload.response?.data.message);
     },
@@ -58,6 +72,47 @@ export const userSlice = createSlice({
     },
     logout: state => {
       state.user = null;
+    },
+
+    getProfile: (state, action: PayloadAction<string>) => {
+      state.profile = null;
+      state.profileError = null;
+    },
+    getProfileSuccess: (state, { payload }) => {
+      state.profile = payload;
+      state.profileError = null;
+    },
+    getProfileFailure: (state, { payload }) => {
+      state.profile = null;
+      state.profileError = payload;
+      alert(payload.response?.data.message);
+    },
+    editProfile: (state, action: PayloadAction<{ username: string; data: userAPI.editProfileRequestType }>) => {
+      state.editProfile = false;
+      state.profileError = null;
+    },
+    editProfileSuccess: (state, { payload }) => {
+      state.user = payload;
+      state.editProfile = true;
+      state.profileError = null;
+    },
+    editProfileFailure: (state, { payload }) => {
+      state.editProfile = false;
+      state.profileError = payload;
+      alert(payload.response?.data.message);
+    },
+    signout: (state, action: PayloadAction<string>) => {
+      state.deleteProfile = false;
+      state.profileError = null;
+    },
+    signoutSuccess: (state, { payload }) => {
+      state.deleteProfile = true;
+      state.profileError = null;
+    },
+    signoutFailure: (state, { payload }) => {
+      state.deleteProfile = false;
+      state.profileError = payload;
+      alert(payload.response?.data.message);
     },
   },
 });
@@ -95,10 +150,38 @@ function* logoutSaga() {
   localStorage.removeItem('user');
 }
 
+function* getProfileSaga(action: PayloadAction<string>) {
+  try {
+    const response: AxiosResponse = yield call(userAPI.getProfile, action.payload);
+    yield put(userActions.getProfileSuccess(response));
+  } catch (error) {
+    yield put(userActions.getProfileFailure(error));
+  }
+}
+function* editProfileSaga(action: PayloadAction<{ username: string; data: userAPI.editProfileRequestType }>) {
+  try {
+    const response: AxiosResponse = yield call(userAPI.editProfile, action.payload);
+    yield put(userActions.editProfileSuccess(response));
+  } catch (error) {
+    yield put(userActions.editProfileFailure(error));
+  }
+}
+function* signoutSaga(action: PayloadAction<string>) {
+  try {
+    const response: AxiosResponse = yield call(userAPI.signout, action.payload);
+    yield put(userActions.signoutSuccess(response));
+  } catch (error) {
+    yield put(userActions.signoutFailure(error));
+  }
+}
+
 export default function* userSaga() {
   yield takeLatest(userActions.token, tokenSaga);
   yield takeLatest(userActions.signup, signupSaga);
   yield takeLatest(userActions.login, loginSaga);
   yield takeLatest(userActions.check, checkSaga);
   yield takeLatest(userActions.logout, logoutSaga);
+  yield takeLatest(userActions.getProfile, getProfileSaga);
+  yield takeLatest(userActions.editProfile, editProfileSaga);
+  yield takeLatest(userActions.signout, signoutSaga);
 }
