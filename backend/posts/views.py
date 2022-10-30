@@ -92,7 +92,20 @@ def post_detail(request, query_id):
             print(error)
             return HttpResponseBadRequest()
     elif request.method == "PUT":
-        return HttpResponse("Not implemented")
+        try:
+            data = json.loads(request.body.decode())
+            post_id = int(query_id)
+            post_obj = Post.objects.get(pk=post_id)
+
+            post_obj.title = data["title"]
+            post_obj.content = data["content"]
+            post_obj.save()
+            return JsonResponse({"message": "success"}, status=200)
+        except Post.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception as error:
+            print(error)
+            return HttpResponseBadRequest()
     else:  # request.method == "DELETE":
         try:
             post_id = int(query_id)

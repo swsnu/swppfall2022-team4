@@ -36,7 +36,7 @@ const PostDetail = () => {
       navigate('/post');
       dispatch(postActions.stateRefresh());
     }
-  });
+  }, [postDeleteStatus]);
   const deleteOnClick = async () => {
     if (id) {
       await dispatch(

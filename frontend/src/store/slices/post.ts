@@ -96,6 +96,19 @@ export const postSlice = createSlice({
       state.postDelete = false;
       alert('Delete failed');
     },
+    editPost: (state, action: PayloadAction<postAPI.editPostRequestType>) => {
+      // edit!
+      state.postEdit = false;
+    },
+    editPostSuccess: (state, { payload }) => {
+      // success!
+      state.postEdit = true;
+    },
+    editPostFailure: (state, { payload }) => {
+      // failure..
+      state.postEdit = false;
+      alert('edit failed');
+    },
     stateRefresh: state => {
       state.postEdit = false;
       state.postDelete = false;
@@ -153,6 +166,15 @@ function* deletePostSaga(action: PayloadAction<postAPI.deletePostRequestType>) {
   }
 }
 
+function* editPostSaga(action: PayloadAction<postAPI.editPostRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(postAPI.editPost, action.payload);
+    yield put(postActions.editPostSuccess(response));
+  } catch (error) {
+    yield put(postActions.editPostFailure(error));
+  }
+}
+
 function* getPostCommentSaga(action: PayloadAction<commentAPI.getPostCommentRequestType>) {
   try {
     const response: AxiosResponse = yield call(commentAPI.getPostComment, action.payload);
@@ -167,5 +189,6 @@ export default function* postSaga() {
   yield takeLatest(postActions.createPost, createPostSaga);
   yield takeLatest(postActions.getPostDetail, getPostDetailSaga);
   yield takeLatest(postActions.deletePost, deletePostSaga);
+  yield takeLatest(postActions.editPost, editPostSaga);
   yield takeLatest(postActions.getPostComment, getPostCommentSaga);
 }

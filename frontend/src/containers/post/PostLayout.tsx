@@ -25,8 +25,14 @@ const PostContentWrapper = styled.div`
   }
 `;
 
-const TopElementWrapper = styled.div`
+const TopElementWrapperWithPadding = styled.div`
   padding: 20px;
+  margin: 40px 0px 15px 0px;
+  border: 1px solid black;
+  width: 100%;
+  background-color: #ffffff;
+`;
+const TopElementWrapperWithoutPadding = styled.div`
   margin: 40px 0px 15px 0px;
   border: 1px solid black;
   width: 100%;
@@ -51,7 +57,7 @@ const SideBarWrapper = styled.div`
 export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element, sideElement: JSX.Element) => (
   <PostPageWrapper>
     <PostContentWrapper>
-      <TopElementWrapper>{topElement}</TopElementWrapper>
+      <TopElementWrapperWithoutPadding>{topElement}</TopElementWrapperWithoutPadding>
       <Main_SideWrapper>
         {mainElement}
         <SideBarWrapper>{sideElement}</SideBarWrapper>
@@ -64,7 +70,7 @@ const SearchBar = <span>Search Bar</span>;
 export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX.Element) => (
   <PostPageWrapper>
     <PostContentWrapper>
-      <TopElementWrapper>{SearchBar}</TopElementWrapper>
+      <TopElementWrapperWithPadding>{SearchBar}</TopElementWrapperWithPadding>
       <Main_SideWrapper>
         {mainElement}
         <SideBarWrapper>{sideElement}</SideBarWrapper>
