@@ -46,6 +46,7 @@ const Header = () => {
     };
   }, [infoRef]);
   useEffect(() => {
+    window.scrollTo(0, 0);
     setNotificationOpen(false);
     setInfoOpen(false);
   }, [location]);
@@ -125,6 +126,7 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #ffffff;
   border-bottom: 2px solid #909090;
   padding: 0 20px;
   z-index: 100;
