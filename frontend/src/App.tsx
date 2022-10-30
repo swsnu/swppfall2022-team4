@@ -9,6 +9,7 @@ import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 import Main from 'containers/Main';
 import Login from 'containers/user/Login';
 import Signup from 'containers/user/Signup';
+import WorkoutLog from 'containers/workout/WorkoutLog';
 import Header from 'components/sections/Header';
 
 import PostMain from 'containers/post/PostMain';
@@ -93,6 +94,7 @@ const InsideComponent = () => {
     <Routes>
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
+      <Route path="workout" element={<WorkoutLog />} />
       <Route path="post" element={<PostMain />} />
       <Route path="post/create" element={<PostCreate />} />
       <Route path="post/:id" element={<PostDetail />} />
