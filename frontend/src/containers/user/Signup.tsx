@@ -1,11 +1,15 @@
 import { useEffect, useReducer } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { BsCheck2Circle, BsCircle } from 'react-icons/bs';
 import styled from 'styled-components';
-import { userActions } from 'store/slices/user';
 import { RootState } from 'index';
-import { signupInitialState, signupReducer } from 'utils/userData';
+import { userActions } from 'store/slices/user';
+import { signupReducer, signupInitialState, checkBody } from 'utils/userData';
+
+import Button1 from 'components/common/buttons/Button1';
+import Button2 from 'components/common/buttons/Button2';
+import Passwords from 'components/user/Passwords';
+import OtherInfos from 'components/user/OtherInfos';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -43,20 +47,7 @@ const Signup = () => {
     } else if (state.gender === '') {
       alert('성별을 선택해 주세요.');
       return;
-    }
-
-    const height = parseFloat(state.height);
-    const weight = parseFloat(state.weight);
-    const age = parseFloat(state.age);
-
-    if (!height || height < 80.0 || height > 300.0) {
-      alert('올바른 키를 입력해 주세요.');
-      return;
-    } else if (!weight || weight < 20.0 || weight > 300.0) {
-      alert('올바른 몸무게를 입력해 주세요.');
-      return;
-    } else if (!age || age < 3) {
-      alert('올바른 나이를 입력해 주세요.');
+    } else if (!checkBody(state.height, state.weight, state.age)) {
       return;
     }
 
@@ -65,9 +56,9 @@ const Signup = () => {
       password: state.password,
       nickname: state.nickname,
       gender: state.gender,
-      height: height,
-      weight: weight,
-      age: age,
+      height: parseFloat(state.height),
+      weight: parseFloat(state.weight),
+      age: parseFloat(state.age),
     };
 
     dispatch(userActions.signup(request));
@@ -82,78 +73,31 @@ const Signup = () => {
 
       <InputWrapper>
         <InputItem>
-          <NormalInput type="text" placeholder="ID" name="username" value={state.username} onChange={onChange} />
+          <Input type="text" placeholder="ID" name="username" value={state.username} onChange={onChange} />
           <Warning color={state.usernameWarning.color}>{state.usernameWarning.content}</Warning>
         </InputItem>
-
-        <InputItem>
-          <NormalInput
-            type="password"
-            placeholder="Password"
-            name="password"
-            value={state.password}
-            onChange={onChange}
-          />
-          <Warning color={state.passwordWarning.color}>{state.passwordWarning.content}</Warning>
-        </InputItem>
-
-        <InputItem>
-          <NormalInput
-            type="password"
-            placeholder="Password"
-            name="passwordConfirm"
-            value={state.passwordConfirm}
-            onChange={onChange}
-          />
-          <Warning color={state.passwordConfirmWarning.color}>{state.passwordConfirmWarning.content}</Warning>
-        </InputItem>
-
-        <InputItem>
-          <SmallInputWrapper>
-            <NicknameInput
-              type="text"
-              placeholder="Nickname"
-              name="nickname"
-              value={state.nickname}
-              onChange={onChange}
-            />
-            <GenderWrapper>
-              <GenderText>Gender</GenderText>
-              <CheckboxWrapper>
-                <div>Male</div>
-                {state.gender === 'male' ? (
-                  <BsCheck2Circle style={{ marginRight: '6px' }} />
-                ) : (
-                  <BsCircle
-                    style={{ marginRight: '6px' }}
-                    onClick={() => stateDispatch({ name: 'gender', value: 'male' })}
-                  />
-                )}
-                <div>Female</div>
-                {state.gender === 'female' ? (
-                  <BsCheck2Circle />
-                ) : (
-                  <BsCircle onClick={() => stateDispatch({ name: 'gender', value: 'female' })} />
-                )}
-              </CheckboxWrapper>
-            </GenderWrapper>
-          </SmallInputWrapper>
-          <Warning color={state.nicknameWarning.color}>{state.nicknameWarning.content}</Warning>
-        </InputItem>
-
-        <InputItem>
-          <SmallInputWrapper>
-            <HeightInput type="text" placeholder="Height" name="height" value={state.height} onChange={onChange} />
-            <HeightInput type="text" placeholder="Weight" name="weight" value={state.weight} onChange={onChange} />
-            <AgeText>Age</AgeText>
-            <AgeInput type="text" placeholder="Age" name="age" value={state.age} onChange={onChange} />
-          </SmallInputWrapper>
-          <Warning color={state.bodyWarning.color}>{state.bodyWarning.content}</Warning>
-        </InputItem>
+        <Passwords
+          password={state.password}
+          passwordConfirm={state.passwordConfirm}
+          passwordWarning={state.passwordWarning}
+          passwordConfirmWarning={state.passwordConfirmWarning}
+          changed={onChange}
+        />
+        <OtherInfos
+          nickname={state.nickname}
+          gender={state.gender}
+          height={state.height}
+          weight={state.weight}
+          age={state.age}
+          nicknameWarning={state.nicknameWarning}
+          bodyWarning={state.bodyWarning}
+          changed={onChange}
+          stateDispatch={stateDispatch}
+        />
       </InputWrapper>
 
-      <SignupButton onClick={onSignup}>Sign up</SignupButton>
-      <LoginButton to="/login">Back to Login</LoginButton>
+      <Button1 content="Sign up" clicked={onSignup} style={{ margin: '15px 0' }} />
+      <Button2 content="Back to Login" clicked={() => navigate('/login')} />
     </Wrapper>
   );
 };
@@ -211,75 +155,10 @@ const Warning = styled.div<{ color: string }>`
   margin-top: 2px;
   color: ${props => props.color};
 `;
-
-const NormalInput = styled.input`
+const Input = styled.input`
   width: 100%;
   height: 48px;
   border: 2px solid #565656;
   padding: 0px 8px;
   font-size: 18px;
-`;
-const SmallInputWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-const NicknameInput = styled(NormalInput)`
-  width: 180px;
-`;
-const HeightInput = styled(NormalInput)`
-  width: 100px;
-`;
-const AgeText = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 -2px 0 2px;
-`;
-const AgeInput = styled(NormalInput)`
-  width: 60px;
-`;
-const GenderWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-family: IBMPlexSansThaiLooped;
-`;
-const GenderText = styled.div`
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 8px;
-`;
-const CheckboxWrapper = styled.div`
-  display: flex;
-  div {
-    margin-right: 2px;
-  }
-`;
-
-const SignupButton = styled.button`
-  width: 120px;
-  height: 45px;
-  background-color: #349c66;
-  color: white;
-  border: 0;
-  border-radius: 5px;
-  margin: 20px 0;
-  font-family: FugazOne;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background-color 0.15s linear;
-  &:hover {
-    background-color: #3bb978;
-  }
-`;
-const LoginButton = styled(Link)`
-  color: #606060;
-  font-family: IBMPlexSansThaiLooped;
-  font-size: 21px;
-  letter-spacing: -0.5px;
-  transition: color 0.15s linear;
-  &:hover {
-    color: #000000;
-  }
 `;

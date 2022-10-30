@@ -29,7 +29,6 @@ export type signupStateType = {
     color: string;
   };
 };
-
 export const signupInitialState: signupStateType = {
   username: '',
   password: '',
@@ -61,7 +60,6 @@ export const signupInitialState: signupStateType = {
     color: '#686868',
   },
 };
-
 export const signupReducer = (state: signupStateType, action: { name: string; value: string }) => {
   const actionName: string = action.name;
   let newValue: string = action.value;
@@ -250,4 +248,23 @@ export const signupReducer = (state: signupStateType, action: { name: string; va
     default:
       return state;
   }
+};
+
+export const checkBody = (h: string, w: string, a: string) => {
+  const height = parseFloat(h);
+  const weight = parseFloat(w);
+  const age = parseFloat(a);
+
+  if (!height || height < 80.0 || height > 300.0) {
+    alert('올바른 키를 입력해 주세요.');
+    return false;
+  } else if (!weight || weight < 20.0 || weight > 300.0) {
+    alert('올바른 몸무게를 입력해 주세요.');
+    return false;
+  } else if (!age || age < 3) {
+    alert('올바른 나이를 입력해 주세요.');
+    return false;
+  }
+
+  return true;
 };
