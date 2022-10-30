@@ -6,13 +6,15 @@ import FugazOne from 'assets/fonts/FugazOne.ttf';
 import IBMPlexSansThaiLooped from 'assets/fonts/IBMPlexSansThaiLooped.ttf';
 import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 
+import Header from 'components/sections/Header';
+import Footer from 'components/sections/Footer';
 import Main from 'containers/Main';
 import Login from 'containers/user/Login';
 import Signup from 'containers/user/Signup';
 import PostMain from 'containers/post/PostMain';
 import PostCreate from 'containers/post/PostCreate';
 import PostDetail from 'containers/post/PostDetail';
-import Header from 'components/sections/Header';
+import Mypage from 'containers/user/Mypage';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -99,11 +101,15 @@ const InsideComponent = () => {
             <Header />
             <Routes>
               <Route path="" element={<Main />} />
-              <Route path="post" element={<PostMain />} />
-              <Route path="post/create" element={<PostCreate />} />
-              <Route path="post/:id" element={<PostDetail />} />
-              <Route path="*" element={<div>After Login</div>} />
+              <Route path="post/*">
+                <Route path="" element={<PostMain />} />
+                <Route path="create" element={<PostCreate />} />
+                <Route path=":id" element={<PostDetail />} />
+              </Route>
+              <Route path="mypage/:username" element={<Mypage />} />
+              <Route path="*" element={<div>NOT FOUND</div>} />
             </Routes>
+            <Footer />
           </Wrapper>
         }
       />
