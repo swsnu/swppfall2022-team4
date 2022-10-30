@@ -2,6 +2,7 @@ import os
 import json
 import bcrypt
 import jwt
+import datetime
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
@@ -41,6 +42,7 @@ def signup(request):
             image="profile_default.png",
             exp=0,
             level=1,
+            created=datetime.date.today(),
         ).save()
 
         token = jwt.encode({'username': data['username']},
@@ -135,7 +137,8 @@ def profile(request, user_id):
             "weight": user.weight,
             "age": user.age,
             "exp": user.exp,
-            "level": user.level
+            "level": user.level,
+            "created": user.created
         })
 
     elif request.method == 'PUT':
