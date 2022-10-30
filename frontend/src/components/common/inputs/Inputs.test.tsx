@@ -4,7 +4,7 @@ import Input1 from './Input1';
 const onChanged = jest.fn();
 beforeEach(() => jest.clearAllMocks());
 
-describe('Buttons', () => {
+describe('Inputs', () => {
   test.each([
     [1, <Input1 type="text" placeholder="placeholder" name="name" value="value" changed={e => onChanged(e)} />],
   ])('test %d', (_, element) => {
