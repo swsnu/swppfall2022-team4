@@ -156,31 +156,48 @@ def profile(request, user_id):
                 ).decode('utf-8')
                 user.hashed_password = new_hashed_password
                 user.save()
-                return HttpResponse(status=200)
             else:
                 return JsonResponse({"message": "비밀번호가 틀렸습니다."}, status=401)
+        else:
+            try:
+                if (User.objects.filter(nickname=data['nickname'])).exists():
+                    return JsonResponse({"message": "이미 있는 닉네임입니다."}, status=409)
+                user.nickname = data['nickname']
+                user.image = data['image']
+                user.gender = data['gender']
+                user.height = data['height']
+                user.weight = data['weight']
+                user.age = data['age']
+                user.save()
+            except KeyError:
+                return HttpResponseBadRequest()
 
-        try:
-            if (User.objects.filter(nickname=data['nickname'])).exists():
-                return JsonResponse({"message": "이미 있는 닉네임입니다."}, status=409)
-            user.nickname = data['nickname']
-            user.image = data['image']
-            user.gender = data['gender']
-            user.height = data['height']
-            user.weight = data['weight']
-            user.age = data['age']
-            user.save()
-        except KeyError:
-            return HttpResponseBadRequest()
+        token = jwt.encode(
+            {'username': user.username},
+            os.environ.get("JWT_SECRET"),
+            os.environ.get("ALGORITHM")
+        )
+        response = JsonResponse(
+            {
+                "username": user.username,
+                "nickname": user.nickname,
+                "image": user.image
+            },
+            status=200
+        )
+        response.set_cookie(
+            'access_token',
+            token,
+            max_age=60 * 60 * 24 * 7,
+            samesite='None',
+            secure=True,
+            httponly=True
+        )
+        return response
 
     elif request.method == 'DELETE':
-        data = json.loads(request.body.decode())
         if request.user.username != user.username:
             return HttpResponse(status=403)
 
-        password = data.get("password", None)
-        if bcrypt.checkpw(password.encode('utf-8'), user.hashed_password.encode('utf-8')):
-            user.delete()
-            return HttpResponse(status=200)
-        else:
-            return JsonResponse({"message": "비밀번호가 틀렸습니다."}, status=401)
+        user.delete()
+        return HttpResponse(status=204)
