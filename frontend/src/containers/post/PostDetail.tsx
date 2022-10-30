@@ -30,31 +30,46 @@ const PostDetail = () => {
   }, []);
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
-
-  const postDetailContent = (
+  const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
+  useEffect(() => {
+    if (postDeleteStatus) {
+      navigate('/post');
+      dispatch(postActions.stateRefresh());
+    }
+  });
+  const deleteOnClick = async () => {
+    if (id) {
+      await dispatch(
+        postActions.deletePost({
+          post_id: id,
+        }),
+      );
+    }
+  };
+  const PostDetailContent = (
     <ArticleDetailWrapper>
       {post ? (
         <ArticleItem>
           <ArticleBody>
-            <h1>{post.title}</h1>
+            <ArticleTitleWrapper>
+              <ArticleBackBtn onClick={() => navigate('/post')}>◀︎</ArticleBackBtn>
+              <ArticleTitle>{post.title}</ArticleTitle>
+              <span>{timeAgoFormat(post.created)}</span>
+            </ArticleTitleWrapper>
             <h2>{post.content}</h2>
             <h2>작성자 {post.author_name}</h2>
             <h3>{post.comments_num}</h3>
           </ArticleBody>
           <ArticleCommentWrapper>
-            {postComment ? (
-              postComment.map((comment, id) => {
-                return (
-                  <CommentItem key={id}>
-                    <span> {comment.content} </span>
-                    <span> {comment.author_name} </span>
-                    <span> {comment.created} </span>
-                  </CommentItem>
-                );
-              })
-            ) : (
-              <span> No Comment</span>
-            )}
+            {postComment?.map((comment, id) => {
+              return (
+                <CommentItem key={id}>
+                  <span> {comment.content} </span>
+                  <span> {comment.author_name} </span>
+                  <span> {comment.created} </span>
+                </CommentItem>
+              );
+            })}
           </ArticleCommentWrapper>
         </ArticleItem>
       ) : (
@@ -62,17 +77,24 @@ const PostDetail = () => {
       )}
     </ArticleDetailWrapper>
   );
+  const CreateBtn = <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>;
+  const PostAuthorPanel =
+    user?.username == post?.author_name ? (
+      <>
+        {CreateBtn}
+        <CreatePostBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</CreatePostBtn>
+        <CreatePostBtn onClick={deleteOnClick}>글 삭제</CreatePostBtn>
+      </>
+    ) : (
+      <> {CreateBtn} NOT AUTHOR.</>
+    );
   const SideBar = (
     <>
-      <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
-      <SideBarItem>
-        <button onClick={() => navigate('/post')}>글 목록으로</button>
-        {user?.username == post?.author_name ? <h1> AUTHOR! </h1> : <h2> NOT AUTHOR.</h2>}
-      </SideBarItem>
+      <SideBarItem>{PostAuthorPanel}</SideBarItem>
       <SideBarItem>사이드바 공간2</SideBarItem>
     </>
   );
-  return PostPageWithSearchBar(postDetailContent, SideBar);
+  return PostPageWithSearchBar(PostDetailContent, SideBar);
 };
 
 const ArticleDetailWrapper = styled.div`
@@ -84,6 +106,7 @@ const ArticleDetailWrapper = styled.div`
   background-color: #ffffff;
   position: relative;
 `;
+
 const ArticleCommentWrapper = styled.div`
   border: 1px solid black;
   margin-right: 15px;
@@ -105,6 +128,26 @@ const ArticleBody = styled.div`
   flex-direction: column;
   align-items: center;
   border-bottom: 1px solid black;
+`;
+
+const ArticleTitleWrapper = styled.div`
+  width: 100%;
+  height: 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid black;
+  margin-bottom: 20px;
+`;
+const ArticleBackBtn = styled.button`
+  margin-right: 30px;
+  font-size: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+`;
+const ArticleTitle = styled.h1`
+  font-size: 24px;
 `;
 const ArticleItem = styled.div`
   padding: 10px 20px;

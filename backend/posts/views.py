@@ -1,5 +1,4 @@
 import json
-from os import stat
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
@@ -8,8 +7,7 @@ from django.http import (
 )
 from django.views.decorators.http import require_http_methods
 from math import ceil
-from .models import Post
-from comments.models import Comment
+from posts.models import Post
 from users import models as user_model
 
 
@@ -96,7 +94,17 @@ def post_detail(request, query_id):
     elif request.method == "PUT":
         return HttpResponse("Not implemented")
     else:  # request.method == "DELETE":
-        return HttpResponse("Not implemented")
+        try:
+            post_id = int(query_id)
+            post_obj = Post.objects.get(pk=post_id)
+
+            post_obj.delete()
+            return JsonResponse({"message": "success"}, status=200)
+        except Post.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception as error:
+            print(error)
+            return HttpResponseBadRequest()
 
 
 @require_http_methods(["GET"])

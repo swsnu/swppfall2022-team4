@@ -20,6 +20,8 @@ interface PostState {
     comments: commentAPI.Comment[] | null;
     error: AxiosError | null;
   };
+  postEdit: boolean;
+  postDelete: boolean;
 }
 const initialState: PostState = {
   postList: {
@@ -37,12 +39,15 @@ const initialState: PostState = {
     comments: null,
     error: null,
   },
+  postEdit: false,
+  postDelete: false,
 };
 
 export const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     getPosts: (state, action: PayloadAction<postAPI.getPostsRequestType>) => {
       state.postList.posts = null;
       state.postList.error = null;
@@ -78,18 +83,36 @@ export const postSlice = createSlice({
       state.postDetail.error = payload;
       alert(payload.response?.data.message);
     },
+    deletePost: (state, action: PayloadAction<postAPI.deletePostRequestType>) => {
+      // delete!
+      state.postDelete = false;
+    },
+    deletePostSuccess: (state, { payload }) => {
+      // success!
+      state.postDelete = true;
+    },
+    deletePostFailure: (state, { payload }) => {
+      // failure..
+      state.postDelete = false;
+      alert('Delete failed');
+    },
+    stateRefresh: state => {
+      state.postEdit = false;
+      state.postDelete = false;
+    },
     getPostComment: (state, action: PayloadAction<commentAPI.getPostCommentRequestType>) => {
       state.postComment.comments = null;
       state.postComment.error = null;
     },
     getPostCommentSuccess: (state, { payload }) => {
-      console.log(payload);
+      // console.log(payload);
       state.postComment.comments = payload.comments;
     },
     getPostCommentFailure: (state, { payload }) => {
       state.postList.error = payload;
       alert(payload.response?.data.message);
     },
+    /* eslint-enable @typescript-eslint/no-unused-vars */
   },
 });
 export const postActions = postSlice.actions;
@@ -121,6 +144,15 @@ function* getPostDetailSaga(action: PayloadAction<postAPI.getPostDetailRequestTy
   }
 }
 
+function* deletePostSaga(action: PayloadAction<postAPI.deletePostRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(postAPI.deletePost, action.payload);
+    yield put(postActions.deletePostSuccess(response));
+  } catch (error) {
+    yield put(postActions.deletePostFailure(error));
+  }
+}
+
 function* getPostCommentSaga(action: PayloadAction<commentAPI.getPostCommentRequestType>) {
   try {
     const response: AxiosResponse = yield call(commentAPI.getPostComment, action.payload);
@@ -134,5 +166,6 @@ export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
   yield takeLatest(postActions.getPostDetail, getPostDetailSaga);
+  yield takeLatest(postActions.deletePost, deletePostSaga);
   yield takeLatest(postActions.getPostComment, getPostCommentSaga);
 }
