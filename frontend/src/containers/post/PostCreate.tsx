@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
@@ -13,22 +13,27 @@ const PostCreate = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(({ user }: RootState) => user.user);
-
+  const postCreateStatus = useSelector(({ post }: RootState) => post.postCreate);
   const cancelOnClick = () => {
     // alert('are you sure?');
     navigate('/post');
     //TODO;
   };
-  const confirmOnClick = () => {
+  useEffect(() => {
+    if (postCreateStatus.status) {
+      navigate(`/post/${postCreateStatus.post_id}`);
+      dispatch(postActions.stateRefresh());
+    }
+  }, [postCreateStatus]);
+  const confirmOnClick = async () => {
     if (user) {
-      dispatch(
+      await dispatch(
         postActions.createPost({
           title: title,
           content: content,
           author_name: user.username,
         }),
       );
-      navigate('/post');
     }
   };
   const TitleInputWrapper = (

@@ -43,12 +43,8 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
 };
-
 export type createPostResponseType = {
-  page: number;
-  page_size: number;
-  page_total: number;
-  posts: Post[];
+  post_id: string;
 };
 
 export const getPostDetail = async (payload: getPostDetailRequestType) => {

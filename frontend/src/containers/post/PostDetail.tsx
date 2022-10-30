@@ -6,6 +6,7 @@ import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
 import { timeAgoFormat } from 'utils/datetime';
 import { PostPageWithSearchBar } from './PostLayout';
+import { setCommentRange } from 'typescript';
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,7 +16,8 @@ const PostDetail = () => {
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
   const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
-  const [comment, SetComment] = useState('');
+  const [comment, setComment] = useState('');
+  const [commentNum, changeCommentNum] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -24,13 +26,17 @@ const PostDetail = () => {
           post_id: id,
         }),
       );
+    }
+  }, []);
+  useEffect(() => {
+    if (id) {
       dispatch(
         postActions.getPostComment({
           post_id: id,
         }),
       );
     }
-  }, []);
+  }, [commentNum]);
   useEffect(() => {
     if (postDeleteStatus) {
       navigate('/post');
@@ -45,6 +51,27 @@ const PostDetail = () => {
           post_id: id,
         }),
       );
+    }
+  };
+  const commentCreateOnClick = async () => {
+    if (user && id) {
+      await dispatch(
+        postActions.createComment({
+          content: comment,
+          author_name: user.username,
+          post_id: id,
+          parent_comment: 'none',
+        }),
+      );
+      await dispatch(
+        postActions.getPostComment({
+          post_id: id,
+        }),
+      );
+      setComment('');
+      changeCommentNum(Date.now());
+    } else {
+      console.log('user or id is not valid');
     }
   };
   const PostDetailContent = (
@@ -69,6 +96,14 @@ const PostDetail = () => {
                     <span> {comment.content} </span>
                     <span> {comment.author_name} </span>
                     <span> {timeAgoFormat(comment.created)} </span>
+                    {user?.username == comment?.author_name ? (
+                      <>
+                        <CommentAuthorBtn>수정</CommentAuthorBtn>
+                        <CommentAuthorBtn>삭제</CommentAuthorBtn>
+                      </>
+                    ) : (
+                      <></>
+                    )}
                   </CommentItem>
                 );
               })}
@@ -77,9 +112,9 @@ const PostDetail = () => {
               <CommentInput
                 placeholder="댓글 입력"
                 value={comment}
-                onChange={e => SetComment(e.target.value)}
+                onChange={e => setComment(e.target.value)}
               ></CommentInput>
-              <CommentBtn>작성</CommentBtn>
+              <CommentSubmitBtn onClick={commentCreateOnClick}>작성</CommentSubmitBtn>
             </CommentForm>
           </ArticleCommentWrapper>
         </ArticleItem>
@@ -113,7 +148,6 @@ const ArticleDetailWrapper = styled.div`
   margin-right: 15px;
   width: 80%;
   height: 100%;
-  min-height: 100%;
   background-color: #ffffff;
   position: relative;
 `;
@@ -157,11 +191,12 @@ const ArticleItem = styled.div`
   padding: 10px 20px;
   font-size: 14px;
   width: 100%;
-  height: 80%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   //   border-bottom: 1px solid black;
+  overflow-y: auto;
 `;
 
 const ArticleCommentWrapper = styled.div`
@@ -184,10 +219,17 @@ const CommentInput = styled.input`
   width: 90%;
   padding: 10px 12px;
 `;
-const CommentBtn = styled.button`
+const CommentSubmitBtn = styled.button`
   width: 10%;
   padding: 10px 6px;
   background-color: #dddddd;
+  border: none;
+  margin-left: 5px;
+  cursor: pointer;
+`;
+const CommentAuthorBtn = styled.button`
+  padding: 10px 6px;
+  background-color: #d7e934;
   border: none;
   margin-left: 5px;
   cursor: pointer;

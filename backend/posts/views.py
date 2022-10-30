@@ -54,8 +54,10 @@ def post_home(request):
             author_name = data["author_name"]
 
             author = user_model.User.objects.get(username=author_name)
-            Post.objects.create(author=author, title=title, content=content)
-            return JsonResponse({"message": "Success!"}, status=201)
+            created_post = Post.objects.create(
+                author=author, title=title, content=content
+            )
+            return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
         except (KeyError, json.JSONDecodeError, user_model.User.DoesNotExist):
             return HttpResponseBadRequest()

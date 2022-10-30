@@ -20,6 +20,10 @@ interface PostState {
     comments: commentAPI.Comment[] | null;
     error: AxiosError | null;
   };
+  postCreate: {
+    status: boolean;
+    post_id: string | null;
+  };
   postEdit: boolean;
   postDelete: boolean;
 }
@@ -38,6 +42,10 @@ const initialState: PostState = {
   postComment: {
     comments: null,
     error: null,
+  },
+  postCreate: {
+    status: false,
+    post_id: null,
   },
   postEdit: false,
   postDelete: false,
@@ -68,6 +76,8 @@ export const postSlice = createSlice({
     },
     createPostSuccess: (state, { payload }) => {
       // console.log(payload);
+      state.postCreate.post_id = payload.post_id;
+      state.postCreate.status = true;
     },
     createPostFailure: (state, { payload }) => {
       // console.log(payload);
@@ -110,6 +120,7 @@ export const postSlice = createSlice({
       alert('edit failed');
     },
     stateRefresh: state => {
+      state.postCreate.status = false;
       state.postEdit = false;
       state.postDelete = false;
     },
@@ -124,6 +135,15 @@ export const postSlice = createSlice({
     getPostCommentFailure: (state, { payload }) => {
       state.postList.error = payload;
       alert(payload.response?.data.message);
+    },
+    createComment: (state, action: PayloadAction<commentAPI.createCommentRequestType>) => {
+      //create!
+    },
+    createCommentSuccess: (state, { payload }) => {
+      // console.log(payload);
+    },
+    createCommentFailure: (state, { payload }) => {
+      // console.log(payload);
     },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
@@ -184,6 +204,15 @@ function* getPostCommentSaga(action: PayloadAction<commentAPI.getPostCommentRequ
   }
 }
 
+function* createCommentSaga(action: PayloadAction<commentAPI.createCommentRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.createComment, action.payload);
+    yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    yield put(postActions.createCommentFailure(error));
+  }
+}
+
 export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
@@ -191,4 +220,5 @@ export default function* postSaga() {
   yield takeLatest(postActions.deletePost, deletePostSaga);
   yield takeLatest(postActions.editPost, editPostSaga);
   yield takeLatest(postActions.getPostComment, getPostCommentSaga);
+  yield takeLatest(postActions.createComment, createCommentSaga);
 }

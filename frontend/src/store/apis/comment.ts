@@ -25,18 +25,13 @@ export type getPostCommentResponseType = {
 };
 
 export const createComment = async (payload: createCommentRequestType) => {
-  const response = await client.post<createCommentResponseType>(`/api/post/`, payload);
+  const response = await client.post(`/api/comment/`, payload);
   return response.data;
 };
 
 export type createCommentRequestType = {
-  title: string;
   content: string;
   author_name: string;
-};
-
-export type createCommentResponseType = {
-  page: number;
-  page_size: number;
-  page_total: number;
+  post_id: string;
+  parent_comment: string;
 };
