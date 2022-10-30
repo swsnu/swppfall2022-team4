@@ -196,10 +196,10 @@ const reducer = (state: stateType, action: { name: string; value: string }) => {
     case 'height': {
       newValue = newValue.substring(0, 5);
 
-      const exceptNum = /[^0-9.]/g;
+      const exceptNum = /[^\d.]/g;
       newValue = newValue.replace(exceptNum, '');
 
-      const regex = /^([0-9]{1,3})([.][0-9])?$/;
+      const regex = /^(\d{1,3})([.]\d)?$/;
       if (!regex.test(newValue)) {
         newWarning.content = '* 키는 정수 또는 소수점 첫째 자리까지여야 합니다.';
         newWarning.color = '#ff3939';
@@ -216,10 +216,10 @@ const reducer = (state: stateType, action: { name: string; value: string }) => {
     case 'weight': {
       newValue = newValue.substring(0, 5);
 
-      const exceptNum = /[^0-9.]/g;
+      const exceptNum = /[^\d.]/g;
       newValue = newValue.replace(exceptNum, '');
 
-      const regex = /^([0-9]{1,3})([.][0-9])?$/;
+      const regex = /^([\d]{1,3})([.][\d])?$/;
       if (!regex.test(newValue)) {
         newWarning.content = '* 몸무게는 정수 또는 소수점 첫째 자리까지여야 합니다.';
         newWarning.color = '#ff3939';
@@ -236,10 +236,10 @@ const reducer = (state: stateType, action: { name: string; value: string }) => {
     case 'age': {
       newValue = newValue.substring(0, 2);
 
-      const exceptNum = /[^0-9]/g;
+      const exceptNum = /[^\d]/g;
       newValue = newValue.replace(exceptNum, '');
 
-      const regex = /^[0-9]{1,3}$/;
+      const regex = /^[\d]{1,3}$/;
       if (!regex.test(newValue)) {
         newWarning.content = '* 나이는 정수여야 합니다.';
         newWarning.color = '#ff3939';
