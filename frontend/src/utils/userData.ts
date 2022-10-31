@@ -211,7 +211,7 @@ export const userReducer = (state: userStateType, action: { name: string; value:
       const exceptNum = /[^\d.]/g;
       newValue = newValue.replace(exceptNum, '');
 
-      const regex = /^([\d]{1,3})([.][\d])?$/;
+      const regex = /^(\d{1,3})([.]\d)?$/;
       if (!regex.test(newValue)) {
         newWarning.content = '* 몸무게는 정수 또는 소수점 첫째 자리까지여야 합니다.';
         newWarning.color = '#ff3939';
@@ -231,7 +231,7 @@ export const userReducer = (state: userStateType, action: { name: string; value:
       const exceptNum = /[^\d]/g;
       newValue = newValue.replace(exceptNum, '');
 
-      const regex = /^[\d]{1,3}$/;
+      const regex = /^\d{1,3}$/;
       if (!regex.test(newValue)) {
         newWarning.content = '* 나이는 정수여야 합니다.';
         newWarning.color = '#ff3939';
@@ -251,17 +251,20 @@ export const userReducer = (state: userStateType, action: { name: string; value:
 };
 
 export const checkBody = (h: string, w: string, a: string) => {
+  const regex1 = /^(\d{1,3})([.]\d)?$/;
+  const regex2 = /^\d{1,3}$/;
+
   const height = parseFloat(h);
   const weight = parseFloat(w);
   const age = parseFloat(a);
 
-  if (!height || height < 80.0 || height > 300.0) {
+  if (!height || height < 80.0 || height > 300.0 || !regex1.test(h)) {
     alert('올바른 키를 입력해 주세요.');
     return false;
-  } else if (!weight || weight < 20.0 || weight > 300.0) {
+  } else if (!weight || weight < 20.0 || weight > 300.0 || !regex1.test(w)) {
     alert('올바른 몸무게를 입력해 주세요.');
     return false;
-  } else if (!age || age < 3) {
+  } else if (!age || age < 3 || !regex2.test(a)) {
     alert('올바른 나이를 입력해 주세요.');
     return false;
   }
