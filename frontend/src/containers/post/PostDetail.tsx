@@ -6,7 +6,6 @@ import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
 import { timeAgoFormat } from 'utils/datetime';
 import { PostPageWithSearchBar } from './PostLayout';
-import { setCommentRange } from 'typescript';
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
