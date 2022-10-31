@@ -6,6 +6,12 @@ import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
 import { timeAgoFormat } from 'utils/datetime';
 import { PostPageWithSearchBar } from './PostLayout';
+import { Comment } from 'store/apis/comment';
+
+interface IProps {
+  isActive?: boolean;
+  onClick?: () => void;
+}
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +20,7 @@ const PostDetail = () => {
   const user = useSelector(({ user }: RootState) => user.user);
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
+  const [commentList, setCommentList] = useState<Comment[]>([]);
   const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
   const [comment, setComment] = useState('');
   const [commentNum, changeCommentNum] = useState(0);
@@ -36,6 +43,9 @@ const PostDetail = () => {
       );
     }
   }, [commentNum]);
+  useEffect(() => {
+    if (postComment) setCommentList(postComment);
+  }, [postComment]);
   useEffect(() => {
     if (postDeleteStatus) {
       navigate('/post');
@@ -89,7 +99,7 @@ const PostDetail = () => {
           </ArticleBody>
           <ArticleCommentWrapper>
             <CommentWrapper>
-              {postComment?.map((comment, id) => {
+              {commentList.map((comment, id) => {
                 return (
                   <CommentItem key={id}>
                     <span> {comment.content} </span>
@@ -113,7 +123,9 @@ const PostDetail = () => {
                 value={comment}
                 onChange={e => setComment(e.target.value)}
               ></CommentInput>
-              <CommentSubmitBtn onClick={commentCreateOnClick}>작성</CommentSubmitBtn>
+              <CommentSubmitBtn isActive={comment !== ''} onClick={commentCreateOnClick}>
+                작성
+              </CommentSubmitBtn>
             </CommentForm>
           </ArticleCommentWrapper>
         </ArticleItem>
@@ -149,6 +161,9 @@ const ArticleDetailWrapper = styled.div`
   height: 100%;
   background-color: #ffffff;
   position: relative;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const SideBarItem = styled.div`
@@ -161,6 +176,7 @@ const ArticleBody = styled.div`
   font-size: 14px;
   width: 100%;
   height: 80%;
+  min-height: 480px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -169,7 +185,7 @@ const ArticleBody = styled.div`
 
 const ArticleTitleWrapper = styled.div`
   width: 100%;
-  height: 10%;
+  height: 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -195,7 +211,10 @@ const ArticleItem = styled.div`
   flex-direction: column;
   align-items: center;
   //   border-bottom: 1px solid black;
-  overflow-y: auto;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const ArticleCommentWrapper = styled.div`
@@ -218,13 +237,19 @@ const CommentInput = styled.input`
   width: 90%;
   padding: 10px 12px;
 `;
-const CommentSubmitBtn = styled.button`
+const CommentSubmitBtn = styled.button<IProps>`
   width: 10%;
   padding: 10px 6px;
   background-color: #dddddd;
   border: none;
   margin-left: 5px;
   cursor: pointer;
+
+  ${({ isActive }) =>
+    isActive &&
+    `
+    background: #8ee5b9;
+  `}
 `;
 const CommentAuthorBtn = styled.button`
   padding: 10px 6px;

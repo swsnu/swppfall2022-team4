@@ -52,6 +52,9 @@ const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
     min-height: 100%;
     line-height: 1;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
   #root {
     min-height: 100%;
