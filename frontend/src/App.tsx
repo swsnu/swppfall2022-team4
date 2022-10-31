@@ -15,6 +15,7 @@ import Header from 'components/sections/Header';
 import PostMain from 'containers/post/PostMain';
 import PostCreate from 'containers/post/PostCreate';
 import PostDetail from 'containers/post/PostDetail';
+import PostEdit from 'containers/post/PostEdit';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -94,10 +95,6 @@ const InsideComponent = () => {
     <Routes>
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
-      <Route path="workout" element={<WorkoutLog />} />
-      <Route path="post" element={<PostMain />} />
-      <Route path="post/create" element={<PostCreate />} />
-      <Route path="post/:id" element={<PostDetail />} />
       <Route
         path="*"
         element={
@@ -105,6 +102,11 @@ const InsideComponent = () => {
             <Header />
             <Routes>
               <Route path="" element={<Main />} />
+              <Route path="post" element={<PostMain />} />
+              <Route path="post/create" element={<PostCreate />} />
+              <Route path="post/:id" element={<PostDetail />} />
+              <Route path="post/:id/edit" element={<PostEdit />} />
+              <Route path="workout" element={<WorkoutLog />} />
             </Routes>
           </Wrapper>
         }

@@ -3,35 +3,52 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { PostPageLayout } from './PostLayout';
 
-const PostCreate = () => {
+const PostEdit = () => {
+  const { id } = useParams<{ id: string }>();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-
+  const post = useSelector(({ post }: RootState) => post.postDetail.post);
+  const postEditStatus = useSelector(({ post }: RootState) => post.postEdit);
+  useEffect(() => {
+    if (id) {
+      dispatch(
+        postActions.getPostDetail({
+          post_id: id,
+        }),
+      );
+    }
+  }, []);
+  useEffect(() => {
+    if (post) {
+      setTitle(post.title);
+      setContent(post.content);
+    }
+  }, [post]);
+  useEffect(() => {
+    if (postEditStatus) {
+      navigate(`/post/${id}`);
+      dispatch(postActions.stateRefresh());
+    }
+  }, [postEditStatus]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(({ user }: RootState) => user.user);
-  const postCreateStatus = useSelector(({ post }: RootState) => post.postCreate);
+
   const cancelOnClick = () => {
     // alert('are you sure?');
     navigate('/post');
     //TODO;
   };
-  useEffect(() => {
-    if (postCreateStatus.status) {
-      navigate(`/post/${postCreateStatus.post_id}`);
-      dispatch(postActions.stateRefresh());
-    }
-  }, [postCreateStatus]);
   const confirmOnClick = () => {
-    if (user) {
+    if (user && id) {
       dispatch(
-        postActions.createPost({
+        postActions.editPost({
+          post_id: id,
           title: title,
           content: content,
-          author_name: user.username,
         }),
       );
     }
@@ -58,6 +75,11 @@ const PostCreate = () => {
   return PostPageLayout(TitleInputWrapper, ContentInputWrapper, SideBarWrapper);
 };
 
+const ContentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
 const TitleInput = styled.input`
   width: 100%;
   height: 100%;
@@ -80,11 +102,6 @@ const CreateBtnWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-`;
-const ContentWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  position: relative;
 `;
 const CreatePostBtn = styled.button`
   padding: 0px 14px;
@@ -112,4 +129,4 @@ const CancelPostBtn = styled.button`
     background-color: #ff4444;
   }
 `;
-export default PostCreate;
+export default PostEdit;

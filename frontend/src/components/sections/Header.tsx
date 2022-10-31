@@ -60,7 +60,7 @@ const Header = () => {
         </Title>
 
         <CategoryWrapper>
-          <Category to="/record" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <Category to="/workout" className={({ isActive }) => (isActive ? 'active' : '')}>
             기록
           </Category>
           <Category to="/group" className={({ isActive }) => (isActive ? 'active' : '')}>
@@ -72,7 +72,7 @@ const Header = () => {
           <Category to="/information" className={({ isActive }) => (isActive ? 'active' : '')}>
             운동정보
           </Category>
-          <CategoryIcon to="/record" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <CategoryIcon to="/workout" className={({ isActive }) => (isActive ? 'active' : '')}>
             <HiOutlineDocumentReport />
           </CategoryIcon>
           <CategoryIcon to="/group" className={({ isActive }) => (isActive ? 'active' : '')}>
@@ -130,6 +130,7 @@ const Wrapper = styled.div`
   z-index: 100;
   position: fixed;
   top: 0;
+  background-color: #ffffff;
 `;
 const FakeHeader = styled.div`
   width: 100%;
