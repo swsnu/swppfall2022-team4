@@ -60,7 +60,7 @@ const Header = () => {
         </Title>
 
         <CategoryWrapper>
-          <Category to="/record" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <Category to="/workout" className={({ isActive }) => (isActive ? 'active' : '')}>
             기록
           </Category>
           <Category to="/group" className={({ isActive }) => (isActive ? 'active' : '')}>
