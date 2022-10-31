@@ -9,6 +9,7 @@ import { dateDiff } from 'utils/datetime';
 
 import Loading from 'components/common/Loading';
 import Button3 from 'components/common/buttons/Button3';
+import NotFound from 'components/common/NotFound';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -16,10 +17,11 @@ const Mypage = () => {
 
   const { username } = useParams();
   const [type, setType] = useState(0);
-  const { user, profile, loading } = useSelector(({ user }: RootState) => ({
+  const { user, profile, loading, profileError } = useSelector(({ user }: RootState) => ({
     user: user.user,
     profile: user.profile,
     loading: user.loading,
+    profileError: user.profileError,
   }));
 
   useEffect(() => {
@@ -28,6 +30,11 @@ const Mypage = () => {
       dispatch(userActions.resetProfile());
     };
   }, []);
+  useEffect(() => {
+    if (profileError && profileError.response?.status === 404) {
+      navigate('/not_found');
+    }
+  }, [navigate, profileError]);
 
   const changeType = (num: number) => {
     setType(num);
