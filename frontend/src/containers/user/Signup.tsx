@@ -6,6 +6,7 @@ import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
 import { signupReducer, signupInitialState, checkBody } from 'utils/userData';
 
+import Input1 from 'components/common/inputs/Input1';
 import Button1 from 'components/common/buttons/Button1';
 import Button2 from 'components/common/buttons/Button2';
 import Passwords from 'components/user/Passwords';
@@ -73,7 +74,14 @@ const Signup = () => {
 
       <InputWrapper>
         <InputItem>
-          <Input type="text" placeholder="ID" name="username" value={state.username} onChange={onChange} />
+          <Input1
+            type="text"
+            placeholder="ID"
+            name="username"
+            value={state.username}
+            changed={onChange}
+            style={{ width: '100%' }}
+          />
           <Warning color={state.usernameWarning.color}>{state.usernameWarning.content}</Warning>
         </InputItem>
         <Passwords
@@ -154,11 +162,4 @@ const Warning = styled.div<{ color: string }>`
   letter-spacing: -1px;
   margin-top: 2px;
   color: ${props => props.color};
-`;
-const Input = styled.input`
-  width: 100%;
-  height: 48px;
-  border: 2px solid #565656;
-  padding: 0px 8px;
-  font-size: 18px;
 `;
