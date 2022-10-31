@@ -6,6 +6,11 @@ import { postActions } from 'store/slices/post';
 import { useNavigate } from 'react-router';
 import { PostPageLayout } from './PostLayout';
 
+interface IProps {
+  isActive?: boolean;
+  onClick?: () => void;
+}
+
 const PostCreate = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -46,7 +51,13 @@ const PostCreate = () => {
       <ContentTextArea value={content} onChange={e => setContent(e.target.value)} />
       <CreateBtnWrapper>
         <CancelPostBtn onClick={cancelOnClick}>취소</CancelPostBtn>
-        <CreatePostBtn onClick={confirmOnClick}>완료</CreatePostBtn>
+        <CreatePostBtn
+          onClick={confirmOnClick}
+          isActive={title !== '' && content !== ''}
+          disabled={title === '' || content === ''}
+        >
+          완료
+        </CreatePostBtn>
       </CreateBtnWrapper>
     </ContentWrapper>
   );
@@ -86,18 +97,24 @@ const ContentWrapper = styled.div`
   height: 100%;
   position: relative;
 `;
-const CreatePostBtn = styled.button`
+const CreatePostBtn = styled.button<IProps>`
   padding: 0px 14px;
   width: 200px;
   height: 30px;
   border-radius: 15px;
-  background-color: #35c9ea;
+  background-color: #dddddd;
   font-size: 15px;
   letter-spacing: 0.5px;
   margin: 5px 20px;
-  &:hover {
-    background-color: #45d9fa;
-  }
+
+  ${({ isActive }) =>
+    isActive &&
+    `
+    background: #8ee5b9;
+    &:hover {
+      background-color: #45d9fa;
+    }
+  `}
 `;
 const CancelPostBtn = styled.button`
   padding: 0px 14px;

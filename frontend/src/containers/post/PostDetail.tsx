@@ -7,6 +7,8 @@ import { useNavigate, useParams } from 'react-router';
 import { timeAgoFormat } from 'utils/datetime';
 import { PostPageWithSearchBar } from './PostLayout';
 import { Comment } from 'store/apis/comment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 
 interface IProps {
   isActive?: boolean;
@@ -102,17 +104,37 @@ const PostDetail = () => {
               {commentList.map((comment, id) => {
                 return (
                   <CommentItem key={id}>
-                    <span> {comment.content} </span>
-                    <span> {comment.author_name} </span>
-                    <span> {timeAgoFormat(comment.created)} </span>
-                    {user?.username == comment?.author_name ? (
-                      <>
-                        <CommentAuthorBtn>수정</CommentAuthorBtn>
-                        <CommentAuthorBtn>삭제</CommentAuthorBtn>
-                      </>
-                    ) : (
-                      <></>
-                    )}
+                    <CommentWritterWrapperO1>
+                      <CommentWritterWrapper>
+                        <CommentWritterAvatar>Avatar</CommentWritterAvatar>
+                        <CommentWritterText> {comment.author_name} </CommentWritterText>
+                      </CommentWritterWrapper>
+                    </CommentWritterWrapperO1>
+                    <CommentRightWrapper>
+                      <CommentContentWrapper>
+                        <CommentContent> {comment.content} </CommentContent>
+                      </CommentContentWrapper>
+                      <CommentFuncWrapper>
+                        <CommentFuncBtnWrapper>
+                          <CommentAuthorBtn>답글</CommentAuthorBtn>
+                          {user?.username == comment?.author_name && (
+                            <>
+                              <CommentAuthorBtn>수정</CommentAuthorBtn>
+                              <CommentAuthorBtn>삭제</CommentAuthorBtn>
+                            </>
+                          )}
+                        </CommentFuncBtnWrapper>
+                        <CommentFuncLikeBtn>
+                          <FontAwesomeIcon icon={faThumbsUp} />
+                        </CommentFuncLikeBtn>
+                        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
+                        <CommentFuncLikeBtn>
+                          <FontAwesomeIcon icon={faThumbsDown} />
+                        </CommentFuncLikeBtn>
+                        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
+                        <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
+                      </CommentFuncWrapper>
+                    </CommentRightWrapper>
                   </CommentItem>
                 );
               })}
@@ -123,7 +145,7 @@ const PostDetail = () => {
                 value={comment}
                 onChange={e => setComment(e.target.value)}
               ></CommentInput>
-              <CommentSubmitBtn isActive={comment !== ''} onClick={commentCreateOnClick}>
+              <CommentSubmitBtn isActive={comment !== ''} disabled={comment === ''} onClick={commentCreateOnClick}>
                 작성
               </CommentSubmitBtn>
             </CommentForm>
@@ -183,6 +205,21 @@ const ArticleBody = styled.div`
   border-bottom: 1px solid black;
 `;
 
+const ArticleItem = styled.div`
+  padding: 10px 20px;
+  font-size: 14px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+// Article Title
 const ArticleTitleWrapper = styled.div`
   width: 100%;
   height: 50px;
@@ -202,21 +239,8 @@ const ArticleBackBtn = styled.button`
 const ArticleTitle = styled.h1`
   font-size: 24px;
 `;
-const ArticleItem = styled.div`
-  padding: 10px 20px;
-  font-size: 14px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  //   border-bottom: 1px solid black;
-  overflow: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
 
+// Article Comment List
 const ArticleCommentWrapper = styled.div`
   width: 100%;
   background-color: #ffffff;
@@ -225,7 +249,89 @@ const CommentWrapper = styled.div`
   width: 100%;
   background-color: #ffffff;
 `;
+const CommentAuthorBtn = styled.button`
+  padding: 4px 8px;
+  font-size: 10px;
+  background-color: #54dd6d;
+  border: none;
+  border-radius: 4px;
+  margin: 0px 4px;
+  margin-right: 4px;
+  cursor: pointer;
+`;
+const CommentItem = styled.div`
+  padding: 5px 10px;
+  font-size: 14px;
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid gray;
+`;
+const CommentWritterWrapperO1 = styled.div`
+  text-align: center;
+  width: 40px;
+  margin-right: 20px;
+`;
+const CommentWritterWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 8px;
+`;
+const CommentWritterAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+`;
+const CommentWritterText = styled.span`
+  font-size: 12px;
+`;
+const CommentRightWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 50px;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+const CommentFuncWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+`;
+const CommentFuncLikeBtn = styled.div`
+  color: #777777;
+  cursor: pointer;
+`;
+const CommentFuncBtnWrapper = styled.div`
+  margin-right: 12px;
+`;
+const CommentFuncTimeIndicator = styled.span`
+  font-size: 12px;
+  margin-left: 12px;
+`;
+const CommentFuncNumIndicator = styled.span`
+  font-size: 12px;
+  margin: 0px 5px;
+`;
+const CommentContentWrapper = styled.div`
+  width: 100%;
+  margin-top: 5px;
+  text-align: left;
+`;
+const CommentContent = styled.span`
+  text-align: left;
+`;
 
+// Comment Writing Form
 const CommentForm = styled.div`
   width: 100%;
   background-color: #ffffff;
@@ -243,6 +349,8 @@ const CommentSubmitBtn = styled.button<IProps>`
   background-color: #dddddd;
   border: none;
   margin-left: 5px;
+  &:disabled {
+  }
   cursor: pointer;
 
   ${({ isActive }) =>
@@ -250,24 +358,6 @@ const CommentSubmitBtn = styled.button<IProps>`
     `
     background: #8ee5b9;
   `}
-`;
-const CommentAuthorBtn = styled.button`
-  padding: 10px 6px;
-  background-color: #d7e934;
-  border: none;
-  margin-left: 5px;
-  cursor: pointer;
-`;
-
-const CommentItem = styled.div`
-  padding: 10px 20px;
-  font-size: 14px;
-  display: flex;
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid black;
 `;
 const CreatePostBtn = styled.button`
   padding: 0px 20px;
