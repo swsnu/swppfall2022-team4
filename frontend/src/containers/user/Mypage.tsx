@@ -6,7 +6,9 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
 import { dateDiff } from 'utils/datetime';
+
 import Loading from 'components/common/Loading';
+import Button3 from 'components/common/buttons/Button3';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -38,7 +40,6 @@ const Mypage = () => {
       <ProfileWrapper>
         <LeftWrapper>
           <ProfileImage src={process.env.REACT_APP_API_IMAGE + profile.image} alt="profile" />
-
           <ProfileInfoWrapper>
             <Nickname>{profile.nickname}</Nickname>
             <Username>{profile.username}</Username>
@@ -53,7 +54,15 @@ const Mypage = () => {
         <ProfileEtcWrapper>
           <DateDiff>{dateDiff(profile.created)}</DateDiff>
           <DateDiffText>일 째</DateDiffText>
-          <EditButton onClick={() => navigate('/edit_profile')}>프로필 수정</EditButton>
+          {user.username === profile.username && (
+            <Button3
+              content="프로필 수정"
+              clicked={() => navigate('/edit_profile')}
+              style={{
+                marginTop: '20px',
+              }}
+            />
+          )}
         </ProfileEtcWrapper>
         <EditIcon onClick={() => navigate('/edit_profile')} />
       </ProfileWrapper>
@@ -123,6 +132,7 @@ const ProfileWrapper = styled.div`
     padding: 20px 15px 15px 15px;
   }
 `;
+
 const LeftWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -211,24 +221,6 @@ const DateDiff = styled.div`
 const DateDiffText = styled.div`
   font-size: 25px;
   font-family: NanumSqaureR;
-`;
-const EditButton = styled.div`
-  width: 120px;
-  height: 40px;
-  border: 1px solid #646464;
-  border-radius: 5px;
-  background-color: #d7efe3;
-  padding-top: 8px;
-  margin-top: 25px;
-  font-size: 17px;
-  font-weight: 600;
-  font-family: NanumSqaureR;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.15s linear;
-  &:hover {
-    background-color: #aae5c7;
-  }
 `;
 const EditIcon = styled(AiOutlineEdit)`
   width: 40px;
