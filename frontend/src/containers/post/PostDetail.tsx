@@ -15,6 +15,9 @@ interface IProps {
   onClick?: () => void;
 }
 
+interface IPropsComment {
+  isChild?: boolean;
+}
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
@@ -24,7 +27,7 @@ const PostDetail = () => {
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
   const [commentList, setCommentList] = useState<Comment[]>([]);
   const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
-  const [comment, setComment] = useState('');
+  const [commentInput, setCommentInput] = useState('');
   const [commentNum, changeCommentNum] = useState(0);
 
   useEffect(() => {
@@ -68,7 +71,7 @@ const PostDetail = () => {
     if (user && id) {
       dispatch(
         postActions.createComment({
-          content: comment,
+          content: commentInput,
           author_name: user.username,
           post_id: id,
           parent_comment: 'none',
@@ -79,7 +82,7 @@ const PostDetail = () => {
           post_id: id,
         }),
       );
-      setComment('');
+      setCommentInput('');
       changeCommentNum(Date.now());
     } else {
       console.log('user or id is not valid');
@@ -103,49 +106,81 @@ const PostDetail = () => {
             <CommentWrapper>
               {commentList.map((comment, id) => {
                 return (
-                  <CommentItem key={id}>
-                    <CommentWritterWrapperO1>
-                      <CommentWritterWrapper>
-                        <CommentWritterAvatar>Avatar</CommentWritterAvatar>
-                        <CommentWritterText> {comment.author_name} </CommentWritterText>
-                      </CommentWritterWrapper>
-                    </CommentWritterWrapperO1>
-                    <CommentRightWrapper>
-                      <CommentContentWrapper>
-                        <CommentContent> {comment.content} </CommentContent>
-                      </CommentContentWrapper>
-                      <CommentFuncWrapper>
-                        <CommentFuncBtnWrapper>
-                          <CommentAuthorBtn>답글</CommentAuthorBtn>
-                          {user?.username == comment?.author_name && (
-                            <>
-                              <CommentAuthorBtn>수정</CommentAuthorBtn>
-                              <CommentAuthorBtn>삭제</CommentAuthorBtn>
-                            </>
-                          )}
-                        </CommentFuncBtnWrapper>
-                        <CommentFuncLikeBtn>
-                          <FontAwesomeIcon icon={faThumbsUp} />
-                        </CommentFuncLikeBtn>
-                        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-                        <CommentFuncLikeBtn>
-                          <FontAwesomeIcon icon={faThumbsDown} />
-                        </CommentFuncLikeBtn>
-                        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-                        <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
-                      </CommentFuncWrapper>
-                    </CommentRightWrapper>
-                  </CommentItem>
+                  <CommentReplyWrapper>
+                    <CommentItem isChild={comment.parent_comment !== null} key={id}>
+                      <CommentWritterWrapperO1>
+                        <CommentWritterWrapper>
+                          <CommentWritterAvatar>Avatar</CommentWritterAvatar>
+                          <CommentWritterText> {comment.author_name} </CommentWritterText>
+                        </CommentWritterWrapper>
+                      </CommentWritterWrapperO1>
+                      <CommentRightWrapper>
+                        <CommentContentWrapper>
+                          <CommentContent> {comment.content} </CommentContent>
+                        </CommentContentWrapper>
+                        <CommentFuncWrapper>
+                          <CommentFuncBtnWrapper>
+                            {comment.parent_comment === null && (
+                              <CommentAuthorBtn
+                                onClick={() => {
+                                  dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
+                                }}
+                              >
+                                답글
+                              </CommentAuthorBtn>
+                            )}
+                            {user?.username == comment?.author_name && (
+                              <>
+                                <CommentAuthorBtn>수정</CommentAuthorBtn>
+                                <CommentAuthorBtn>삭제</CommentAuthorBtn>
+                              </>
+                            )}
+                          </CommentFuncBtnWrapper>
+                          <CommentFuncLikeBtn>
+                            <FontAwesomeIcon icon={faThumbsUp} />
+                          </CommentFuncLikeBtn>
+                          <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
+                          <CommentFuncLikeBtn>
+                            <FontAwesomeIcon icon={faThumbsDown} />
+                          </CommentFuncLikeBtn>
+                          <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
+                          <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
+                        </CommentFuncWrapper>
+                      </CommentRightWrapper>
+                    </CommentItem>
+                    <CommentReplyForm>
+                      {comment.replyActive === true && (
+                        <CommentForm>
+                          <CommentInput
+                            placeholder="댓글 입력"
+                            value={commentInput}
+                            onChange={e => setCommentInput(e.target.value)}
+                          ></CommentInput>
+                          <CommentSubmitBtn
+                            isActive={commentInput !== ''}
+                            disabled={commentInput === ''}
+                            onClick={commentCreateOnClick}
+                          >
+                            작성
+                          </CommentSubmitBtn>
+                        </CommentForm>
+                      )}
+                    </CommentReplyForm>
+                  </CommentReplyWrapper>
                 );
               })}
             </CommentWrapper>
             <CommentForm>
               <CommentInput
                 placeholder="댓글 입력"
-                value={comment}
-                onChange={e => setComment(e.target.value)}
+                value={commentInput}
+                onChange={e => setCommentInput(e.target.value)}
               ></CommentInput>
-              <CommentSubmitBtn isActive={comment !== ''} disabled={comment === ''} onClick={commentCreateOnClick}>
+              <CommentSubmitBtn
+                isActive={commentInput !== ''}
+                disabled={commentInput === ''}
+                onClick={commentCreateOnClick}
+              >
                 작성
               </CommentSubmitBtn>
             </CommentForm>
@@ -259,7 +294,12 @@ const CommentAuthorBtn = styled.button`
   margin-right: 4px;
   cursor: pointer;
 `;
-const CommentItem = styled.div`
+const CommentReplyWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+const CommentReplyForm = styled.div``;
+const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
   font-size: 14px;
   display: flex;
@@ -267,6 +307,12 @@ const CommentItem = styled.div`
   flex-direction: row;
   align-items: center;
   border-bottom: 1px solid gray;
+
+  ${({ isChild }) =>
+    isChild &&
+    `
+    padding-left: 40px;
+  `}
 `;
 const CommentWritterWrapperO1 = styled.div`
   text-align: center;

@@ -1,12 +1,13 @@
 import json
 from django.http import (
-    HttpResponse,
     HttpResponseBadRequest,
     HttpResponseNotFound,
     JsonResponse,
 )
 from django.views.decorators.http import require_http_methods
 from math import ceil
+
+from sqlalchemy import false
 from posts.models import Post
 from users import models as user_model
 
@@ -136,6 +137,11 @@ def post_comment(request, query_id):
         for index, _ in enumerate(comment_response):
             del comment_response[index]["author_id"]
             comment_response[index]["author_name"] = comments[index].author.username
+            comment_response[index]["parent_comment"] = comment_response[index][
+                "parent_comment_id"
+            ]
+            comment_response[index]["replyActive"] = False
+            del comment_response[index]["parent_comment_id"]
 
         return JsonResponse({"comments": comment_response}, status=200)
     except Post.DoesNotExist:

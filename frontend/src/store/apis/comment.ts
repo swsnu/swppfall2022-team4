@@ -13,7 +13,8 @@ export type Comment = {
   updated: string;
   like_num: number;
   dislike_num: number;
-  parentComment: number;
+  parent_comment: number | null;
+  replyActive: boolean;
 };
 
 export type getPostCommentRequestType = {
@@ -34,4 +35,8 @@ export type createCommentRequestType = {
   author_name: string;
   post_id: string;
   parent_comment: string;
+};
+
+export type createCommentReplyType = {
+  parent_comment: number;
 };

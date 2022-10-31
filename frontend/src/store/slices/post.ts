@@ -124,12 +124,22 @@ export const postSlice = createSlice({
       state.postEdit = false;
       state.postDelete = false;
     },
+    toggleCommentReply: (state, action: PayloadAction<commentAPI.createCommentReplyType>) => {
+      if (state.postComment.comments)
+        state.postComment.comments = state.postComment.comments?.map(comment => {
+          if (comment.id === action.payload.parent_comment) {
+            return { ...comment, replyActive: !comment.replyActive };
+          } else {
+            return comment;
+          }
+        });
+    },
     getPostComment: (state, action: PayloadAction<commentAPI.getPostCommentRequestType>) => {
       state.postComment.comments = null;
       state.postComment.error = null;
     },
     getPostCommentSuccess: (state, { payload }) => {
-      // console.log(payload);
+      console.log(payload);
       state.postComment.comments = payload.comments;
     },
     getPostCommentFailure: (state, { payload }) => {
