@@ -9,3 +9,4 @@ class AbstractTimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
+        

@@ -3,7 +3,7 @@ from . import views
 
 app_name = "post"
 urlpatterns = [
-    path("", views.postHome, name="postHome"),
-    path("<str:id>/", views.postDetail, name="postDetail"),
-    path("<str:id>/comment/", views.postComment, name="postComment")
+    path("", views.post_home, name="postHome"),
+    path("<str:query_id>/", views.post_detail, name="postDetail"),
+    path("<str:query_id>/comment/", views.post_comment, name="postComment"),
 ]

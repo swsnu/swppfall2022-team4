@@ -8,16 +8,21 @@ import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 
 import Header from 'components/sections/Header';
 import Footer from 'components/sections/Footer';
+import NotFound from 'components/common/NotFound';
+
 import Main from 'containers/Main';
 import Login from 'containers/user/Login';
 import Signup from 'containers/user/Signup';
-import PostMain from 'containers/post/PostMain';
-import PostCreate from 'containers/post/PostCreate';
-import PostDetail from 'containers/post/PostDetail';
 import Mypage from 'containers/user/Mypage';
 import EditProfile from 'containers/user/EditProfile';
 import EditPassword from 'containers/user/EditPassword';
-import NotFound from 'components/common/NotFound';
+
+import PostMain from 'containers/post/PostMain';
+import PostCreate from 'containers/post/PostCreate';
+import PostEdit from 'containers/post/PostEdit';
+import PostDetail from 'containers/post/PostDetail';
+
+import WorkoutLog from 'containers/workout/WorkoutLog';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -109,11 +114,14 @@ const InsideComponent = () => {
                 <Route path="" element={<PostMain />} />
                 <Route path="create" element={<PostCreate />} />
                 <Route path=":id" element={<PostDetail />} />
+                <Route path=":id/edit" element={<PostEdit />} />
               </Route>
 
               <Route path="profile/:username" element={<Mypage />} />
               <Route path="edit_profile" element={<EditProfile />} />
               <Route path="edit_password" element={<EditPassword />} />
+
+              <Route path="workout" element={<WorkoutLog />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -2,7 +2,7 @@ from django.db import models
 from utils.models import AbstractTimeStampedModel
 from users.models import User
 from posts.models import Post
- 
+
 
 class Comment(AbstractTimeStampedModel):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
@@ -13,12 +13,14 @@ class Comment(AbstractTimeStampedModel):
     like_num = models.IntegerField(null=False, default=0)
     dislike_num = models.IntegerField(null=False, default=0)
 
-    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    parent_comment = models.ForeignKey(
+        "self", on_delete=models.CASCADE, blank=True, null=True
+    )
 
     def get_eff_like(self):
-        """ Get effective number of like """
+        """Get effective number of like"""
         return self.like_num - self.dislike_num
-    
+
     def __str__(self):
-        """ To string method """
-        return self.content
+        """To string method"""
+        return str(self.content)
