@@ -6,8 +6,6 @@ from django.http import (
 )
 from django.views.decorators.http import require_http_methods
 from math import ceil
-
-from sqlalchemy import false
 from posts.models import Post
 from users import models as user_model
 
