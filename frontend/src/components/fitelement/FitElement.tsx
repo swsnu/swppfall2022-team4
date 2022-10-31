@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export interface IProps {
   key: number;
@@ -16,7 +16,7 @@ export const FitElement = (props: IProps) => {
   return (
     <FitElementLog>
       <LogCategory className="type3">{props.id}</LogCategory>
-      <LogImage src={require("assets/images/workout_log/fitelement_category/example.png")} />
+      <LogImage src={require('assets/images/workout_log/fitelement_category/example.png')} />
       <LogCategory className="type">{props.workout_type}</LogCategory>
       <LogCategory className="type2">{props.weight}</LogCategory>
       <LogCategory>{props.rep}</LogCategory>
