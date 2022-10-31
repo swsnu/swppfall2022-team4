@@ -68,7 +68,6 @@ const WorkoutLog = () => {
   // header 추가
   return (
     <Wrapper>
-      <HeaderWrapper_temp>HeaderPart</HeaderWrapper_temp>
       <InnerWrapper>
         <LeftWrapper>
           <CalendarWrapper>
@@ -165,17 +164,6 @@ const Wrapper = styled.div`
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-`;
-
-const HeaderWrapper_temp = styled.div`
-  width: 100%;
-  height: 8%;
-  min-width: 100vw;
-  min-height: 8vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #e4f2e4;
 `;
 
 const InnerWrapper = styled.div`
