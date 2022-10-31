@@ -35,7 +35,7 @@ def create_fit_element(request):
 
 
 @require_http_methods(["GET", "PUT", "DELETE"])
-def fit_element(request, fit_element_id):
+def fit_element(request, fitelement_id):
     """
     GET: get a fit element
     PUT: edit a fit element
@@ -43,7 +43,7 @@ def fit_element(request, fit_element_id):
     """
     if request.method == 'GET':
         try:
-            workout = FitElement.objects.get(id=fit_element_id)
+            workout = FitElement.objects.get(id=fitelement_id)
             return_json = {
                 'id': workout.id,
                 'author': workout.author.id,  # id or name
