@@ -19,6 +19,8 @@ const Button4 = ({ content, clicked, style }: IProps) => {
 export default Button4;
 
 const Wrapper = styled.button`
+  border: 0;
+  background-color: transparent;
   display: flex;
   align-items: center;
   font-size: 24px;
