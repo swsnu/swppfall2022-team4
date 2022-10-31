@@ -43,12 +43,8 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
 };
-
 export type createPostResponseType = {
-  page: number;
-  page_size: number;
-  page_total: number;
-  posts: Post[];
+  post_id: string;
 };
 
 export const getPostDetail = async (payload: getPostDetailRequestType) => {
@@ -58,4 +54,24 @@ export const getPostDetail = async (payload: getPostDetailRequestType) => {
 
 export type getPostDetailRequestType = {
   post_id: string;
+};
+
+export const deletePost = async (payload: deletePostRequestType) => {
+  const response = await client.delete(`/api/post/${payload.post_id}/`);
+  return response.data;
+};
+
+export type deletePostRequestType = {
+  post_id: string;
+};
+
+export const editPost = async (payload: editPostRequestType) => {
+  const response = await client.put(`/api/post/${payload.post_id}/`, payload);
+  return response.data;
+};
+
+export type editPostRequestType = {
+  post_id: string;
+  title: string;
+  content: string;
 };

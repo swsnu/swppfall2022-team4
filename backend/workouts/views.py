@@ -192,7 +192,7 @@ def daily_log(request, year, month, specific_date):
             }
 
         return JsonResponse(daily_log_dict, safe=False, status=200)
-    
+
     elif request.method == 'POST':
         pass
 
