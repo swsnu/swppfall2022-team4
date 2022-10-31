@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { FitElement } from 'components/fitelement/FitElement';
+import { workoutLogActions } from 'store/slices/workout';
+import { getFitElementRequestType } from 'store/apis/workout';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -52,11 +54,16 @@ const WorkoutLog = () => {
     return selected_day;
   }
 
+  const defaultConfig: getFitElementRequestType = {
+    fitelement_id: 1
+  };
+
   useEffect(() => {
     setDay(date.getDate());
     setMonth(date.getMonth());
     setYear(date.getFullYear());
     setStartDay(getStartDayOfMonth(date));
+    dispatch(workoutLogActions.getFitElement(defaultConfig));
   }, [date]);
 
   function isLeapYear(year: number) {
