@@ -244,7 +244,7 @@ const ArticleBody = styled.div`
   font-size: 14px;
   width: 100%;
   height: 80%;
-  min-height: 480px;
+  min-height: 360px;
   display: flex;
   flex-direction: column;
   align-items: center;
