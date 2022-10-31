@@ -72,7 +72,7 @@ const Header = () => {
           <Category to="/information" className={({ isActive }) => (isActive ? 'active' : '')}>
             운동정보
           </Category>
-          <CategoryIcon to="/record" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <CategoryIcon to="/workout" className={({ isActive }) => (isActive ? 'active' : '')}>
             <HiOutlineDocumentReport />
           </CategoryIcon>
           <CategoryIcon to="/group" className={({ isActive }) => (isActive ? 'active' : '')}>
