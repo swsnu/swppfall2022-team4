@@ -146,12 +146,12 @@ def profile(request, user_id):
         if request.user.username != user.username:
             return HttpResponse(status=403)
 
-        password = data.get("password", None)
-        new_password = data.get("password", None)
+        password = data.get("oldPassword", None)
+        new_password = data.get("newPassword", None)
         if password and new_password:
             if bcrypt.checkpw(password.encode('utf-8'), user.hashed_password.encode('utf-8')):
                 new_hashed_password = bcrypt.hashpw(
-                    data['password'].encode('utf-8'),
+                    new_password.encode('utf-8'),
                     bcrypt.gensalt()
                 ).decode('utf-8')
                 user.hashed_password = new_hashed_password
@@ -160,7 +160,8 @@ def profile(request, user_id):
                 return JsonResponse({"message": "비밀번호가 틀렸습니다."}, status=401)
         else:
             try:
-                if (User.objects.filter(nickname=data['nickname'])).exists():
+                if user.nickname != data['nickname'] \
+                    and (User.objects.filter(nickname=data['nickname'])).exists():
                     return JsonResponse({"message": "이미 있는 닉네임입니다."}, status=409)
                 user.nickname = data['nickname']
                 user.image = data['image']
@@ -200,4 +201,6 @@ def profile(request, user_id):
             return HttpResponse(status=403)
 
         user.delete()
-        return HttpResponse(status=204)
+        response = HttpResponse(status=204)
+        response.set_cookie('access_token', None, max_age=60 * 60 * 24 * 7, samesite='None', secure=True, httponly=True)
+        return response

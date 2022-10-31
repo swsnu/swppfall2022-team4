@@ -122,6 +122,7 @@ export const userSlice = createSlice({
       state.profileError = null;
     },
     signoutSuccess: state => {
+      state.user = null;
       state.loading = false;
       state.deleteProfile = true;
       state.profileError = null;

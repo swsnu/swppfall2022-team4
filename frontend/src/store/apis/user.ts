@@ -67,8 +67,8 @@ export type profileType = {
 };
 export type editProfileRequestType =
   | {
-      password: string;
-      new_password: string;
+      oldPassword: string;
+      newPassword: string;
     }
   | {
       nickname: string;

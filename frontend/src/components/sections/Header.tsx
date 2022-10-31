@@ -271,6 +271,7 @@ const InfoWrapper = styled.div`
     width: 36px;
     height: 36px;
     border-radius: 5px;
+    border: 1px solid black;
     cursor: pointer;
   }
 `;
