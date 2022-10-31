@@ -2,7 +2,6 @@ import os
 import json
 import bcrypt
 import jwt
-import datetime
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
@@ -31,7 +30,7 @@ def signup(request):
 
         hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'),
                                         bcrypt.gensalt()).decode('utf-8')
-        User(
+        User.objects.create(
             username=data['username'],
             hashed_password=hashed_password,
             nickname=data['nickname'],
@@ -42,8 +41,7 @@ def signup(request):
             image="profile_default.png",
             exp=0,
             level=1,
-            created=datetime.date.today(),
-        ).save()
+        )
 
         token = jwt.encode({'username': data['username']},
                            os.environ.get("JWT_SECRET"),
