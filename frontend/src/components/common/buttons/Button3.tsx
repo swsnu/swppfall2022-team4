@@ -22,7 +22,6 @@ const Wrapper = styled.button`
   background-color: #d7efe3;
   border: 1px solid #646464;
   border-radius: 5px;
-  padding-top: 8px;
   font-size: 17px;
   font-weight: 600;
   font-family: NanumSqaureR;
