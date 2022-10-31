@@ -30,6 +30,11 @@ def comment_home(request):
             Comment.objects.create(
                 author=author, post=post, content=content, parent_comment=None
             )
+        else:
+            parent_comment = Comment.objects.get(pk=parent_comment)
+            Comment.objects.create(
+                author=author, post=post, content=content, parent_comment=parent_comment
+            )
         return JsonResponse({"message": "Success!"}, status=201)
     except (
         KeyError,

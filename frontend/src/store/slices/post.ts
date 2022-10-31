@@ -139,7 +139,7 @@ export const postSlice = createSlice({
       state.postComment.error = null;
     },
     getPostCommentSuccess: (state, { payload }) => {
-      console.log(payload);
+      // console.log(payload);
       state.postComment.comments = payload.comments;
     },
     getPostCommentFailure: (state, { payload }) => {
