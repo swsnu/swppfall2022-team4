@@ -1,4 +1,4 @@
-export type signupStateType = {
+export type userStateType = {
   username: string;
   password: string;
   passwordConfirm: string;
@@ -29,7 +29,7 @@ export type signupStateType = {
     color: string;
   };
 };
-export const signupInitialState: signupStateType = {
+export const userInitialState: userStateType = {
   username: '',
   password: '',
   passwordConfirm: '',
@@ -60,7 +60,7 @@ export const signupInitialState: signupStateType = {
     color: '#686868',
   },
 };
-export const signupReducer = (state: signupStateType, action: { name: string; value: string }) => {
+export const userReducer = (state: userStateType, action: { name: string; value: string }) => {
   const actionName: string = action.name;
   let newValue: string = action.value;
   const newWarning = {

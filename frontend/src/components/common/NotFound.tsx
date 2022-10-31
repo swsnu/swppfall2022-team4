@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { BiArrowBack } from 'react-icons/bi';
 import styled from 'styled-components';
+
+import Button4 from './buttons/Button4';
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -9,10 +10,7 @@ const NotFound = () => {
     <Wrapper>
       <NumberText>404</NumberText>
       <NotFoundText>Not Found</NotFoundText>
-      <Home onClick={() => navigate('/')}>
-        <BiArrowBack />
-        Home
-      </Home>
+      <Button4 content="Home" clicked={() => navigate('/')} style={{ marginTop: '50px' }} />
     </Wrapper>
   );
 };
@@ -42,22 +40,4 @@ const NotFoundText = styled.div`
   font-size: 27px;
   font-family: 'Press Start 2P', cursive;
   color: #606060;
-`;
-const Home = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 50px;
-  font-size: 24px;
-  font-family: 'Press Start 2P', cursive;
-  color: #9b9b9b;
-  svg {
-    width: 30px;
-    height: 30px;
-    margin: 0 10px 1.5px 0;
-  }
-  cursor: pointer;
-  transition: all 0.2s linear;
-  &:hover {
-    color: black;
-  }
 `;

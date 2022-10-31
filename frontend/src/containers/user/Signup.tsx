@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
-import { signupReducer, signupInitialState, checkBody } from 'utils/userData';
+import { userReducer, userInitialState, checkBody } from 'utils/userData';
 
 import Input1 from 'components/common/inputs/Input1';
 import Button1 from 'components/common/buttons/Button1';
@@ -16,7 +16,7 @@ const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [state, stateDispatch] = useReducer(signupReducer, signupInitialState);
+  const [state, stateDispatch] = useReducer(userReducer, userInitialState);
   const { user } = useSelector(({ user }: RootState) => ({
     user: user.user,
   }));
