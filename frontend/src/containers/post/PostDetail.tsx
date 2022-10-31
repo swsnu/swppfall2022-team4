@@ -43,18 +43,18 @@ const PostDetail = () => {
     }
   }, [postDeleteStatus]);
 
-  const deleteOnClick = async () => {
+  const deleteOnClick = () => {
     if (id) {
-      await dispatch(
+      dispatch(
         postActions.deletePost({
           post_id: id,
         }),
       );
     }
   };
-  const commentCreateOnClick = async () => {
+  const commentCreateOnClick = () => {
     if (user && id) {
-      await dispatch(
+      dispatch(
         postActions.createComment({
           content: comment,
           author_name: user.username,
@@ -62,7 +62,7 @@ const PostDetail = () => {
           parent_comment: 'none',
         }),
       );
-      await dispatch(
+      dispatch(
         postActions.getPostComment({
           post_id: id,
         }),

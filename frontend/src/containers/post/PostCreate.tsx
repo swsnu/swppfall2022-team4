@@ -25,9 +25,9 @@ const PostCreate = () => {
       dispatch(postActions.stateRefresh());
     }
   }, [postCreateStatus]);
-  const confirmOnClick = async () => {
+  const confirmOnClick = () => {
     if (user) {
-      await dispatch(
+      dispatch(
         postActions.createPost({
           title: title,
           content: content,

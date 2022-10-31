@@ -42,9 +42,9 @@ const PostEdit = () => {
     navigate('/post');
     //TODO;
   };
-  const confirmOnClick = async () => {
+  const confirmOnClick = () => {
     if (user && id) {
-      await dispatch(
+      dispatch(
         postActions.editPost({
           post_id: id,
           title: title,
