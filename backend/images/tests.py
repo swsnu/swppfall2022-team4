@@ -1,4 +1,5 @@
 import bcrypt
+import datetime
 from django.test import TestCase, Client
 from users.models import User
 
@@ -16,6 +17,7 @@ class ImageTestCase(TestCase):
             image="profile_default.png",
             exp=0,
             level=1,
+            created=datetime.date.today()
         )
 
     def test_upload(self):
