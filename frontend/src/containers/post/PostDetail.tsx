@@ -30,6 +30,7 @@ const PostDetail = () => {
   const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
   const [commentInput, setCommentInput] = useState('');
   const [commentNum, changeCommentNum] = useState(0);
+  const [replyActivated, setReplyActivated] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -86,12 +87,14 @@ const PostDetail = () => {
       );
       setCommentInput('');
       changeCommentNum(Date.now());
+      setReplyActivated(false);
     } else {
       console.log('user or id is not valid');
     }
   };
 
-  const commentEditOnClick = () => {
+  const commentEditOnClick = (comment_id: number) => {
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment_id }));
     console.log('hi');
   };
   const commentDeleteOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -112,27 +115,44 @@ const PostDetail = () => {
   };
 
   const CommentBtnComponent = (comment: Comment) => {
-    return (
-      <CommentFuncBtnWrapper>
-        {comment.parent_comment === null && (
+    if (comment.editActive) {
+      return (
+        <div>
           <CommentAuthorBtn
             onClick={() => {
-              dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
+              dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
             }}
           >
-            답글
+            취소
           </CommentAuthorBtn>
-        )}
-        {user?.username == comment?.author_name && (
-          <>
-            <CommentAuthorBtn>수정</CommentAuthorBtn>
-            <CommentAuthorBtn onClick={commentDeleteOnClick} data-comment_id={comment.id}>
-              삭제
+          <CommentAuthorBtn>완료</CommentAuthorBtn>
+        </div>
+      );
+    } else {
+      return (
+        <CommentFuncBtnWrapper>
+          {comment.parent_comment === null && (
+            <CommentAuthorBtn
+              onClick={() => {
+                dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
+                setReplyActivated(!replyActivated);
+              }}
+              disabled={replyActivated && !comment.replyActive}
+            >
+              답글
             </CommentAuthorBtn>
-          </>
-        )}
-      </CommentFuncBtnWrapper>
-    );
+          )}
+          {user?.username == comment?.author_name && (
+            <>
+              <CommentAuthorBtn onClick={() => commentEditOnClick(comment.id)}>수정</CommentAuthorBtn>
+              <CommentAuthorBtn onClick={commentDeleteOnClick} data-comment_id={comment.id}>
+                삭제
+              </CommentAuthorBtn>
+            </>
+          )}
+        </CommentFuncBtnWrapper>
+      );
+    }
   };
 
   const CommentItemComponent = (comment: Comment) => {
@@ -147,7 +167,11 @@ const PostDetail = () => {
           </CommentWritterWrapperO1>
           <CommentRightWrapper>
             <CommentContentWrapper>
-              <CommentContent> {comment.content} </CommentContent>
+              {comment.editActive ? (
+                <CommentEditInput></CommentEditInput>
+              ) : (
+                <CommentContent> {comment.content} </CommentContent>
+              )}
             </CommentContentWrapper>
             <CommentFuncWrapper>
               {CommentBtnComponent(comment)}
@@ -163,9 +187,9 @@ const PostDetail = () => {
             </CommentFuncWrapper>
           </CommentRightWrapper>
         </CommentItem>
-        <CommentReplyForm>
+        <CommentReplyFormWrapper>
           {comment.replyActive === true && (
-            <CommentForm>
+            <CommentReplyForm>
               <CommentInput
                 placeholder="댓글 입력"
                 value={commentInput}
@@ -179,9 +203,9 @@ const PostDetail = () => {
               >
                 작성
               </CommentSubmitBtn>
-            </CommentForm>
+            </CommentReplyForm>
           )}
-        </CommentReplyForm>
+        </CommentReplyFormWrapper>
       </CommentReplyWrapper>
     );
   };
@@ -211,7 +235,7 @@ const PostDetail = () => {
               <CommentSubmitBtn
                 isActive={commentInput !== ''}
                 disabled={commentInput === ''}
-                onClick={e => commentCreateOnClick(e)}
+                onClick={commentCreateOnClick}
                 data-parent_comment={null}
               >
                 작성
@@ -326,12 +350,14 @@ const CommentAuthorBtn = styled.button`
   margin: 0px 4px;
   margin-right: 4px;
   cursor: pointer;
+  :disabled {
+    cursor: default;
+  }
 `;
 const CommentReplyWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const CommentReplyForm = styled.div``;
 const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
   font-size: 14px;
@@ -389,21 +415,28 @@ const CommentFuncWrapper = styled.div`
 const CommentFuncLikeBtn = styled.div`
   color: #777777;
   cursor: pointer;
+  margin-left: 8px;
 `;
 const CommentFuncBtnWrapper = styled.div`
-  margin-right: 12px;
+  margin-left: 12px;
 `;
 const CommentFuncTimeIndicator = styled.span`
   font-size: 12px;
+  text-align: right;
   margin-left: 12px;
+  min-width: 60px;
 `;
 const CommentFuncNumIndicator = styled.span`
   font-size: 12px;
-  margin: 0px 5px;
+  margin-left: 8px;
+  /* margin: 0px 5px; */
 `;
 const CommentContentWrapper = styled.div`
   width: 100%;
   margin-top: 5px;
+  text-align: left;
+`;
+const CommentEditInput = styled.input`
   text-align: left;
 `;
 const CommentContent = styled.span`
@@ -418,6 +451,17 @@ const CommentForm = styled.div`
   justify-content: space-between;
   margin-top: 10px;
 `;
+const CommentReplyForm = styled.div`
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-left: 40px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid gray;
+`;
+const CommentReplyFormWrapper = styled.div``;
 const CommentInput = styled.input`
   width: 90%;
   padding: 10px 12px;

@@ -126,13 +126,25 @@ export const postSlice = createSlice({
     },
     toggleCommentReply: (state, action: PayloadAction<commentAPI.createCommentReplyType>) => {
       if (state.postComment.comments)
-        state.postComment.comments = state.postComment.comments?.map(comment => {
+        state.postComment.comments = state.postComment.comments.map(comment => {
           if (comment.id === action.payload.parent_comment) {
             return { ...comment, replyActive: !comment.replyActive };
           } else {
             return comment;
           }
         });
+    },
+    toggleCommentEdit: (state, action: PayloadAction<commentAPI.editToggleActionType>) => {
+      if (state.postComment.comments) {
+        state.postComment.comments = state.postComment.comments.map(comment => {
+          if (comment.id === action.payload.comment_id) {
+            return { ...comment, editActive: comment.editActive ? false : true };
+          } else {
+            return comment;
+          }
+        });
+      }
+      console.log('Hi');
     },
     getPostComment: (state, action: PayloadAction<commentAPI.getPostCommentRequestType>) => {
       state.postComment.comments = null;

@@ -15,6 +15,7 @@ export type Comment = {
   dislike_num: number;
   parent_comment: number | null;
   replyActive: boolean;
+  editActive: boolean;
 };
 
 export type getPostCommentRequestType = {
@@ -39,6 +40,10 @@ export type createCommentRequestType = {
 
 export type createCommentReplyType = {
   parent_comment: number;
+};
+
+export type editToggleActionType = {
+  comment_id: number;
 };
 
 export const deleteComment = async (payload: deleteCommentRequestType) => {
