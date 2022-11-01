@@ -12,4 +12,5 @@ export const rootReducer = combineReducers({
 export function* rootSaga() {
   yield all([fork(userSaga)]);
   yield all([fork(postSaga)]);
+  yield all([fork(workoutLogSage)]);
 }

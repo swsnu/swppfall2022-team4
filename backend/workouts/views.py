@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from unicodedata import category
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse, HttpResponseBadRequest
 
@@ -172,26 +173,36 @@ def daily_log(request, year, month, specific_date):
     PUT: edit memo or fit elements changed
     """
     if request.method == 'GET':
-        req_data = json.loads(request.body.decode())
-        user_id = req_data['user_id']
+        # req_data = json.loads(request.body.decode())
+        
+        # print(req_data)
+        print(request.GET.get)
+        user_id = request.GET.get('user_id')
+        print(user_id)
 
-        daily_logs = DailyLog.objects.filter(id=user_id)
-        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())[0]
+        daily_logs = DailyLog.objects.filter(id=int(user_id))
+        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
         # 하나밖에 없도록 처리할 것
 
-        if daily_log_single is None:
+        if len(daily_log_single) == 0:
             daily_log_dict = DailyLog(
                 date=datetime(year, month, specific_date).date()
             )
             daily_log_dict.save()
-        else:
-            daily_log_dict = {
-                'memo': daily_log_single.memo,
-                'date': daily_log_single.date,
-                'fitelements': list(daily_log.fit_element.values_list('id', flat=True))
+            daily_log_dict_return = {
+                'memo': NULL,
+                'fitelements': list(),
+                'date': daily_log_dict.date
             }
 
-        return JsonResponse(daily_log_dict, safe=False, status=200)
+        else:
+            daily_log_dict_return = {
+                'memo': daily_log_single[0].memo,
+                'date': daily_log_single[0].date,
+                'fitelements': list(daily_log_single[0].fit_element.values_list('id', flat=True))
+            }
+
+        return JsonResponse(daily_log_dict_return, safe=False, status=200)
 
     elif request.method == 'POST':
         pass

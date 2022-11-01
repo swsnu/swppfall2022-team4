@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
-import { getFitElementRequestType } from 'store/apis/workout';
+import { getFitElementRequestType, getDailyLogRequestType, getDailyFitElementsRequestType } from 'store/apis/workout';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -14,27 +15,6 @@ const WorkoutLog = () => {
   const DAYS_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   const DAYS_OF_THE_WEEK = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-
-  const example_fitelements = [
-    {
-      type: 'log',
-      workout_type: '스쿼트',
-      category: 'leg',
-      weight: 100,
-      rep: 10,
-      set: 5,
-      time: 20,
-    },
-    {
-      type: 'log',
-      workout_type: '데드리프트',
-      category: 'leg',
-      weight: 80,
-      rep: 7,
-      set: 6,
-      time: 15,
-    },
-  ];
 
   const today = new Date();
   const [date, setDate] = useState(today);
@@ -54,8 +34,14 @@ const WorkoutLog = () => {
     return selected_day;
   }
 
-  const defaultConfig: getFitElementRequestType = {
-    fitelement_id: 1
+  const defaultDailyLogConfig: getDailyLogRequestType = {
+    year: 2022,
+    month: 10,
+    specific_date: 29,
+    user_id: 1,
+    data: {
+      user_id: 1,
+    },
   };
 
   useEffect(() => {
@@ -63,8 +49,11 @@ const WorkoutLog = () => {
     setMonth(date.getMonth());
     setYear(date.getFullYear());
     setStartDay(getStartDayOfMonth(date));
-    dispatch(workoutLogActions.getFitElement(defaultConfig));
+    dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
   }, [date]);
+
+  const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
+  const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
 
   function isLeapYear(year: number) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -72,7 +61,6 @@ const WorkoutLog = () => {
 
   const days = isLeapYear(date.getFullYear()) ? DAYS_LEAP : DAYS;
 
-  // header 추가
   return (
     <Wrapper>
       <InnerWrapper>
@@ -90,11 +78,11 @@ const WorkoutLog = () => {
               </CalendarHeader>
               <Body>
                 {DAYS_OF_THE_WEEK.map(d =>
-                  d == 'SUN' ? (
+                  d === 'SUN' ? (
                     <Day className="sunday" key={d}>
                       {d}
                     </Day>
-                  ) : d == 'SAT' ? (
+                  ) : d === 'SAT' ? (
                     <Day className="saturday" key={d}>
                       {d}
                     </Day>
@@ -139,7 +127,7 @@ const WorkoutLog = () => {
                 <LogCategory className="type2">시간</LogCategory>
               </LogHeader>
               <LogBody>
-                {example_fitelements.map((fitelement, index) => (
+                {dailyFitElements.map((fitelement, index) => (
                   <FitElement
                     key={index}
                     id={index + 1}
