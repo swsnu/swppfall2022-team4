@@ -32,6 +32,7 @@ const PostDetail = () => {
   const [commentList, setCommentList] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState('');
   const [commentReplyInput, setCommentReplyInput] = useState('');
+  const [commentEditInput, setCommentEditInput] = useState('');
   const [commentNum, changeCommentNum] = useState(0);
   const [replyActivated, setReplyActivated] = useState(false);
   const [editActivated, setEditActivated] = useState(false);
@@ -98,9 +99,31 @@ const PostDetail = () => {
     }
   };
 
-  const commentEditOnClick = (comment_id: number) => {
-    dispatch(postActions.toggleCommentEdit({ comment_id: comment_id }));
+  const commentReplyOpenOnClick = (comment: Comment) => {
+    dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
+    setReplyActivated(!replyActivated);
+  };
+  const commentEditOpenOnClick = (comment: Comment) => {
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    setCommentEditInput(comment.content);
     setEditActivated(true);
+  };
+
+  const commentEditConfirmOnClick = (comment: Comment) => {
+    dispatch(
+      postActions.editComment({
+        comment_id: comment.id,
+        content: commentEditInput,
+      }),
+    );
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    changeCommentNum(Date.now());
+    setEditActivated(false);
+  };
+
+  const commentEditCancelOnClick = (comment: Comment) => {
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    setEditActivated(false);
   };
 
   const commentDeleteOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -124,39 +147,29 @@ const PostDetail = () => {
     if (comment.editActive) {
       return (
         <CommentFuncBtnWrapper>
-          <CommentAuthorBtn
-            onClick={() => {
-              dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
-              setEditActivated(false);
-            }}
-          >
-            취소
-          </CommentAuthorBtn>
-          <CommentAuthorBtn>완료</CommentAuthorBtn>
+          <CommentRedBtn onClick={() => commentEditCancelOnClick(comment)}>취소</CommentRedBtn>
+          <CommentGreenBtn onClick={() => commentEditConfirmOnClick(comment)}>완료</CommentGreenBtn>
         </CommentFuncBtnWrapper>
       );
     } else {
       return (
         <CommentFuncBtnWrapper>
           {comment.parent_comment === null && (
-            <CommentAuthorBtn
-              onClick={() => {
-                dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
-                setReplyActivated(!replyActivated);
-              }}
+            <CommentGreenBtn
+              onClick={() => commentReplyOpenOnClick(comment)}
               disabled={replyActivated && !comment.replyActive}
             >
               답글
-            </CommentAuthorBtn>
+            </CommentGreenBtn>
           )}
           {user?.username == comment?.author_name && (
             <>
-              <CommentAuthorBtn disabled={editActivated} onClick={() => commentEditOnClick(comment.id)}>
+              <CommentGreenBtn disabled={editActivated} onClick={() => commentEditOpenOnClick(comment)}>
                 수정
-              </CommentAuthorBtn>
-              <CommentAuthorBtn onClick={commentDeleteOnClick} data-comment_id={comment.id}>
+              </CommentGreenBtn>
+              <CommentRedBtn onClick={commentDeleteOnClick} data-comment_id={comment.id}>
                 삭제
-              </CommentAuthorBtn>
+              </CommentRedBtn>
             </>
           )}
         </CommentFuncBtnWrapper>
@@ -177,7 +190,10 @@ const PostDetail = () => {
           <CommentRightWrapper>
             <CommentContentWrapper>
               {comment.editActive ? (
-                <CommentEditInput></CommentEditInput>
+                <CommentEditInput
+                  value={commentEditInput}
+                  onChange={e => setCommentEditInput(e.target.value)}
+                ></CommentEditInput>
               ) : (
                 <CommentContent> {comment.content} </CommentContent>
               )}
@@ -227,11 +243,26 @@ const PostDetail = () => {
             <ArticleTitleWrapper>
               <ArticleBackBtn onClick={() => navigate('/post')}>◀︎</ArticleBackBtn>
               <ArticleTitle>{post.title}</ArticleTitle>
-              <span>{timeAgoFormat(post.created)}</span>
+              <PostWritterWrapper>
+                <PostWritterLeftWrapper>
+                  <PostWritterText> {post.author_name} </PostWritterText>
+                  <PostTimeText>{timeAgoFormat(post.created)}</PostTimeText>
+                </PostWritterLeftWrapper>
+                <PostWritterAvatar>Avatar</PostWritterAvatar>
+              </PostWritterWrapper>
             </ArticleTitleWrapper>
-            <h2>작성자 {post.author_name}</h2>
-            <h2>{post.content}</h2>
-            <h3>{post.comments_num}</h3>
+            <ArticleBodyContent>{post.content}</ArticleBodyContent>
+            <ArticleBodyFooter>
+              <h3>댓글 {post.comments_num}</h3>
+              <CommentFuncLikeBtn>
+                <FontAwesomeIcon icon={faThumbsUp} />
+              </CommentFuncLikeBtn>
+              <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
+              <CommentFuncLikeBtn>
+                <FontAwesomeIcon icon={faThumbsDown} />
+              </CommentFuncLikeBtn>
+              <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
+            </ArticleBodyFooter>
           </ArticleBody>
           <ArticleCommentWrapper>
             <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
@@ -260,13 +291,13 @@ const PostDetail = () => {
   const CreateBtn = <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>;
   const PostAuthorPanel =
     user?.username == post?.author_name ? (
-      <>
+      <PostPanelWrapper>
         {CreateBtn}
         <CreatePostBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</CreatePostBtn>
         <CreatePostBtn onClick={deleteOnClick}>글 삭제</CreatePostBtn>
-      </>
+      </PostPanelWrapper>
     ) : (
-      <> {CreateBtn}</>
+      <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
     );
   const SideBar = (
     <>
@@ -294,6 +325,7 @@ const SideBarItem = styled.div`
   width: 100%;
   height: 40%;
 `;
+
 const ArticleBody = styled.div`
   padding: 10px 20px;
   font-size: 14px;
@@ -330,6 +362,7 @@ const ArticleTitleWrapper = styled.div`
   border-bottom: 1px solid black;
   margin-bottom: 20px;
 `;
+
 const ArticleBackBtn = styled.button`
   margin-right: 30px;
   font-size: 30px;
@@ -337,8 +370,56 @@ const ArticleBackBtn = styled.button`
   border: none;
   cursor: pointer;
 `;
+
 const ArticleTitle = styled.h1`
   font-size: 24px;
+`;
+
+const PostWritterWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const PostWritterLeftWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 8px;
+  margin-right: 8px;
+`;
+
+const PostWritterAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 8px;
+`;
+
+const PostWritterText = styled.span`
+  font-size: 16px;
+  margin-bottom: 3px;
+`;
+
+const PostTimeText = styled.span`
+  font-size: 13px;
+  margin-bottom: 2px;
+`;
+
+const ArticleBodyContent = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  /* min-height: 360px; */
+`;
+
+const ArticleBodyFooter = styled.div`
+  display: flex;
+  width: 100%;
 `;
 
 // Article Comment List
@@ -346,11 +427,13 @@ const ArticleCommentWrapper = styled.div`
   width: 100%;
   background-color: #ffffff;
 `;
+
 const CommentWrapper = styled.div`
   width: 100%;
   background-color: #ffffff;
 `;
-const CommentAuthorBtn = styled.button`
+
+const CommentGreenBtn = styled.button`
   padding: 4px 8px;
   font-size: 10px;
   background-color: #54dd6d;
@@ -363,10 +446,27 @@ const CommentAuthorBtn = styled.button`
     cursor: default;
   }
 `;
+
+const CommentRedBtn = styled.button`
+  padding: 4px 8px;
+  font-size: 10px;
+  background-color: #dd5454;
+  border: none;
+  border-radius: 4px;
+  margin: 0px 4px;
+  margin-right: 4px;
+  color: #dddddd;
+  cursor: pointer;
+  :disabled {
+    cursor: default;
+  }
+`;
+
 const CommentReplyWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
 const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
   font-size: 14px;
@@ -382,17 +482,20 @@ const CommentItem = styled.div<IPropsComment>`
     padding-left: 40px;
   `}
 `;
+
 const CommentWritterWrapperO1 = styled.div`
   text-align: center;
   width: 40px;
   margin-right: 20px;
 `;
+
 const CommentWritterWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 8px;
 `;
+
 const CommentWritterAvatar = styled.div`
   width: 40px;
   height: 40px;
@@ -403,9 +506,11 @@ const CommentWritterAvatar = styled.div`
   align-items: center;
   margin-bottom: 5px;
 `;
+
 const CommentWritterText = styled.span`
   font-size: 12px;
 `;
+
 const CommentRightWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -414,6 +519,7 @@ const CommentRightWrapper = styled.div`
   flex-direction: column;
   justify-content: space-between;
 `;
+
 const CommentFuncWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -421,36 +527,43 @@ const CommentFuncWrapper = styled.div`
   align-items: center;
   justify-content: flex-end;
 `;
+
 const CommentFuncLikeBtn = styled.div`
   color: #777777;
   cursor: pointer;
   margin-left: 8px;
 `;
+
 const CommentFuncBtnWrapper = styled.div`
   margin-left: 12px;
 `;
+
 const CommentFuncTimeIndicator = styled.span`
   font-size: 12px;
   text-align: right;
   margin-left: 12px;
-  min-width: 60px;
+  min-width: 48px;
 `;
+
 const CommentFuncNumIndicator = styled.span`
   font-size: 12px;
   margin-left: 8px;
   /* margin: 0px 5px; */
 `;
+
 const CommentContentWrapper = styled.div`
   width: 100%;
   margin-top: 5px;
   text-align: left;
 `;
+
 const CommentEditInput = styled.input`
   text-align: left;
   width: 100%;
   padding: 10px 12px;
   margin-bottom: 6px;
 `;
+
 const CommentContent = styled.span`
   text-align: left;
 `;
@@ -463,6 +576,7 @@ const CommentForm = styled.div`
   justify-content: space-between;
   margin-top: 10px;
 `;
+
 const CommentReplyForm = styled.div`
   width: 100%;
   background-color: #ffffff;
@@ -473,11 +587,14 @@ const CommentReplyForm = styled.div`
   padding-bottom: 10px;
   border-bottom: 1px solid gray;
 `;
+
 const CommentReplyFormWrapper = styled.div``;
+
 const CommentInput = styled.input`
   width: 90%;
   padding: 10px 12px;
 `;
+
 const CommentSubmitBtn = styled.button<IPropsCommentSubmitBtn>`
   width: 10%;
   padding: 10px 6px;
@@ -494,13 +611,21 @@ const CommentSubmitBtn = styled.button<IPropsCommentSubmitBtn>`
     background: #8ee5b9;
   `}
 `;
-const CreatePostBtn = styled.button`
-  padding: 0px 20px;
+
+const PostPanelWrapper = styled.div`
   width: 100%;
-  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const CreatePostBtn = styled.button`
+  padding: 5px 20px;
+  width: 90%;
+  border-radius: 10px;
   background-color: #35c9ea;
   font-size: 15px;
-  letter-spacing: 0.5px;
+  margin-bottom: 10px;
   &:hover {
     background-color: #45d9fa;
   }

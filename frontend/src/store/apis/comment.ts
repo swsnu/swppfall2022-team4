@@ -61,6 +61,6 @@ export const editComment = async (payload: editCommentRequestType) => {
 };
 
 export type editCommentRequestType = {
-  comment_id: string;
+  comment_id: number;
   content: string;
 };
