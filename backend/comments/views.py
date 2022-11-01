@@ -1,7 +1,7 @@
 import json
 from django.http import (
-    HttpResponse,
     HttpResponseBadRequest,
+    HttpResponseNotFound,
     JsonResponse,
 )
 from django.views.decorators.http import require_http_methods
@@ -43,3 +43,37 @@ def comment_home(request):
         Post.DoesNotExist,
     ):
         return HttpResponseBadRequest()
+
+
+@require_http_methods(["PUT", "DELETE"])
+def comment_detail(request, query_id):
+    """
+    PUT : edit comment.
+    DELETE : delete comment.
+    """
+    if request.method == "PUT":
+        try:
+            data = json.loads(request.body.decode())
+            comment_id = int(query_id)
+            comment_obj = Comment.objects.get(pk=comment_id)
+
+            comment_obj.content = data["content"]
+            comment_obj.save()
+            return JsonResponse({"message": "success"}, status=200)
+        except Post.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception as error:
+            print(error)
+            return HttpResponseBadRequest()
+    else:  # request.method == "DELETE":
+        try:
+            comment_id = int(query_id)
+            comment_obj = Comment.objects.get(pk=comment_id)
+
+            comment_obj.delete()
+            return JsonResponse({"message": "success"}, status=200)
+        except Post.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception as error:
+            print(error)
+            return HttpResponseBadRequest()

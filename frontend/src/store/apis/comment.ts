@@ -40,3 +40,22 @@ export type createCommentRequestType = {
 export type createCommentReplyType = {
   parent_comment: number;
 };
+
+export const deleteComment = async (payload: deleteCommentRequestType) => {
+  const response = await client.delete(`/api/comment/${payload.comment_id}/`);
+  return response.data;
+};
+
+export type deleteCommentRequestType = {
+  comment_id: string;
+};
+
+export const editComment = async (payload: editCommentRequestType) => {
+  const response = await client.put(`/api/comment/${payload.comment_id}/`, payload);
+  return response.data;
+};
+
+export type editCommentRequestType = {
+  comment_id: string;
+  content: string;
+};

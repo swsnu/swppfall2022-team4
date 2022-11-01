@@ -155,6 +155,12 @@ export const postSlice = createSlice({
     createCommentFailure: (state, { payload }) => {
       // console.log(payload);
     },
+    editComment: (state, action: PayloadAction<commentAPI.editCommentRequestType>) => {
+      //edit!
+    },
+    deleteComment: (state, action: PayloadAction<commentAPI.deleteCommentRequestType>) => {
+      //edit!
+    },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
 });
@@ -223,6 +229,23 @@ function* createCommentSaga(action: PayloadAction<commentAPI.createCommentReques
   }
 }
 
+function* editCommentSaga(action: PayloadAction<commentAPI.editCommentRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.editComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    // yield put(postActions.createCommentFailure(error));
+  }
+}
+function* deleteCommentSaga(action: PayloadAction<commentAPI.deleteCommentRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.deleteComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    // yield put(postActions.createCommentFailure(error));
+  }
+}
+
 export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
@@ -231,4 +254,6 @@ export default function* postSaga() {
   yield takeLatest(postActions.editPost, editPostSaga);
   yield takeLatest(postActions.getPostComment, getPostCommentSaga);
   yield takeLatest(postActions.createComment, createCommentSaga);
+  yield takeLatest(postActions.editComment, editCommentSaga);
+  yield takeLatest(postActions.deleteComment, deleteCommentSaga);
 }

@@ -91,6 +91,26 @@ const PostDetail = () => {
     }
   };
 
+  const commentEditOnClick = () => {
+    console.log('hi');
+  };
+  const commentDeleteOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target_id = e.currentTarget.getAttribute('data-comment_id');
+    if (target_id && id) {
+      dispatch(
+        postActions.deleteComment({
+          comment_id: target_id,
+        }),
+      );
+      dispatch(
+        postActions.getPostComment({
+          post_id: id,
+        }),
+      );
+    }
+    changeCommentNum(Date.now());
+  };
+
   const CommentBtnComponent = (comment: Comment) => {
     return (
       <CommentFuncBtnWrapper>
@@ -106,7 +126,9 @@ const PostDetail = () => {
         {user?.username == comment?.author_name && (
           <>
             <CommentAuthorBtn>수정</CommentAuthorBtn>
-            <CommentAuthorBtn>삭제</CommentAuthorBtn>
+            <CommentAuthorBtn onClick={commentDeleteOnClick} data-comment_id={comment.id}>
+              삭제
+            </CommentAuthorBtn>
           </>
         )}
       </CommentFuncBtnWrapper>
