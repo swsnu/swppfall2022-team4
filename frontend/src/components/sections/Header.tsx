@@ -46,6 +46,7 @@ const Header = () => {
     };
   }, [infoRef]);
   useEffect(() => {
+    window.scrollTo(0, 0);
     setNotificationOpen(false);
     setInfoOpen(false);
   }, [location]);
@@ -104,7 +105,7 @@ const Header = () => {
             <Info open={infoOpen}>
               {infoOpen && (
                 <>
-                  <MypageButton onClick={() => navigate(`/mypage/${user.username}`)}>Mypage</MypageButton>
+                  <MypageButton onClick={() => navigate(`/profile/${user.username}`)}>Mypage</MypageButton>
                   <LogoutButton onClick={() => dispatch(userActions.logout())}>Logout</LogoutButton>
                 </>
               )}
@@ -125,12 +126,18 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #ffffff;
   border-bottom: 2px solid #909090;
   padding: 0 20px;
   z-index: 100;
   position: fixed;
   top: 0;
-  background-color: #ffffff;
+
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 `;
 const FakeHeader = styled.div`
   width: 100%;
@@ -264,6 +271,7 @@ const InfoWrapper = styled.div`
     width: 36px;
     height: 36px;
     border-radius: 5px;
+    border: 1px solid black;
     cursor: pointer;
   }
 `;

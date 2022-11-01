@@ -6,16 +6,23 @@ import FugazOne from 'assets/fonts/FugazOne.ttf';
 import IBMPlexSansThaiLooped from 'assets/fonts/IBMPlexSansThaiLooped.ttf';
 import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 
+import Header from 'components/sections/Header';
+import Footer from 'components/sections/Footer';
+import NotFound from 'components/common/NotFound';
+
 import Main from 'containers/Main';
 import Login from 'containers/user/Login';
 import Signup from 'containers/user/Signup';
-import WorkoutLog from 'containers/workout/WorkoutLog';
-import Header from 'components/sections/Header';
+import Mypage from 'containers/user/Mypage';
+import EditProfile from 'containers/user/EditProfile';
+import EditPassword from 'containers/user/EditPassword';
 
 import PostMain from 'containers/post/PostMain';
 import PostCreate from 'containers/post/PostCreate';
-import PostDetail from 'containers/post/PostDetail';
 import PostEdit from 'containers/post/PostEdit';
+import PostDetail from 'containers/post/PostDetail';
+
+import WorkoutLog from 'containers/workout/WorkoutLog';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -87,7 +94,6 @@ function App() {
     </>
   );
 }
-
 export default App;
 
 const InsideComponent = () => {
@@ -100,14 +106,27 @@ const InsideComponent = () => {
         element={
           <Wrapper>
             <Header />
+
             <Routes>
               <Route path="" element={<Main />} />
-              <Route path="post" element={<PostMain />} />
-              <Route path="post/create" element={<PostCreate />} />
-              <Route path="post/:id" element={<PostDetail />} />
-              <Route path="post/:id/edit" element={<PostEdit />} />
+
+              <Route path="post/*">
+                <Route path="" element={<PostMain />} />
+                <Route path="create" element={<PostCreate />} />
+                <Route path=":id" element={<PostDetail />} />
+                <Route path=":id/edit" element={<PostEdit />} />
+              </Route>
+
+              <Route path="profile/:username" element={<Mypage />} />
+              <Route path="edit_profile" element={<EditProfile />} />
+              <Route path="edit_password" element={<EditPassword />} />
+
               <Route path="workout" element={<WorkoutLog />} />
+
+              <Route path="*" element={<NotFound />} />
             </Routes>
+
+            <Footer />
           </Wrapper>
         }
       />

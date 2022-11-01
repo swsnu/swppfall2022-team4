@@ -1,6 +1,7 @@
 from django.db import models
+from utils.models import AbstractTimeStampedModel
 
-class User(models.Model):
+class User(AbstractTimeStampedModel):
     username = models.CharField(max_length=20, null=False)
     hashed_password = models.CharField(max_length=255, null=False)
     nickname = models.CharField(max_length=8, null=False)
@@ -11,8 +12,5 @@ class User(models.Model):
     weight = models.FloatField(null=False)
     age = models.IntegerField(null=False)
 
-    exp = models.IntegerField(null = False)
-    level = models.IntegerField(null = False)
-
-    # Related_name : posts <- posts.Post
-    # Related_name : comments <- comments.Comment
+    exp = models.IntegerField(null=False)
+    level = models.IntegerField(null=False)
