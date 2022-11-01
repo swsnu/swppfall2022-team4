@@ -139,7 +139,6 @@ def post_comment(request, query_id):
             processed_comment[index]["parent_comment"] = processed_comment[index][
                 "parent_comment_id"
             ]
-            processed_comment[index]["replyActive"] = False
             del processed_comment[index]["parent_comment_id"]
 
         # Re-ordering.

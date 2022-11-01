@@ -23,14 +23,18 @@ const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const user = useSelector(({ user }: RootState) => user.user);
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
-  const [commentList, setCommentList] = useState<Comment[]>([]);
   const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
+
+  const [commentList, setCommentList] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState('');
+  const [commentReplyInput, setCommentReplyInput] = useState('');
   const [commentNum, changeCommentNum] = useState(0);
   const [replyActivated, setReplyActivated] = useState(false);
+  const [editActivated, setEditActivated] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -69,12 +73,13 @@ const PostDetail = () => {
       );
     }
   };
+
   const commentCreateOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (user && id) {
       const parent_comment = e.currentTarget.getAttribute('data-parent_comment');
       dispatch(
         postActions.createComment({
-          content: commentInput,
+          content: parent_comment ? commentReplyInput : commentInput,
           author_name: user.username,
           post_id: id,
           parent_comment: parent_comment ? parent_comment : 'none',
@@ -95,8 +100,9 @@ const PostDetail = () => {
 
   const commentEditOnClick = (comment_id: number) => {
     dispatch(postActions.toggleCommentEdit({ comment_id: comment_id }));
-    console.log('hi');
+    setEditActivated(true);
   };
+
   const commentDeleteOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target_id = e.currentTarget.getAttribute('data-comment_id');
     if (target_id && id) {
@@ -117,16 +123,17 @@ const PostDetail = () => {
   const CommentBtnComponent = (comment: Comment) => {
     if (comment.editActive) {
       return (
-        <div>
+        <CommentFuncBtnWrapper>
           <CommentAuthorBtn
             onClick={() => {
               dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+              setEditActivated(false);
             }}
           >
             취소
           </CommentAuthorBtn>
           <CommentAuthorBtn>완료</CommentAuthorBtn>
-        </div>
+        </CommentFuncBtnWrapper>
       );
     } else {
       return (
@@ -144,7 +151,9 @@ const PostDetail = () => {
           )}
           {user?.username == comment?.author_name && (
             <>
-              <CommentAuthorBtn onClick={() => commentEditOnClick(comment.id)}>수정</CommentAuthorBtn>
+              <CommentAuthorBtn disabled={editActivated} onClick={() => commentEditOnClick(comment.id)}>
+                수정
+              </CommentAuthorBtn>
               <CommentAuthorBtn onClick={commentDeleteOnClick} data-comment_id={comment.id}>
                 삭제
               </CommentAuthorBtn>
@@ -192,12 +201,12 @@ const PostDetail = () => {
             <CommentReplyForm>
               <CommentInput
                 placeholder="댓글 입력"
-                value={commentInput}
-                onChange={e => setCommentInput(e.target.value)}
+                value={commentReplyInput}
+                onChange={e => setCommentReplyInput(e.target.value)}
               ></CommentInput>
               <CommentSubmitBtn
-                isActive={commentInput !== ''}
-                disabled={commentInput === ''}
+                isActive={commentReplyInput !== ''}
+                disabled={commentReplyInput === ''}
                 onClick={commentCreateOnClick}
                 data-parent_comment={comment.id}
               >
@@ -438,6 +447,9 @@ const CommentContentWrapper = styled.div`
 `;
 const CommentEditInput = styled.input`
   text-align: left;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 6px;
 `;
 const CommentContent = styled.span`
   text-align: left;

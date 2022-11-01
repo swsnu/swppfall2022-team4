@@ -14,8 +14,8 @@ export type Comment = {
   like_num: number;
   dislike_num: number;
   parent_comment: number | null;
-  replyActive: boolean;
-  editActive: boolean;
+  replyActive?: boolean;
+  editActive?: boolean;
 };
 
 export type getPostCommentRequestType = {
