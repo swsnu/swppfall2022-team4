@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
@@ -11,19 +11,23 @@ import { PostPageWithSearchBar } from './PostLayout';
 const PostMain = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [page, setPage] = useState(1);
   const defaultPageConfig: getPostsRequestType = {
-    pageNum: 1,
+    pageNum: page,
     pageSize: 10,
   };
   useEffect(() => {
     dispatch(postActions.getPosts(defaultPageConfig));
-  }, []);
+  }, [page]);
 
   const postList = useSelector((rootState: RootState) => rootState.post.postList.posts);
+  const maxPage = useSelector((rootState: RootState) => rootState.post.postList.pageTotal);
   const SideBar = (
     <>
-      <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
+      <PostPanelWrapper>
+        <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
+      </PostPanelWrapper>
+
       <SideBarItem>사이드바 공간1</SideBarItem>
       <SideBarItem>사이드바 공간2</SideBarItem>
     </>
@@ -54,7 +58,22 @@ const PostMain = () => {
       ) : (
         <span></span>
       )}
-      <ArticleFooter>◀ 1 2 3 4 5 6 7 8 9 10 ▶︎</ArticleFooter>
+      <ArticleFooter>
+        <PageNumberIndicator onClick={() => setPage(1)}>◀◀</PageNumberIndicator>
+        <PageNumberIndicator onClick={() => (page >= 2 ? setPage(page => page - 1) : null)}>◀</PageNumberIndicator>
+        {[...Array(5)]
+          .map((_, i) => Math.floor((page - 1) / 5) * 5 + i + 1)
+          .map(
+            page =>
+              maxPage &&
+              page <= maxPage && <PageNumberIndicator onClick={() => setPage(page)}>{page}</PageNumberIndicator>,
+          )}
+        <PageNumberIndicator onClick={() => (maxPage && page < maxPage ? setPage(page => page + 1) : null)}>
+          ▶︎
+        </PageNumberIndicator>
+        <PageNumberIndicator onClick={() => (maxPage ? setPage(maxPage) : null)}>▶︎▶︎</PageNumberIndicator>
+        현재 페이지 : {page}
+      </ArticleFooter>
     </ArticleListWrapper>
   );
 
@@ -106,16 +125,25 @@ const SideBarItem = styled.div`
   width: 100%;
   height: 40%;
 `;
-const CreatePostBtn = styled.button`
-  padding: 0px 20px;
+const PostPanelWrapper = styled.div`
   width: 100%;
-  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const CreatePostBtn = styled.button`
+  padding: 5px 20px;
+  width: 90%;
+  border-radius: 10px;
   background-color: #35c9ea;
   font-size: 15px;
-  letter-spacing: 0.5px;
+  margin-bottom: 10px;
   &:hover {
     background-color: #45d9fa;
   }
 `;
-
+const PageNumberIndicator = styled.span`
+  cursor: pointer;
+  margin: 0px 5px;
+`;
 export default PostMain;
