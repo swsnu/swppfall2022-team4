@@ -19,6 +19,17 @@ interface IPropsCommentSubmitBtn {
 interface IPropsComment {
   isChild?: boolean;
 }
+
+const FuncBtnStatus = {
+  None: 'None',
+  Like: 'Like',
+  Dislike: 'Dislike',
+  Scrap: 'Scrap',
+};
+interface IPropsFuncBtn {
+  color: string;
+}
+
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
@@ -28,7 +39,7 @@ const PostDetail = () => {
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
   const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
-
+  const postFuncStatus = useSelector(({ post }: RootState) => post.postFunc);
   const [commentList, setCommentList] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState('');
   const [commentReplyInput, setCommentReplyInput] = useState('');
@@ -45,7 +56,7 @@ const PostDetail = () => {
         }),
       );
     }
-  }, []);
+  }, [postFuncStatus]);
   useEffect(() => {
     if (id) {
       dispatch(
@@ -65,6 +76,26 @@ const PostDetail = () => {
     }
   }, [postDeleteStatus]);
 
+  const funcLikeOnClick = () => {
+    if (id) {
+      dispatch(
+        postActions.postFunc({
+          post_id: id,
+          func_type: 'like',
+        }),
+      );
+    }
+  };
+  const funcDislikeOnClick = () => {
+    if (id) {
+      dispatch(
+        postActions.postFunc({
+          post_id: id,
+          func_type: 'dislike',
+        }),
+      );
+    }
+  };
   const deleteOnClick = () => {
     if (id) {
       dispatch(
@@ -103,6 +134,7 @@ const PostDetail = () => {
     dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
     setReplyActivated(!replyActivated);
   };
+
   const commentEditOpenOnClick = (comment: Comment) => {
     dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
     setCommentEditInput(comment.content);
@@ -200,13 +232,13 @@ const PostDetail = () => {
             </CommentContentWrapper>
             <CommentFuncWrapper>
               {CommentBtnComponent(comment)}
-              <CommentFuncLikeBtn>
+              <CommentFuncBtn color={comment.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}>
                 <FontAwesomeIcon icon={faThumbsUp} />
-              </CommentFuncLikeBtn>
+              </CommentFuncBtn>
               <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-              <CommentFuncLikeBtn>
+              <CommentFuncBtn color={comment.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}>
                 <FontAwesomeIcon icon={faThumbsDown} />
-              </CommentFuncLikeBtn>
+              </CommentFuncBtn>
               <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
               <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
             </CommentFuncWrapper>
@@ -254,13 +286,16 @@ const PostDetail = () => {
             <ArticleBodyContent>{post.content}</ArticleBodyContent>
             <ArticleBodyFooter>
               <h3>댓글 {post.comments_num}</h3>
-              <CommentFuncLikeBtn>
+              <CommentFuncBtn onClick={funcLikeOnClick} color={post.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}>
                 <FontAwesomeIcon icon={faThumbsUp} />
-              </CommentFuncLikeBtn>
+              </CommentFuncBtn>
               <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
-              <CommentFuncLikeBtn>
+              <CommentFuncBtn
+                onClick={funcDislikeOnClick}
+                color={post.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}
+              >
                 <FontAwesomeIcon icon={faThumbsDown} />
-              </CommentFuncLikeBtn>
+              </CommentFuncBtn>
               <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
             </ArticleBodyFooter>
           </ArticleBody>
@@ -528,8 +563,20 @@ const CommentFuncWrapper = styled.div`
   justify-content: flex-end;
 `;
 
-const CommentFuncLikeBtn = styled.div`
-  color: #777777;
+const handleFuncBtnColor = (color: string) => {
+  switch (color) {
+    case FuncBtnStatus.Like:
+      return '#ff0000';
+    case FuncBtnStatus.Dislike:
+      return '#0000ff';
+    case FuncBtnStatus.Scrap:
+      return '#dddd00';
+    default:
+      return '#dddddd';
+  }
+};
+const CommentFuncBtn = styled.div<IPropsFuncBtn>`
+  color: ${({ color }) => handleFuncBtnColor(color)};
   cursor: pointer;
   margin-left: 8px;
 `;

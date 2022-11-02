@@ -96,8 +96,6 @@ def post_detail(request, query_id):
                 .filter(username=request.user.username)
                 .exists(),
             }
-            # print(post_response)
-            # print(request.user)
             return JsonResponse(post_response, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
@@ -143,22 +141,34 @@ def post_comment(request, query_id):
         post_obj = Post.objects.get(pk=post_id)
 
         comments = post_obj.comments.all()
-        processed_comment = list(comments.values())
-        for index, _ in enumerate(processed_comment):
-            del processed_comment[index]["author_id"]
-            processed_comment[index]["author_name"] = comments[index].author.username
-            processed_comment[index]["parent_comment"] = processed_comment[index][
-                "parent_comment_id"
-            ]
-            del processed_comment[index]["parent_comment_id"]
+        proc_comm = list(comments.values())
+        for index, _ in enumerate(proc_comm):
+            proc_comm[index]["like_num"] = comments[index].get_like_num()
+            proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
+            proc_comm[index]["liked"] = (
+                comments[index]
+                .liker.all()
+                .filter(username=request.user.username)
+                .exists()
+            )
+            proc_comm[index]["disliked"] = (
+                comments[index]
+                .disliker.all()
+                .filter(username=request.user.username)
+                .exists()
+            )
+            proc_comm[index]["author_name"] = comments[index].author.username
+            proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]
+            del proc_comm[index]["author_id"]
+            del proc_comm[index]["parent_comment_id"]
 
         # Re-ordering.
-        comment_reservoir = copy.deepcopy(processed_comment)
+        comment_reservoir = copy.deepcopy(proc_comm)
         comment_response = []
         parent_id = None
         while len(comment_reservoir) != 0:
-            processed_comment = copy.deepcopy(comment_reservoir)
-            for comment in processed_comment:
+            proc_comm = copy.deepcopy(comment_reservoir)
+            for comment in proc_comm:
                 if parent_id:
                     if comment["parent_comment"] == parent_id:
                         comment_response.append(comment)
@@ -170,6 +180,44 @@ def post_comment(request, query_id):
             parent_id = None
         return JsonResponse({"comments": comment_response}, status=200)
     except Post.DoesNotExist:
+        return HttpResponseNotFound()
+    except Exception as error:
+        print(error)
+        return HttpResponseBadRequest()
+
+
+@require_http_methods(["PUT"])
+def post_func(request, query_id):
+    """
+    PUT : edit post.
+    """
+    try:
+        data = json.loads(request.body.decode())
+        post_id = int(query_id)
+        post_obj = Post.objects.get(pk=post_id)
+
+        type_of_work = data["func_type"]  # type : like, dislike, scrap
+
+        user = user_model.User.objects.get(username=request.user.username)
+        if type_of_work == "like":
+            if post_obj.liker.all().filter(username=request.user.username).exists():
+                post_obj.liker.remove(user)
+            else:
+                post_obj.liker.add(user)
+        elif type_of_work == "dislike":
+            if post_obj.disliker.all().filter(username=request.user.username).exists():
+                post_obj.disliker.remove(user)
+            else:
+                post_obj.disliker.add(user)
+        elif type_of_work == "scrap":
+            if post_obj.scraper.all().filter(username=request.user.username).exists():
+                post_obj.scraper.remove(user)
+            else:
+                post_obj.scraper.add(user)
+        else:
+            HttpResponseBadRequest()
+        return JsonResponse({"message": "success"}, status=200)
+    except (Post.DoesNotExist, user_model.User.DoesNotExist):
         return HttpResponseNotFound()
     except Exception as error:
         print(error)

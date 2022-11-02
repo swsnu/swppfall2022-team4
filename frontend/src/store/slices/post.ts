@@ -27,6 +27,7 @@ interface PostState {
   };
   postEdit: boolean;
   postDelete: boolean;
+  postFunc: boolean;
 }
 const initialState: PostState = {
   postList: {
@@ -50,6 +51,7 @@ const initialState: PostState = {
   },
   postEdit: false,
   postDelete: false,
+  postFunc: false,
 };
 
 export const postSlice = createSlice({
@@ -130,7 +132,7 @@ export const postSlice = createSlice({
       state.postComment.error = null;
     },
     getPostCommentSuccess: (state, { payload }) => {
-      // console.log(payload);
+      console.log(payload);
       state.postComment.comments = payload.comments;
     },
     getPostCommentFailure: (state, { payload }) => {
@@ -157,6 +159,7 @@ export const postSlice = createSlice({
       state.postCreate.status = false;
       state.postEdit = false;
       state.postDelete = false;
+      state.postFunc = false;
     },
     toggleCommentReply: (state, action: PayloadAction<commentAPI.createCommentReplyType>) => {
       if (state.postComment.comments)
@@ -178,6 +181,12 @@ export const postSlice = createSlice({
           }
         });
       }
+    },
+    postFunc: (state, action: PayloadAction<postAPI.postFuncRequestType>) => {
+      state.postFunc = false;
+    },
+    postFuncSuccess: (state, { payload }) => {
+      state.postFunc = true;
     },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
@@ -229,6 +238,15 @@ function* editPostSaga(action: PayloadAction<postAPI.editPostRequestType>) {
   }
 }
 
+function* postFuncSaga(action: PayloadAction<postAPI.postFuncRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(postAPI.postFunc, action.payload);
+    yield put(postActions.postFuncSuccess(response));
+  } catch (error) {
+    // yield put(postActions.editPostFailure(error));
+  }
+}
+
 export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
@@ -236,6 +254,9 @@ export default function* postSaga() {
   yield takeLatest(postActions.deletePost, deletePostSaga);
   yield takeLatest(postActions.editPost, editPostSaga);
   yield takeLatest(postActions.getPostComment, getPostCommentSaga);
+
+  yield takeLatest(postActions.postFunc, postFuncSaga);
+
   yield takeLatest(postActions.createComment, createCommentSaga);
   yield takeLatest(postActions.editComment, editCommentSaga);
   yield takeLatest(postActions.deleteComment, deleteCommentSaga);

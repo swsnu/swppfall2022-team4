@@ -18,6 +18,9 @@ export type Post = {
   dislike_num: number;
   scrap_num: number;
   comments_num: number;
+  liked?: boolean;
+  disliked?: boolean;
+  scraped?: boolean;
 };
 
 export type getPostsRequestType = {
@@ -67,4 +70,14 @@ export type editPostRequestType = {
 // Used in createPostRequest, deletePostRequest
 export type postIdentifyingRequestType = {
   post_id: string;
+};
+
+export const postFunc = async (payload: postFuncRequestType) => {
+  const response = await client.put(`/api/post/${payload.post_id}/func/`, payload);
+  return response.data;
+};
+
+export type postFuncRequestType = {
+  post_id: string;
+  func_type: string;
 };
