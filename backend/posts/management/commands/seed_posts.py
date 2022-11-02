@@ -1,4 +1,5 @@
 import random
+import datetime
 
 from django.core.management import BaseCommand
 from django_seed import Seed
@@ -31,6 +32,12 @@ class Command(BaseCommand):
                 "like_num": lambda x: random.randint(0, 100),
                 "dislike_num": lambda x: random.randint(0, 30),
                 "scrap_num": lambda x: random.randint(0, 10),
+                "created": lambda x: seeder.faker.date_between_dates(
+                    datetime.datetime(2022, 1, 1), datetime.datetime(2022, 7, 1)
+                ),
+                "updated": lambda x: seeder.faker.date_between_dates(
+                    datetime.datetime(2022, 7, 2), datetime.datetime(2022, 11, 2)
+                ),
             },
         )
 

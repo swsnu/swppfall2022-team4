@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class User(models.Model):
     username = models.CharField(max_length=20, null=False)
     hashed_password = models.CharField(max_length=255, null=False)
@@ -11,8 +12,13 @@ class User(models.Model):
     weight = models.FloatField(null=False)
     age = models.IntegerField(null=False)
 
-    exp = models.IntegerField(null = False)
-    level = models.IntegerField(null = False)
+    exp = models.IntegerField(null=False)
+    level = models.IntegerField(null=False)
 
     # Related_name : posts <- posts.Post
     # Related_name : comments <- comments.Comment
+    # Related_name : liked_posts <- posts.Post
+    # Related_name : disliked_posts <- posts.Post
+    # Related_name : scraped_posts <- posts.Post
+    # Related_name : liked_comments <- comments.Comment
+    # Related_name : disliked_comments <- comments.Comment

@@ -82,11 +82,22 @@ def post_detail(request, query_id):
                 "content": post_obj.content,
                 "created": post_obj.created,
                 "updated": post_obj.updated,
-                "like_num": post_obj.like_num,
-                "dislike_num": post_obj.dislike_num,
-                "scrap_num": post_obj.scrap_num,
+                "like_num": post_obj.get_like_num(),
+                "dislike_num": post_obj.get_dislike_num(),
+                "scrap_num": post_obj.get_scrap_num(),
                 "comments_num": post_obj.comments.count(),
+                "liked": post_obj.liker.all()
+                .filter(username=request.user.username)
+                .exists(),
+                "disliked": post_obj.disliker.all()
+                .filter(username=request.user.username)
+                .exists(),
+                "scraped": post_obj.scraper.all()
+                .filter(username=request.user.username)
+                .exists(),
             }
+            # print(post_response)
+            # print(request.user)
             return JsonResponse(post_response, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
