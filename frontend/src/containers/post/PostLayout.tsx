@@ -42,7 +42,6 @@ const TopElementWrapperWithoutPadding = styled.div`
 const Main_SideWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  border: 1px solid black;
   width: 100%;
   min-height: 600px;
   height: 70vh;

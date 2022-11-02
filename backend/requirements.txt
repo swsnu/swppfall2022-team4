@@ -10,6 +10,7 @@ dill==0.3.6
 Django==4.1.2
 django-cors-headers==3.13.0
 django-dotenv==1.4.2
+django-seed==0.2.2
 docopt==0.6.2
 idna==3.4
 isort==5.10.1

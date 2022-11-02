@@ -1,6 +1,6 @@
 import json
+import copy
 from django.http import (
-    HttpResponse,
     HttpResponseBadRequest,
     HttpResponseNotFound,
     JsonResponse,
@@ -82,11 +82,22 @@ def post_detail(request, query_id):
                 "content": post_obj.content,
                 "created": post_obj.created,
                 "updated": post_obj.updated,
-                "like_num": post_obj.like_num,
-                "dislike_num": post_obj.dislike_num,
-                "scrap_num": post_obj.scrap_num,
+                "like_num": post_obj.get_like_num(),
+                "dislike_num": post_obj.get_dislike_num(),
+                "scrap_num": post_obj.get_scrap_num(),
                 "comments_num": post_obj.comments.count(),
+                "liked": post_obj.liker.all()
+                .filter(username=request.user.username)
+                .exists(),
+                "disliked": post_obj.disliker.all()
+                .filter(username=request.user.username)
+                .exists(),
+                "scraped": post_obj.scraper.all()
+                .filter(username=request.user.username)
+                .exists(),
             }
+            # print(post_response)
+            # print(request.user)
             return JsonResponse(post_response, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
@@ -132,11 +143,31 @@ def post_comment(request, query_id):
         post_obj = Post.objects.get(pk=post_id)
 
         comments = post_obj.comments.all()
-        comment_response = list(comments.values())
-        for index, _ in enumerate(comment_response):
-            del comment_response[index]["author_id"]
-            comment_response[index]["author_name"] = comments[index].author.username
+        processed_comment = list(comments.values())
+        for index, _ in enumerate(processed_comment):
+            del processed_comment[index]["author_id"]
+            processed_comment[index]["author_name"] = comments[index].author.username
+            processed_comment[index]["parent_comment"] = processed_comment[index][
+                "parent_comment_id"
+            ]
+            del processed_comment[index]["parent_comment_id"]
 
+        # Re-ordering.
+        comment_reservoir = copy.deepcopy(processed_comment)
+        comment_response = []
+        parent_id = None
+        while len(comment_reservoir) != 0:
+            processed_comment = copy.deepcopy(comment_reservoir)
+            for comment in processed_comment:
+                if parent_id:
+                    if comment["parent_comment"] == parent_id:
+                        comment_response.append(comment)
+                        comment_reservoir.remove(comment)
+                else:
+                    comment_response.append(comment)
+                    parent_id = comment["id"]
+                    comment_reservoir.remove(comment)
+            parent_id = None
         return JsonResponse({"comments": comment_response}, status=200)
     except Post.DoesNotExist:
         return HttpResponseNotFound()

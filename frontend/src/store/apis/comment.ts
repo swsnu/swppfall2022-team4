@@ -13,7 +13,9 @@ export type Comment = {
   updated: string;
   like_num: number;
   dislike_num: number;
-  parentComment: number;
+  parent_comment: number | null;
+  replyActive?: boolean;
+  editActive?: boolean;
 };
 
 export type getPostCommentRequestType = {
@@ -34,4 +36,31 @@ export type createCommentRequestType = {
   author_name: string;
   post_id: string;
   parent_comment: string;
+};
+
+export type createCommentReplyType = {
+  parent_comment: number;
+};
+
+export type editToggleActionType = {
+  comment_id: number;
+};
+
+export const deleteComment = async (payload: deleteCommentRequestType) => {
+  const response = await client.delete(`/api/comment/${payload.comment_id}/`);
+  return response.data;
+};
+
+export type deleteCommentRequestType = {
+  comment_id: string;
+};
+
+export const editComment = async (payload: editCommentRequestType) => {
+  const response = await client.put(`/api/comment/${payload.comment_id}/`, payload);
+  return response.data;
+};
+
+export type editCommentRequestType = {
+  comment_id: number;
+  content: string;
 };
