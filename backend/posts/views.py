@@ -33,6 +33,8 @@ def post_home(request):
             posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
             del posts_serializable[index]["author_id"]
             posts_serializable[index]["author_name"] = posts[index].author.username
+            posts_serializable[index]["like_num"] = posts[index].get_like_num()
+            posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
 
         # Total page number calculation.
         response = JsonResponse(

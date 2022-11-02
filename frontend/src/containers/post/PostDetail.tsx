@@ -9,6 +9,7 @@ import { PostPageWithSearchBar } from './PostLayout';
 import { Comment } from 'store/apis/comment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import Loading from 'components/common/Loading';
 
 interface IPropsCommentSubmitBtn {
   disabled?: boolean;
@@ -349,7 +350,7 @@ const PostDetail = () => {
           </ArticleCommentWrapper>
         </ArticleItem>
       ) : (
-        <h1>Loading</h1>
+        <Loading />
       )}
     </ArticleDetailWrapper>
   );
