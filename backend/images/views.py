@@ -6,7 +6,7 @@ from utils.get_random import get_random_string
 @require_http_methods(["POST"])
 def upload(request):
     """
-    이미지를 백엔드 로컬 환경에 업로드합니다.
+    POST : 이미지를 백엔드 로컬 환경에 업로드
     """
     try:
         file_type = str(request.FILES['image'].content_type[:6])

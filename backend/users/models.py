@@ -1,7 +1,8 @@
 from django.db import models
+from utils.models import AbstractTimeStampedModel
 
 
-class User(models.Model):
+class User(AbstractTimeStampedModel):
     username = models.CharField(max_length=20, null=False)
     hashed_password = models.CharField(max_length=255, null=False)
     nickname = models.CharField(max_length=8, null=False)
