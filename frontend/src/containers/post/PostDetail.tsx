@@ -40,6 +40,7 @@ const PostDetail = () => {
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
   const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
   const postFuncStatus = useSelector(({ post }: RootState) => post.postFunc);
+  const commentFuncStatus = useSelector(({ post }: RootState) => post.postComment.commentFunc);
   const [commentList, setCommentList] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState('');
   const [commentReplyInput, setCommentReplyInput] = useState('');
@@ -65,7 +66,7 @@ const PostDetail = () => {
         }),
       );
     }
-  }, [commentNum]);
+  }, [commentNum, commentFuncStatus]);
   useEffect(() => {
     if (postComment) setCommentList(postComment);
   }, [postComment]);
@@ -76,7 +77,7 @@ const PostDetail = () => {
     }
   }, [postDeleteStatus]);
 
-  const funcLikeOnClick = () => {
+  const postFuncLikeOnClick = () => {
     if (id) {
       dispatch(
         postActions.postFunc({
@@ -86,11 +87,31 @@ const PostDetail = () => {
       );
     }
   };
-  const funcDislikeOnClick = () => {
+  const postFuncDislikeOnClick = () => {
     if (id) {
       dispatch(
         postActions.postFunc({
           post_id: id,
+          func_type: 'dislike',
+        }),
+      );
+    }
+  };
+  const commentFuncLikeOnClick = (comment: Comment) => {
+    if (comment.id) {
+      dispatch(
+        postActions.commentFunc({
+          comment_id: comment.id,
+          func_type: 'like',
+        }),
+      );
+    }
+  };
+  const commentFuncDislikeOnClick = (comment: Comment) => {
+    if (comment.id) {
+      dispatch(
+        postActions.commentFunc({
+          comment_id: comment.id,
           func_type: 'dislike',
         }),
       );
@@ -232,11 +253,17 @@ const PostDetail = () => {
             </CommentContentWrapper>
             <CommentFuncWrapper>
               {CommentBtnComponent(comment)}
-              <CommentFuncBtn color={comment.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}>
+              <CommentFuncBtn
+                onClick={() => commentFuncLikeOnClick(comment)}
+                color={comment.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}
+              >
                 <FontAwesomeIcon icon={faThumbsUp} />
               </CommentFuncBtn>
               <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-              <CommentFuncBtn color={comment.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}>
+              <CommentFuncBtn
+                onClick={() => commentFuncDislikeOnClick(comment)}
+                color={comment.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}
+              >
                 <FontAwesomeIcon icon={faThumbsDown} />
               </CommentFuncBtn>
               <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
@@ -286,12 +313,15 @@ const PostDetail = () => {
             <ArticleBodyContent>{post.content}</ArticleBodyContent>
             <ArticleBodyFooter>
               <h3>댓글 {post.comments_num}</h3>
-              <CommentFuncBtn onClick={funcLikeOnClick} color={post.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}>
+              <CommentFuncBtn
+                onClick={postFuncLikeOnClick}
+                color={post.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}
+              >
                 <FontAwesomeIcon icon={faThumbsUp} />
               </CommentFuncBtn>
               <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
               <CommentFuncBtn
-                onClick={funcDislikeOnClick}
+                onClick={postFuncDislikeOnClick}
                 color={post.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}
               >
                 <FontAwesomeIcon icon={faThumbsDown} />
@@ -595,6 +625,7 @@ const CommentFuncTimeIndicator = styled.span`
 const CommentFuncNumIndicator = styled.span`
   font-size: 12px;
   margin-left: 8px;
+  min-width: 15px;
   /* margin: 0px 5px; */
 `;
 

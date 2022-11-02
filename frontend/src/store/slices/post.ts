@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as postAPI from 'store/apis/post';
 import * as commentAPI from 'store/apis/comment';
-import { createCommentSaga, deleteCommentSaga, editCommentSaga, getPostCommentSaga } from './comment';
+import { commentFuncSaga, createCommentSaga, deleteCommentSaga, editCommentSaga, getPostCommentSaga } from './comment';
 
 interface PostState {
   postList: {
@@ -20,6 +20,7 @@ interface PostState {
   postComment: {
     comments: commentAPI.Comment[] | null;
     error: AxiosError | null;
+    commentFunc: boolean;
   };
   postCreate: {
     status: boolean;
@@ -44,6 +45,7 @@ const initialState: PostState = {
   postComment: {
     comments: null,
     error: null,
+    commentFunc: false,
   },
   postCreate: {
     status: false,
@@ -188,6 +190,12 @@ export const postSlice = createSlice({
     postFuncSuccess: (state, { payload }) => {
       state.postFunc = true;
     },
+    commentFunc: (state, action: PayloadAction<commentAPI.commentFuncRequestType>) => {
+      state.postComment.commentFunc = false;
+    },
+    commentFuncSuccess: (state, { payload }) => {
+      state.postComment.commentFunc = true;
+    },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
 });
@@ -260,4 +268,5 @@ export default function* postSaga() {
   yield takeLatest(postActions.createComment, createCommentSaga);
   yield takeLatest(postActions.editComment, editCommentSaga);
   yield takeLatest(postActions.deleteComment, deleteCommentSaga);
+  yield takeLatest(postActions.commentFunc, commentFuncSaga);
 }

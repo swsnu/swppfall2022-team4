@@ -8,7 +8,7 @@ from django.http import (
 from django.views.decorators.http import require_http_methods
 from math import ceil
 from posts.models import Post
-from users import models as user_model
+from users.models import User
 
 
 @require_http_methods(["GET", "POST"])
@@ -53,13 +53,13 @@ def post_home(request):
             content = data["content"]
             author_name = data["author_name"]
 
-            author = user_model.User.objects.get(username=author_name)
+            author = User.objects.get(username=author_name)
             created_post = Post.objects.create(
                 author=author, title=title, content=content
             )
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
-        except (KeyError, json.JSONDecodeError, user_model.User.DoesNotExist):
+        except (KeyError, json.JSONDecodeError, User.DoesNotExist):
             return HttpResponseBadRequest()
 
 
@@ -189,7 +189,7 @@ def post_comment(request, query_id):
 @require_http_methods(["PUT"])
 def post_func(request, query_id):
     """
-    PUT : edit post.
+    PUT : process given functions.
     """
     try:
         data = json.loads(request.body.decode())
@@ -198,7 +198,7 @@ def post_func(request, query_id):
 
         type_of_work = data["func_type"]  # type : like, dislike, scrap
 
-        user = user_model.User.objects.get(username=request.user.username)
+        user = User.objects.get(username=request.user.username)
         if type_of_work == "like":
             if post_obj.liker.all().filter(username=request.user.username).exists():
                 post_obj.liker.remove(user)
@@ -217,7 +217,7 @@ def post_func(request, query_id):
         else:
             HttpResponseBadRequest()
         return JsonResponse({"message": "success"}, status=200)
-    except (Post.DoesNotExist, user_model.User.DoesNotExist):
+    except (Post.DoesNotExist, User.DoesNotExist):
         return HttpResponseNotFound()
     except Exception as error:
         print(error)

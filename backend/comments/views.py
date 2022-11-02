@@ -77,3 +77,36 @@ def comment_detail(request, query_id):
         except Exception as error:
             print(error)
             return HttpResponseBadRequest()
+
+
+@require_http_methods(["PUT"])
+def comment_func(request, query_id):
+    """
+    PUT : process given functions.
+    """
+    try:
+        data = json.loads(request.body.decode())
+        comm_id = int(query_id)
+        comm_obj = Comment.objects.get(pk=comm_id)
+
+        type_of_work = data["func_type"]  # type : like, dislike
+
+        user = User.objects.get(username=request.user.username)
+        if type_of_work == "like":
+            if comm_obj.liker.all().filter(username=request.user.username).exists():
+                comm_obj.liker.remove(user)
+            else:
+                comm_obj.liker.add(user)
+        elif type_of_work == "dislike":
+            if comm_obj.disliker.all().filter(username=request.user.username).exists():
+                comm_obj.disliker.remove(user)
+            else:
+                comm_obj.disliker.add(user)
+        else:
+            HttpResponseBadRequest()
+        return JsonResponse({"message": "success"}, status=200)
+    except (Comment.DoesNotExist, User.DoesNotExist):
+        return HttpResponseNotFound()
+    except Exception as error:
+        print(error)
+        return HttpResponseBadRequest()
