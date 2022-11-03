@@ -9,6 +9,10 @@ interface IPropsSearchClear {
   isActive?: boolean;
 }
 
+interface IPropsColorButton {
+  color?: string;
+}
+
 interface IPropsBtn {
   isActive?: boolean;
   onClick?: () => void;
@@ -150,28 +154,107 @@ export const postEditorLayout = (
   const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
   const [tagInput, setTagInput] = useState('');
   const [selectedTagClass, setSelectedTagClass] = useState('');
+  const [tagRandColor, setTagRandColor] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagCreating, setTagCreating] = useState(false);
+  const getColor = () => {
+    return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
+  };
 
+  const DEFAULT_OPTION = '$NONE';
+  const NEW_OPTION = '$NEW$';
+  const SEARCH_OPTION = '$SEARCH$';
+
+  const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = e.target.options[e.target.selectedIndex].value;
+    if (newValue === NEW_OPTION) {
+      // Show Create Form.
+      setTagCreating(true);
+    } else {
+      setTagCreating(false);
+      setSelectedTags(s => {
+        if (!s.includes(newValue)) return [...s, newValue];
+        else return s;
+      });
+    }
+  };
   const tagNames = () => {
+    if (selectedTagClass === NEW_OPTION) {
+      return (
+        <div>
+          {' '}
+          태그 생성하는 컴포넌트.
+          <input value={tagInput} onChange={e => setTagInput(e.target.value)}></input>
+          <div>
+            태그 색상 지정
+            <ColorCircle color={tagRandColor}></ColorCircle>
+            <RandColorBtn onClick={() => setTagRandColor(getColor())}>다른 랜덤 색상!</RandColorBtn>
+          </div>
+          <button
+            onClick={() => {
+              dispatch(
+                tagActions.createTag({
+                  name: tagInput,
+                  classId: '1',
+                }),
+              );
+            }}
+          >
+            생성
+          </button>
+        </div>
+      );
+    }
+    if (selectedTagClass === SEARCH_OPTION) {
+      return (
+        <div>
+          {' '}
+          태그 검색하는 컴포넌트. <input value={tagInput} onChange={e => setTagInput(e.target.value)}></input>
+          <button
+            onClick={() => {
+              dispatch(
+                tagActions.createTag({
+                  name: tagInput,
+                  classId: '1',
+                }),
+              );
+            }}
+          >
+            검색
+          </button>
+        </div>
+      );
+    }
     const tagTarget = tagList?.filter(tagClass => tagClass.class_name === selectedTagClass);
     if (tagTarget && tagTarget.length > 0) {
       return (
-        <select defaultValue="None">
-          <option disabled value="None">
-            {' '}
-            - 태그 이름 -{' '}
-          </option>
-          {tagList
-            ?.filter(tagClass => tagClass.class_name === selectedTagClass)[0]
-            .tags.map(tag => {
-              return (
-                <option value={tag.tag_name} key={tag.id}>
-                  {tag.tag_name}
-                </option>
-              );
-            })}
-        </select>
+        <div>
+          '{selectedTagClass}' 선택됨
+          <select defaultValue={DEFAULT_OPTION} onChange={tagOnChange}>
+            <option disabled value={DEFAULT_OPTION}>
+              {' '}
+              - 태그 이름 -{' '}
+            </option>
+            {tagList
+              ?.filter(tagClass => tagClass.class_name === selectedTagClass)[0]
+              .tags.map(tag => {
+                return (
+                  <option value={tag.id} key={tag.id}>
+                    {tag.tag_name}
+                  </option>
+                );
+              })}
+            <option value={NEW_OPTION}> - 태그 분류 만들기 - </option>
+          </select>
+          {tagCreating && <span>태그 생성 폼!!</span>}
+        </div>
       );
     }
+  };
+  const selectedTagsComponent = () => {
+    return selectedTags.map(tags => {
+      return <span>{tags}</span>;
+    });
   };
   return (
     <PostPageWrapper>
@@ -195,28 +278,12 @@ export const postEditorLayout = (
           </ContentWrapper>
           <SideBarWrapper>
             <TagWrapper>
-              태그 설정
-              <input value={tagInput} onChange={e => setTagInput(e.target.value)}></input>
-              <button
-                onClick={() => {
-                  dispatch(
-                    tagActions.createTag({
-                      name: tagInput,
-                      classId: '1',
-                    }),
-                  );
-                }}
-              >
-                생성
-              </button>
-            </TagWrapper>
-            <div>
-              태그 목록 {selectedTagClass} 선택됨
+              <div>태그 설정</div>
               <select
-                defaultValue="None"
-                onChange={e => setSelectedTagClass(e.target.options[e.target.selectedIndex].text)}
+                defaultValue={DEFAULT_OPTION}
+                onChange={e => setSelectedTagClass(e.target.options[e.target.selectedIndex].value)}
               >
-                <option value="None" disabled>
+                <option value={DEFAULT_OPTION} disabled>
                   {' '}
                   - 태그 분류 -{' '}
                 </option>
@@ -227,9 +294,12 @@ export const postEditorLayout = (
                     </option>
                   );
                 })}
+                <option value={SEARCH_OPTION}> - 태그 검색 - </option>
+                <option value={NEW_OPTION}> - 태그 분류 만들기 - </option>
               </select>
               {tagNames()}
-            </div>
+              {selectedTagsComponent()}
+            </TagWrapper>
           </SideBarWrapper>
         </Main_SideWrapper>
       </PostContentWrapper>
@@ -237,7 +307,21 @@ export const postEditorLayout = (
   );
 };
 
+const ColorCircle = styled.button<IPropsColorButton>`
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  ${({ color }) =>
+    color &&
+    `
+    background: ${color};
+  `}
+`;
+const RandColorBtn = styled.button``;
 const TagWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
   background-color: #ffffff;
   height: 50%;
 `;
