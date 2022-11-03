@@ -10,16 +10,29 @@ class Comment(AbstractTimeStampedModel):
 
     content = models.TextField()
 
-    like_num = models.IntegerField(null=False, default=0)
-    dislike_num = models.IntegerField(null=False, default=0)
+    liker = models.ManyToManyField(User, related_name="liked_comments", blank=True)
+    disliker = models.ManyToManyField(
+        User, related_name="disliked_comments", blank=True
+    )
+    scraper = models.ManyToManyField(User, related_name="scraped_comments", blank=True)
+
+    # Related_name : comments <- comments.Comment
 
     parent_comment = models.ForeignKey(
         "self", on_delete=models.CASCADE, blank=True, null=True
     )
 
+    def get_like_num(self):
+        """Get number of like"""
+        return self.liker.count()
+
+    def get_dislike_num(self):
+        """Get number of dislike"""
+        return self.disliker.count()
+
     def get_eff_like(self):
         """Get effective number of like"""
-        return self.like_num - self.dislike_num
+        return self.get_like_num() - self.get_dislike_num()
 
     def __str__(self):
         """To string method"""

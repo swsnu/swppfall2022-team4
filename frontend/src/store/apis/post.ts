@@ -17,7 +17,6 @@ export type Post = {
   like_num: number;
   dislike_num: number;
   scrap_num: number;
-  //   view_num: number;
   comments_num: number;
 };
 
@@ -34,7 +33,7 @@ export type getPostsResponseType = {
 };
 
 export const createPost = async (payload: createPostRequestType) => {
-  const response = await client.post<createPostResponseType>(`/api/post/`, payload);
+  const response = await client.post<postIdentifyingRequestType>(`/api/post/`, payload);
   return response.data;
 };
 
@@ -43,26 +42,15 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
 };
-export type createPostResponseType = {
-  post_id: string;
-};
 
-export const getPostDetail = async (payload: getPostDetailRequestType) => {
+export const getPostDetail = async (payload: postIdentifyingRequestType) => {
   const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
   return response.data;
 };
 
-export type getPostDetailRequestType = {
-  post_id: string;
-};
-
-export const deletePost = async (payload: deletePostRequestType) => {
+export const deletePost = async (payload: postIdentifyingRequestType) => {
   const response = await client.delete(`/api/post/${payload.post_id}/`);
   return response.data;
-};
-
-export type deletePostRequestType = {
-  post_id: string;
 };
 
 export const editPost = async (payload: editPostRequestType) => {
@@ -74,4 +62,9 @@ export type editPostRequestType = {
   post_id: string;
   title: string;
   content: string;
+};
+
+// Used in createPostRequest, deletePostRequest
+export type postIdentifyingRequestType = {
+  post_id: string;
 };
