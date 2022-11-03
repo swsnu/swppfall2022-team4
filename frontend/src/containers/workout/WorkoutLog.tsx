@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
-import { getFitElementRequestType, getDailyLogRequestType, getDailyFitElementsRequestType } from 'store/apis/workout';
+import { getDailyLogRequestType } from 'store/apis/workout';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -29,20 +29,38 @@ const WorkoutLog = () => {
     if (day < 7) {
       selected_day = day + 1;
     } else {
-      selected_day = 0;
+      selected_day = 0; // 일요일
     }
     return selected_day;
   }
 
   const defaultDailyLogConfig: getDailyLogRequestType = {
-    year: 2022,
-    month: 10,
-    specific_date: 29,
+    year: year,
+    month: month+1,
+    specific_date: day,
     user_id: 1,
     data: {
       user_id: 1,
     },
   };
+
+  const clickDate = (year: number, month: number, d: number) => {
+    setDate(new Date(year, month, d));
+    const dailyLogConfig: getDailyLogRequestType = {
+      year: year,
+      month: month+1,
+      specific_date: d,
+      user_id: 1,
+      data: {
+        user_id: 1,
+      },
+    };
+    console.log(year, month+1, d)
+    dispatch(workoutLogActions.getDailyLog(dailyLogConfig));
+  };
+
+  const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
+  const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
 
   useEffect(() => {
     setDay(date.getDate());
@@ -51,9 +69,6 @@ const WorkoutLog = () => {
     setStartDay(getStartDayOfMonth(date));
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
   }, [date]);
-
-  const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
-  const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
 
   function isLeapYear(year: number) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -95,7 +110,7 @@ const WorkoutLog = () => {
                   .map((_, index) => {
                     const d = index - (startDay - 2);
                     return (
-                      <Day key={index} onClick={() => setDate(new Date(year, month, d))}>
+                      <Day key={index} onClick={() => { console.log(year, month, d); clickDate(year, month, d) }}>
                         {d > 0 ? d : ''}
                       </Day>
                     );
