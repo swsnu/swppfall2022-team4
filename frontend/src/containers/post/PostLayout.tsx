@@ -46,8 +46,10 @@ const TopElementWrapperWithoutPadding = styled.div`
 `;
 
 const Main_SideWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  row-gap: 10px;
+  column-gap: 10px;
   width: 100%;
   min-height: 600px;
   height: 70vh;
@@ -89,7 +91,7 @@ const ClearSearchInput = styled.span<IPropsSearchClear>`
 `;
 export const SideBarWrapper = styled.div`
   /* border: 1px solid black; */
-  width: 20%;
+  width: 100%;
 `;
 
 export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX.Element) => {
@@ -194,7 +196,7 @@ const CreateBtnWrapper = styled.div`
   justify-content: flex-end;
 `;
 const ContentWrapper = styled.div`
-  width: 80%;
+  width: 100%;
   height: 100%;
   position: relative;
 `;

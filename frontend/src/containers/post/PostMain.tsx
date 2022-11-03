@@ -109,8 +109,7 @@ const PostMain = () => {
 
 const ArticleListWrapper = styled.div`
   border: 1px solid black;
-  margin-right: 15px;
-  width: 80%;
+  width: 100%;
   height: 100%;
   min-height: 100%;
   background-color: #ffffff;

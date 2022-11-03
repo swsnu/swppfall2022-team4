@@ -4,6 +4,7 @@ from utils.models import AbstractTimeStampedModel
 
 class TagClass(AbstractTimeStampedModel):
     string = models.CharField(max_length=10)
+    color = models.CharField(max_length=7)
 
 
 class Tag(AbstractTimeStampedModel):
