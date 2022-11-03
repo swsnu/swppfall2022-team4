@@ -12,16 +12,20 @@ const PostMain = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
-  const defaultPageConfig: getPostsRequestType = {
-    pageNum: page,
-    pageSize: 10,
-  };
-  useEffect(() => {
-    dispatch(postActions.getPosts(defaultPageConfig));
-  }, [page]);
 
   const postList = useSelector((rootState: RootState) => rootState.post.postList.posts);
   const maxPage = useSelector((rootState: RootState) => rootState.post.postList.pageTotal);
+  const searchKeyword = useSelector((rootState: RootState) => rootState.post.postSearch);
+
+  useEffect(() => {
+    const defaultPageConfig: getPostsRequestType = {
+      pageNum: page,
+      pageSize: 10,
+      searchKeyword: searchKeyword ? searchKeyword : undefined,
+    };
+    dispatch(postActions.getPosts(defaultPageConfig));
+  }, [page, searchKeyword]);
+
   const SideBar = (
     <>
       <PostPanelWrapper>
@@ -66,7 +70,11 @@ const PostMain = () => {
           .map(
             page =>
               maxPage &&
-              page <= maxPage && <PageNumberIndicator onClick={() => setPage(page)}>{page}</PageNumberIndicator>,
+              page <= maxPage && (
+                <PageNumberIndicator key={page} onClick={() => setPage(page)}>
+                  {page}
+                </PageNumberIndicator>
+              ),
           )}
         <PageNumberIndicator onClick={() => (maxPage && page < maxPage ? setPage(page => page + 1) : null)}>
           ▶︎

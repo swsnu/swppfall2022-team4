@@ -1,9 +1,16 @@
 import client from './client';
 
 export const getPosts = async (payload: getPostsRequestType) => {
-  const response = await client.get<getPostsResponseType>(
-    `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`,
-  );
+  let response;
+  if (payload.searchKeyword) {
+    response = await client.get<getPostsResponseType>(
+      `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}&search=${payload.searchKeyword}`,
+    );
+  } else {
+    response = await client.get<getPostsResponseType>(
+      `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`,
+    );
+  }
   return response.data;
 };
 
@@ -26,6 +33,7 @@ export type Post = {
 export type getPostsRequestType = {
   pageNum: number;
   pageSize: number;
+  searchKeyword?: string;
 };
 
 export type getPostsResponseType = {
@@ -80,4 +88,8 @@ export const postFunc = async (payload: postFuncRequestType) => {
 export type postFuncRequestType = {
   post_id: string;
   func_type: string;
+};
+
+export type postSearchRequestType = {
+  search_keyword: string;
 };

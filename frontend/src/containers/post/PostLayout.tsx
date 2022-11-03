@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { postActions } from 'store/slices/post';
 import styled from 'styled-components';
 
 const PostPageWrapper = styled.div`
@@ -25,13 +28,6 @@ const PostContentWrapper = styled.div`
   }
 `;
 
-const TopElementWrapperWithPadding = styled.div`
-  padding: 20px;
-  margin: 40px 0px 15px 0px;
-  border: 1px solid black;
-  width: 100%;
-  background-color: #ffffff;
-`;
 const TopElementWrapperWithoutPadding = styled.div`
   margin: 40px 0px 15px 0px;
   border: 1px solid black;
@@ -65,15 +61,45 @@ export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element
   </PostPageWrapper>
 );
 
-const SearchBar = <span>Search Bar</span>;
-export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX.Element) => (
-  <PostPageWrapper>
-    <PostContentWrapper>
-      <TopElementWrapperWithPadding>{SearchBar}</TopElementWrapperWithPadding>
-      <Main_SideWrapper>
-        {mainElement}
-        <SideBarWrapper>{sideElement}</SideBarWrapper>
-      </Main_SideWrapper>
-    </PostContentWrapper>
-  </PostPageWrapper>
-);
+const SearchForm = styled.form`
+  width: 100%;
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 15px 20px;
+  border: none;
+`;
+
+export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX.Element) => {
+  const [search, setSearch] = useState('');
+  const dispatch = useDispatch();
+  return (
+    <PostPageWrapper>
+      <PostContentWrapper>
+        <TopElementWrapperWithoutPadding>
+          <SearchForm
+            onSubmit={e => {
+              e.preventDefault();
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: search,
+                }),
+              );
+            }}
+          >
+            <SearchInput
+              placeholder="Search keyword"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            ></SearchInput>
+          </SearchForm>
+        </TopElementWrapperWithoutPadding>
+        <Main_SideWrapper>
+          {mainElement}
+          <SideBarWrapper>{sideElement}</SideBarWrapper>
+        </Main_SideWrapper>
+      </PostContentWrapper>
+    </PostPageWrapper>
+  );
+};

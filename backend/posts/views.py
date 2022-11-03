@@ -14,20 +14,25 @@ from users.models import User
 @require_http_methods(["GET", "POST"])
 def post_home(request):
     """
-    GET : get post list. [ Query = page(1-based indexing), pageSize ]
+    GET : get post list. [ Query = page(1-based indexing), pageSize, search(optional) ]
     POST : create post.
     """
     if request.method == "GET":
-        page_num = int(request.GET.get("page", 1))
-        if page_num <= 0:
-            page_num = 1
-        page_size = int(request.GET.get("pageSize", 10))
-        page_size = max(page_size, 10)
+        query_args = {}
+        query_args["page_num"] = max(int(request.GET.get("page", 1)), 1)
+        query_args["page_size"] = max(int(request.GET.get("pageSize", 10)), 10)
+        query_args["keyword"] = request.GET.get("search", None)
 
-        offset = (page_num - 1) * page_size
-        limit = page_num * page_size
+        offset = (query_args["page_num"] - 1) * query_args["page_size"]
+        limit = query_args["page_num"] * query_args["page_size"]
 
-        posts = Post.objects.all()[offset:limit]
+        if query_args["keyword"]:
+            filter_args = {}
+            filter_args["title__icontains"] = query_args["keyword"]
+            posts = Post.objects.all().filter(**filter_args)[offset:limit]
+        else:
+            posts = Post.objects.all()[offset:limit]
+
         posts_serializable = list(posts.values())
         for index, _ in enumerate(posts_serializable):
             posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
@@ -39,9 +44,9 @@ def post_home(request):
         # Total page number calculation.
         response = JsonResponse(
             {
-                "page": page_num,
-                "page_size": page_size,
-                "page_total": ceil(Post.objects.count() / page_size),
+                "page": query_args["page_num"],
+                "page_size": query_args["page_size"],
+                "page_total": ceil(Post.objects.count() / query_args["page_size"]),
                 "posts": posts_serializable,
             },
             status=200,

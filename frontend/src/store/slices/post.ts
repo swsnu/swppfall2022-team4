@@ -29,6 +29,7 @@ interface PostState {
   postEdit: boolean;
   postDelete: boolean;
   postFunc: boolean;
+  postSearch: string;
 }
 const initialState: PostState = {
   postList: {
@@ -54,6 +55,7 @@ const initialState: PostState = {
   postEdit: false,
   postDelete: false,
   postFunc: false,
+  postSearch: '',
 };
 
 export const postSlice = createSlice({
@@ -155,6 +157,10 @@ export const postSlice = createSlice({
     },
     deleteComment: (state, action: PayloadAction<commentAPI.deleteCommentRequestType>) => {
       //edit!
+    },
+    // postSearch ------------------------------------------------------------------------
+    postSearch: (state, action: PayloadAction<postAPI.postSearchRequestType>) => {
+      state.postSearch = action.payload.search_keyword;
     },
     // utils ------------------------------------------------------------------------
     stateRefresh: state => {
