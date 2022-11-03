@@ -156,6 +156,7 @@ const PostDetail = () => {
         }),
       );
       setCommentInput('');
+      setCommentReplyInput('');
       changeCommentNum(Date.now());
       setReplyActivated(false);
     } else {

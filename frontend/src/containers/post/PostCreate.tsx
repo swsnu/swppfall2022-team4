@@ -43,12 +43,12 @@ const PostCreate = () => {
   };
   const TitleInputWrapper = (
     <>
-      <TitleInput type="text" value={title} onChange={e => setTitle(e.target.value)} />
+      <TitleInput type="text" placeholder="제목" value={title} onChange={e => setTitle(e.target.value)} />
     </>
   );
   const ContentInputWrapper = (
     <ContentWrapper>
-      <ContentTextArea value={content} onChange={e => setContent(e.target.value)} />
+      <ContentTextArea placeholder="내용" value={content} onChange={e => setContent(e.target.value)} />
       <CreateBtnWrapper>
         <CancelPostBtn onClick={cancelOnClick}>취소</CancelPostBtn>
         <CreatePostBtn

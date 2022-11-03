@@ -8,6 +8,10 @@ import { timeAgoFormat } from 'utils/datetime';
 import { useNavigate } from 'react-router';
 import { PostPageWithSearchBar } from './PostLayout';
 
+interface IPropsPageIndicator {
+  isActive?: boolean;
+}
+
 const PostMain = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -63,23 +67,36 @@ const PostMain = () => {
         <span></span>
       )}
       <ArticleFooter>
-        <PageNumberIndicator onClick={() => setPage(1)}>◀◀</PageNumberIndicator>
-        <PageNumberIndicator onClick={() => (page >= 2 ? setPage(page => page - 1) : null)}>◀</PageNumberIndicator>
-        {[...Array(5)]
-          .map((_, i) => Math.floor((page - 1) / 5) * 5 + i + 1)
-          .map(
-            page =>
-              maxPage &&
-              page <= maxPage && (
-                <PageNumberIndicator key={page} onClick={() => setPage(page)}>
-                  {page}
-                </PageNumberIndicator>
-              ),
-          )}
-        <PageNumberIndicator onClick={() => (maxPage && page < maxPage ? setPage(page => page + 1) : null)}>
-          ▶︎
+        <PageNumberIndicator isActive={page >= 2} onClick={() => setPage(1)}>
+          ◀◀
         </PageNumberIndicator>
-        <PageNumberIndicator onClick={() => (maxPage ? setPage(maxPage) : null)}>▶︎▶︎</PageNumberIndicator>
+        <PageNumberIndicator isActive={page >= 2} onClick={() => (page >= 2 ? setPage(page => page - 1) : null)}>
+          ◀
+        </PageNumberIndicator>
+        {maxPage &&
+          [...Array(5)]
+            .map((_, i) => Math.floor((page - 1) / 5) * 5 + i + 1)
+            .map(
+              p =>
+                p <= maxPage && (
+                  <PageNumberIndicator isActive={p != page} key={p} onClick={() => (p != page ? setPage(p) : null)}>
+                    {p}
+                  </PageNumberIndicator>
+                ),
+            )}
+        {maxPage && (
+          <PageNumberIndicator
+            isActive={page < maxPage}
+            onClick={() => (page < maxPage ? setPage(page => page + 1) : null)}
+          >
+            ▶︎
+          </PageNumberIndicator>
+        )}
+        {maxPage && (
+          <PageNumberIndicator isActive={page < maxPage} onClick={() => (maxPage ? setPage(maxPage) : null)}>
+            ▶︎▶︎
+          </PageNumberIndicator>
+        )}
         현재 페이지 : {page}
       </ArticleFooter>
     </ArticleListWrapper>
@@ -150,8 +167,13 @@ const CreatePostBtn = styled.button`
     background-color: #45d9fa;
   }
 `;
-const PageNumberIndicator = styled.span`
-  cursor: pointer;
+const PageNumberIndicator = styled.span<IPropsPageIndicator>`
   margin: 0px 5px;
+  ${({ isActive }) =>
+    isActive &&
+    `
+    cursor: pointer;
+    color: #62bf45;
+  `}
 `;
 export default PostMain;
