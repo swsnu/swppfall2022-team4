@@ -10,7 +10,7 @@ import { Comment } from 'store/apis/comment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import Loading from 'components/common/Loading';
-import { faArrowRightLong, faArrowTurnDown, faArrowTurnRight, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 interface IPropsCommentSubmitBtn {
   disabled?: boolean;

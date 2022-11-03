@@ -7,6 +7,7 @@ import { getPostsRequestType } from 'store/apis/post';
 import { timeAgoFormat } from 'utils/datetime';
 import { useNavigate } from 'react-router';
 import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
+import { tagActions } from 'store/slices/tag';
 
 interface IPropsPageIndicator {
   isActive?: boolean;
@@ -29,7 +30,9 @@ const PostMain = () => {
     };
     dispatch(postActions.getPosts(defaultPageConfig));
   }, [page, searchKeyword]);
-
+  useEffect(() => {
+    dispatch(tagActions.getTags());
+  }, []);
   const SideBar = (
     <SideBarWrapper>
       <PostPanelWrapper>
