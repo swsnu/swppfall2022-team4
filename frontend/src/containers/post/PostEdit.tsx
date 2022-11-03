@@ -52,7 +52,7 @@ const PostEdit = () => {
       );
     }
   };
-  return postEditorLayout(title, setTitle, content, setContent, cancelOnClick, confirmOnClick);
+  return postEditorLayout(title, setTitle, content, setContent, cancelOnClick, confirmOnClick, []);
 };
 
 export default PostEdit;

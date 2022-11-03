@@ -11,6 +11,8 @@ import {
   TopElementWrapperWithoutPadding,
 } from './PostLayout';
 import { TagClass } from 'store/apis/tag';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDice } from '@fortawesome/free-solid-svg-icons';
 
 interface IPropsColorButton {
   color?: string;
@@ -38,21 +40,24 @@ export const postEditorLayout = (
   setContent: (value: React.SetStateAction<string>) => void,
   cancelOnClick: () => void,
   confirmOnClick: () => void,
+  prevTagList: TagVisual[],
 ) => {
   const dispatch = useDispatch();
   const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
 
-  const [tagInput, setTagInput] = useState('');
-  const [tagClassInput, setTagClassInput] = useState('');
-  const [tagRandColor, setTagRandColor] = useState('');
-  const [tagCreating, setTagCreating] = useState(false);
+  const [tagInput, setTagInput] = useState(''); // Tag creation name input
+  const [tagClassInput, setTagClassInput] = useState(''); // Tag Class creation name input
+  const [tagSearchInput, setTagSearchInput] = useState(''); // Tag search input
+
+  const [tagClassSelect, setTagClassSelect] = useState(DEFAULT_OPTION); // Tag Class select value
+  const [tagSelect, setTagSelect] = useState(DEFAULT_OPTION); // Tag select value
+
+  const [tagRandColor, setTagRandColor] = useState(''); // Random Color for Tag Class creation
   const [tagUpdate, setTagUpdate] = useState(0);
 
   const [currentTagClass, setCurrentTagClass] = useState<TagClass | null>(null);
-  const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
+  const [selectedTags, setSelectedTags] = useState<TagVisual[]>(prevTagList);
 
-  const [tagClassSelect, setTagClassSelect] = useState(DEFAULT_OPTION);
-  const [tagSelect, setTagSelect] = useState(DEFAULT_OPTION);
   useEffect(() => {
     dispatch(tagActions.getTags());
   }, [tagUpdate]);
@@ -67,23 +72,18 @@ export const postEditorLayout = (
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.options[e.target.selectedIndex].value;
     setTagSelect(newValue);
-    if (newValue === NEW_OPTION) {
-      setTagCreating(true); // Show Create Form.
-    } else {
-      setTagCreating(false);
+    if (newValue !== NEW_OPTION) {
       setSelectedTags(s => {
+        const tagName = e.target.options[e.target.selectedIndex].text;
         if (
           currentTagClass &&
           !s.includes({
             id: newValue,
-            name: e.target.options[e.target.selectedIndex].text,
+            name: tagName,
             color: currentTagClass.color,
           })
         )
-          return [
-            ...s,
-            { id: newValue, name: e.target.options[e.target.selectedIndex].text, color: currentTagClass.color },
-          ];
+          return [...s, { id: newValue, name: tagName, color: currentTagClass.color }];
         else return s;
       });
       setTagSelect(DEFAULT_OPTION);
@@ -92,16 +92,21 @@ export const postEditorLayout = (
   const tagNames = () => {
     if (tagClassSelect === NEW_OPTION) {
       return (
-        <div>
-          {' '}
-          태그 생성하는 컴포넌트.
-          <input value={tagClassInput} onChange={e => setTagClassInput(e.target.value)}></input>
-          <div>
-            태그 색상 지정
+        <TagClassFuncWrapper>
+          <TagInput
+            placeholder="카테고리 이름"
+            value={tagClassInput}
+            onChange={e => setTagClassInput(e.target.value)}
+          ></TagInput>
+          <TagClassColorWrapper>
+            <TagClassColorLabel>색상:</TagClassColorLabel>
             <ColorCircle color={tagRandColor}></ColorCircle>
-            <RandColorBtn onClick={() => setTagRandColor(getRandomColor())}>다른 랜덤 색상!</RandColorBtn>
-          </div>
-          <button
+            <RandColorBtn onClick={() => setTagRandColor(getRandomColor())}>
+              <FontAwesomeIcon size="xl" icon={faDice} />
+            </RandColorBtn>
+          </TagClassColorWrapper>
+          <TagGreenBtn
+            disabled={tagClassInput === ''}
             onClick={() => {
               dispatch(
                 tagActions.createTagClass({
@@ -115,28 +120,32 @@ export const postEditorLayout = (
             }}
           >
             분류 생성
-          </button>
-        </div>
+          </TagGreenBtn>
+        </TagClassFuncWrapper>
       );
     }
     if (tagClassSelect === SEARCH_OPTION) {
       return (
-        <div>
-          {' '}
-          태그 검색하는 컴포넌트. <input value={tagInput} onChange={e => setTagInput(e.target.value)}></input>
-          <button
+        <TagClassFuncWrapper>
+          <TagInput
+            placeholder="키워드"
+            value={tagSearchInput}
+            onChange={e => setTagSearchInput(e.target.value)}
+          ></TagInput>
+          <TagGreenBtn
+            disabled={tagSearchInput === ''}
             onClick={() => {
-              dispatch(
-                tagActions.createTag({
-                  name: tagInput,
-                  classId: '1',
-                }),
-              );
+              //   dispatch(
+              //     tagActions.createTag({
+              //       name: tagSearchInput,
+              //       classId: '1',
+              //     }),
+              //   );
             }}
           >
             검색
-          </button>
-        </div>
+          </TagGreenBtn>
+        </TagClassFuncWrapper>
       );
     }
     const tagTarget = tagList?.filter(tagClass => tagClass.id === currentTagClass?.id);
@@ -145,8 +154,7 @@ export const postEditorLayout = (
         <TagSubWrapper>
           <TagSelect value={tagSelect} onChange={tagOnChange}>
             <option disabled value={DEFAULT_OPTION}>
-              {' '}
-              - 태그 이름 -{' '}
+              - 태그 이름 -
             </option>
             {tagList
               ?.filter(tagClass => tagClass.id === currentTagClass?.id)[0]
@@ -159,12 +167,12 @@ export const postEditorLayout = (
               })}
             <option value={NEW_OPTION}> - 태그 만들기 - </option>
           </TagSelect>
-          {tagCreating && (
-            <div>
-              {' '}
-              태그 생성하는 컴포넌트.
-              <input value={tagInput} onChange={e => setTagInput(e.target.value)}></input>
-              <button
+          {tagSelect === NEW_OPTION && (
+            <TagClassFuncWrapper>
+              {/* 태그 만들기 */}
+              <TagInput value={tagInput} onChange={e => setTagInput(e.target.value)}></TagInput>
+              <TagGreenBtn
+                disabled={tagInput === ''}
                 onClick={() => {
                   if (currentTagClass)
                     dispatch(
@@ -178,9 +186,9 @@ export const postEditorLayout = (
                   setTagUpdate(Date.now());
                 }}
               >
-                태그 생성
-              </button>
-            </div>
+                생성
+              </TagGreenBtn>
+            </TagClassFuncWrapper>
           )}
         </TagSubWrapper>
       );
@@ -215,8 +223,7 @@ export const postEditorLayout = (
           }}
         >
           <option value={DEFAULT_OPTION} disabled>
-            {' '}
-            - 태그 분류 -{' '}
+            - 카테고리 -
           </option>
           {tagList?.map(tagClass => {
             return (
@@ -226,7 +233,7 @@ export const postEditorLayout = (
             );
           })}
           <option value={SEARCH_OPTION}> - 태그 검색 - </option>
-          <option value={NEW_OPTION}> - 태그 분류 만들기 - </option>
+          <option value={NEW_OPTION}> - 태그 카테고리 생성 - </option>
         </TagSelect>
         {tagNames()}
       </TagWrapper>
@@ -261,6 +268,35 @@ export const postEditorLayout = (
   );
 };
 
+const TagGreenBtn = styled.button`
+  padding: 5px 8px;
+  margin: 6px 10px;
+  font-size: 14px;
+  background-color: #54dd6d;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  :disabled {
+    background-color: #9b9b9b;
+    cursor: default;
+  }
+`;
+
+const TagClassColorWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
+const TagClassColorLabel = styled.span`
+  font-size: 14px;
+  text-align: center;
+`;
+const TagClassFuncWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 const TagBubbleWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -290,6 +326,10 @@ const TagWrapper = styled.div`
   background-color: #ffffff;
   height: 50%;
 `;
+const TagInput = styled.input`
+  padding: 5px 8px;
+  margin: 6px 10px;
+`;
 const TagSelect = styled.select`
   padding: 5px 8px;
   margin: 6px 10px;
@@ -299,13 +339,20 @@ const ColorCircle = styled.button<IPropsColorButton>`
   height: 45px;
   border-radius: 50%;
   border: none;
+  margin: 5px 15px;
   ${({ color }) =>
     color &&
     `
       background: ${color};
     `}
 `;
-const RandColorBtn = styled.button``;
+const RandColorBtn = styled.button`
+  background: none;
+  border: none;
+  &:active {
+    color: #55dd54;
+  }
+`;
 const TagSubWrapper = styled.div`
   display: flex;
   flex-direction: column;
