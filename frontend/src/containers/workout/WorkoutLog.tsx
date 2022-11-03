@@ -57,7 +57,6 @@ const WorkoutLog = () => {
         user_id: 1,
       },
     };
-    console.log(year, month + 1, d);
     dispatch(workoutLogActions.getDailyLog(dailyLogConfig));
   };
 
@@ -109,7 +108,7 @@ const WorkoutLog = () => {
                     <Day key={d}>{d}</Day>
                   ),
                 )}
-                {Array(days[month] + (startDay - 1))
+                {Array(36)
                   .fill(null)
                   .map((_, index) => {
                     const d = index - (startDay - 2);
@@ -117,11 +116,10 @@ const WorkoutLog = () => {
                       <Day
                         key={index}
                         onClick={() => {
-                          console.log(year, month, d);
                           clickDate(year, month, d);
                         }}
                       >
-                        {d > 0 ? d : ''}
+                        {d > 0 ? (d <= days[month] ? d : '') : ''}
                       </Day>
                     );
                   })}
@@ -213,6 +211,7 @@ const CalendarWrapper = styled.div`
   height: 80%;
   min-height: 60vh;
   max-height: 60vh;
+  min-width: 40vw;
   margin-top: 10vh;
   display: flex;
   justify-content: center;
