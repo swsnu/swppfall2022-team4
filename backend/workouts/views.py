@@ -174,7 +174,6 @@ def daily_log(request, year, month, specific_date):
     """
     if request.method == 'GET':
         # req_data = json.loads(request.body.decode())
-        
         # print(req_data)
         print(request.GET.get)
         user_id = request.GET.get('user_id')
@@ -191,7 +190,7 @@ def daily_log(request, year, month, specific_date):
             daily_log_dict.save()
             daily_log_dict_return = {
                 'memo': NULL,
-                'fitelements': list(),
+                'fitelements': [],
                 'date': daily_log_dict.date
             }
 
