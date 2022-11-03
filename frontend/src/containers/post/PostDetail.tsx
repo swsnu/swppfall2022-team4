@@ -403,6 +403,7 @@ const ArticleDetailWrapper = styled.div`
   height: 100%;
   background-color: #ffffff;
   position: relative;
+  overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
   }

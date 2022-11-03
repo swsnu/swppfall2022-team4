@@ -1,32 +1,40 @@
 import json
 from django.http import (
     HttpResponseBadRequest,
-    HttpResponseNotFound,
     JsonResponse,
 )
 from django.views.decorators.http import require_http_methods
-from posts.models import Post
-from comments.models import Comment
-from users.models import User
-from tags.models import Tag
+from tags.models import Tag, TagClass
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def tag_home(request):
     """
     GET : Get tag lists.
     """
-    tags = Tag.objects.all()
+    if request.method == "GET":
+        tag_class = TagClass.objects.all()
+        tag_class_serializable = list(tag_class.values())
+        for index, _ in enumerate(tag_class_serializable):
+            tag_class_serializable[index]["tags"] = list(tag_class[index].tags.values())
+        response = JsonResponse(
+            {
+                "tags": tag_class_serializable,
+            },
+            status=200,
+        )
+        return response
+    else:  # POST
+        try:
+            data = json.loads(request.body.decode())
 
-    tags_serializable = list(tags.values())
-
-    response = JsonResponse(
-        {
-            "tags": tags_serializable,
-        },
-        status=200,
-    )
-    return response
+            tag_name = data["name"]
+            class_id = data["classId"]
+            tag_class = TagClass.objects.get(pk=class_id)
+            Tag.objects.create(tag_name=tag_name, tag_class=tag_class)
+            return JsonResponse({"message": "Success!"}, status=201)
+        except (KeyError, json.JSONDecodeError, TagClass.DoesNotExist):
+            return HttpResponseBadRequest()
 
 
 # @require_http_methods(["PUT", "DELETE"])

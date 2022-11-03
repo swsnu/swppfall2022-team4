@@ -2,6 +2,7 @@ import { RootState } from 'index';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postActions } from 'store/slices/post';
+import { tagActions } from 'store/slices/tag';
 import styled from 'styled-components';
 
 interface IPropsSearchClear {
@@ -52,7 +53,7 @@ const Main_SideWrapper = styled.div`
   column-gap: 10px;
   width: 100%;
   min-height: 600px;
-  height: 70vh;
+  height: 80vh;
 `;
 
 export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element, sideElement: JSX.Element) => (
@@ -142,6 +143,36 @@ export const postEditorLayout = (
   cancelOnClick: () => void,
   confirmOnClick: () => void,
 ) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(tagActions.getTags());
+  }, []);
+  const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
+  const [tagInput, setTagInput] = useState('');
+  const [selectedTagClass, setSelectedTagClass] = useState('');
+
+  const tagNames = () => {
+    const tagTarget = tagList?.filter(tagClass => tagClass.class_name === selectedTagClass);
+    if (tagTarget && tagTarget.length > 0) {
+      return (
+        <select defaultValue="None">
+          <option disabled value="None">
+            {' '}
+            - 태그 이름 -{' '}
+          </option>
+          {tagList
+            ?.filter(tagClass => tagClass.class_name === selectedTagClass)[0]
+            .tags.map(tag => {
+              return (
+                <option value={tag.tag_name} key={tag.id}>
+                  {tag.tag_name}
+                </option>
+              );
+            })}
+        </select>
+      );
+    }
+  };
   return (
     <PostPageWrapper>
       <PostContentWrapper>
@@ -163,7 +194,42 @@ export const postEditorLayout = (
             </CreateBtnWrapper>
           </ContentWrapper>
           <SideBarWrapper>
-            <span>Tag TBD</span>
+            <TagWrapper>
+              태그 설정
+              <input value={tagInput} onChange={e => setTagInput(e.target.value)}></input>
+              <button
+                onClick={() => {
+                  dispatch(
+                    tagActions.createTag({
+                      name: tagInput,
+                      classId: '1',
+                    }),
+                  );
+                }}
+              >
+                생성
+              </button>
+            </TagWrapper>
+            <div>
+              태그 목록 {selectedTagClass} 선택됨
+              <select
+                defaultValue="None"
+                onChange={e => setSelectedTagClass(e.target.options[e.target.selectedIndex].text)}
+              >
+                <option value="None" disabled>
+                  {' '}
+                  - 태그 분류 -{' '}
+                </option>
+                {tagList?.map(tagClass => {
+                  return (
+                    <option value={tagClass.class_name} key={tagClass.id}>
+                      {tagClass.class_name}
+                    </option>
+                  );
+                })}
+              </select>
+              {tagNames()}
+            </div>
           </SideBarWrapper>
         </Main_SideWrapper>
       </PostContentWrapper>
@@ -171,6 +237,10 @@ export const postEditorLayout = (
   );
 };
 
+const TagWrapper = styled.div`
+  background-color: #ffffff;
+  height: 50%;
+`;
 const TitleInput = styled.input`
   width: 100%;
   height: 100%;

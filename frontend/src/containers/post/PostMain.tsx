@@ -21,7 +21,7 @@ const PostMain = () => {
   const postList = useSelector((rootState: RootState) => rootState.post.postList.posts);
   const maxPage = useSelector((rootState: RootState) => rootState.post.postList.pageTotal);
   const searchKeyword = useSelector((rootState: RootState) => rootState.post.postSearch);
-
+  const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
   useEffect(() => {
     const defaultPageConfig: getPostsRequestType = {
       pageNum: page,
@@ -38,7 +38,21 @@ const PostMain = () => {
       <PostPanelWrapper>
         <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
       </PostPanelWrapper>
-      <SideBarItem>사이드바 공간1</SideBarItem>
+      <SideBarItem>
+        태그 목록
+        <div>
+          {tagList?.map(tagClass => {
+            return (
+              <div key={tagClass.id}>
+                {tagClass.class_name}
+                {tagClass.tags.map(tag => {
+                  return <span key={tag.id}>{tag.tag_name}</span>;
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </SideBarItem>
       <SideBarItem>사이드바 공간2</SideBarItem>
     </SideBarWrapper>
   );
