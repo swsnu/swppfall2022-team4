@@ -249,7 +249,10 @@ const PostDetail = () => {
                   onChange={e => setCommentEditInput(e.target.value)}
                 ></CommentEditInput>
               ) : (
-                <CommentContent> {comment.content} </CommentContent>
+                <CommentContent>
+                  {/* [My ID : {comment.id} / Parent : {comment.parent_comment}] */}
+                  {comment.content}
+                </CommentContent>
               )}
             </CommentContentWrapper>
             <CommentFuncWrapper>

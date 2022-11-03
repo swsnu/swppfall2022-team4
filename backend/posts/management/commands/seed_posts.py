@@ -51,11 +51,11 @@ class Command(BaseCommand):
                     post.liker.add(user)
             for user in User.objects.order_by("?"):
                 rand_num = random.randint(1, 10)
-                if rand_num <= 2:  # 20% like
+                if rand_num <= 2:  # 20% dislike
                     post.disliker.add(user)
             for user in User.objects.order_by("?"):
                 rand_num = random.randint(1, 10)
-                if rand_num <= 1:  # 10% like
+                if rand_num <= 1:  # 10% scrap
                     post.scraper.add(user)
 
         self.stdout.write(
