@@ -10,6 +10,7 @@ import { Comment } from 'store/apis/comment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import Loading from 'components/common/Loading';
+import { faArrowRightLong, faArrowTurnDown, faArrowTurnRight, faStar } from '@fortawesome/free-solid-svg-icons';
 
 interface IPropsCommentSubmitBtn {
   disabled?: boolean;
@@ -94,6 +95,16 @@ const PostDetail = () => {
         postActions.postFunc({
           post_id: id,
           func_type: 'dislike',
+        }),
+      );
+    }
+  };
+  const postFuncScrapOnClick = () => {
+    if (id) {
+      dispatch(
+        postActions.postFunc({
+          post_id: id,
+          func_type: 'scrap',
         }),
       );
     }
@@ -235,6 +246,7 @@ const PostDetail = () => {
     return (
       <CommentReplyWrapper key={comment.id}>
         <CommentItem isChild={comment.parent_comment !== null}>
+          {/* {comment.parent_comment !== null && <FontAwesomeIcon icon={faArrowRightLong} />} */}
           <CommentWritterWrapperO1>
             <CommentWritterWrapper>
               <CommentWritterAvatar>Avatar</CommentWritterAvatar>
@@ -331,6 +343,13 @@ const PostDetail = () => {
                 <FontAwesomeIcon icon={faThumbsDown} />
               </CommentFuncBtn>
               <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
+              <CommentFuncBtn
+                onClick={postFuncScrapOnClick}
+                color={post.scraped ? FuncBtnStatus.Scrap : FuncBtnStatus.None}
+              >
+                <FontAwesomeIcon icon={faStar} />
+              </CommentFuncBtn>
+              <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
             </ArticleBodyFooter>
           </ArticleBody>
           <ArticleCommentWrapper>
