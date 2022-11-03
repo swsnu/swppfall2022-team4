@@ -32,6 +32,7 @@ class JsonWebTokenMiddleWare:
                     raise PermissionDenied()
                 request.user = User.objects.get(username=username)
             return self.get_response(request)
+            
         except (PermissionDenied, jwt.exceptions.DecodeError, User.DoesNotExist):
             return JsonResponse({"message": "토큰이 올바르지 않습니다."}, status=401)
 
