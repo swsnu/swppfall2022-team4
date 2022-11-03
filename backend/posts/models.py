@@ -1,6 +1,7 @@
 from django.db import models
 from utils.models import AbstractTimeStampedModel
 from users.models import User
+from tags.models import Tag
 
 
 class Post(AbstractTimeStampedModel):
@@ -13,6 +14,8 @@ class Post(AbstractTimeStampedModel):
     liker = models.ManyToManyField(User, related_name="liked_posts", blank=True)
     disliker = models.ManyToManyField(User, related_name="disliked_posts", blank=True)
     scraper = models.ManyToManyField(User, related_name="scraped_posts", blank=True)
+
+    tags = models.ManyToManyField(Tag, related_name="tagged_posts", blank=True)
 
     # Related_name : comments <- comments.Comment
     def get_like_num(self):

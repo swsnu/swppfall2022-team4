@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate } from 'react-router';
-import { postEditorLayout } from './PostEditorLayout';
+import { postEditorLayout, TagVisual } from './PostEditorLayout';
 
 const PostCreate = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -31,11 +32,21 @@ const PostCreate = () => {
           title: title,
           content: content,
           author_name: user.username,
+          tags: selectedTags,
         }),
       );
     }
   };
-  return postEditorLayout(title, setTitle, content, setContent, cancelOnClick, confirmOnClick, []);
+  return postEditorLayout(
+    title,
+    setTitle,
+    content,
+    setContent,
+    cancelOnClick,
+    confirmOnClick,
+    selectedTags,
+    setSelectedTags,
+  );
 };
 
 export default PostCreate;

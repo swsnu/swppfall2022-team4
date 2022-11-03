@@ -1,3 +1,4 @@
+import { TagVisual } from 'containers/post/PostEditorLayout';
 import client from './client';
 
 export const getPosts = async (payload: getPostsRequestType) => {
@@ -25,6 +26,7 @@ export type Post = {
   dislike_num: number;
   scrap_num: number;
   comments_num: number;
+  tags: TagVisual[];
   liked?: boolean;
   disliked?: boolean;
   scraped?: boolean;
@@ -52,6 +54,7 @@ export type createPostRequestType = {
   title: string;
   content: string;
   author_name: string;
+  tags: TagVisual[];
 };
 
 export const getPostDetail = async (payload: postIdentifyingRequestType) => {
@@ -73,6 +76,7 @@ export type editPostRequestType = {
   post_id: string;
   title: string;
   content: string;
+  tags: TagVisual[];
 };
 
 // Used in createPostRequest, deletePostRequest

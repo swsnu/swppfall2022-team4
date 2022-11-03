@@ -9,6 +9,7 @@ from django.views.decorators.http import require_http_methods
 from math import ceil
 from posts.models import Post
 from users.models import User
+from tags.models import Tag, TagClass
 
 
 @require_http_methods(["GET", "POST"])
@@ -42,6 +43,17 @@ def post_home(request):
             posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
             posts_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
 
+            posts_serializable[index]["tags"] = []
+            for tag in list(posts[index].tags.all().values()):
+                tag_class = TagClass.objects.get(pk=tag['tag_class_id'])
+                posts_serializable[index]["tags"].append(
+                    {
+                        "id": tag['id'],
+                        "name": tag['tag_name'],
+                        "color": tag_class.color,
+                    }
+                )
+
         # Total page number calculation.
         response = JsonResponse(
             {
@@ -57,14 +69,13 @@ def post_home(request):
         try:
             data = json.loads(request.body.decode())
 
-            title = data["title"]
-            content = data["content"]
-            author_name = data["author_name"]
-
-            author = User.objects.get(username=author_name)
+            author = User.objects.get(username=data["author_name"])
             created_post = Post.objects.create(
-                author=author, title=title, content=content
+                author=author, title=data["title"], content=data["content"]
             )
+            for tag in data["tags"]:
+                tag = Tag.objects.get(pk=tag["id"])
+                created_post.tags.add(tag)
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
         except (KeyError, json.JSONDecodeError, User.DoesNotExist):
@@ -83,6 +94,17 @@ def post_detail(request, query_id):
             post_id = int(query_id)
             post_obj = Post.objects.get(pk=post_id)
 
+            tag_response = []
+            for tag in list(post_obj.tags.all().values()):
+                tag_class = TagClass.objects.get(pk=tag['tag_class_id'])
+                tag_response.append(
+                    {
+                        "id": tag['id'],
+                        "name": tag['tag_name'],
+                        "color": tag_class.color,
+                    }
+                )
+
             post_response = {
                 "id": post_obj.pk,
                 "title": post_obj.title,
@@ -94,15 +116,10 @@ def post_detail(request, query_id):
                 "dislike_num": post_obj.get_dislike_num(),
                 "scrap_num": post_obj.get_scrap_num(),
                 "comments_num": post_obj.comments.count(),
-                "liked": post_obj.liker.all()
-                .filter(username=request.user.username)
-                .exists(),
-                "disliked": post_obj.disliker.all()
-                .filter(username=request.user.username)
-                .exists(),
-                "scraped": post_obj.scraper.all()
-                .filter(username=request.user.username)
-                .exists(),
+                "liked": post_obj.liker.all().filter(username=request.user.username).exists(),
+                "disliked": post_obj.disliker.all().filter(username=request.user.username).exists(),
+                "scraped": post_obj.scraper.all().filter(username=request.user.username).exists(),
+                "tags": tag_response,
             }
             return JsonResponse(post_response, status=200)
         except Post.DoesNotExist:
@@ -118,6 +135,11 @@ def post_detail(request, query_id):
 
             post_obj.title = data["title"]
             post_obj.content = data["content"]
+            tags = data["tags"]
+            post_obj.tags.clear()
+            for tag in tags:
+                tag = Tag.objects.get(pk=tag["id"])
+                post_obj.tags.add(tag)
             post_obj.save()
             return JsonResponse({"message": "success"}, status=200)
         except Post.DoesNotExist:
@@ -154,16 +176,10 @@ def post_comment(request, query_id):
             proc_comm[index]["like_num"] = comments[index].get_like_num()
             proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
             proc_comm[index]["liked"] = (
-                comments[index]
-                .liker.all()
-                .filter(username=request.user.username)
-                .exists()
+                comments[index].liker.all().filter(username=request.user.username).exists()
             )
             proc_comm[index]["disliked"] = (
-                comments[index]
-                .disliker.all()
-                .filter(username=request.user.username)
-                .exists()
+                comments[index].disliker.all().filter(username=request.user.username).exists()
             )
             proc_comm[index]["author_name"] = comments[index].author.username
             proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]

@@ -13,6 +13,8 @@ class Tag(AbstractTimeStampedModel):
         TagClass, blank=True, null=True, on_delete=models.CASCADE, related_name="tags"
     )
 
+    # Related_name : tagged_posts <- posts.Post
+
     def __str__(self):
         """To string method"""
         return str(self.tag_name)

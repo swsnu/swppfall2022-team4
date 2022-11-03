@@ -3,12 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
-import { postEditorLayout } from './PostEditorLayout';
+import { postEditorLayout, TagVisual } from './PostEditorLayout';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
+
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postEditStatus = useSelector(({ post }: RootState) => post.postEdit);
   useEffect(() => {
@@ -24,6 +26,7 @@ const PostEdit = () => {
     if (post) {
       setTitle(post.title);
       setContent(post.content);
+      setSelectedTags(post.tags);
     }
   }, [post]);
   useEffect(() => {
@@ -48,11 +51,21 @@ const PostEdit = () => {
           post_id: id,
           title: title,
           content: content,
+          tags: selectedTags,
         }),
       );
     }
   };
-  return postEditorLayout(title, setTitle, content, setContent, cancelOnClick, confirmOnClick, []);
+  return postEditorLayout(
+    title,
+    setTitle,
+    content,
+    setContent,
+    cancelOnClick,
+    confirmOnClick,
+    selectedTags,
+    setSelectedTags,
+  );
 };
 
 export default PostEdit;

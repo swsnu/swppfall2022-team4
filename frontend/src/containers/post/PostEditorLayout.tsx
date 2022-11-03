@@ -23,7 +23,7 @@ interface IPropsBtn {
   onClick?: () => void;
 }
 
-interface TagVisual {
+export interface TagVisual {
   id: string;
   name: string;
   color: string;
@@ -40,7 +40,8 @@ export const postEditorLayout = (
   setContent: (value: React.SetStateAction<string>) => void,
   cancelOnClick: () => void,
   confirmOnClick: () => void,
-  prevTagList: TagVisual[],
+  selectedTags: TagVisual[],
+  setSelectedTags: (value: React.SetStateAction<TagVisual[]>) => void,
 ) => {
   const dispatch = useDispatch();
   const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
@@ -56,7 +57,6 @@ export const postEditorLayout = (
   const [tagUpdate, setTagUpdate] = useState(0);
 
   const [currentTagClass, setCurrentTagClass] = useState<TagClass | null>(null);
-  const [selectedTags, setSelectedTags] = useState<TagVisual[]>(prevTagList);
 
   useEffect(() => {
     dispatch(tagActions.getTags());
@@ -75,14 +75,7 @@ export const postEditorLayout = (
     if (newValue !== NEW_OPTION) {
       setSelectedTags(s => {
         const tagName = e.target.options[e.target.selectedIndex].text;
-        if (
-          currentTagClass &&
-          !s.includes({
-            id: newValue,
-            name: tagName,
-            color: currentTagClass.color,
-          })
-        )
+        if (currentTagClass && s.filter(item => item.id == newValue).length === 0)
           return [...s, { id: newValue, name: tagName, color: currentTagClass.color }];
         else return s;
       });
@@ -194,23 +187,21 @@ export const postEditorLayout = (
       );
     }
   };
-  const selectedTagsComponent = () => {
-    return (
-      <TagBubbleWrapper>
-        {selectedTags.map(tags => {
-          return (
-            <TagBubble key={tags.id} color={tags.color}>
-              {tags.name}
-            </TagBubble>
-          );
-        })}
-      </TagBubbleWrapper>
-    );
-  };
+  const selectedTagsComponent = (
+    <TagBubbleWrapper>
+      {selectedTags.map(tags => {
+        return (
+          <TagBubble key={tags.id} color={tags.color}>
+            {tags.name}
+          </TagBubble>
+        );
+      })}
+    </TagBubbleWrapper>
+  );
 
   const TagPanel = (
     <TagWrapper>
-      <TagWrapper>
+      <TagWrapperIn>
         <TagTitle>태그 설정</TagTitle>
         <TagSelect
           key={tagUpdate}
@@ -236,8 +227,8 @@ export const postEditorLayout = (
           <option value={NEW_OPTION}> - 태그 카테고리 생성 - </option>
         </TagSelect>
         {tagNames()}
-      </TagWrapper>
-      {selectedTagsComponent()}
+      </TagWrapperIn>
+      {selectedTagsComponent}
     </TagWrapper>
   );
 
@@ -301,6 +292,9 @@ const TagBubbleWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 8px 5px;
 `;
 const TagBubble = styled.button<IPropsColorButton>`
   height: 25px;
@@ -320,11 +314,19 @@ const TagTitle = styled.span`
   text-align: center;
   width: 100%;
 `;
+const TagWrapperIn = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #ffffff;
+`;
 const TagWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   background-color: #ffffff;
-  height: 50%;
+  height: 60%;
+  overflow-y: scroll;
 `;
 const TagInput = styled.input`
   padding: 5px 8px;

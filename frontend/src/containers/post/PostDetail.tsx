@@ -12,6 +12,10 @@ import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import Loading from 'components/common/Loading';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 
+interface IPropsColorButton {
+  color?: string;
+}
+
 interface IPropsCommentSubmitBtn {
   disabled?: boolean;
   isActive?: boolean;
@@ -329,7 +333,7 @@ const PostDetail = () => {
             </ArticleTitleWrapper>
             <ArticleBodyContent>{post.content}</ArticleBodyContent>
             <ArticleBodyFooter>
-              <h3>댓글 {post.comments_num}</h3>
+              <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
               <CommentFuncBtn
                 onClick={postFuncLikeOnClick}
                 color={post.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}
@@ -351,6 +355,16 @@ const PostDetail = () => {
                 <FontAwesomeIcon icon={faStar} />
               </CommentFuncBtn>
               <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
+
+              <TagBubbleWrapper>
+                {post.tags.map(tags => {
+                  return (
+                    <TagBubble key={tags.id} color={tags.color}>
+                      {tags.name}
+                    </TagBubble>
+                  );
+                })}
+              </TagBubbleWrapper>
             </ArticleBodyFooter>
           </ArticleBody>
           <ArticleCommentWrapper>
@@ -397,6 +411,34 @@ const PostDetail = () => {
   return PostPageWithSearchBar(PostDetailContent, SideBar);
 };
 
+const TagBubbleWrapper = styled.div`
+  display: flex;
+  margin-left: 10px;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+const TagBubble = styled.button<IPropsColorButton>`
+  height: 20px;
+  width: fit-content;
+  border-radius: 25px;
+  padding: 1px 12px;
+  border: none;
+  white-space: nowrap;
+  margin: 1px 3px;
+  ${({ color }) =>
+    color &&
+    `
+      background: ${color};
+    `}
+`;
+const ArticleBodyFooter = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: center;
+`;
 const ArticleDetailWrapper = styled.div`
   border: 1px solid black;
   width: 100%;
@@ -504,11 +546,6 @@ const ArticleBodyContent = styled.div`
   width: 100%;
   height: 100%;
   /* min-height: 360px; */
-`;
-
-const ArticleBodyFooter = styled.div`
-  display: flex;
-  width: 100%;
 `;
 
 // Article Comment List
@@ -646,6 +683,13 @@ const CommentFuncTimeIndicator = styled.span`
   min-width: 48px;
 `;
 
+const CommentNumIndicator = styled.span`
+  font-size: 15px;
+  width: 50px;
+  margin-right: 5px;
+  white-space: nowrap;
+  /* margin: 0px 5px; */
+`;
 const CommentFuncNumIndicator = styled.span`
   font-size: 12px;
   margin-left: 8px;
