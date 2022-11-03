@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
-import { postEditorLayout } from './PostLayout';
+import { postEditorLayout } from './PostEditorLayout';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();
