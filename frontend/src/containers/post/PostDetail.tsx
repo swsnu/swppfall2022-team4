@@ -5,7 +5,7 @@ import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
 import { timeAgoFormat } from 'utils/datetime';
-import { PostPageWithSearchBar } from './PostLayout';
+import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { Comment } from 'store/apis/comment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
@@ -389,10 +389,10 @@ const PostDetail = () => {
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
     );
   const SideBar = (
-    <>
-      <SideBarItem>{PostAuthorPanel}</SideBarItem>
+    <SideBarWrapper>
+      {PostAuthorPanel}
       <SideBarItem>사이드바 공간2</SideBarItem>
-    </>
+    </SideBarWrapper>
   );
   return PostPageWithSearchBar(PostDetailContent, SideBar);
 };
@@ -722,9 +722,9 @@ const PostPanelWrapper = styled.div`
 `;
 
 const CreatePostBtn = styled.button`
-  padding: 5px 20px;
-  width: 90%;
-  border-radius: 10px;
+  padding: 8px 20px;
+  width: 100%;
+  border: none;
   background-color: #35c9ea;
   font-size: 15px;
   margin-bottom: 10px;

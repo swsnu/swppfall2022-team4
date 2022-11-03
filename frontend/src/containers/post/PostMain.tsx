@@ -6,7 +6,7 @@ import { postActions } from 'store/slices/post';
 import { getPostsRequestType } from 'store/apis/post';
 import { timeAgoFormat } from 'utils/datetime';
 import { useNavigate } from 'react-router';
-import { PostPageWithSearchBar } from './PostLayout';
+import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 
 interface IPropsPageIndicator {
   isActive?: boolean;
@@ -31,14 +31,13 @@ const PostMain = () => {
   }, [page, searchKeyword]);
 
   const SideBar = (
-    <>
+    <SideBarWrapper>
       <PostPanelWrapper>
         <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
       </PostPanelWrapper>
-
       <SideBarItem>사이드바 공간1</SideBarItem>
       <SideBarItem>사이드바 공간2</SideBarItem>
-    </>
+    </SideBarWrapper>
   );
   const MainContent = (
     <ArticleListWrapper>
@@ -157,9 +156,9 @@ const PostPanelWrapper = styled.div`
   align-items: center;
 `;
 const CreatePostBtn = styled.button`
-  padding: 5px 20px;
-  width: 90%;
-  border-radius: 10px;
+  padding: 8px 20px;
+  width: 100%;
+  border: none;
   background-color: #35c9ea;
   font-size: 15px;
   margin-bottom: 10px;

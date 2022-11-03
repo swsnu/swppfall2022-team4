@@ -1,7 +1,12 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { RootState } from 'index';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { postActions } from 'store/slices/post';
 import styled from 'styled-components';
+
+interface IPropsSearchClear {
+  isActive?: boolean;
+}
 
 const PostPageWrapper = styled.div`
   background-color: #d7efe3;
@@ -43,19 +48,13 @@ const Main_SideWrapper = styled.div`
   height: 70vh;
 `;
 
-const SideBarWrapper = styled.div`
-  border: 1px solid black;
-  width: 20%;
-  background-color: #ffffff;
-`;
-
 export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element, sideElement: JSX.Element) => (
   <PostPageWrapper>
     <PostContentWrapper>
       <TopElementWrapperWithoutPadding>{topElement}</TopElementWrapperWithoutPadding>
       <Main_SideWrapper>
         {mainElement}
-        <SideBarWrapper>{sideElement}</SideBarWrapper>
+        {sideElement}
       </Main_SideWrapper>
     </PostContentWrapper>
   </PostPageWrapper>
@@ -63,17 +62,38 @@ export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element
 
 const SearchForm = styled.form`
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const SearchInput = styled.input`
-  width: 100%;
+  width: 95%;
   padding: 15px 20px;
   border: none;
 `;
+const ClearSearchInput = styled.span<IPropsSearchClear>`
+  width: 5%;
+  text-align: center;
+  cursor: pointer;
+  ${({ isActive }) =>
+    !isActive &&
+    `
+    display: none;
+  `}
+`;
+export const SideBarWrapper = styled.div`
+  /* border: 1px solid black; */
+  width: 20%;
+`;
 
 export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX.Element) => {
-  const [search, setSearch] = useState('');
+  const postSearch = useSelector(({ post }: RootState) => post.postSearch);
+  const [search, setSearch] = useState(postSearch);
   const dispatch = useDispatch();
+  useEffect(() => {
+    setSearch(postSearch);
+  }, []);
   return (
     <PostPageWrapper>
       <PostContentWrapper>
@@ -93,11 +113,14 @@ export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX
               value={search}
               onChange={e => setSearch(e.target.value)}
             ></SearchInput>
+            <ClearSearchInput isActive={search !== ''} onClick={() => setSearch('')}>
+              Clear
+            </ClearSearchInput>
           </SearchForm>
         </TopElementWrapperWithoutPadding>
         <Main_SideWrapper>
           {mainElement}
-          <SideBarWrapper>{sideElement}</SideBarWrapper>
+          {sideElement}
         </Main_SideWrapper>
       </PostContentWrapper>
     </PostPageWrapper>

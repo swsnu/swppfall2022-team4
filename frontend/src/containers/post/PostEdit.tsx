@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
-import { PostPageLayout } from './PostLayout';
+import { PostPageLayout, SideBarWrapper } from './PostLayout';
 
 interface IProps {
   isActive?: boolean;
@@ -78,12 +78,12 @@ const PostEdit = () => {
       </CreateBtnWrapper>
     </ContentWrapper>
   );
-  const SideBarWrapper = (
-    <>
+  const SideBarComponent = (
+    <SideBarWrapper>
       <span>TBD</span>
-    </>
+    </SideBarWrapper>
   );
-  return PostPageLayout(TitleInputWrapper, ContentInputWrapper, SideBarWrapper);
+  return PostPageLayout(TitleInputWrapper, ContentInputWrapper, SideBarComponent);
 };
 
 const ContentWrapper = styled.div`
