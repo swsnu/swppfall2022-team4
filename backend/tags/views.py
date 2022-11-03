@@ -13,13 +13,13 @@ def tag_home(request):
     GET : Get tag lists.
     """
     if request.method == "GET":
-        tag_class = TagClass.objects.all()
-        tag_class_serializable = list(tag_class.values())
-        for index, _ in enumerate(tag_class_serializable):
-            tag_class_serializable[index]["tags"] = list(tag_class[index].tags.values())
+        tag_classes = TagClass.objects.all()
+        tag_classes_serializable = list(tag_classes.values())
+        for index, _ in enumerate(tag_classes_serializable):
+            tag_classes_serializable[index]["tags"] = list(tag_classes[index].tags.values())
         response = JsonResponse(
             {
-                "tags": tag_class_serializable,
+                "tags": tag_classes_serializable,
             },
             status=200,
         )
@@ -30,11 +30,27 @@ def tag_home(request):
 
             tag_name = data["name"]
             class_id = data["classId"]
-            tag_class = TagClass.objects.get(pk=class_id)
-            Tag.objects.create(tag_name=tag_name, tag_class=tag_class)
+            parent_class = TagClass.objects.get(pk=class_id)
+            Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
             return JsonResponse({"message": "Success!"}, status=201)
         except (KeyError, json.JSONDecodeError, TagClass.DoesNotExist):
             return HttpResponseBadRequest()
+
+
+@require_http_methods(["POST"])
+def tag_class(request):
+    """
+    GET : Get tag lists.
+    """
+    try:
+        data = json.loads(request.body.decode())
+
+        class_name = data["name"]
+        class_color = data["color"]
+        TagClass.objects.create(class_name=class_name, color=class_color)
+        return JsonResponse({"message": "Success!"}, status=201)
+    except (KeyError, json.JSONDecodeError):
+        return HttpResponseBadRequest()
 
 
 # @require_http_methods(["PUT", "DELETE"])

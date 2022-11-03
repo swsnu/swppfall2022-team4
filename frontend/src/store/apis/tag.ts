@@ -20,6 +20,16 @@ export type getTagListResponseType = {
   tags: TagClass[];
 };
 
+export const createTagClass = async (payload: createTagClassRequestType) => {
+  const response = await client.post(`/api/tag/class/`, payload);
+  return response.data;
+};
+
+export type createTagClassRequestType = {
+  name: string;
+  color: string;
+};
+
 export const createTag = async (payload: createTagRequestType) => {
   const response = await client.post(`/api/tag/`, payload);
   return response.data;

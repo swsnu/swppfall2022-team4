@@ -148,15 +148,22 @@ export const postEditorLayout = (
   confirmOnClick: () => void,
 ) => {
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(tagActions.getTags());
-  }, []);
   const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
   const [tagInput, setTagInput] = useState('');
-  const [selectedTagClass, setSelectedTagClass] = useState('');
+  const [tagClassInput, setTagClassInput] = useState('');
+  const [selectedTagClassID, setSelectedTagClassID] = useState('');
   const [tagRandColor, setTagRandColor] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [tagCreating, setTagCreating] = useState(false);
+  const [tagUpdate, setTagUpdate] = useState(0);
+
+  useEffect(() => {
+    dispatch(tagActions.getTags());
+  }, [tagUpdate]);
+  useEffect(() => {
+    setTagRandColor(getColor());
+  }, []);
+
   const getColor = () => {
     return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
   };
@@ -179,12 +186,12 @@ export const postEditorLayout = (
     }
   };
   const tagNames = () => {
-    if (selectedTagClass === NEW_OPTION) {
+    if (selectedTagClassID === NEW_OPTION) {
       return (
         <div>
           {' '}
           태그 생성하는 컴포넌트.
-          <input value={tagInput} onChange={e => setTagInput(e.target.value)}></input>
+          <input value={tagClassInput} onChange={e => setTagClassInput(e.target.value)}></input>
           <div>
             태그 색상 지정
             <ColorCircle color={tagRandColor}></ColorCircle>
@@ -193,19 +200,22 @@ export const postEditorLayout = (
           <button
             onClick={() => {
               dispatch(
-                tagActions.createTag({
-                  name: tagInput,
-                  classId: '1',
+                tagActions.createTagClass({
+                  name: tagClassInput,
+                  color: tagRandColor,
                 }),
               );
+              dispatch(tagActions.getTags());
+              setTagClassInput('');
+              setTagUpdate(Date.now());
             }}
           >
-            생성
+            분류 생성
           </button>
         </div>
       );
     }
-    if (selectedTagClass === SEARCH_OPTION) {
+    if (selectedTagClassID === SEARCH_OPTION) {
       return (
         <div>
           {' '}
@@ -225,18 +235,17 @@ export const postEditorLayout = (
         </div>
       );
     }
-    const tagTarget = tagList?.filter(tagClass => tagClass.class_name === selectedTagClass);
+    const tagTarget = tagList?.filter(tagClass => tagClass.id.toString() === selectedTagClassID);
     if (tagTarget && tagTarget.length > 0) {
       return (
-        <div>
-          '{selectedTagClass}' 선택됨
+        <TagSubWrapper>
           <select defaultValue={DEFAULT_OPTION} onChange={tagOnChange}>
             <option disabled value={DEFAULT_OPTION}>
               {' '}
               - 태그 이름 -{' '}
             </option>
             {tagList
-              ?.filter(tagClass => tagClass.class_name === selectedTagClass)[0]
+              ?.filter(tagClass => tagClass.id.toString() === selectedTagClassID)[0]
               .tags.map(tag => {
                 return (
                   <option value={tag.id} key={tag.id}>
@@ -244,10 +253,31 @@ export const postEditorLayout = (
                   </option>
                 );
               })}
-            <option value={NEW_OPTION}> - 태그 분류 만들기 - </option>
+            <option value={NEW_OPTION}> - 태그 만들기 - </option>
           </select>
-          {tagCreating && <span>태그 생성 폼!!</span>}
-        </div>
+          {tagCreating && (
+            <div>
+              {' '}
+              태그 생성하는 컴포넌트.
+              <input value={tagInput} onChange={e => setTagInput(e.target.value)}></input>
+              <button
+                onClick={() => {
+                  dispatch(
+                    tagActions.createTag({
+                      name: tagInput,
+                      classId: selectedTagClassID,
+                    }),
+                  );
+                  dispatch(tagActions.getTags());
+                  setTagInput('');
+                  setTagUpdate(Date.now());
+                }}
+              >
+                태그 생성
+              </button>
+            </div>
+          )}
+        </TagSubWrapper>
       );
     }
   };
@@ -277,11 +307,12 @@ export const postEditorLayout = (
             </CreateBtnWrapper>
           </ContentWrapper>
           <SideBarWrapper>
-            <TagWrapper>
+            <TagWrapper key={tagUpdate}>
               <div>태그 설정</div>
               <select
+                key={tagUpdate}
                 defaultValue={DEFAULT_OPTION}
-                onChange={e => setSelectedTagClass(e.target.options[e.target.selectedIndex].value)}
+                onChange={e => setSelectedTagClassID(e.target.options[e.target.selectedIndex].value)}
               >
                 <option value={DEFAULT_OPTION} disabled>
                   {' '}
@@ -289,7 +320,7 @@ export const postEditorLayout = (
                 </option>
                 {tagList?.map(tagClass => {
                   return (
-                    <option value={tagClass.class_name} key={tagClass.id}>
+                    <option value={tagClass.id} key={tagClass.id}>
                       {tagClass.class_name}
                     </option>
                   );
@@ -319,6 +350,10 @@ const ColorCircle = styled.button<IPropsColorButton>`
   `}
 `;
 const RandColorBtn = styled.button``;
+const TagSubWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 const TagWrapper = styled.div`
   display: flex;
   flex-direction: column;

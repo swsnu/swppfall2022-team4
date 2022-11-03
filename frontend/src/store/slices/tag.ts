@@ -29,6 +29,15 @@ export const tagSlice = createSlice({
       state.error = payload;
       alert(payload.response?.data.message);
     },
+    createTagClass: (state, action: PayloadAction<tagAPI.createTagClassRequestType>) => {
+      //create!
+    },
+    createTagClassSuccess: (state, { payload }) => {
+      console.log(payload);
+    },
+    createTagClassFailure: (state, { payload }) => {
+      // console.log(payload);
+    },
     createTag: (state, action: PayloadAction<tagAPI.createTagRequestType>) => {
       //create!
     },
@@ -53,6 +62,15 @@ function* getTagsSaga() {
   }
 }
 
+function* createTagClassSaga(action: PayloadAction<tagAPI.createTagClassRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(tagAPI.createTagClass, action.payload);
+    yield put(tagActions.createTagClassSuccess(response));
+  } catch (error) {
+    yield put(tagActions.createTagClassFailure(error));
+  }
+}
+
 function* createTagSaga(action: PayloadAction<tagAPI.createTagRequestType>) {
   try {
     const response: AxiosResponse = yield call(tagAPI.createTag, action.payload);
@@ -65,4 +83,5 @@ function* createTagSaga(action: PayloadAction<tagAPI.createTagRequestType>) {
 export default function* tagSaga() {
   yield takeLatest(tagActions.getTags, getTagsSaga);
   yield takeLatest(tagActions.createTag, createTagSaga);
+  yield takeLatest(tagActions.createTagClass, createTagClassSaga);
 }
