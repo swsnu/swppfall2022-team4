@@ -22,6 +22,7 @@ const WorkoutLog = () => {
   const [month, setMonth] = useState(date.getMonth());
   const [year, setYear] = useState(date.getFullYear());
   const [startDay, setStartDay] = useState(getStartDayOfMonth(date));
+  const [selected_month, setSelectedMonth] = useState(date.getMonth());
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -36,7 +37,7 @@ const WorkoutLog = () => {
 
   const defaultDailyLogConfig: getDailyLogRequestType = {
     year: year,
-    month: month+1,
+    month: month + 1,
     specific_date: day,
     user_id: 1,
     data: {
@@ -46,16 +47,17 @@ const WorkoutLog = () => {
 
   const clickDate = (year: number, month: number, d: number) => {
     setDate(new Date(year, month, d));
+    setSelectedMonth(month);
     const dailyLogConfig: getDailyLogRequestType = {
       year: year,
-      month: month+1,
+      month: month + 1,
       specific_date: d,
       user_id: 1,
       data: {
         user_id: 1,
       },
     };
-    console.log(year, month+1, d)
+    console.log(year, month + 1, d);
     dispatch(workoutLogActions.getDailyLog(dailyLogConfig));
   };
 
@@ -63,11 +65,13 @@ const WorkoutLog = () => {
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
 
   useEffect(() => {
+    dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
+  }, []);
+  useEffect(() => {
     setDay(date.getDate());
     setMonth(date.getMonth());
     setYear(date.getFullYear());
     setStartDay(getStartDayOfMonth(date));
-    dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
   }, [date]);
 
   function isLeapYear(year: number) {
@@ -110,7 +114,13 @@ const WorkoutLog = () => {
                   .map((_, index) => {
                     const d = index - (startDay - 2);
                     return (
-                      <Day key={index} onClick={() => { console.log(year, month, d); clickDate(year, month, d) }}>
+                      <Day
+                        key={index}
+                        onClick={() => {
+                          console.log(year, month, d);
+                          clickDate(year, month, d);
+                        }}
+                      >
                         {d > 0 ? d : ''}
                       </Day>
                     );
@@ -128,6 +138,9 @@ const WorkoutLog = () => {
         <RightWrapper>
           <LogWrapper>
             <LogUpper>
+              <DateWrapper>
+                {year}.{selected_month + 1}.{day}
+              </DateWrapper>
               <AnyButton>루틴</AnyButton>
               <AnyButton>불러오기</AnyButton>
               <AnyButton>내보내기</AnyButton>
@@ -198,6 +211,8 @@ const LeftWrapper = styled.div`
 const CalendarWrapper = styled.div`
   width: 100%;
   height: 80%;
+  min-height: 60vh;
+  max-height: 60vh;
   margin-top: 10vh;
   display: flex;
   justify-content: center;
@@ -308,6 +323,17 @@ const MemoTitleWrapper = styled.div`
   width: 90%;
   font-family: IBMPlexSansThaiLooped;
   font-size: 20px;
+  font-weight: 600;
+  justify-content: start;
+`;
+
+const DateWrapper = styled.div`
+  display: flex;
+  margin: 10px;
+  height: 20%;
+  width: 90%;
+  font-family: IBMPlexSansThaiLooped;
+  font-size: 15px;
   font-weight: 600;
   justify-content: start;
 `;
