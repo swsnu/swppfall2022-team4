@@ -19,18 +19,23 @@ class JsonWebTokenMiddleWare:
 
     def __call__(self, request):
         try:
-            if request.path not in ("/api/user/login/",
-                                    "/api/user/social_login/",
-                                    "/api/user/signup/",
-                                    "/api/user/token/"):
+            if request.path not in (
+                "/api/user/login/",
+                "/api/user/social_login/",
+                "/api/user/signup/",
+                "/api/user/token/"
+            ) and not request.path[:6] == "/admin":
                 access_token = request.COOKIES.get("access_token", None)
                 if not access_token:
                     raise PermissionDenied()
+
                 payload = decode_jwt(access_token)
                 username = payload.get("username", None)
                 if not username:
                     raise PermissionDenied()
+                
                 request.user = User.objects.get(username=username)
+
             return self.get_response(request)
             
         except (PermissionDenied, jwt.exceptions.DecodeError, User.DoesNotExist):
