@@ -49,7 +49,7 @@ def message(request, room_id):
         return HttpResponse(status=404)
 
     room = Chatroom.objects.get(id=room_id)
-    if request.user.username in [room.username1, room.username2]:
+    if request.user.username not in [room.username1, room.username2]:
         return HttpResponse(status=403)
 
     if request.method == 'GET':
