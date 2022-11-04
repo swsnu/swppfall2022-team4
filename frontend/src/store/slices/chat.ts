@@ -10,7 +10,7 @@ interface ChatState {
   messageList: chatAPI.messageType[];
   error: AxiosError | null;
 }
-const initialState: ChatState = {
+export const initialState: ChatState = {
   socket: null,
   chatroomList: [],
   messageList: [],
