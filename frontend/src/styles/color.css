@@ -1,0 +1,12 @@
+:root {
+    /* White */
+    --fit-white: #ffffff;
+
+    /* Gray */
+    --fit-disabled-gray: #9b9b9b;
+    /* Green */
+    --fit-green-back: #d7efe3;
+    --fit-green-pos-big-btn1: #00be5f;
+    --fit-green-small-btn1: #54dd6d;
+    --fit-green-mid-btn1: #8ee5b9;
+}

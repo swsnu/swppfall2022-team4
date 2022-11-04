@@ -12,7 +12,8 @@ import {
 } from './PostLayout';
 import { TagClass } from 'store/apis/tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDice } from '@fortawesome/free-solid-svg-icons';
+import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
+import 'styles/color.css';
 
 interface IPropsColorButton {
   color?: string;
@@ -33,7 +34,7 @@ const DEFAULT_OPTION = '$NONE$';
 const NEW_OPTION = '$NEW$';
 const SEARCH_OPTION = '$SEARCH$';
 
-export const postEditorLayout = (
+export const PostEditorLayout = (
   title: string,
   setTitle: (value: React.SetStateAction<string>) => void,
   content: string,
@@ -193,6 +194,9 @@ export const postEditorLayout = (
         return (
           <TagBubble key={tags.id} color={tags.color}>
             {tags.name}
+            <TagBubbleFunc>
+              <FontAwesomeIcon icon={faX} />
+            </TagBubbleFunc>
           </TagBubble>
         );
       })}
@@ -263,12 +267,12 @@ const TagGreenBtn = styled.button`
   padding: 5px 8px;
   margin: 6px 10px;
   font-size: 14px;
-  background-color: #54dd6d;
+  background-color: var(--fit-green-small-btn1);
   border: none;
   border-radius: 4px;
   cursor: pointer;
   :disabled {
-    background-color: #9b9b9b;
+    background-color: var(--fit-disabled-gray);
     cursor: default;
   }
 `;
@@ -296,17 +300,34 @@ const TagBubbleWrapper = styled.div`
   align-items: flex-end;
   padding: 8px 5px;
 `;
+const TagBubbleFunc = styled.div`
+  margin-left: 5px;
+  font-size: 10px;
+  color: red;
+  width: fit-content;
+  height: fit-content;
+  display: block;
+  cursor: pointer;
+`;
 const TagBubble = styled.button<IPropsColorButton>`
   height: 25px;
   border-radius: 30px;
   padding: 1px 10px;
   border: none;
   margin: 1px 2px;
+  width: fit-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   ${({ color }) =>
     color &&
     `
       background: ${color};
-    `}
+    `}/* &:hover ${TagBubbleFunc} {
+    visibility: visible;
+    width: fit-content;
+    height: fit-content;
+  } */
 `;
 const TagTitle = styled.span`
   margin: 10px 0px;
@@ -318,15 +339,14 @@ const TagWrapperIn = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
 `;
 const TagWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
   height: 60%;
-  overflow-y: scroll;
 `;
 const TagInput = styled.input`
   padding: 5px 8px;
@@ -352,7 +372,7 @@ const RandColorBtn = styled.button`
   background: none;
   border: none;
   &:active {
-    color: #55dd54;
+    color: var(--fit-green-small-btn1);
   }
 `;
 const TagSubWrapper = styled.div`
@@ -394,7 +414,7 @@ const CreatePostBtn = styled.button<IPropsBtn>`
   width: 200px;
   height: 30px;
   border-radius: 15px;
-  background-color: #dddddd;
+  background-color: var(--fit-disabled-gray);
   font-size: 15px;
   letter-spacing: 0.5px;
   margin: 5px 20px;
@@ -402,7 +422,7 @@ const CreatePostBtn = styled.button<IPropsBtn>`
   ${({ isActive }) =>
     isActive &&
     `
-      background: #8ee5b9;
+      background: var(--fit-green-mid-btn1);
       &:hover {
         background-color: #45d9fa;
       }

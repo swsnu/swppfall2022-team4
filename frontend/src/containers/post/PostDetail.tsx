@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import Loading from 'components/common/Loading';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import 'styles/color.css';
 
 interface IPropsColorButton {
   color?: string;
@@ -443,7 +444,7 @@ const ArticleDetailWrapper = styled.div`
   border: 1px solid black;
   width: 100%;
   height: 100%;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
   position: relative;
   overflow-y: auto;
   &::-webkit-scrollbar {
@@ -551,18 +552,18 @@ const ArticleBodyContent = styled.div`
 // Article Comment List
 const ArticleCommentWrapper = styled.div`
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
 `;
 
 const CommentWrapper = styled.div`
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
 `;
 
 const CommentGreenBtn = styled.button`
   padding: 4px 8px;
   font-size: 10px;
-  background-color: #54dd6d;
+  background-color: var(--fit-green-small-btn1);
   border: none;
   border-radius: 4px;
   margin: 0px 4px;
@@ -717,7 +718,7 @@ const CommentContent = styled.span`
 // Comment Writing Form
 const CommentForm = styled.div`
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
@@ -725,7 +726,7 @@ const CommentForm = styled.div`
 
 const CommentReplyForm = styled.div`
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
@@ -744,7 +745,7 @@ const CommentInput = styled.input`
 const CommentSubmitBtn = styled.button<IPropsCommentSubmitBtn>`
   width: 10%;
   padding: 10px 6px;
-  background-color: #dddddd;
+  background-color: var(--fit-disabled-gray);
   border: none;
   margin-left: 5px;
   &:disabled {
@@ -754,7 +755,7 @@ const CommentSubmitBtn = styled.button<IPropsCommentSubmitBtn>`
   ${({ isActive }) =>
     isActive &&
     `
-    background: #8ee5b9;
+    background: var(--fit-green-mid-btn1);
   `}
 `;
 
