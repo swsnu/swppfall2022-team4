@@ -6,7 +6,7 @@ beforeEach(() => jest.clearAllMocks());
 
 describe('ChatroomButton', () => {
   test('user is empty', () => {
-    render(<ChatroomButton user={null} clicked={onClick} active={false} />);
+    render(<ChatroomButton user={null} clicked={onClick} active={true} />);
     expect(screen.getByText('(알수없음)')).toBeInTheDocument();
   });
 
