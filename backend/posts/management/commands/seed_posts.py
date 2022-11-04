@@ -2,8 +2,9 @@ import random
 import datetime
 
 from django.core.management import BaseCommand
+from django.contrib.admin.utils import flatten
 from django_seed import Seed
-from users import models as user_models
+from users.models import User
 from posts import models
 
 
@@ -20,7 +21,7 @@ class Command(BaseCommand):
         number = options.get("number")
         seeder = Seed.seeder()
 
-        all_users = user_models.User.objects.all()
+        all_users = User.objects.all()
 
         seeder.add_entity(
             models.Post,
@@ -29,9 +30,6 @@ class Command(BaseCommand):
                 "title": lambda x: seeder.faker.company(),
                 "author": lambda x: random.choice(all_users),
                 "content": lambda x: seeder.faker.sentence(),
-                "like_num": lambda x: random.randint(0, 100),
-                "dislike_num": lambda x: random.randint(0, 30),
-                "scrap_num": lambda x: random.randint(0, 10),
                 "created": lambda x: seeder.faker.date_between_dates(
                     datetime.datetime(2022, 1, 1), datetime.datetime(2022, 7, 1)
                 ),
@@ -41,7 +39,24 @@ class Command(BaseCommand):
             },
         )
 
-        seeder.execute()
+        created_posts_ = seeder.execute()
+        created_posts = flatten(list(created_posts_.values()))
+
+        for post_pk in created_posts:
+            post = models.Post.objects.get(pk=post_pk)
+
+            for user in User.objects.order_by("?"):
+                rand_num = random.randint(1, 10)
+                if rand_num <= 6:  # 60% like
+                    post.liker.add(user)
+            for user in User.objects.order_by("?"):
+                rand_num = random.randint(1, 10)
+                if rand_num <= 2:  # 20% dislike
+                    post.disliker.add(user)
+            for user in User.objects.order_by("?"):
+                rand_num = random.randint(1, 10)
+                if rand_num <= 1:  # 10% scrap
+                    post.scraper.add(user)
 
         self.stdout.write(
             self.style.SUCCESS(f"{number} Posts are generated automatically.")

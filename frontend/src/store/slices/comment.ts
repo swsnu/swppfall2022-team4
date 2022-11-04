@@ -40,3 +40,12 @@ export function* deleteCommentSaga(action: PayloadAction<commentAPI.deleteCommen
     // yield put(postActions.createCommentFailure(error));
   }
 }
+
+export function* commentFuncSaga(action: PayloadAction<commentAPI.commentFuncRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.commentFunc, action.payload);
+    yield put(postActions.commentFuncSuccess(response));
+  } catch (error) {
+    // yield put(commentActions.editcommentFailure(error));
+  }
+}

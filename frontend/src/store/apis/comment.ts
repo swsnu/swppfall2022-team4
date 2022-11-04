@@ -16,6 +16,8 @@ export type Comment = {
   parent_comment: number | null;
   replyActive?: boolean;
   editActive?: boolean;
+  liked?: boolean;
+  disliked?: boolean;
 };
 
 export type getPostCommentRequestType = {
@@ -63,4 +65,14 @@ export const editComment = async (payload: editCommentRequestType) => {
 export type editCommentRequestType = {
   comment_id: number;
   content: string;
+};
+
+export const commentFunc = async (payload: commentFuncRequestType) => {
+  const response = await client.put(`/api/comment/${payload.comment_id}/func/`, payload);
+  return response.data;
+};
+
+export type commentFuncRequestType = {
+  comment_id: number;
+  func_type: string;
 };

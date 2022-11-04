@@ -5,10 +5,16 @@ import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
 import { timeAgoFormat } from 'utils/datetime';
-import { PostPageWithSearchBar } from './PostLayout';
+import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { Comment } from 'store/apis/comment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import Loading from 'components/common/Loading';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+
+interface IPropsColorButton {
+  color?: string;
+}
 
 interface IPropsCommentSubmitBtn {
   disabled?: boolean;
@@ -19,6 +25,17 @@ interface IPropsCommentSubmitBtn {
 interface IPropsComment {
   isChild?: boolean;
 }
+
+const FuncBtnStatus = {
+  None: 'None',
+  Like: 'Like',
+  Dislike: 'Dislike',
+  Scrap: 'Scrap',
+};
+interface IPropsFuncBtn {
+  color: string;
+}
+
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
@@ -28,7 +45,8 @@ const PostDetail = () => {
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
   const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
-
+  const postFuncStatus = useSelector(({ post }: RootState) => post.postFunc);
+  const commentFuncStatus = useSelector(({ post }: RootState) => post.postComment.commentFunc);
   const [commentList, setCommentList] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState('');
   const [commentReplyInput, setCommentReplyInput] = useState('');
@@ -45,7 +63,7 @@ const PostDetail = () => {
         }),
       );
     }
-  }, []);
+  }, [postFuncStatus]);
   useEffect(() => {
     if (id) {
       dispatch(
@@ -54,7 +72,7 @@ const PostDetail = () => {
         }),
       );
     }
-  }, [commentNum]);
+  }, [commentNum, commentFuncStatus]);
   useEffect(() => {
     if (postComment) setCommentList(postComment);
   }, [postComment]);
@@ -65,6 +83,56 @@ const PostDetail = () => {
     }
   }, [postDeleteStatus]);
 
+  const postFuncLikeOnClick = () => {
+    if (id) {
+      dispatch(
+        postActions.postFunc({
+          post_id: id,
+          func_type: 'like',
+        }),
+      );
+    }
+  };
+  const postFuncDislikeOnClick = () => {
+    if (id) {
+      dispatch(
+        postActions.postFunc({
+          post_id: id,
+          func_type: 'dislike',
+        }),
+      );
+    }
+  };
+  const postFuncScrapOnClick = () => {
+    if (id) {
+      dispatch(
+        postActions.postFunc({
+          post_id: id,
+          func_type: 'scrap',
+        }),
+      );
+    }
+  };
+  const commentFuncLikeOnClick = (comment: Comment) => {
+    if (comment.id) {
+      dispatch(
+        postActions.commentFunc({
+          comment_id: comment.id,
+          func_type: 'like',
+        }),
+      );
+    }
+  };
+  const commentFuncDislikeOnClick = (comment: Comment) => {
+    if (comment.id) {
+      dispatch(
+        postActions.commentFunc({
+          comment_id: comment.id,
+          func_type: 'dislike',
+        }),
+      );
+    }
+  };
   const deleteOnClick = () => {
     if (id) {
       dispatch(
@@ -92,6 +160,7 @@ const PostDetail = () => {
         }),
       );
       setCommentInput('');
+      setCommentReplyInput('');
       changeCommentNum(Date.now());
       setReplyActivated(false);
     } else {
@@ -103,6 +172,7 @@ const PostDetail = () => {
     dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
     setReplyActivated(!replyActivated);
   };
+
   const commentEditOpenOnClick = (comment: Comment) => {
     dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
     setCommentEditInput(comment.content);
@@ -181,6 +251,7 @@ const PostDetail = () => {
     return (
       <CommentReplyWrapper key={comment.id}>
         <CommentItem isChild={comment.parent_comment !== null}>
+          {/* {comment.parent_comment !== null && <FontAwesomeIcon icon={faArrowRightLong} />} */}
           <CommentWritterWrapperO1>
             <CommentWritterWrapper>
               <CommentWritterAvatar>Avatar</CommentWritterAvatar>
@@ -195,18 +266,27 @@ const PostDetail = () => {
                   onChange={e => setCommentEditInput(e.target.value)}
                 ></CommentEditInput>
               ) : (
-                <CommentContent> {comment.content} </CommentContent>
+                <CommentContent>
+                  {/* [My ID : {comment.id} / Parent : {comment.parent_comment}] */}
+                  {comment.content}
+                </CommentContent>
               )}
             </CommentContentWrapper>
             <CommentFuncWrapper>
               {CommentBtnComponent(comment)}
-              <CommentFuncLikeBtn>
+              <CommentFuncBtn
+                onClick={() => commentFuncLikeOnClick(comment)}
+                color={comment.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}
+              >
                 <FontAwesomeIcon icon={faThumbsUp} />
-              </CommentFuncLikeBtn>
+              </CommentFuncBtn>
               <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-              <CommentFuncLikeBtn>
+              <CommentFuncBtn
+                onClick={() => commentFuncDislikeOnClick(comment)}
+                color={comment.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}
+              >
                 <FontAwesomeIcon icon={faThumbsDown} />
-              </CommentFuncLikeBtn>
+              </CommentFuncBtn>
               <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
               <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
             </CommentFuncWrapper>
@@ -253,15 +333,38 @@ const PostDetail = () => {
             </ArticleTitleWrapper>
             <ArticleBodyContent>{post.content}</ArticleBodyContent>
             <ArticleBodyFooter>
-              <h3>댓글 {post.comments_num}</h3>
-              <CommentFuncLikeBtn>
+              <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
+              <CommentFuncBtn
+                onClick={postFuncLikeOnClick}
+                color={post.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}
+              >
                 <FontAwesomeIcon icon={faThumbsUp} />
-              </CommentFuncLikeBtn>
+              </CommentFuncBtn>
               <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
-              <CommentFuncLikeBtn>
+              <CommentFuncBtn
+                onClick={postFuncDislikeOnClick}
+                color={post.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}
+              >
                 <FontAwesomeIcon icon={faThumbsDown} />
-              </CommentFuncLikeBtn>
+              </CommentFuncBtn>
               <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
+              <CommentFuncBtn
+                onClick={postFuncScrapOnClick}
+                color={post.scraped ? FuncBtnStatus.Scrap : FuncBtnStatus.None}
+              >
+                <FontAwesomeIcon icon={faStar} />
+              </CommentFuncBtn>
+              <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
+
+              <TagBubbleWrapper>
+                {post.tags.map(tags => {
+                  return (
+                    <TagBubble key={tags.id} color={tags.color}>
+                      {tags.name}
+                    </TagBubble>
+                  );
+                })}
+              </TagBubbleWrapper>
             </ArticleBodyFooter>
           </ArticleBody>
           <ArticleCommentWrapper>
@@ -284,7 +387,7 @@ const PostDetail = () => {
           </ArticleCommentWrapper>
         </ArticleItem>
       ) : (
-        <h1>Loading</h1>
+        <Loading />
       )}
     </ArticleDetailWrapper>
   );
@@ -300,21 +403,49 @@ const PostDetail = () => {
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
     );
   const SideBar = (
-    <>
-      <SideBarItem>{PostAuthorPanel}</SideBarItem>
+    <SideBarWrapper>
+      {PostAuthorPanel}
       <SideBarItem>사이드바 공간2</SideBarItem>
-    </>
+    </SideBarWrapper>
   );
   return PostPageWithSearchBar(PostDetailContent, SideBar);
 };
 
+const TagBubbleWrapper = styled.div`
+  display: flex;
+  margin-left: 10px;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+const TagBubble = styled.button<IPropsColorButton>`
+  height: 20px;
+  width: fit-content;
+  border-radius: 25px;
+  padding: 1px 12px;
+  border: none;
+  white-space: nowrap;
+  margin: 1px 3px;
+  ${({ color }) =>
+    color &&
+    `
+      background: ${color};
+    `}
+`;
+const ArticleBodyFooter = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: center;
+`;
 const ArticleDetailWrapper = styled.div`
   border: 1px solid black;
-  margin-right: 15px;
-  width: 80%;
+  width: 100%;
   height: 100%;
   background-color: #ffffff;
   position: relative;
+  overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -415,11 +546,6 @@ const ArticleBodyContent = styled.div`
   width: 100%;
   height: 100%;
   /* min-height: 360px; */
-`;
-
-const ArticleBodyFooter = styled.div`
-  display: flex;
-  width: 100%;
 `;
 
 // Article Comment List
@@ -528,8 +654,20 @@ const CommentFuncWrapper = styled.div`
   justify-content: flex-end;
 `;
 
-const CommentFuncLikeBtn = styled.div`
-  color: #777777;
+const handleFuncBtnColor = (color: string) => {
+  switch (color) {
+    case FuncBtnStatus.Like:
+      return '#ff0000';
+    case FuncBtnStatus.Dislike:
+      return '#0000ff';
+    case FuncBtnStatus.Scrap:
+      return '#dddd00';
+    default:
+      return '#dddddd';
+  }
+};
+const CommentFuncBtn = styled.div<IPropsFuncBtn>`
+  color: ${({ color }) => handleFuncBtnColor(color)};
   cursor: pointer;
   margin-left: 8px;
 `;
@@ -545,9 +683,17 @@ const CommentFuncTimeIndicator = styled.span`
   min-width: 48px;
 `;
 
+const CommentNumIndicator = styled.span`
+  font-size: 15px;
+  width: 50px;
+  margin-right: 5px;
+  white-space: nowrap;
+  /* margin: 0px 5px; */
+`;
 const CommentFuncNumIndicator = styled.span`
   font-size: 12px;
   margin-left: 8px;
+  min-width: 15px;
   /* margin: 0px 5px; */
 `;
 
@@ -620,9 +766,9 @@ const PostPanelWrapper = styled.div`
 `;
 
 const CreatePostBtn = styled.button`
-  padding: 5px 20px;
-  width: 90%;
-  border-radius: 10px;
+  padding: 8px 20px;
+  width: 100%;
+  border: none;
   background-color: #35c9ea;
   font-size: 15px;
   margin-bottom: 10px;
