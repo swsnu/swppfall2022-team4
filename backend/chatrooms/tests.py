@@ -90,7 +90,7 @@ class ImageTestCase(TestCase):
         return client, csrftoken
 
     def test_chatroom(self):
-        client, csrftoken = self.ready()
+        client, _ = self.ready()
 
         res = client.get('/api/chat/username2/')
         self.assertEqual(res.status_code, 403)
@@ -99,7 +99,7 @@ class ImageTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_message(self):
-        client, csrftoken = self.ready()
+        client, _ = self.ready()
 
         res = client.get('/api/chat/message/999/')
         self.assertEqual(res.status_code, 404)

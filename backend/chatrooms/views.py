@@ -18,9 +18,9 @@ def chatroom(request, user_id):
     data = json.loads(serializers.serialize('json', chatrooms))
     response = []
 
-    for x in data:
-        username1 = x['fields']['username1']
-        username2 = x['fields']['username2']
+    for chatroom_data in data:
+        username1 = chatroom_data['fields']['username1']
+        username2 = chatroom_data['fields']['username2']
         target_username = username1 if username2 == user_id else username2
 
         if not (User.objects.filter(username=target_username)).exists():
@@ -34,7 +34,7 @@ def chatroom(request, user_id):
             }
 
         response.append({
-            "id": x['pk'],
+            "id": chatroom_data['pk'],
             "user": user,
         })
 
@@ -49,7 +49,7 @@ def message(request, room_id):
         return HttpResponse(status=404)
 
     room = Chatroom.objects.get(id=room_id)
-    if room.username1 != request.user.username and room.username2 != request.user.username:
+    if request.user.username in [room.username1, room.username2]:
         return HttpResponse(status=403)
 
     if request.method == 'GET':
@@ -57,9 +57,9 @@ def message(request, room_id):
         data = json.loads(serializers.serialize('json', messages))
         response = []
 
-        for x in data:
-            author = x['fields']['author']
-            content = x['fields']['content']
+        for message_data in data:
+            author = message_data['fields']['author']
+            content = message_data['fields']['content']
 
             if not (User.objects.filter(id=author)).exists():
                 author = None
@@ -72,10 +72,10 @@ def message(request, room_id):
                 }
 
             response.append({
-                "id": x['pk'],
+                "id": message_data['pk'],
                 "author": author,
                 "content": content,
-                "created": x['fields']['created']
+                "created": message_data['fields']['created']
             })
 
         return JsonResponse(response, safe=False)
