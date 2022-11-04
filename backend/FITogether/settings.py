@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    'daphne',
     'chats',
     'chatrooms',
     'tags',
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-ASGI_APPLICATION = 'FITogether.routing.application'
+ASGI_APPLICATION = 'FITogether.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {

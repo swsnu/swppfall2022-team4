@@ -19,16 +19,17 @@ class Command(BaseCommand):
         number = options.get("number")
         seeder = Seed.seeder()
 
-        all_users = User.objects.all()
         all_chatrooms = Chatroom.objects.all()
 
         for chatroom in all_chatrooms:
+            user1 = User.objects.get(username=chatroom.username1)
+            user2 = User.objects.get(username=chatroom.username2)
             seeder.add_entity(
                 Message,
                 number,
                 {
                     "room": chatroom,
-                    "author": lambda x: random.choice(all_users),
+                    "author": lambda x: random.choice([user1, user2]),
                     "content": lambda x: seeder.faker.sentence(),
                     "created": lambda x: seeder.faker.date_between_dates(
                         datetime.datetime(2022, 1, 1), datetime.datetime(2022, 7, 1)
