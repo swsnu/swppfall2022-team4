@@ -20,7 +20,7 @@ interface UserState {
 
   notice: string[];
 }
-const initialState: UserState = {
+export const initialState: UserState = {
   user: null,
   error: null,
 
@@ -78,9 +78,11 @@ export const userSlice = createSlice({
     check: state => state,
     checkFailure: state => {
       state.user = null;
+      localStorage.removeItem('user');
     },
     logout: state => {
       state.user = null;
+      localStorage.removeItem('user');
     },
 
     getProfile: (state, action: PayloadAction<string>) => {
@@ -166,7 +168,6 @@ function* checkSaga() {
 }
 function* logoutSaga() {
   yield call(userAPI.logout);
-  localStorage.removeItem('user');
 }
 
 function* getProfileSaga(action: PayloadAction<string>) {
