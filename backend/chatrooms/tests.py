@@ -18,8 +18,7 @@ class ImageTestCase(TestCase):
             weight=75,
             image="profile_default.png",
             exp=0,
-            level=1,
-            created=datetime.date.today()
+            level=1
         )
         User.objects.create(
             username='username2',
@@ -31,8 +30,7 @@ class ImageTestCase(TestCase):
             weight=75,
             image="profile_default.png",
             exp=0,
-            level=1,
-            created=datetime.date.today()
+            level=1
         )
         User.objects.create(
             username='username3',
@@ -44,8 +42,7 @@ class ImageTestCase(TestCase):
             weight=75,
             image="profile_default.png",
             exp=0,
-            level=1,
-            created=datetime.date.today()
+            level=1
         )
 
         chatroom1 = Chatroom.objects.create(
@@ -64,14 +61,12 @@ class ImageTestCase(TestCase):
         Message.objects.create(
             room=chatroom1,
             author=user1,
-            content="content1",
-            created = datetime.date.today()
+            content="content1"
         )
         Message.objects.create(
             room=chatroom2,
             author=None,
-            content="content2",
-            created = datetime.date.today()
+            content="content2"
         )
 
     def ready(self):

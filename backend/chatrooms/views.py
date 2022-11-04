@@ -14,7 +14,7 @@ def chatroom(request, user_id):
     if request.user.username != user_id:
         return HttpResponse(status=403)
 
-    chatrooms = Chatroom.objects.filter(Q(username1=user_id) | Q(username2=user_id))
+    chatrooms = Chatroom.objects.filter(Q(username1=user_id) | Q(username2=user_id)).order_by('-updated')
     data = json.loads(serializers.serialize('json', chatrooms))
     response = []
 

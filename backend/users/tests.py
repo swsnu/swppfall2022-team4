@@ -18,8 +18,7 @@ class ImageTestCase(TestCase):
             weight=75,
             image="profile_default.png",
             exp=0,
-            level=1,
-            created=datetime.date.today()
+            level=1
         )
         User.objects.create(
             username='username2',
@@ -31,8 +30,7 @@ class ImageTestCase(TestCase):
             weight=75,
             image="profile_default.png",
             exp=0,
-            level=1,
-            created=datetime.date.today()
+            level=1
         )
 
     def ready(self):

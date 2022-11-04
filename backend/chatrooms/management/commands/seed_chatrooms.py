@@ -1,4 +1,5 @@
 import random
+import datetime
 
 from django.core.management import BaseCommand
 from users.models import User
@@ -18,7 +19,9 @@ class Command(BaseCommand):
                 if random.randint(0, 1) == 0:
                     Chatroom.objects.create(
                         username1=all_users[i].username,
-                        username2=all_users[j].username
+                        username2=all_users[j].username,
+                        created=datetime.datetime(2012, 7, 1),
+                        updated=datetime.datetime(2012, 7, 1),
                     )
                     cnt += 1
 
