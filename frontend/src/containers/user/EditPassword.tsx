@@ -103,7 +103,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fafafa;
   padding-bottom: 40px;
 `;
 

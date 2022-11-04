@@ -121,7 +121,7 @@ const InsideComponent = () => {
               <Route path="edit_password" element={<EditPassword />} />
 
               <Route path="chat" element={<Chat />} />
-              <Route path="chat/:username" element={<Chat />} />
+              <Route path="chat/:id" element={<Chat />} />
 
               <Route path="post/*">
                 <Route path="" element={<PostMain />} />
@@ -154,4 +154,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;

@@ -1,8 +1,6 @@
-import useCheckAuth from 'hooks/useCheckAuth';
 import styled from 'styled-components';
 
 const Main = () => {
-  useCheckAuth();
   return (
     <Wrapper>
       <div>Main Page</div>
