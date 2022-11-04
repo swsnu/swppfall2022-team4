@@ -213,13 +213,13 @@ class ImageTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_check(self):
-        client, csrftoken = self.ready()
+        client, _ = self.ready()
 
         res = client.get('/api/user/check/')
         self.assertEqual(res.status_code, 200)
 
     def test_logout(self):
-        client, csrftoken = self.ready()
+        client, _ = self.ready()
 
         res = client.get('/api/user/logout/')
         self.assertEqual(res.status_code, 204)
