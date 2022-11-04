@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'index';
-import { userActions } from 'store/slices/user';
-import useCheckAuth from 'hooks/useCheckAuth';
+import { AiFillHome } from 'react-icons/ai';
+import { BsFillChatDotsFill } from 'react-icons/bs';
 import { IoIosNotifications, IoIosNotificationsOutline } from 'react-icons/io';
 import { HiOutlineDocumentReport, HiUserGroup, HiOutlineAnnotation, HiInformationCircle } from 'react-icons/hi';
 import styled from 'styled-components';
+import { RootState } from 'index';
+import { userActions } from 'store/slices/user';
+import { chatActions } from 'store/slices/chat';
+import useCheckAuth from 'hooks/useCheckAuth';
 
 const Header = () => {
   useCheckAuth();
@@ -18,9 +21,10 @@ const Header = () => {
   const infoRef = useRef<HTMLDivElement>(null);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
-  const { user, notice } = useSelector((state: RootState) => ({
+  const { user, notice, where } = useSelector((state: RootState) => ({
     user: state.user.user,
     notice: state.user.notice,
+    where: state.chat.where,
   }));
 
   useEffect(() => {
@@ -50,6 +54,52 @@ const Header = () => {
     setNotificationOpen(false);
     setInfoOpen(false);
   }, [location]);
+
+  const ws: React.MutableRefObject<WebSocket | null> = useRef(null);
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://${process.env.REACT_APP_API_SOCKET_URL}/ws/chat/${user && user.username}/`);
+
+    ws.current.onopen = () => {
+      console.log(`CONNECTED`);
+      dispatch(chatActions.setSocket(ws.current));
+    };
+    ws.current.onclose = () => {
+      console.log(`DISCONNECTED`);
+    };
+    ws.current.onerror = error => {
+      console.log(`CONNECTION ERROR`);
+      console.log(error);
+    };
+    ws.current.onmessage = e => {
+      const data = JSON.parse(e.data);
+
+      console.log(data, where, data.where.toString());
+
+      if (data.type === 'CHAT') {
+        if (where === null) {
+          console.log('ignore...');
+        } else if (where !== data.where.toString()) {
+          console.log('update list...');
+          dispatch(chatActions.getChatroomList(user?.username || ''));
+        } else {
+          console.log('update list and message...');
+          dispatch(chatActions.getChatroomList(user?.username || ''));
+          dispatch(chatActions.addMessage(data.data));
+        }
+      }
+    };
+
+    return () => {
+      console.log('CLOSE');
+      if (ws && ws.current) ws.current.close();
+    };
+  }, [where]);
+
+  const onLogout = () => {
+    if (window.confirm('정말 로그아웃하시겠습니까?')) {
+      dispatch(userActions.logout());
+    }
+  };
 
   if (!user) return <div>no user</div>;
   return (

@@ -6,12 +6,16 @@ import * as chatAPI from 'store/apis/chat';
 
 interface ChatState {
   socket: any;
+  where: string | null;
+
   chatroomList: chatAPI.chatroomType[];
   messageList: chatAPI.messageType[];
   error: AxiosError | null;
 }
 export const initialState: ChatState = {
   socket: null,
+  where: null,
+
   chatroomList: [],
   messageList: [],
   error: null,
@@ -23,6 +27,12 @@ export const chatSlice = createSlice({
   reducers: {
     setSocket: (state, { payload }) => {
       state.socket = payload;
+    },
+    setWhere: (state, { payload }) => {
+      state.where = payload;
+    },
+    addMessage: (state, { payload }) => {
+      state.messageList.push(payload);
     },
     getChatroomList: (state, action: PayloadAction<string>) => {
       state.chatroomList = [];

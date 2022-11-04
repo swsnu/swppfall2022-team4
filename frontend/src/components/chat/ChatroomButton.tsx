@@ -23,7 +23,7 @@ export default ChatroomButton;
 
 const Wrapper = styled.div<{ active: boolean }>`
   width: 250px;
-  height: 100%;
+  height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
