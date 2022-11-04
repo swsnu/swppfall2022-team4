@@ -13,8 +13,5 @@ class Group(models.Model):
     end_date = models.DateField(null = True)
     description = models.TextField(blank = False)
     free = models.BooleanField(null = False)
+    goal = models.ManyToManyField(FitElement, related_name = 'group_goal')
 
-class Goal(models.Model):
-    """ group goal definition """
-    group_id = models.ForeignKey(Group, on_delete = models.CASCADE, related_name = 'goal')
-    fit_element = models.ManyToManyField(FitElement, related_name = 'group_goal')
