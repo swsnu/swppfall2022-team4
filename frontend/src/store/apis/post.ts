@@ -1,9 +1,17 @@
+import { TagVisual } from 'containers/post/PostEditorLayout';
 import client from './client';
 
 export const getPosts = async (payload: getPostsRequestType) => {
-  const response = await client.get<getPostsResponseType>(
-    `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`,
-  );
+  let response;
+  if (payload.searchKeyword) {
+    response = await client.get<getPostsResponseType>(
+      `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}&search=${payload.searchKeyword}`,
+    );
+  } else {
+    response = await client.get<getPostsResponseType>(
+      `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`,
+    );
+  }
   return response.data;
 };
 
@@ -18,11 +26,16 @@ export type Post = {
   dislike_num: number;
   scrap_num: number;
   comments_num: number;
+  tags: TagVisual[];
+  liked?: boolean;
+  disliked?: boolean;
+  scraped?: boolean;
 };
 
 export type getPostsRequestType = {
   pageNum: number;
   pageSize: number;
+  searchKeyword?: string;
 };
 
 export type getPostsResponseType = {
@@ -41,6 +54,7 @@ export type createPostRequestType = {
   title: string;
   content: string;
   author_name: string;
+  tags: TagVisual[];
 };
 
 export const getPostDetail = async (payload: postIdentifyingRequestType) => {
@@ -62,9 +76,24 @@ export type editPostRequestType = {
   post_id: string;
   title: string;
   content: string;
+  tags: TagVisual[];
 };
 
 // Used in createPostRequest, deletePostRequest
 export type postIdentifyingRequestType = {
   post_id: string;
+};
+
+export const postFunc = async (payload: postFuncRequestType) => {
+  const response = await client.put(`/api/post/${payload.post_id}/func/`, payload);
+  return response.data;
+};
+
+export type postFuncRequestType = {
+  post_id: string;
+  func_type: string;
+};
+
+export type postSearchRequestType = {
+  search_keyword: string;
 };

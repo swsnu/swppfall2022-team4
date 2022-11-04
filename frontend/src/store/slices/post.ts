@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as postAPI from 'store/apis/post';
 import * as commentAPI from 'store/apis/comment';
-import { createCommentSaga, deleteCommentSaga, editCommentSaga, getPostCommentSaga } from './comment';
+import { commentFuncSaga, createCommentSaga, deleteCommentSaga, editCommentSaga, getPostCommentSaga } from './comment';
 
 interface PostState {
   postList: {
@@ -20,6 +20,7 @@ interface PostState {
   postComment: {
     comments: commentAPI.Comment[] | null;
     error: AxiosError | null;
+    commentFunc: boolean;
   };
   postCreate: {
     status: boolean;
@@ -27,6 +28,8 @@ interface PostState {
   };
   postEdit: boolean;
   postDelete: boolean;
+  postFunc: boolean;
+  postSearch: string;
 }
 const initialState: PostState = {
   postList: {
@@ -43,6 +46,7 @@ const initialState: PostState = {
   postComment: {
     comments: null,
     error: null,
+    commentFunc: false,
   },
   postCreate: {
     status: false,
@@ -50,6 +54,8 @@ const initialState: PostState = {
   },
   postEdit: false,
   postDelete: false,
+  postFunc: false,
+  postSearch: '',
 };
 
 export const postSlice = createSlice({
@@ -152,11 +158,16 @@ export const postSlice = createSlice({
     deleteComment: (state, action: PayloadAction<commentAPI.deleteCommentRequestType>) => {
       //edit!
     },
+    // postSearch ------------------------------------------------------------------------
+    postSearch: (state, action: PayloadAction<postAPI.postSearchRequestType>) => {
+      state.postSearch = action.payload.search_keyword;
+    },
     // utils ------------------------------------------------------------------------
     stateRefresh: state => {
       state.postCreate.status = false;
       state.postEdit = false;
       state.postDelete = false;
+      state.postFunc = false;
     },
     toggleCommentReply: (state, action: PayloadAction<commentAPI.createCommentReplyType>) => {
       if (state.postComment.comments)
@@ -178,6 +189,18 @@ export const postSlice = createSlice({
           }
         });
       }
+    },
+    postFunc: (state, action: PayloadAction<postAPI.postFuncRequestType>) => {
+      state.postFunc = false;
+    },
+    postFuncSuccess: (state, { payload }) => {
+      state.postFunc = true;
+    },
+    commentFunc: (state, action: PayloadAction<commentAPI.commentFuncRequestType>) => {
+      state.postComment.commentFunc = false;
+    },
+    commentFuncSuccess: (state, { payload }) => {
+      state.postComment.commentFunc = true;
     },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
@@ -229,6 +252,15 @@ function* editPostSaga(action: PayloadAction<postAPI.editPostRequestType>) {
   }
 }
 
+function* postFuncSaga(action: PayloadAction<postAPI.postFuncRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(postAPI.postFunc, action.payload);
+    yield put(postActions.postFuncSuccess(response));
+  } catch (error) {
+    // yield put(postActions.editPostFailure(error));
+  }
+}
+
 export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
@@ -236,7 +268,11 @@ export default function* postSaga() {
   yield takeLatest(postActions.deletePost, deletePostSaga);
   yield takeLatest(postActions.editPost, editPostSaga);
   yield takeLatest(postActions.getPostComment, getPostCommentSaga);
+
+  yield takeLatest(postActions.postFunc, postFuncSaga);
+
   yield takeLatest(postActions.createComment, createCommentSaga);
   yield takeLatest(postActions.editComment, editCommentSaga);
   yield takeLatest(postActions.deleteComment, deleteCommentSaga);
+  yield takeLatest(postActions.commentFunc, commentFuncSaga);
 }

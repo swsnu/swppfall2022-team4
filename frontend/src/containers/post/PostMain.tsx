@@ -6,31 +6,41 @@ import { postActions } from 'store/slices/post';
 import { getPostsRequestType } from 'store/apis/post';
 import { timeAgoFormat } from 'utils/datetime';
 import { useNavigate } from 'react-router';
-import { PostPageWithSearchBar } from './PostLayout';
+import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
+import { tagActions } from 'store/slices/tag';
+
+interface IPropsPageIndicator {
+  isActive?: boolean;
+}
 
 const PostMain = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
-  const defaultPageConfig: getPostsRequestType = {
-    pageNum: page,
-    pageSize: 10,
-  };
-  useEffect(() => {
-    dispatch(postActions.getPosts(defaultPageConfig));
-  }, [page]);
 
   const postList = useSelector((rootState: RootState) => rootState.post.postList.posts);
   const maxPage = useSelector((rootState: RootState) => rootState.post.postList.pageTotal);
+  const searchKeyword = useSelector((rootState: RootState) => rootState.post.postSearch);
+  // const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
+  useEffect(() => {
+    const defaultPageConfig: getPostsRequestType = {
+      pageNum: page,
+      pageSize: 10,
+      searchKeyword: searchKeyword ? searchKeyword : undefined,
+    };
+    dispatch(postActions.getPosts(defaultPageConfig));
+  }, [page, searchKeyword]);
+  useEffect(() => {
+    dispatch(tagActions.getTags());
+  }, []);
   const SideBar = (
-    <>
+    <SideBarWrapper>
       <PostPanelWrapper>
         <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
       </PostPanelWrapper>
-
-      <SideBarItem>사이드바 공간1</SideBarItem>
+      <SideBarItem>태그 목록</SideBarItem>
       <SideBarItem>사이드바 공간2</SideBarItem>
-    </>
+    </SideBarWrapper>
   );
   const MainContent = (
     <ArticleListWrapper>
@@ -59,19 +69,36 @@ const PostMain = () => {
         <span></span>
       )}
       <ArticleFooter>
-        <PageNumberIndicator onClick={() => setPage(1)}>◀◀</PageNumberIndicator>
-        <PageNumberIndicator onClick={() => (page >= 2 ? setPage(page => page - 1) : null)}>◀</PageNumberIndicator>
-        {[...Array(5)]
-          .map((_, i) => Math.floor((page - 1) / 5) * 5 + i + 1)
-          .map(
-            page =>
-              maxPage &&
-              page <= maxPage && <PageNumberIndicator onClick={() => setPage(page)}>{page}</PageNumberIndicator>,
-          )}
-        <PageNumberIndicator onClick={() => (maxPage && page < maxPage ? setPage(page => page + 1) : null)}>
-          ▶︎
+        <PageNumberIndicator isActive={page >= 2} onClick={() => setPage(1)}>
+          ◀◀
         </PageNumberIndicator>
-        <PageNumberIndicator onClick={() => (maxPage ? setPage(maxPage) : null)}>▶︎▶︎</PageNumberIndicator>
+        <PageNumberIndicator isActive={page >= 2} onClick={() => (page >= 2 ? setPage(page => page - 1) : null)}>
+          ◀
+        </PageNumberIndicator>
+        {maxPage &&
+          [...Array(5)]
+            .map((_, i) => Math.floor((page - 1) / 5) * 5 + i + 1)
+            .map(
+              p =>
+                p <= maxPage && (
+                  <PageNumberIndicator isActive={p != page} key={p} onClick={() => (p != page ? setPage(p) : null)}>
+                    {p}
+                  </PageNumberIndicator>
+                ),
+            )}
+        {maxPage && (
+          <PageNumberIndicator
+            isActive={page < maxPage}
+            onClick={() => (page < maxPage ? setPage(page => page + 1) : null)}
+          >
+            ▶︎
+          </PageNumberIndicator>
+        )}
+        {maxPage && (
+          <PageNumberIndicator isActive={page < maxPage} onClick={() => (maxPage ? setPage(maxPage) : null)}>
+            ▶︎▶︎
+          </PageNumberIndicator>
+        )}
         현재 페이지 : {page}
       </ArticleFooter>
     </ArticleListWrapper>
@@ -82,8 +109,7 @@ const PostMain = () => {
 
 const ArticleListWrapper = styled.div`
   border: 1px solid black;
-  margin-right: 15px;
-  width: 80%;
+  width: 100%;
   height: 100%;
   min-height: 100%;
   background-color: #ffffff;
@@ -132,9 +158,9 @@ const PostPanelWrapper = styled.div`
   align-items: center;
 `;
 const CreatePostBtn = styled.button`
-  padding: 5px 20px;
-  width: 90%;
-  border-radius: 10px;
+  padding: 8px 20px;
+  width: 100%;
+  border: none;
   background-color: #35c9ea;
   font-size: 15px;
   margin-bottom: 10px;
@@ -142,8 +168,13 @@ const CreatePostBtn = styled.button`
     background-color: #45d9fa;
   }
 `;
-const PageNumberIndicator = styled.span`
-  cursor: pointer;
+const PageNumberIndicator = styled.span<IPropsPageIndicator>`
   margin: 0px 5px;
+  ${({ isActive }) =>
+    isActive &&
+    `
+    cursor: pointer;
+    color: #62bf45;
+  `}
 `;
 export default PostMain;

@@ -25,6 +25,7 @@ import PostEdit from 'containers/post/PostEdit';
 import PostDetail from 'containers/post/PostDetail';
 
 import WorkoutLog from 'containers/workout/WorkoutLog';
+import InformationLobby from 'containers/information/InformationLobby';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -130,6 +131,8 @@ const InsideComponent = () => {
               </Route>
 
               <Route path="workout" element={<WorkoutLog />} />
+
+              <Route path="information" element={<InformationLobby />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
