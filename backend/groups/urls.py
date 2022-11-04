@@ -2,5 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # path('group/all', views.group_list)
+    path('', views.general_group, name = "groups"),
+    path('<int:group_id>', views.group_detail, name = "group")
 ]

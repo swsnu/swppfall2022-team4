@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/image/', include('images.urls')),
     path('api/user/', include('users.urls')),
     path('api/fitelement/', include('workouts.urls')),
+    path('api/group/', include('groups.urls')),
     path('api/post/', include('posts.urls', namespace="post")),
     path('api/comment/', include('comments.urls', namespace="comment"))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
