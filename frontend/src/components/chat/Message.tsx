@@ -66,6 +66,7 @@ const ContentWrapper = styled.div<{ my: boolean }>`
   border-radius: 5px;
   box-shadow: 1px 1px 2px 2px #797979;
   line-height: normal;
+  word-break: break-all;
 
   @media all and (max-width: 435px) {
     max-width: 280px;
