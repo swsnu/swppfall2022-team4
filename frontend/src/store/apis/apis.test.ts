@@ -1,5 +1,6 @@
 import client from './client';
 import * as userAPI from './user';
+import * as chatAPI from './chat';
 
 beforeEach(() => {
   client.get = jest.fn().mockImplementation(url => Promise.resolve({ data: url }));
@@ -60,6 +61,17 @@ describe('API TEST', () => {
     test('signout', async () => {
       const result = await userAPI.signout('11111111');
       expect(result).toBe(`/api/user/profile/11111111/`);
+    });
+  });
+
+  describe('Chat', () => {
+    test('getChatroomList', async () => {
+      const result = await chatAPI.getChatroomList('11111111');
+      expect(result).toBe(`/api/chat/11111111/`);
+    });
+    test('getMessageList', async () => {
+      const result = await chatAPI.getMessageList('11111111');
+      expect(result).toBe(`/api/chat/message/11111111/`);
     });
   });
 });
