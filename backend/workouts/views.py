@@ -11,11 +11,12 @@ from django.views.decorators.http import require_http_methods
 @require_http_methods(["POST"])
 def create_fit_element(request):
     """
-    POST: create fit element
+    POST: create a fit element
     """
     if request.method == 'POST':
         try:
             req_data = json.loads(request.body.decode())
+            print(req_data)
             new_fit_element = FitElement(
                 author_id=req_data["user_id"],
                 type=req_data["type"],
@@ -28,10 +29,13 @@ def create_fit_element(request):
                 time=req_data["time"],
                 date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
             )
+            print(datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'))
 
             new_fit_element.save()
 
-            if not DailyLog.objects.filter(date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')).exists():
+            daily_logs = DailyLog.objects.filter(author_id=int(req_data["user_id"]))
+
+            if not daily_logs.filter(date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')).exists():
                 try:
                     new_daily_log = DailyLog(
                         author_id=req_data["user_id"],
@@ -42,6 +46,12 @@ def create_fit_element(request):
                     new_daily_log.fit_element.add(new_fit_element)
                     # return JsonResponse({"dailylog_date": datetime(new_daily_log.date)}, status=201)
                 except (KeyError, json.JSONDecodeError):
+                    return HttpResponseBadRequest()
+            else:
+                try:
+                    daily_log_single = daily_logs.filter(date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'))[0]
+                    daily_log_single.fit_element.add(new_fit_element)
+                except:
                     return HttpResponseBadRequest()
             
             return JsonResponse({"workout_id": str(new_fit_element.pk)}, status=201)
@@ -190,13 +200,11 @@ def daily_log(request, year, month, specific_date):
     PUT: edit memo or fit elements changed
     """
     if request.method == 'GET':
-        # req_data = json.loads(request.body.decode())
-        # print(req_data)
         print(request.GET.get)
         user_id = request.GET.get('user_id')
-        print(user_id)
+        print(DailyLog.objects.all())
 
-        daily_logs = DailyLog.objects.filter(id=int(user_id))
+        daily_logs = DailyLog.objects.filter(author_id=int(user_id))
         daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
         # 하나밖에 없도록 처리할 것
 

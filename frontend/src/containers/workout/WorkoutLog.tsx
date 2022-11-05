@@ -6,6 +6,8 @@ import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
 import { getDailyLogRequestType, createWorkoutLogRequestType, createDailyLogRequestType } from 'store/apis/workout';
+import { rootSaga } from 'store';
+import { create } from 'domain';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -54,6 +56,7 @@ const WorkoutLog = () => {
 
   const clickDate = (year: number, month: number, d: number) => {
     setDate(new Date(year, month, d));
+    console.log(year, month, d);
     setSelectedMonth(month);
     const dailyLogConfig: getDailyLogRequestType = {
       year: year,
@@ -68,6 +71,7 @@ const WorkoutLog = () => {
   };
 
   const createWorkoutLog = () => {
+    console.log("create", year, month, day)
     const newLogConfig: createWorkoutLogRequestType = {
       user_id: 1,
       type: 'log',
@@ -78,7 +82,7 @@ const WorkoutLog = () => {
       rep: rep,
       set: set,
       time: workout_time,
-      date: date
+      date: new Date(year, month, day+1)
     };
     dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
   }
@@ -98,10 +102,11 @@ const WorkoutLog = () => {
 
   const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
+  const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
-  }, []);
+  }, [createDailyLogStatus]);
 
   useEffect(() => {
     setDay(date.getDate());
@@ -174,7 +179,7 @@ const WorkoutLog = () => {
           <LogWrapper>
             <LogUpper>
               <DateWrapper>
-                {year}.{selected_month + 1}.{day}
+                {year}.{selected_month+1}.{day}
               </DateWrapper>
               <AnyButton>루틴</AnyButton>
               <AnyButton>불러오기</AnyButton>
