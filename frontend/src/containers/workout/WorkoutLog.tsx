@@ -5,10 +5,7 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
-import { getDailyLogRequestType, createWorkoutLogRequestType, createDailyLogRequestType } from 'store/apis/workout';
-import { rootSaga } from 'store';
-import { create } from 'domain';
-
+import { getDailyLogRequestType, createWorkoutLogRequestType, createDailyLogRequestType, editMemoRequestType } from 'store/apis/workout';
 const WorkoutLog = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,6 +29,8 @@ const WorkoutLog = () => {
   const [set, setSet] = useState<number | null>(null);
   const [workout_time, setWorkoutTime] = useState<number | null>(null);
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
+  const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
+  const [memo, setMemo] = useState('');
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -71,7 +70,7 @@ const WorkoutLog = () => {
   };
 
   const createWorkoutLog = () => {
-    console.log("create", year, month, day)
+    console.log('create', year, month, day);
     const newLogConfig: createWorkoutLogRequestType = {
       user_id: 1,
       type: 'log',
@@ -82,23 +81,39 @@ const WorkoutLog = () => {
       rep: rep,
       set: set,
       time: workout_time,
-      date: new Date(year, month, day+1)
+      date: new Date(year, month, day + 1),
     };
     dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
-  }
-  
-  // const createDailyLog = (memo:any, fitelements:any) => {
-  //   const newDailyLogConfig: createDailyLogRequestType = {
-  //     user_id: 1,
-  //     memo: memo,
-  //     date: date,
-  //     fitelements: fitelements,
-  //     year: year,
-  //     month: month,
-  //     specific_date: day
-  //   };
-  //   dispatch(workoutLogActions.createDailyLog(newDailyLogConfig));
-  // }
+  };
+
+  const memoOnClick = () => {
+    if (memo_write_mode === false) {
+      setMemoWriteMode(true);
+    } else {
+      if (dailyLog.isDailyLog === false) {
+        const newDailyLogConfig: createDailyLogRequestType = {
+          user_id: 1,
+          memo: memo,
+          date: date,
+          fitelements: [],
+          year: year,
+          month: month + 1,
+          specific_date: day,
+        };
+        dispatch(workoutLogActions.createDailyLog(newDailyLogConfig));
+      } else {
+        const editMemoConfig: editMemoRequestType = {
+          user_id: 1,
+          memo: memo,
+          year: year,
+          month: month + 1,
+          specific_date: day,
+        };
+        dispatch(workoutLogActions.editMemo(editMemoConfig));
+      }
+      setMemoWriteMode(false);
+    }
+  };
 
   const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
@@ -106,7 +121,12 @@ const WorkoutLog = () => {
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
+    setMemo(dailyLog.memo || '연필 클릭 후 메모를 추가해 보세요.')
   }, [createDailyLogStatus]);
+
+  useEffect(() => {
+    setMemo(dailyLog.memo || '연필 클릭 후 메모를 추가해 보세요.')
+  }, [dailyLog])
 
   useEffect(() => {
     setDay(date.getDate());
@@ -170,8 +190,16 @@ const WorkoutLog = () => {
           </CalendarWrapper>
           <MemoWrapper>
             <Frame className="memo">
-              <MemoTitleWrapper>Notes</MemoTitleWrapper>
-              <MemoContentWrapper>여기에 내용을 입력해주세요.</MemoContentWrapper>
+              <MemoTitleWrapper>
+                Notes
+                <MemoEditButton
+                  onClick={() => memoOnClick()}
+                  src={require('assets/images/workout_log/memo/memo_edit.png')}
+                ></MemoEditButton>
+              </MemoTitleWrapper>
+              <MemoContentWrapper>
+                {memo_write_mode ? <MemoInput value={memo} onChange={e => setMemo(e.target.value)}/> : memo}
+              </MemoContentWrapper>
             </Frame>
           </MemoWrapper>
         </LeftWrapper>
@@ -179,7 +207,7 @@ const WorkoutLog = () => {
           <LogWrapper>
             <LogUpper>
               <DateWrapper>
-                {year}.{selected_month+1}.{day}
+                {year}.{selected_month + 1}.{day}
               </DateWrapper>
               <AnyButton>루틴</AnyButton>
               <AnyButton>불러오기</AnyButton>
@@ -196,22 +224,46 @@ const WorkoutLog = () => {
               </LogHeader>
               <LogInputBody>
                 <LogInputBody_input>
-                  <WorkoutTypeInput type='text' value={workout_type || ''} onChange={e => setWorkoutType(e.target.value)} />
-                  <WorkoutTypeInput className="type2" type='number' min="0" value={weight || 0} onChange={e => setWeight(Number(e.target.value))} />
-                  <WorkoutTypeInput className="type1" type='number' min="0" value={rep || 0} onChange={e => setRep(Number(e.target.value))} />
-                  <WorkoutTypeInput className="type1" type='number' min="0" value={set || 0} onChange={e => setSet(Number(e.target.value))} />
-                  <WorkoutTypeInput className="type2" type='number' min="0" value={workout_time || 0} onChange={e => setWorkoutTime(Number(e.target.value))}/>
+                  <WorkoutTypeInput
+                    type="text"
+                    value={workout_type || ''}
+                    onChange={e => setWorkoutType(e.target.value)}
+                  />
+                  <WorkoutTypeInput
+                    className="type2"
+                    type="number"
+                    min="0"
+                    value={weight || 0}
+                    onChange={e => setWeight(Number(e.target.value))}
+                  />
+                  <WorkoutTypeInput
+                    className="type1"
+                    type="number"
+                    min="0"
+                    value={rep || 0}
+                    onChange={e => setRep(Number(e.target.value))}
+                  />
+                  <WorkoutTypeInput
+                    className="type1"
+                    type="number"
+                    min="0"
+                    value={set || 0}
+                    onChange={e => setSet(Number(e.target.value))}
+                  />
+                  <WorkoutTypeInput
+                    className="type2"
+                    type="number"
+                    min="0"
+                    value={workout_time || 0}
+                    onChange={e => setWorkoutTime(Number(e.target.value))}
+                  />
                 </LogInputBody_input>
                 <LogInputBody_button>
-                  <AnyButton className="type1">
-                    취소
-                  </AnyButton>
+                  <AnyButton className="type1">취소</AnyButton>
                   <AnyButton className="type1" onClick={() => createWorkoutLog()}>
                     완료
                   </AnyButton>
-                  
                 </LogInputBody_button>
-
               </LogInputBody>
               <LogBody>
                 {dailyFitElements.map((fitelement, index) => (
@@ -376,6 +428,21 @@ const MemoWrapper = styled.div`
   justify-content: center;
 `;
 
+const MemoEditButton = styled.img`
+  display: flex;
+  margin-left: 3px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const MemoInput = styled.input`
+  width: 80%;
+  height: 100%;
+  padding: 8px 20px;
+  font-size: 10px;
+`;
+
+
 const MemoTitleWrapper = styled.div`
   display: flex;
   margin: 10px;
@@ -512,7 +579,7 @@ const WorkoutTypeInput = styled.input`
   &&.type2 {
     width: 20%;
   }
-`
+`;
 
 const LogInputBody_button = styled.div`
   width: 100%;

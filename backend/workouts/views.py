@@ -200,17 +200,15 @@ def daily_log(request, year, month, specific_date):
     PUT: edit memo or fit elements changed
     """
     if request.method == 'GET':
-        print(request.GET.get)
         user_id = request.GET.get('user_id')
         print(DailyLog.objects.all())
 
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
         daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
-        # 하나밖에 없도록 처리할 것
 
         if len(daily_log_single) == 0:
             daily_log_dict_return = {
-                'author': int(user_id),
+                'author': -1,
                 'memo': "",
                 'date': datetime(year, month, specific_date).date(),
                 'fitelements': list()
@@ -227,18 +225,31 @@ def daily_log(request, year, month, specific_date):
         return JsonResponse(daily_log_dict_return, safe=False, status=200)
 
     elif request.method == 'POST':
-        try:
-            req_data = json.loads(request.body.decode())
-            new_daily_log = DailyLog(
-                author_id=req_data["user_id"],
-                memo=req_data["memo"],
-                date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
-            )
-            new_daily_log.fit_element.add(req_data["fitelements"])
-            new_daily_log.save()
-            return JsonResponse({"dailylog_date": datetime(new_daily_log.date)}, status=201)
-        except (KeyError, json.JSONDecodeError):
-            return HttpResponseBadRequest()
+        user_id = request.GET.get('user_id')
+        daily_logs = DailyLog.objects.filter(author_id=int(user_id))
+        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
+
+        if len(daily_log_single) == 0:
+            try:
+                req_data = json.loads(request.body.decode())
+                new_daily_log = DailyLog(
+                    author_id=req_data["user_id"],
+                    memo=req_data["memo"],
+                    date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
+                )
+                new_daily_log.save()
+                return JsonResponse({"dailylog_date": new_daily_log.date}, status=201)
+            except (KeyError, json.JSONDecodeError):
+                return HttpResponseBadRequest()
 
     elif request.method == 'PUT':
-        pass
+        user_id = request.GET.get('user_id')
+        daily_logs = DailyLog.objects.filter(author_id=int(user_id))
+        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
+
+        if len(daily_log_single) > 0:
+            req_data = json.loads(request.body.decode())
+            memo = req_data["memo"]
+            daily_log_single[0].memo = memo
+            daily_log_single[0].save()
+            return HttpResponse(status=201)

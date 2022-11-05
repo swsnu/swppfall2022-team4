@@ -21,6 +21,7 @@ interface WorkoutLogState {
 
     } | null;
     daily_log: {
+        isDailyLog: Boolean;
         date: Date | null;
         memo: string | null;
         fit_element: number[] | null;
@@ -51,6 +52,7 @@ const initialState: WorkoutLogState = {
     },
     routine: null,
     daily_log: {
+        isDailyLog: false,
         date: null,
         memo: null,
         fit_element: null,
@@ -103,13 +105,17 @@ export const workoutLogSlice = createSlice({
             state.dailyLogCreate.status = true;
         },
         getDailyLogSuccess: (state, { payload }) => {
+            state.daily_log.isDailyLog = (payload[0].author === -1) ? false : true;
             state.daily_log.memo = payload[0].memo;
             state.daily_log.fit_element = payload[0].fitelements;
             state.daily_log.date = payload[0].date;
             state.daily_fit_elements = payload[1];
         },
         getDailyFitElements: (state, { payload }) => {
-        }
+        },
+        editMemo: (state, action: PayloadAction<workoutLogAPI.editMemoRequestType>) => {
+
+        },
     }
 })
 
@@ -148,7 +154,14 @@ function* createDailyLogSaga(action: PayloadAction<workoutLogAPI.createDailyLogR
     } catch (error) {
         
     }
-    
+}
+
+function* editMemoLogSaga(action: PayloadAction<workoutLogAPI.editMemoRequestType>) {
+    try {
+        const response: AxiosResponse = yield call(workoutLogAPI.editMemo, action.payload);
+    } catch (error) {
+
+    }
 }
 
 export default function* workoutLogSaga() {
@@ -156,5 +169,6 @@ export default function* workoutLogSaga() {
     yield takeLatest(workoutLogActions.getDailyLog, getDailyLogSaga);
     yield takeLatest(workoutLogActions.createDailyLog, createDailyLogSaga);
     yield takeLatest(workoutLogActions.createWorkoutLog, createWorkoutLogSaga);
+    yield takeLatest(workoutLogActions.editMemo, editMemoLogSaga);
   }
   

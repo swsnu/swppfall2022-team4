@@ -61,6 +61,14 @@ export type createDailyLogRequestType = {
     specific_date: number;
 };
 
+export type editMemoRequestType = {
+    user_id: number;
+    memo: string | null;
+    year: number;
+    month: number;
+    specific_date: number;
+}
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
     const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
     return response.data;
@@ -89,5 +97,10 @@ export const createWorkoutLog = async (payload: createWorkoutLogRequestType) => 
 
 export const createDailyLog = async (payload: createDailyLogRequestType) => {
     const response = await client.post<createDailyLogRequestType>(`/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`, payload);
+    return response.data;
+}
+
+export const editMemo = async (payload: editMemoRequestType) => {
+    const response = await client.put<editMemoRequestType>(`/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`, payload);
     return response.data;
 }
