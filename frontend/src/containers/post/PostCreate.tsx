@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate } from 'react-router';
-import { postEditorLayout, TagVisual } from './PostEditorLayout';
+import { PostEditorLayout, TagVisual } from './PostEditorLayout';
 
 const PostCreate = () => {
   const [title, setTitle] = useState('');
@@ -37,7 +37,7 @@ const PostCreate = () => {
       );
     }
   };
-  return postEditorLayout(
+  return PostEditorLayout(
     title,
     setTitle,
     content,

@@ -153,11 +153,10 @@ const Wrapper = styled.div`
   width: 100%;
   max-width: 1200px;
   height: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fafafa;
   padding-bottom: 40px;
 `;
 

@@ -33,7 +33,7 @@ const DEFAULT_OPTION = '$NONE$';
 const NEW_OPTION = '$NEW$';
 const SEARCH_OPTION = '$SEARCH$';
 
-export const postEditorLayout = (
+export const PostEditorLayout = (
   title: string,
   setTitle: (value: React.SetStateAction<string>) => void,
   content: string,

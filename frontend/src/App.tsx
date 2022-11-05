@@ -17,6 +17,8 @@ import Mypage from 'containers/user/Mypage';
 import EditProfile from 'containers/user/EditProfile';
 import EditPassword from 'containers/user/EditPassword';
 
+import Chat from 'containers/chat/Chat';
+
 import PostMain from 'containers/post/PostMain';
 import PostCreate from 'containers/post/PostCreate';
 import PostEdit from 'containers/post/PostEdit';
@@ -114,16 +116,19 @@ const InsideComponent = () => {
             <Routes>
               <Route path="" element={<Main />} />
 
+              <Route path="profile/:username" element={<Mypage />} />
+              <Route path="edit_profile" element={<EditProfile />} />
+              <Route path="edit_password" element={<EditPassword />} />
+
+              <Route path="chat" element={<Chat />} />
+              <Route path="chat/:id" element={<Chat />} />
+
               <Route path="post/*">
                 <Route path="" element={<PostMain />} />
                 <Route path="create" element={<PostCreate />} />
                 <Route path=":id" element={<PostDetail />} />
                 <Route path=":id/edit" element={<PostEdit />} />
               </Route>
-
-              <Route path="profile/:username" element={<Mypage />} />
-              <Route path="edit_profile" element={<EditProfile />} />
-              <Route path="edit_password" element={<EditPassword />} />
 
               <Route path="workout" element={<WorkoutLog />} />
 
@@ -149,4 +154,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;

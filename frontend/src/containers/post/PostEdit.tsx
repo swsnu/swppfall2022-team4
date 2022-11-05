@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
-import { postEditorLayout, TagVisual } from './PostEditorLayout';
+import { PostEditorLayout, TagVisual } from './PostEditorLayout';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();
@@ -56,7 +56,7 @@ const PostEdit = () => {
       );
     }
   };
-  return postEditorLayout(
+  return PostEditorLayout(
     title,
     setTitle,
     content,
