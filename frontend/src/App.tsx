@@ -10,6 +10,7 @@ import Main from 'containers/Main';
 import Login from 'containers/user/Login';
 import Signup from 'containers/user/Signup';
 import WorkoutLog from 'containers/workout/WorkoutLog';
+import Routine from 'containers/workout/Routine';
 import Header from 'components/sections/Header';
 
 import PostMain from 'containers/post/PostMain';
@@ -107,6 +108,7 @@ const InsideComponent = () => {
               <Route path="post/:id" element={<PostDetail />} />
               <Route path="post/:id/edit" element={<PostEdit />} />
               <Route path="workout" element={<WorkoutLog />} />
+              <Route path="routine" element={<Routine />} />
             </Routes>
           </Wrapper>
         }

@@ -13,6 +13,7 @@ import {
   getCalendarInfoRequestType,
   getCalendarInfo,
 } from 'store/apis/workout';
+
 const WorkoutLog = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -79,6 +80,11 @@ const WorkoutLog = () => {
     };
     dispatch(workoutLogActions.getDailyLog(dailyLogConfig));
   };
+
+  const routineClick = () => {
+    // aTODO: edit 도중 나가는 이벤트
+    navigate('/routine');
+  }
 
   const createWorkoutLog = () => {
     console.log('create', year, month, day);
@@ -274,7 +280,7 @@ const WorkoutLog = () => {
               <DateWrapper>
                 {selected_year}.{selected_month + 1}.{selected_date}
               </DateWrapper>
-              <AnyButton>루틴</AnyButton>
+              <AnyButton onClick={() => routineClick()}>루틴</AnyButton>
               <AnyButton>불러오기</AnyButton>
               <AnyButton>내보내기</AnyButton>
               <AnyButton>저장</AnyButton>
