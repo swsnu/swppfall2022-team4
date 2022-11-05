@@ -26,11 +26,25 @@ def create_fit_element(request):
                 rep=req_data["rep"],
                 set=req_data["set"],
                 time=req_data["time"],
-                date=req_data["date"]
+                date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
             )
 
             new_fit_element.save()
-            return HttpResponse(status=201)
+
+            if not DailyLog.objects.filter(date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')).exists():
+                try:
+                    new_daily_log = DailyLog(
+                        author_id=req_data["user_id"],
+                        memo="",
+                        date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
+                    )
+                    new_daily_log.save()
+                    new_daily_log.fit_element.add(new_fit_element)
+                    # return JsonResponse({"dailylog_date": datetime(new_daily_log.date)}, status=201)
+                except (KeyError, json.JSONDecodeError):
+                    return HttpResponseBadRequest()
+            
+            return JsonResponse({"workout_id": str(new_fit_element.pk)}, status=201)
         except (KeyError, json.JSONDecodeError):
             return HttpResponseBadRequest()
 
@@ -62,7 +76,10 @@ def fit_element(request, fitelement_id):
         except (KeyError, json.JSONDecodeError, FitElement.DoesNotExist):
             return HttpResponse(404)
     elif request.method == 'PUT':
-        pass
+        try:
+            pass
+        except (KeyError, json.JSONDecodeError, FitElement.DoesNotExist):
+            return HttpResponse(404)
     elif request.method == 'DELETE':
         pass
 
@@ -184,18 +201,16 @@ def daily_log(request, year, month, specific_date):
         # 하나밖에 없도록 처리할 것
 
         if len(daily_log_single) == 0:
-            daily_log_dict = DailyLog(
-                date=datetime(year, month, specific_date).date()
-            )
-            daily_log_dict.save()
             daily_log_dict_return = {
-                'memo': NULL,
-                'fitelements': [],
-                'date': daily_log_dict.date
+                'author': int(user_id),
+                'memo': "",
+                'date': datetime(year, month, specific_date).date(),
+                'fitelements': list()
             }
 
         else:
             daily_log_dict_return = {
+                'author': daily_log_single[0].author.id,
                 'memo': daily_log_single[0].memo,
                 'date': daily_log_single[0].date,
                 'fitelements': list(daily_log_single[0].fit_element.values_list('id', flat=True))
@@ -204,7 +219,18 @@ def daily_log(request, year, month, specific_date):
         return JsonResponse(daily_log_dict_return, safe=False, status=200)
 
     elif request.method == 'POST':
-        pass
+        try:
+            req_data = json.loads(request.body.decode())
+            new_daily_log = DailyLog(
+                author_id=req_data["user_id"],
+                memo=req_data["memo"],
+                date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
+            )
+            new_daily_log.fit_element.add(req_data["fitelements"])
+            new_daily_log.save()
+            return JsonResponse({"dailylog_date": datetime(new_daily_log.date)}, status=201)
+        except (KeyError, json.JSONDecodeError):
+            return HttpResponseBadRequest()
 
     elif request.method == 'PUT':
         pass

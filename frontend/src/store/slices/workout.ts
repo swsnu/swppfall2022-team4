@@ -25,7 +25,16 @@ interface WorkoutLogState {
         memo: string | null;
         fit_element: number[] | null;
     };
-    daily_fit_elements: Array<any>
+    daily_fit_elements: Array<any>;
+    workoutCreate: {
+        status: boolean;
+        workout_id: string | null;
+    }
+    dailyLogCreate: {
+        status: boolean;
+        dailylog_date: Date | null;
+    }
+
 }
 
 const initialState: WorkoutLogState = {
@@ -46,7 +55,15 @@ const initialState: WorkoutLogState = {
         memo: null,
         fit_element: null,
     },
-    daily_fit_elements: []
+    daily_fit_elements: [],
+    workoutCreate: {
+        status: false,
+        workout_id: null,
+    },
+    dailyLogCreate: {
+        status: false,
+        dailylog_date: null,
+    }
 }
 
 
@@ -68,8 +85,22 @@ export const workoutLogSlice = createSlice({
             state.workout_log.time = payload.time;
             state.workout_log.date = payload.date;
         },
+        createWorkoutLog: (state, action: PayloadAction<workoutLogAPI.createWorkoutLogRequestType>) => {
+
+        },
+        createWorkoutLogSuccess: (state, { payload }) => {
+            state.workoutCreate.workout_id = payload.workout_id;
+            state.workoutCreate.status = true;
+        },
         getDailyLog: (state, action: PayloadAction<workoutLogAPI.getDailyLogRequestType>) => {
             
+        },
+        createDailyLog: (state, action: PayloadAction<workoutLogAPI.createDailyLogRequestType>) => {
+            
+        },
+        createDailyLogSuccess: (state, { payload }) => {
+            state.dailyLogCreate.dailylog_date = payload.dailylog_date;
+            state.dailyLogCreate.status = true;
         },
         getDailyLogSuccess: (state, { payload }) => {
             state.daily_log.memo = payload[0].memo;
@@ -101,9 +132,29 @@ function* getDailyLogSaga(action: PayloadAction<workoutLogAPI.getDailyLogRequest
     }
 }
 
+function* createWorkoutLogSaga(action: PayloadAction<workoutLogAPI.createWorkoutLogRequestType>) {
+    try {
+        const response: AxiosResponse = yield call(workoutLogAPI.createWorkoutLog, action.payload);
+        yield put(workoutLogActions.createWorkoutLogSuccess(response));
+    } catch (error) {
+        
+    }
+}
+
+function* createDailyLogSaga(action: PayloadAction<workoutLogAPI.createDailyLogRequestType>) {
+    try {
+        const response: AxiosResponse = yield call(workoutLogAPI.createDailyLog, action.payload);
+        yield put(workoutLogActions.createDailyLogSuccess(response));
+    } catch (error) {
+        
+    }
+    
+}
 
 export default function* workoutLogSaga() {
     yield takeLatest(workoutLogActions.getFitElement, getFitElementSaga);
     yield takeLatest(workoutLogActions.getDailyLog, getDailyLogSaga);
+    yield takeLatest(workoutLogActions.createDailyLog, createDailyLogSaga);
+    yield takeLatest(workoutLogActions.createWorkoutLog, createWorkoutLogSaga);
   }
   

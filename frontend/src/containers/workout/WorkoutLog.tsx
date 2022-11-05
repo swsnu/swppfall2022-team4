@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
-import { getDailyLogRequestType } from 'store/apis/workout';
+import { getDailyLogRequestType, createWorkoutLogRequestType, createDailyLogRequestType } from 'store/apis/workout';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -23,6 +23,13 @@ const WorkoutLog = () => {
   const [year, setYear] = useState(date.getFullYear());
   const [startDay, setStartDay] = useState(getStartDayOfMonth(date));
   const [selected_month, setSelectedMonth] = useState(date.getMonth());
+  const [workout_type, setWorkoutType] = useState('');
+  const [workout_category, setWorkoutCategory] = useState('leg');
+  const [rep, setRep] = useState<number | null>(null);
+  const [weight, setWeight] = useState<number | null>(null);
+  const [set, setSet] = useState<number | null>(null);
+  const [workout_time, setWorkoutTime] = useState<number | null>(null);
+  const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -60,12 +67,42 @@ const WorkoutLog = () => {
     dispatch(workoutLogActions.getDailyLog(dailyLogConfig));
   };
 
+  const createWorkoutLog = () => {
+    const newLogConfig: createWorkoutLogRequestType = {
+      user_id: 1,
+      type: 'log',
+      workout_type: workout_type,
+      period: workout_period,
+      category: 'leg',
+      weight: weight,
+      rep: rep,
+      set: set,
+      time: workout_time,
+      date: date
+    };
+    dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
+  }
+  
+  // const createDailyLog = (memo:any, fitelements:any) => {
+  //   const newDailyLogConfig: createDailyLogRequestType = {
+  //     user_id: 1,
+  //     memo: memo,
+  //     date: date,
+  //     fitelements: fitelements,
+  //     year: year,
+  //     month: month,
+  //     specific_date: day
+  //   };
+  //   dispatch(workoutLogActions.createDailyLog(newDailyLogConfig));
+  // }
+
   const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
   }, []);
+
   useEffect(() => {
     setDay(date.getDate());
     setMonth(date.getMonth());
@@ -152,6 +189,25 @@ const WorkoutLog = () => {
                 <LogCategory>세트</LogCategory>
                 <LogCategory className="type2">시간</LogCategory>
               </LogHeader>
+              <LogInputBody>
+                <LogInputBody_input>
+                  <WorkoutTypeInput type='text' value={workout_type || ''} onChange={e => setWorkoutType(e.target.value)} />
+                  <WorkoutTypeInput className="type2" type='number' min="0" value={weight || 0} onChange={e => setWeight(Number(e.target.value))} />
+                  <WorkoutTypeInput className="type1" type='number' min="0" value={rep || 0} onChange={e => setRep(Number(e.target.value))} />
+                  <WorkoutTypeInput className="type1" type='number' min="0" value={set || 0} onChange={e => setSet(Number(e.target.value))} />
+                  <WorkoutTypeInput className="type2" type='number' min="0" value={workout_time || 0} onChange={e => setWorkoutTime(Number(e.target.value))}/>
+                </LogInputBody_input>
+                <LogInputBody_button>
+                  <AnyButton className="type1">
+                    취소
+                  </AnyButton>
+                  <AnyButton className="type1" onClick={() => createWorkoutLog()}>
+                    완료
+                  </AnyButton>
+                  
+                </LogInputBody_button>
+
+              </LogInputBody>
               <LogBody>
                 {dailyFitElements.map((fitelement, index) => (
                   <FitElement
@@ -362,6 +418,10 @@ const AnyButton = styled.button`
   &:hover {
     background-color: #3bb978;
   }
+
+  &&.type1 {
+    height: 15px;
+  }
 `;
 
 const RightWrapper = styled.div`
@@ -426,16 +486,56 @@ const LogCategory = styled.div`
   }
 `;
 
+const LogInputBody_input = styled.div`
+  width: 100%;
+  height: 80%;
+  display: flex;
+  min-height: 8vh;
+  font-weight: normal;
+`;
+
+const WorkoutTypeInput = styled.input`
+  width: 40%;
+  height: 100%;
+  padding: 8px 20px;
+  font-size: 10px;
+  margin: 5px;
+
+  &&.type1 {
+    width: 10%;
+  }
+  &&.type2 {
+    width: 20%;
+  }
+`
+
+const LogInputBody_button = styled.div`
+  width: 100%;
+  height: 20%;
+  min-height: 2vh;
+  display: flex;
+  justify-content: end;
+  font-weight: normal;
+`;
+
+const LogInputBody = styled.div`
+  width: 100%;
+  height: 10%;
+  min-height: 10vh;
+  display: flex;
+  flex-direction: column;
+  font-weight: normal;
+  border-bottom: 1px solid black;
+`;
+
 const LogBody = styled.div`
   width: 100%;
   height: 90%;
   min-height: 62vh;
-  display: flex;
   flex-wrap: wrap;
   display: flex;
   flex-direction: column;
   align-items: start;
-  margin: 5px;
   font-weight: normal;
 `;
 

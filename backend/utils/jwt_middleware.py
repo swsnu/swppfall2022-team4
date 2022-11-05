@@ -5,12 +5,14 @@ from django.core.exceptions import PermissionDenied
 from jwt.exceptions import ExpiredSignatureError
 from users.models import User
 
+
 def decode_jwt(access_token):
     return jwt.decode(
         access_token,
         os.environ.get("JWT_SECRET"),
         os.environ.get("ALGORITHM")
     )
+
 
 class JsonWebTokenMiddleWare:
 
@@ -19,10 +21,12 @@ class JsonWebTokenMiddleWare:
 
     def __call__(self, request):
         try:
-            if request.path not in ("/api/user/login/",
-                                    "/api/user/social_login/",
-                                    "/api/user/signup/",
-                                    "/api/user/token/"):
+            if request.path not in (
+                "/api/user/login/",
+                "/api/user/social_login/",
+                "/api/user/signup/",
+                "/api/user/token/"
+            ) and not request.path[:6] == "/admin":
                 access_token = request.COOKIES.get("access_token", None)
                 if not access_token:
                     raise PermissionDenied()
