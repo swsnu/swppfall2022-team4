@@ -69,6 +69,23 @@ export type editMemoRequestType = {
     specific_date: number;
 }
 
+export type getCalendarInfoRequestType = {
+    user_id: number;
+    year: number;
+    month: number;
+}
+
+export type calendarInfoResponse = {
+    year: number;
+    month: number;
+    date: number;
+    workouts: [];
+}
+
+export type getCalendarInfoResponseType = {
+    fitelements: calendarInfoResponse[];
+}
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
     const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
     return response.data;
@@ -102,5 +119,11 @@ export const createDailyLog = async (payload: createDailyLogRequestType) => {
 
 export const editMemo = async (payload: editMemoRequestType) => {
     const response = await client.put<editMemoRequestType>(`/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`, payload);
+    return response.data;
+}
+
+export const getCalendarInfo = async (payload: getCalendarInfoRequestType) => {
+    const response = await client.get<getCalendarInfoResponseType>(`/api/fitelement/${payload.year}/${payload.month}/?&user_id=${payload.user_id}`);
+    console.log(response.data)
     return response.data;
 }

@@ -3,7 +3,6 @@ import { createSlice, Dictionary, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as workoutLogAPI from 'store/apis/workout';
-import { getFitElementRequestType, getFitElementResponseType } from 'store/apis/workout';
 
 interface WorkoutLogState {
     workout_log: {
@@ -34,8 +33,8 @@ interface WorkoutLogState {
     dailyLogCreate: {
         status: boolean;
         dailylog_date: Date | null;
-    }
-
+    },
+    calendar_info: workoutLogAPI.calendarInfoResponse[];
 }
 
 const initialState: WorkoutLogState = {
@@ -65,7 +64,8 @@ const initialState: WorkoutLogState = {
     dailyLogCreate: {
         status: false,
         dailylog_date: null,
-    }
+    },
+    calendar_info: []
 }
 
 
@@ -116,6 +116,12 @@ export const workoutLogSlice = createSlice({
         editMemo: (state, action: PayloadAction<workoutLogAPI.editMemoRequestType>) => {
 
         },
+        getCalendarInfo: (state, action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) => {
+
+        },
+        getCalendarInfoSuccess: (state, { payload }) => {
+            state.calendar_info = payload;
+        }
     }
 })
 
@@ -164,11 +170,21 @@ function* editMemoLogSaga(action: PayloadAction<workoutLogAPI.editMemoRequestTyp
     }
 }
 
+function* getCalendarInfoSaga(action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) {
+    try {
+        const response: AxiosResponse = yield call(workoutLogAPI.getCalendarInfo, action.payload);
+        yield put(workoutLogActions.getCalendarInfoSuccess(response));
+    } catch (error) {
+        
+    }
+}
+
 export default function* workoutLogSaga() {
     yield takeLatest(workoutLogActions.getFitElement, getFitElementSaga);
     yield takeLatest(workoutLogActions.getDailyLog, getDailyLogSaga);
     yield takeLatest(workoutLogActions.createDailyLog, createDailyLogSaga);
     yield takeLatest(workoutLogActions.createWorkoutLog, createWorkoutLogSaga);
     yield takeLatest(workoutLogActions.editMemo, editMemoLogSaga);
+    yield takeLatest(workoutLogActions.getCalendarInfo, getCalendarInfoSaga);
   }
   

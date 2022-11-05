@@ -100,8 +100,9 @@ def get_calendar_info(request, year, month):
     GET: get fit elements for month calendar
     """
     if request.method == 'GET':
-        req_data = json.loads(request.body.decode())
-        user_id = req_data['user_id']
+        # req_data = json.loads(request.body.decode())
+        user_id = request.GET.get('user_id')
+        # user_id = req_data['user_id']
 
         return_json = []
         this_month = datetime(year, month, 1).date()
