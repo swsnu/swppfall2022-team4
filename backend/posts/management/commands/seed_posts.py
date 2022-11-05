@@ -5,16 +5,15 @@ from django.core.management import BaseCommand
 from django.contrib.admin.utils import flatten
 from django_seed import Seed
 from users.models import User
-from posts import models
+from tags.models import Tag
+from posts.models import Post
 
 
 class Command(BaseCommand):
     help = "This command creates many posts"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "-n", "--number", type=int, default=0, help="# of posts to create."
-        )
+        parser.add_argument("-n", "--number", type=int, default=0, help="# of posts to create.")
 
     def handle(self, *args, **options):
         # Subclass must implement this method.
@@ -24,7 +23,7 @@ class Command(BaseCommand):
         all_users = User.objects.all()
 
         seeder.add_entity(
-            models.Post,
+            Post,
             number,
             {
                 "title": lambda x: seeder.faker.company(),
@@ -43,21 +42,26 @@ class Command(BaseCommand):
         created_posts = flatten(list(created_posts_.values()))
 
         for post_pk in created_posts:
-            post = models.Post.objects.get(pk=post_pk)
+            post = Post.objects.get(pk=post_pk)
 
+            # 60% like
             for user in User.objects.order_by("?"):
-                rand_num = random.randint(1, 10)
-                if rand_num <= 6:  # 60% like
+                if random.randint(1, 10) <= 6:
                     post.liker.add(user)
+
+            # 20% dislike
             for user in User.objects.order_by("?"):
-                rand_num = random.randint(1, 10)
-                if rand_num <= 2:  # 20% dislike
+                if random.randint(1, 10) <= 2:
                     post.disliker.add(user)
+
+            # 10% scrap
             for user in User.objects.order_by("?"):
-                rand_num = random.randint(1, 10)
-                if rand_num <= 1:  # 10% scrap
+                if random.randint(1, 10) <= 1:
                     post.scraper.add(user)
 
-        self.stdout.write(
-            self.style.SUCCESS(f"{number} Posts are generated automatically.")
-        )
+            # 5% tag
+            for tag in Tag.objects.all():
+                if random.randint(1, 100) <= 5:
+                    post.tags.add(tag)
+
+        self.stdout.write(self.style.SUCCESS(f"{number} Posts are generated automatically."))
