@@ -17,12 +17,13 @@ def general_group(request):
     """
     if request.method  == 'GET':
         group_list = [group for group in Group.objects.all().values(
-            "group_name", "number", "start_date", "end_date"
+            "id", "group_name", "number", "start_date", "end_date"
         )]
         return JsonResponse(group_list, safe=False)
     else: ## post
         try:
             req_data = json.loads(request.body.decode())
+            print(req_data)
             group = Group(
                 group_name = req_data["group_name"],
                 number = req_data["number"],
@@ -54,6 +55,7 @@ def general_group(request):
             except (KeyError, json.JSONDecodeError):
                 return HttpResponseBadRequest()
         response_dict = {
+            "id" : group.id,
             "group_name" : group.group_name,
             "number" : group.number,
             "start_date" : group.start_date,
