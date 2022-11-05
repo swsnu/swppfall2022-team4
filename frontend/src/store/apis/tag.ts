@@ -17,6 +17,12 @@ export type TagClass = {
   tags: Tag[];
 };
 
+export type TagVisual = {
+  id: string;
+  name: string;
+  color: string;
+};
+
 export type getTagListResponseType = {
   tags: TagClass[];
 };
@@ -39,4 +45,14 @@ export const createTag = async (payload: createTagRequestType) => {
 export type createTagRequestType = {
   name: string;
   classId: string;
+};
+
+export const searchTag = async (payload: searchTagRequestType) => {
+  const response = await client.get(`/api/tag/search/?tag=${payload.tag_name}`);
+  return response.data;
+};
+
+export type searchTagRequestType = {
+  class_name: string;
+  tag_name: string;
 };

@@ -24,11 +24,11 @@ interface IPropsBtn {
   onClick?: () => void;
 }
 
-export interface TagVisual {
+export type TagVisual = {
   id: string;
   name: string;
   color: string;
-}
+};
 
 const DEFAULT_OPTION = '$NONE$';
 const NEW_OPTION = '$NEW$';
@@ -46,6 +46,7 @@ export const PostEditorLayout = (
 ) => {
   const dispatch = useDispatch();
   const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
+  const tagSearch = useSelector((rootState: RootState) => rootState.tag.tagSearch);
 
   const [tagInput, setTagInput] = useState(''); // Tag creation name input
   const [tagClassInput, setTagClassInput] = useState(''); // Tag Class creation name input
@@ -81,6 +82,19 @@ export const PostEditorLayout = (
         else return s;
       });
       setTagSelect(DEFAULT_OPTION);
+    }
+  };
+  const searchedTagOnClick = (e: React.MouseEvent) => {
+    const tagId = e.currentTarget.getAttribute('data-id');
+    const tagName = e.currentTarget.getAttribute('data-name');
+    const tagColor = e.currentTarget.getAttribute('data-color');
+
+    if (tagId && tagName && tagColor) {
+      setSelectedTags(s => {
+        if (s.filter(item => item.id == tagId).length === 0)
+          return [...s, { id: tagId, name: tagName, color: tagColor }];
+        else return s;
+      });
     }
   };
   const tagOnRemove = (e: React.MouseEvent) => {
@@ -126,24 +140,43 @@ export const PostEditorLayout = (
     if (tagClassSelect === SEARCH_OPTION) {
       return (
         <TagClassFuncWrapper>
+          <TagInput placeholder="카테고리" onChange={e => setTagSearchInput(e.target.value)} disabled></TagInput>
           <TagInput
-            placeholder="키워드"
+            placeholder="태그 이름"
             value={tagSearchInput}
             onChange={e => setTagSearchInput(e.target.value)}
           ></TagInput>
           <TagGreenBtn
             disabled={tagSearchInput === ''}
             onClick={() => {
-              //   dispatch(
-              //     tagActions.createTag({
-              //       name: tagSearchInput,
-              //       classId: '1',
-              //     }),
-              //   );
+              dispatch(
+                tagActions.searchTag({
+                  class_name: '',
+                  tag_name: tagSearchInput,
+                }),
+              );
             }}
           >
             검색
           </TagGreenBtn>
+          {tagSearchInput !== '' && tagSearch && (
+            <TagBubbleWrapper>
+              {tagSearch.map(tag => {
+                return (
+                  <TagBubble
+                    key={tag.id}
+                    color={tag.color}
+                    onClick={searchedTagOnClick}
+                    data-id={tag.id}
+                    data-color={tag.color}
+                    data-name={tag.name}
+                  >
+                    {tag.name}
+                  </TagBubble>
+                );
+              })}
+            </TagBubbleWrapper>
+          )}
         </TagClassFuncWrapper>
       );
     }
@@ -219,6 +252,8 @@ export const PostEditorLayout = (
             const targetValue = e.target.options[e.target.selectedIndex].value;
             setTagSelect(DEFAULT_OPTION);
             setTagClassSelect(targetValue);
+            setTagSearchInput('');
+            dispatch(tagActions.searchTagClear());
             setCurrentTagClass(tagList ? tagList.filter(tagClass => tagClass.id.toString() === targetValue)[0] : null);
           }}
         >

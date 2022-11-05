@@ -15,6 +15,7 @@ def tag_home(request):
     if request.method == "GET":
         tag_classes = TagClass.objects.all()
         tag_classes_serializable = list(tag_classes.values())
+
         for index, _ in enumerate(tag_classes_serializable):
             tag_classes_serializable[index]["tags"] = list(tag_classes[index].tags.values())
         response = JsonResponse(
@@ -53,68 +54,39 @@ def tag_class(request):
         return HttpResponseBadRequest()
 
 
-# @require_http_methods(["PUT", "DELETE"])
-# def comment_detail(request, query_id):
-#     """
-#     PUT : edit comment.
-#     DELETE : delete comment.
-#     """
-#     if request.method == "PUT":
-#         try:
-#             data = json.loads(request.body.decode())
-#             comment_id = int(query_id)
-#             comment_obj = Comment.objects.get(pk=comment_id)
+@require_http_methods(["GET"])
+def tag_search(request):
+    """
+    GET : Get searched tag lists.
+    """
+    query_args = {}
+    query_args["class_name"] = request.GET.get("class", None)
+    query_args["tag_name"] = request.GET.get("tag", None)
 
-#             comment_obj.content = data["content"]
-#             comment_obj.save()
-#             return JsonResponse({"message": "success"}, status=200)
-#         except Post.DoesNotExist:
-#             return HttpResponseNotFound()
-#         except Exception as error:
-#             print(error)
-#             return HttpResponseBadRequest()
-#     else:  # request.method == "DELETE":
-#         try:
-#             comment_id = int(query_id)
-#             comment_obj = Comment.objects.get(pk=comment_id)
+    tags = Tag.objects.all()
 
-#             comment_obj.delete()
-#             return JsonResponse({"message": "success"}, status=200)
-#         except Post.DoesNotExist:
-#             return HttpResponseNotFound()
-#         except Exception as error:
-#             print(error)
-#             return HttpResponseBadRequest()
+    if query_args["class_name"] or query_args["tag_name"]:
+        # This is for searching tags.
+        filter_args = {}
+        filter_args["tag_name__icontains"] = query_args["tag_name"]
+        filtered_tags = tags.filter(**filter_args)
 
+        tags_serializable = list(
+            filtered_tags.values()
+        )  # id, created, updated, tag_name, tag_class_id
+        for index, item in enumerate(tags_serializable):
+            belong_class = TagClass.objects.get(pk=item["tag_class_id"])
+            tags_serializable[index]["name"] = item["tag_name"]
+            tags_serializable[index]["color"] = belong_class.color
 
-# @require_http_methods(["PUT"])
-# def comment_func(request, query_id):
-#     """
-#     PUT : process given functions.
-#     """
-#     try:
-#         data = json.loads(request.body.decode())
-#         comm_id = int(query_id)
-#         comm_obj = Comment.objects.get(pk=comm_id)
-
-#         type_of_work = data["func_type"]  # type : like, dislike
-
-#         user = User.objects.get(username=request.user.username)
-#         if type_of_work == "like":
-#             if comm_obj.liker.all().filter(username=request.user.username).exists():
-#                 comm_obj.liker.remove(user)
-#             else:
-#                 comm_obj.liker.add(user)
-#         elif type_of_work == "dislike":
-#             if comm_obj.disliker.all().filter(username=request.user.username).exists():
-#                 comm_obj.disliker.remove(user)
-#             else:
-#                 comm_obj.disliker.add(user)
-#         else:
-#             HttpResponseBadRequest()
-#         return JsonResponse({"message": "success"}, status=200)
-#     except (Comment.DoesNotExist, User.DoesNotExist):
-#         return HttpResponseNotFound()
-#     except Exception as error:
-#         print(error)
-#         return HttpResponseBadRequest()
+            del tags_serializable[index]["tag_name"]
+            del tags_serializable[index]["tag_class_id"]
+        response = JsonResponse(
+            {
+                "tags": tags_serializable,
+            },
+            status=200,
+        )
+        return response
+    else:
+        return HttpResponseBadRequest()
