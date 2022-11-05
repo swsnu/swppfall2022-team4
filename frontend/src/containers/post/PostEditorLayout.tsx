@@ -71,18 +71,23 @@ export const PostEditorLayout = (
   };
 
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.options[e.target.selectedIndex].value;
-    setTagSelect(newValue);
-    if (newValue !== NEW_OPTION) {
+    const tagId = e.target.options[e.target.selectedIndex].value;
+    const tagName = e.target.options[e.target.selectedIndex].text;
+    setTagSelect(tagId);
+    if (tagId !== NEW_OPTION) {
       setSelectedTags(s => {
-        const tagName = e.target.options[e.target.selectedIndex].text;
-        if (currentTagClass && s.filter(item => item.id == newValue).length === 0)
-          return [...s, { id: newValue, name: tagName, color: currentTagClass.color }];
+        if (currentTagClass && s.filter(item => item.id == tagId).length === 0)
+          return [...s, { id: tagId, name: tagName, color: currentTagClass.color }];
         else return s;
       });
       setTagSelect(DEFAULT_OPTION);
     }
   };
+  const tagOnRemove = (e: React.MouseEvent) => {
+    const tagId = e.currentTarget.getAttribute('data-value');
+    setSelectedTags(s => s.filter(item => item.id != tagId));
+  };
+
   const tagNames = () => {
     if (tagClassSelect === NEW_OPTION) {
       return (
@@ -194,7 +199,7 @@ export const PostEditorLayout = (
         return (
           <TagBubble key={tags.id} color={tags.color}>
             {tags.name}
-            <TagBubbleFunc>
+            <TagBubbleFunc onClick={tagOnRemove} data-value={tags.id}>
               <FontAwesomeIcon icon={faX} />
             </TagBubbleFunc>
           </TagBubble>

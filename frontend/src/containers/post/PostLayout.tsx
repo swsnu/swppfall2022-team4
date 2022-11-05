@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postActions } from 'store/slices/post';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 interface IPropsSearchClear {
   isActive?: boolean;
@@ -63,28 +65,6 @@ export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element
   </PostPageWrapper>
 );
 
-const SearchForm = styled.form`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const SearchInput = styled.input`
-  width: 95%;
-  padding: 15px 20px;
-  border: none;
-`;
-const ClearSearchInput = styled.span<IPropsSearchClear>`
-  width: 5%;
-  text-align: center;
-  cursor: pointer;
-  ${({ isActive }) =>
-    !isActive &&
-    `
-    display: none;
-  `}
-`;
 export const SideBarWrapper = styled.div`
   /* border: 1px solid black; */
   width: 100%;
@@ -111,6 +91,9 @@ export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX
               );
             }}
           >
+            <SearchIcon>
+              <FontAwesomeIcon icon={faSearch} />
+            </SearchIcon>
             <SearchInput
               placeholder="Search keyword"
               value={search}
@@ -139,3 +122,33 @@ export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX
     </PostPageWrapper>
   );
 };
+
+const SearchForm = styled.form`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const SearchInput = styled.input`
+  width: 95%;
+  padding: 15px 20px;
+  font-size: 15px;
+  border: none;
+`;
+const ClearSearchInput = styled.span<IPropsSearchClear>`
+  width: 5%;
+  text-align: center;
+  cursor: pointer;
+  ${({ isActive }) =>
+    !isActive &&
+    `
+    display: none;
+  `}
+`;
+const SearchIcon = styled.div`
+  margin-left: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
