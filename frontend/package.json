@@ -73,6 +73,13 @@
   "jest": {
     "transformIgnorePatterns": [
       "node_modules/(?!axios)"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/index.tsx",
+      "!src/test-utils/*",
+      "!src/react-app-env.d.ts",
+      "!src/assets/types/*"
     ]
   }
 }

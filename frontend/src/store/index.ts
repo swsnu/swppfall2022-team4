@@ -3,14 +3,17 @@ import { all, fork } from 'redux-saga/effects';
 import postSaga, { postSlice } from './slices/post';
 import tagSaga, { tagSlice } from './slices/tag';
 import userSaga, { userSlice } from './slices/user';
+import chatSaga, { chatSlice } from './slices/chat';
 
 export const rootReducer = combineReducers({
   user: userSlice.reducer,
   post: postSlice.reducer,
   tag: tagSlice.reducer,
+  chat: chatSlice.reducer,
 });
 export function* rootSaga() {
   yield all([fork(userSaga)]);
   yield all([fork(postSaga)]);
   yield all([fork(tagSaga)]);
+  yield all([fork(chatSaga)]);
 }

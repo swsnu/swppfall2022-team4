@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineEdit } from 'react-icons/ai';
 import styled from 'styled-components';
@@ -9,7 +9,6 @@ import { dateDiff } from 'utils/datetime';
 
 import Loading from 'components/common/Loading';
 import Button3 from 'components/common/buttons/Button3';
-import NotFound from 'components/common/NotFound';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -107,10 +106,11 @@ const Wrapper = styled.div`
   width: 100%;
   max-width: 1200px;
   height: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 50px;
 `;
 
 const ProfileWrapper = styled.div`
