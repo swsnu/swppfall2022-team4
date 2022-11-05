@@ -24,6 +24,10 @@ import PostDetail from 'containers/post/PostDetail';
 
 import WorkoutLog from 'containers/workout/WorkoutLog';
 
+import GroupList from 'containers/group/GroupList';
+import GroupDetail from 'containers/group/GroupDetail';
+import GroupCreate from 'containers/group/GroupCreate';
+
 const GlobalStyles = createGlobalStyle`
   ${reset}
   * {
@@ -122,6 +126,12 @@ const InsideComponent = () => {
               <Route path="edit_password" element={<EditPassword />} />
 
               <Route path="workout" element={<WorkoutLog />} />
+
+              <Route path="group/*">
+                <Route path="" element={<GroupList />} />
+                <Route path="detail/:group_id" element={<GroupDetail />} />
+                <Route path="create" element={<GroupCreate />} />
+              </Route>
 
               <Route path="*" element={<NotFound />} />
             </Routes>
