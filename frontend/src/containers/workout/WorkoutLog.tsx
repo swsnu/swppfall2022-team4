@@ -191,6 +191,7 @@ const WorkoutLog = () => {
       <InnerWrapper>
         <LeftWrapper>
           <LeftUpper>
+            <DateWrapper>
             {isCopy === true
               ? String(copy_date.getFullYear()) +
                 '.' +
@@ -199,7 +200,8 @@ const WorkoutLog = () => {
                 String(copy_date.getDate()) +
                 ' ' +
                 '복사중'
-              : '복사 없음'}
+                : '복사 없음'}
+              </DateWrapper>
           </LeftUpper>
           <CalendarWrapper>
             <Frame>
@@ -422,6 +424,8 @@ const Wrapper = styled.div`
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+  justify-content: start;
+  align-items: start;
 `;
 
 const InnerWrapper = styled.div`
@@ -429,8 +433,8 @@ const InnerWrapper = styled.div`
   height: 92%;
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  align-items: start;
 `;
 
 const LeftWrapper = styled.div`
@@ -439,8 +443,8 @@ const LeftWrapper = styled.div`
   margin-left: 30px;
   display: flex;
   flex-direction: column;
-  justify-content: start;
-  align-items: center;
+  justify-content: center;
+  align-items: start;
 `;
 
 const CalendarWrapper = styled.div`
@@ -546,7 +550,6 @@ const Day = styled.div`
   }
 `;
 
-
 const DayContent = styled.div`
   width: 40px;
   height: 40px;
@@ -587,7 +590,7 @@ const DayContent = styled.div`
 const MemoWrapper = styled.div`
   width: 100%;
   height: 20%;
-  min-height: 20vh;
+  min-height: 30vh;
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
@@ -595,6 +598,7 @@ const MemoWrapper = styled.div`
 
 const MemoEditButton = styled.img`
   display: flex;
+  height: 50%;
   margin-left: 3px;
   align-items: center;
   justify-content: center;
@@ -641,7 +645,7 @@ const MemoContentWrapper = styled.div`
 `;
 
 const CenterContentWrapper = styled.div`
-  display:flex;
+  display: flex;
   width: 100%;
   min-height: 60vh;
   height: 100%;
@@ -654,14 +658,15 @@ const CenterContentWrapper = styled.div`
 `;
 
 const AnyButton = styled.button`
-  width: 70px;
+  width: 180px;
   height: 30px;
   margin: 5px;
   background-color: #d7efe3;
   border: 0;
   border-radius: 8px;
   font-family: FugazOne;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s linear;
   &:hover {
@@ -669,7 +674,8 @@ const AnyButton = styled.button`
   }
 
   &&.type1 {
-    height: 15px;
+    width: 120px;
+    height: 20px;
   }
 `;
 
@@ -685,12 +691,13 @@ const RightWrapper = styled.div`
 `;
 
 const LeftUpper = styled.div`
-  width: 80%;
-  height: 5%;
-  min-height: 5vh;
-  margin-top: 5vh;
+  width: 90%;
+  height: 10%;
+  min-height: 10vh;
+  margin-left: 35px;
   display: flex;
   justify-content: start;
+  align-items: end;
 `;
 
 const LogUpper = styled.div`
