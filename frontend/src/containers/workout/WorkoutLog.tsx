@@ -138,30 +138,18 @@ const WorkoutLog = () => {
   };
 
   const memoOnClick = () => {
+    console.log(memo_write_mode);
     if (memo_write_mode === false) {
       setMemoWriteMode(true);
     } else {
-      if (dailyLog.isDailyLog === false) {
-        const newDailyLogConfig: createDailyLogRequestType = {
-          user_id: 1,
-          memo: memo,
-          date: date,
-          fitelements: [],
-          year: year,
-          month: month + 1,
-          specific_date: day,
-        };
-        dispatch(workoutLogActions.createDailyLog(newDailyLogConfig));
-      } else {
-        const editMemoConfig: editMemoRequestType = {
-          user_id: 1,
-          memo: memo,
-          year: year,
-          month: month + 1,
-          specific_date: day,
-        };
-        dispatch(workoutLogActions.editMemo(editMemoConfig));
-      }
+      const editMemoConfig: editMemoRequestType = {
+        user_id: 1,
+        memo: memo,
+        year: year,
+        month: month + 1,
+        specific_date: day,
+      };
+      dispatch(workoutLogActions.editMemo(editMemoConfig));
       setMemoWriteMode(false);
     }
   };
