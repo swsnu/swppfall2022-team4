@@ -35,7 +35,7 @@ const Routine = () => {
   }, [routine_id]);
 
   const routines = useSelector((rootState: RootState) => rootState.workout_log.routine);
-  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine_fit_elements);
+  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine);
   console.log(routines);
   console.log(selected_routine);
 
@@ -48,7 +48,7 @@ const Routine = () => {
         <Frame>
           <RoutineListWrapper>
             {routines.map((routine, index) => (
-              <RoutineName key={index} onClick={() => routineClick(Number(routine.id))}>
+              <RoutineName key={index} className={(routine.id === routine_id)? "type1" : "type2"} onClick={() => routineClick(Number(routine.id))}>
                 {routine.name}
               </RoutineName>
             ))}
@@ -60,10 +60,25 @@ const Routine = () => {
           <RoutineTitleWrapper>운동 루틴</RoutineTitleWrapper>
         </RightUpper>
         <Frame className="right">
+          {routine_id === -1 ? (
+            <div></div>
+          ) : (
+            <RoutineHeader>
+              <LogHeader className="title">{selected_routine.name}</LogHeader>
+              <LogHeader>
+                <LogCategory className="type">종류</LogCategory>
+                <LogCategory className="type2">강도</LogCategory>
+                <LogCategory>반복</LogCategory>
+                <LogCategory>세트</LogCategory>
+                <LogCategory className="type2">시간</LogCategory>
+              </LogHeader>
+            </RoutineHeader>
+          )}
+
           <LogWrapper>
             {routine_id === -1
               ? '루틴을 눌러주세요.'
-              : selected_routine.map((fitelement, index) => (
+              : selected_routine.fitelements.map((fitelement, index) => (
                   <FitElement
                     key={index}
                     id={index + 1}
@@ -103,6 +118,60 @@ const RoutineName = styled.div`
   align-items: center;
   border-bottom: 1px solid black;
   font-weight: normal;
+
+  &&.type1{
+    background-color: #84e0ed;
+  }
+
+  &&.type2{
+
+  }
+`;
+
+const RoutineHeader = styled.div`
+  font-size: 18px;
+  width: 100%;
+  height: 30%;
+  font-family: IBMPlexSansThaiLooped;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LogHeader = styled.div`
+  font-size: 18px;
+  width: 100%;
+  height: 30%;
+  border-bottom: 1px solid black;
+  padding: 10px 0px 5px 0px;
+  font-family: IBMPlexSansThaiLooped;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &&.title {
+    height: 15vh;
+  }
+`;
+
+const LogCategory = styled.div`
+  width: 10%;
+  height: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: IBMPlexSansThaiLooped;
+  cursor: pointer;
+  color: black;
+
+  &&.type {
+    width: 40%;
+  }
+  &&.type2 {
+    width: 20%;
+  }
 `;
 
 const LeftUpper = styled.div`
