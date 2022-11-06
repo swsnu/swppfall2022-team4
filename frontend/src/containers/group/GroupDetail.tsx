@@ -12,10 +12,13 @@ const GroupDetail = () => {
   const navigate = useNavigate();
   const group_detail = useSelector(({ group }: RootState) => group.groupDetail.groupdetail);
   const groupDeleteStatus = useSelector(({ group }: RootState) => group.groupDelete);
+  const user = useSelector(({ user }: RootState) => user.user);
+  const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
 
   useEffect(() => {
-    if (group_id) {
+    if (group_id && user) {
       dispatch(groupActions.getGroupDetail({ group_id: group_id }));
+      dispatch(groupActions.checkMemberStatus({ group_id: group_id, member: user.username }));
     }
   }, []);
 
@@ -36,8 +39,31 @@ const GroupDetail = () => {
     }
   };
 
+  const joinOnClick = () => {
+    if (group_id && user) {
+      dispatch(
+        groupActions.joinGroup({
+          group_id: group_id,
+          member: user.username,
+        }),
+      );
+    }
+  };
+
+  const exitOnClick = () => {
+    if (group_id && user) {
+      dispatch(
+        groupActions.exitGroup({
+          group_id: group_id,
+          member: user.username,
+        }),
+      );
+    }
+  };
+
   return (
     <Wrapper>
+      <div>{member_status}</div>
       <GroupDetailHeader>
         <div>{group_detail?.group_name}</div>
         <div>{group_detail?.start_date}</div>
@@ -73,7 +99,12 @@ const GroupDetail = () => {
           time={goal.time}
         />
       ))}
-      <GroupDeleteBtn onClick={deleteOnClick}>그룹삭제하기</GroupDeleteBtn>
+      {member_status == 'group_leader' && <GroupDeleteBtn onClick={deleteOnClick}>그룹 삭제하기</GroupDeleteBtn>}
+      {member_status == 'group_member' && <GroupDeleteBtn onClick={exitOnClick}>그룹 탈퇴하기</GroupDeleteBtn>}
+      {member_status == 'not_member' && <GroupDeleteBtn onClick={joinOnClick}>그룹 가입하기</GroupDeleteBtn>}
+      {(member_status == 'group_member' || member_status == 'group_leader') && (
+        <GroupDeleteBtn onClick={() => navigate(`/group/detail/${group_id}/member`)}>그룹 멤버보기</GroupDeleteBtn>
+      )}
     </Wrapper>
   );
 };

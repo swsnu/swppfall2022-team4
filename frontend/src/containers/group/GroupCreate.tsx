@@ -15,6 +15,7 @@ const GroupCreate = () => {
   const [end_date, setEndDate] = useState('');
   const [description, setDescription] = useState('');
   const [free, setFree] = useState(true);
+  const user = useSelector(({ user }: RootState) => user.user);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const GroupCreate = () => {
         end_date: end_date,
         description: description,
         free: free,
-        group_leader: 'testtest',
+        group_leader: user?.username ?? null,
         goal: [example_fit, example_fit],
       }),
     );

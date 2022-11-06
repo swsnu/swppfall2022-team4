@@ -34,7 +34,7 @@ export type postGroupRequestType = {
   end_date: string;
   description: string;
   free: boolean;
-  group_leader: string;
+  group_leader: string | null;
   goal: Fitelement[];
 };
 
@@ -75,5 +75,57 @@ export type deleteGroupRequestType = {
 
 export const deleteGroup = async (payload: deleteGroupRequestType) => {
   const response = await client.delete(`/api/group/${payload.group_id}/`);
+  return response.data;
+};
+
+export type checkGroupMemberRequestType = {
+  group_id: string;
+  member: string | null;
+};
+
+export type checkGroupMemberResponseType = {
+  member_status: string;
+};
+
+export const checkGroupMember = async (payload: checkGroupMemberRequestType) => {
+  const response = await client.put<checkGroupMemberResponseType>(`/api/group/${payload.group_id}/mem_check/`, payload);
+  return response.data;
+};
+
+export type getGroupMembersRequestType = {
+  group_id: string;
+};
+
+export type Member = {
+  id: 1;
+  username: string;
+  cert_days: number;
+  image: string;
+  level: number;
+};
+
+export type getGroupMembersResponseType = {
+  members: Member[];
+};
+
+export const getGroupMembers = async (payload: getGroupMembersRequestType) => {
+  const response = await client.get<getGroupMembersResponseType>(`/api/group/${payload.group_id}/member/`);
+  return response.data;
+};
+
+export type GroupMemberRequestType = {
+  group_id: string;
+  member: string;
+};
+
+export const joinGroup = async (payload: GroupMemberRequestType) => {
+  const response = await client.post<checkGroupMemberResponseType>(`/api/group/${payload.group_id}/member/`, payload);
+  return response.data;
+};
+
+export const exitGroup = async (payload: GroupMemberRequestType) => {
+  const response = await client.delete<checkGroupMemberResponseType>(
+    `/api/group/${payload.group_id}/member/${payload.member}/`,
+  );
   return response.data;
 };

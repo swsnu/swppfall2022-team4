@@ -17,6 +17,14 @@ interface GroupState {
     group_id: string | null;
   };
   groupDelete: boolean;
+  groupMembers: {
+    members: groupAPI.Member[] | null;
+    error: AxiosError | null;
+  };
+  groupMemberStatus: {
+    member_status: string | null;
+    error: AxiosError | null;
+  };
 }
 
 const initialState: GroupState = {
@@ -33,6 +41,14 @@ const initialState: GroupState = {
     group_id: null,
   },
   groupDelete: false,
+  groupMembers: {
+    members: null,
+    error: null,
+  },
+  groupMemberStatus: {
+    member_status: null,
+    error: null,
+  },
 };
 
 export const groupSlice = createSlice({
@@ -40,7 +56,6 @@ export const groupSlice = createSlice({
   initialState,
   reducers: {
     getGroups: (state, action: PayloadAction<string>) => {
-      console.log('getGroups!');
       state.groupList.groups = null;
       state.groupList.error = null;
     },
@@ -55,7 +70,6 @@ export const groupSlice = createSlice({
       state.groupCreate.status = false;
     },
     createGroupSuccess: (state, { payload }) => {
-      console.log(payload);
       state.groupCreate.group_id = payload.id;
       state.groupCreate.status = true;
     },
@@ -84,6 +98,45 @@ export const groupSlice = createSlice({
     stateRefresh: state => {
       state.groupCreate.status = false;
       state.groupDelete = false;
+    },
+    checkMemberStatus: (state, action: PayloadAction<groupAPI.checkGroupMemberRequestType>) => {
+      state.groupMemberStatus.member_status = null;
+    },
+    checkMemberStatusSuccess: (state, { payload }) => {
+      state.groupMemberStatus.member_status = payload.member_status;
+    },
+    checkMemberStatusFailure: (state, { payload }) => {
+      state.groupMemberStatus.error = payload;
+    },
+    getGroupMembers: (state, action: PayloadAction<groupAPI.getGroupMembersRequestType>) => {
+      state.groupMembers.members = null;
+      state.groupMembers.error = null;
+    },
+    getGroupMembersSuccess: (state, { payload }) => {
+      state.groupMembers.members = payload;
+    },
+    getGroupMembersFailure: (state, { payload }) => {
+      state.groupMembers.error = payload;
+    },
+    joinGroup: (state, action: PayloadAction<groupAPI.GroupMemberRequestType>) => {
+      state.groupMemberStatus.member_status = null;
+      state.groupMemberStatus.error = null;
+    },
+    joinGroupSuccess: (state, { payload }) => {
+      state.groupMemberStatus.member_status = payload.member_status;
+    },
+    joinGroupFailure: (state, { payload }) => {
+      state.groupMemberStatus.error = payload;
+    },
+    exitGroup: (state, action: PayloadAction<groupAPI.GroupMemberRequestType>) => {
+      state.groupMemberStatus.member_status = null;
+      state.groupMemberStatus.error = null;
+    },
+    exitGroupSuccess: (state, { payload }) => {
+      state.groupMemberStatus.member_status = payload.member_status;
+    },
+    exitGroupFailure: (state, { payload }) => {
+      state.groupMemberStatus.error = payload;
     },
   },
 });
@@ -125,9 +178,49 @@ function* deleteGroupSaga(action: PayloadAction<groupAPI.deleteGroupRequestType>
   }
 }
 
+function* getGroupMembersSaga(action: PayloadAction<groupAPI.getGroupMembersRequestType>) {
+  try {
+    const response: AxiosResponse = yield Effect.call(groupAPI.getGroupMembers, action.payload);
+    yield Effect.put(groupActions.getGroupMembersSuccess(response));
+  } catch (error) {
+    yield Effect.put(groupActions.getGroupMembersFailure(error));
+  }
+}
+
+function* checkMemberStatusSaga(action: PayloadAction<groupAPI.checkGroupMemberRequestType>) {
+  try {
+    const response: AxiosResponse = yield Effect.call(groupAPI.checkGroupMember, action.payload);
+    yield Effect.put(groupActions.checkMemberStatusSuccess(response));
+  } catch (error) {
+    yield Effect.put(groupActions.checkMemberStatusFailure(error));
+  }
+}
+
+function* joinGroupSaga(action: PayloadAction<groupAPI.GroupMemberRequestType>) {
+  try {
+    const response: AxiosResponse = yield Effect.call(groupAPI.joinGroup, action.payload);
+    yield Effect.put(groupActions.joinGroupSuccess(response));
+  } catch (error) {
+    yield Effect.put(groupActions.joinGroupFailure(error));
+  }
+}
+
+function* exitGroupSaga(action: PayloadAction<groupAPI.GroupMemberRequestType>) {
+  try {
+    const response: AxiosResponse = yield Effect.call(groupAPI.exitGroup, action.payload);
+    yield Effect.put(groupActions.exitGroupSuccess(response));
+  } catch (error) {
+    yield Effect.put(groupActions.exitGroupFailure(error));
+  }
+}
+
 export default function* groupSaga() {
   yield Effect.takeLatest(groupActions.getGroups, getGroupsSaga);
   yield Effect.takeLatest(groupActions.createGroup, createGroupSaga);
   yield Effect.takeLatest(groupActions.getGroupDetail, getGroupDetailSaga);
   yield Effect.takeLatest(groupActions.deleteGroup, deleteGroupSaga);
+  yield Effect.takeLatest(groupActions.getGroupMembers, getGroupMembersSaga);
+  yield Effect.takeLatest(groupActions.checkMemberStatus, checkMemberStatusSaga);
+  yield Effect.takeLatest(groupActions.joinGroup, joinGroupSaga);
+  yield Effect.takeLatest(groupActions.exitGroup, exitGroupSaga);
 }
