@@ -4,6 +4,14 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
+  DragDropContext,
+  Draggable,
+  DraggingStyle,
+  Droppable,
+  DropResult,
+  NotDraggingStyle,
+} from 'react-beautiful-dnd';
+import {
   Main_SideWrapper,
   PostContentWrapper,
   PostPageWrapper,
@@ -216,19 +224,83 @@ export const PostEditorLayout = (
       );
     }
   };
+  const reorder = (list: TagVisual[], startIndex: number, endIndex: number) => {
+    console.log('reorder');
+    console.log(list);
+    console.log(startIndex);
+    console.log(endIndex);
+
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+  const handleTagDragStart = () => {
+    console.log('Start!');
+  };
+  const handleTagDragEnd = (result: DropResult) => {
+    console.log('End');
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(selectedTags, result.source.index, result.destination.index);
+
+    setSelectedTags(items as TagVisual[]);
+  };
+  const grid = 8;
+  const getItemStyle = (isDragging: boolean, draggableStyle: DraggingStyle | NotDraggingStyle) => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: 'none',
+    padding: grid * 2,
+    margin: `0 ${grid}px 0 0`,
+    width: 'fit-content',
+    // change background colour if dragging
+    background: isDragging ? 'lightgreen' : 'grey',
+
+    // styles we need to apply on draggables
+    ...draggableStyle,
+  });
+
+  const getListStyle = (isDraggingOver: boolean) => ({
+    background: isDraggingOver ? 'lightblue' : 'lightgrey',
+    display: 'flex',
+    padding: grid,
+    width: 'fit-content',
+    overflow: 'auto',
+  });
   const selectedTagsComponent = (
-    <TagBubbleWrapper>
-      {selectedTags.map(tags => {
+    <Droppable droppableId="selectedTags" direction="horizontal">
+      {(provided, snapshot) => {
         return (
-          <TagBubble key={tags.id} color={tags.color}>
-            {tags.name}
-            <TagBubbleFunc onClick={tagOnRemove} data-value={tags.id}>
-              <FontAwesomeIcon icon={faX} />
-            </TagBubbleFunc>
-          </TagBubble>
+          <div ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)} {...provided.droppableProps}>
+            {selectedTags.map((tags, index) => {
+              return (
+                <Draggable key={tags.id} draggableId={tags.id.toString()} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      style={getItemStyle(snapshot.isDragging, provided.draggableProps.style!)}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <TagBubble key={tags.id} color={tags.color}>
+                        {tags.name}
+                        <TagBubbleFunc onClick={tagOnRemove} data-value={tags.id}>
+                          <FontAwesomeIcon icon={faX} />
+                        </TagBubbleFunc>
+                      </TagBubble>
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
+          </div>
         );
-      })}
-    </TagBubbleWrapper>
+      }}
+    </Droppable>
   );
 
   const TagPanel = (
@@ -267,25 +339,27 @@ export const PostEditorLayout = (
   );
 
   return (
-    <PostPageWrapper>
-      <PostContentWrapper>
-        <TopElementWrapperWithoutPadding>
-          <TitleInput type="text" placeholder="제목" value={title} onChange={e => setTitle(e.target.value)} />
-        </TopElementWrapperWithoutPadding>
-        <Main_SideWrapper>
-          <ContentWrapper>
-            <ContentTextArea placeholder="내용" value={content} onChange={e => setContent(e.target.value)} />
-            <CreateBtnWrapper>
-              <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
-              <BlueBigActiveBtn onClick={confirmOnClick} disabled={title === '' || content === ''}>
-                완료
-              </BlueBigActiveBtn>
-            </CreateBtnWrapper>
-          </ContentWrapper>
-          <SideBarWrapper>{TagPanel}</SideBarWrapper>
-        </Main_SideWrapper>
-      </PostContentWrapper>
-    </PostPageWrapper>
+    <DragDropContext onDragStart={handleTagDragStart} onDragEnd={handleTagDragEnd}>
+      <PostPageWrapper>
+        <PostContentWrapper>
+          <TopElementWrapperWithoutPadding>
+            <TitleInput type="text" placeholder="제목" value={title} onChange={e => setTitle(e.target.value)} />
+          </TopElementWrapperWithoutPadding>
+          <Main_SideWrapper>
+            <ContentWrapper>
+              <ContentTextArea placeholder="내용" value={content} onChange={e => setContent(e.target.value)} />
+              <CreateBtnWrapper>
+                <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
+                <BlueBigActiveBtn onClick={confirmOnClick} disabled={title === '' || content === ''}>
+                  완료
+                </BlueBigActiveBtn>
+              </CreateBtnWrapper>
+            </ContentWrapper>
+            <SideBarWrapper>{TagPanel}</SideBarWrapper>
+          </Main_SideWrapper>
+        </PostContentWrapper>
+      </PostPageWrapper>
+    </DragDropContext>
   );
 };
 
@@ -321,7 +395,7 @@ const TagBubbleFunc = styled.div`
   display: block;
   cursor: pointer;
 `;
-const TagBubble = styled.button<IPropsColorButton>`
+const TagBubble = styled.div<IPropsColorButton>`
   height: 25px;
   border-radius: 30px;
   padding: 1px 10px;
@@ -335,17 +409,13 @@ const TagBubble = styled.button<IPropsColorButton>`
     color &&
     `
       background: ${color};
-    `}/* &:hover ${TagBubbleFunc} {
-    visibility: visible;
-    width: fit-content;
-    height: fit-content;
-  } */
+    `}
 `;
 const TagTitle = styled.span`
   margin: 10px 0px;
   font-size: 18px;
   text-align: center;
-  width: 100%;
+  width: fit-content;
 `;
 const TagWrapperIn = styled.div`
   display: flex;
