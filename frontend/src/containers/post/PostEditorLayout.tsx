@@ -227,7 +227,7 @@ export const PostEditorLayout = (
       {selectedTags.map(tags => {
         return (
           <TagBubble key={tags.id} color={tags.color}>
-            <span onClick={() => setPrimeTag(tags)}>{tags.name}</span>
+            <ClickableSpan onClick={() => setPrimeTag(tags)}>{tags.name}</ClickableSpan>
             <TagBubbleFunc onClick={tagOnRemove} data-value={tags.id}>
               <FontAwesomeIcon icon={faX} />
             </TagBubbleFunc>
@@ -309,6 +309,10 @@ export const PostEditorLayout = (
     </PostPageWrapper>
   );
 };
+
+const ClickableSpan = styled.div`
+  cursor: pointer;
+`;
 
 const TagClassColorWrapper = styled.div`
   display: flex;

@@ -1,6 +1,11 @@
 import client from './client';
 import { TagVisual } from './tag';
 
+// Used in createPostRequest, deletePostRequest, getPostComment
+export type postIdentifyingRequestType = {
+  post_id: string;
+};
+
 export const getPosts = async (payload: getPostsRequestType) => {
   let response;
   if (payload.searchKeyword) {
@@ -16,7 +21,7 @@ export const getPosts = async (payload: getPostsRequestType) => {
 };
 
 export type Post = {
-  id: number;
+  id: string;
   title: string;
   author_name: string;
   content: string;
@@ -80,11 +85,6 @@ export type editPostRequestType = {
   content: string;
   tags: TagVisual[];
   prime_tag: TagVisual | null;
-};
-
-// Used in createPostRequest, deletePostRequest
-export type postIdentifyingRequestType = {
-  post_id: string;
 };
 
 export const postFunc = async (payload: postFuncRequestType) => {

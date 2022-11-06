@@ -129,7 +129,7 @@ export const postSlice = createSlice({
       state.postEdit = false;
       alert('edit failed');
     },
-    getPostComment: (state, action: PayloadAction<commentAPI.getPostCommentRequestType>) => {
+    getPostComment: (state, action: PayloadAction<postAPI.postIdentifyingRequestType>) => {
       state.postComment.comments = null;
       state.postComment.error = null;
     },
@@ -148,7 +148,7 @@ export const postSlice = createSlice({
     editComment: (state, action: PayloadAction<commentAPI.editCommentRequestType>) => {
       //edit!
     },
-    deleteComment: (state, action: PayloadAction<commentAPI.deleteCommentRequestType>) => {
+    deleteComment: (state, action: PayloadAction<commentAPI.commentIdentifyingRequestType>) => {
       //edit!
     },
     // postSearch ------------------------------------------------------------------------
@@ -172,7 +172,7 @@ export const postSlice = createSlice({
           }
         });
     },
-    toggleCommentEdit: (state, action: PayloadAction<commentAPI.editToggleActionType>) => {
+    toggleCommentEdit: (state, action: PayloadAction<commentAPI.commentIdentifyingRequestType>) => {
       if (state.postComment.comments) {
         state.postComment.comments = state.postComment.comments.map(comment => {
           if (comment.id === action.payload.comment_id) {
