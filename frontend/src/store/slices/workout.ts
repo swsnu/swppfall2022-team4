@@ -38,6 +38,7 @@ interface WorkoutLogState {
     fitelements: Array<any>;
   };
   add_fit_elements: {
+    fitelements: Array<any>;
     status: Boolean;
   }
 }
@@ -76,6 +77,7 @@ const initialState: WorkoutLogState = {
     fitelements: [],
   },
   add_fit_elements: {
+    fitelements: [],
     status: false
   }
 };
@@ -134,6 +136,7 @@ export const workoutLogSlice = createSlice({
       
     },
     addFitElementsSuccess: (state, { payload }) => {
+      state.add_fit_elements.fitelements = payload;
       state.add_fit_elements.status = true;
     }
   },

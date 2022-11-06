@@ -113,9 +113,15 @@ const WorkoutLog = () => {
   };
 
   const copyDailyLog = () => {
-    setIsCopy(true);
-    setCopyDate(new Date(year, month, day));
-    setCopiedFitElements(dailyFitElements.map(v => { return Number(v.id) }));
+    if (dailyLog.isDailyLog === true && dailyFitElements.length > 0) {
+      setIsCopy(true);
+      setCopyDate(new Date(year, month, day));
+      setCopiedFitElements(
+        dailyFitElements.map(v => {
+          return Number(v.id);
+        }),
+      );
+    }
   };
 
   const pasteDailyLog = () => {

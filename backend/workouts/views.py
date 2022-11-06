@@ -33,14 +33,16 @@ def create_fit_element(request):
 
             new_fit_element.save()
 
-            daily_logs = DailyLog.objects.filter(author_id=int(req_data["user_id"]))
+            daily_logs = DailyLog.objects.filter(
+                author_id=int(req_data["user_id"]))
 
             if not daily_logs.filter(date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')).exists():
                 try:
                     new_daily_log = DailyLog(
                         author_id=req_data["user_id"],
                         memo="",
-                        date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
+                        date=datetime.strptime(
+                            req_data["date"][0:10], '%Y-%m-%d'),
                     )
                     new_daily_log.save()
                     new_daily_log.fit_element.add(new_fit_element)
@@ -49,11 +51,12 @@ def create_fit_element(request):
                     return HttpResponseBadRequest()
             else:
                 try:
-                    daily_log_single = daily_logs.filter(date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'))[0]
+                    daily_log_single = daily_logs.filter(
+                        date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'))[0]
                     daily_log_single.fit_element.add(new_fit_element)
                 except:
                     return HttpResponseBadRequest()
-            
+
             return JsonResponse({"workout_id": str(new_fit_element.pk)}, status=201)
         except (KeyError, json.JSONDecodeError):
             return HttpResponseBadRequest()
@@ -205,7 +208,8 @@ def daily_log(request, year, month, specific_date):
         print(DailyLog.objects.all())
 
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
-        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
+        daily_log_single = daily_logs.filter(
+            date=datetime(year, month, specific_date).date())
 
         if len(daily_log_single) == 0:
             daily_log_dict_return = {
@@ -228,7 +232,8 @@ def daily_log(request, year, month, specific_date):
     elif request.method == 'POST':
         user_id = request.GET.get('user_id')
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
-        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
+        daily_log_single = daily_logs.filter(
+            date=datetime(year, month, specific_date).date())
 
         if len(daily_log_single) == 0:
             try:
@@ -246,7 +251,8 @@ def daily_log(request, year, month, specific_date):
     elif request.method == 'PUT':
         user_id = request.GET.get('user_id')
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
-        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
+        daily_log_single = daily_logs.filter(
+            date=datetime(year, month, specific_date).date())
 
         req_data = json.loads(request.body.decode())
         return_json = []
@@ -268,18 +274,23 @@ def daily_log(request, year, month, specific_date):
                     new_daily_log.save()
                     for fitelement_id in fitelements:
                         if FitElement.objects.filter(id=fitelement_id).exists():
-                            return_json.append(fitelement_id)
-                            fitelement = FitElement.objects.get(id=fitelement_id)   
+                            fitelement = FitElement.objects.get(
+                                id=fitelement_id)
+                            fitelement.pk = None
+                            fitelement.save()
+                            return_json.append(fitelement.pk)
                             new_daily_log.fit_element.add(fitelement)
                     new_daily_log.save()
-                    return JsonResponse({"dailylog_date": new_daily_log.date}, status=201)
+                    return JsonResponse(return_json, safe=False, status=200)
                 except (KeyError, json.JSONDecodeError):
                     return HttpResponseBadRequest()
-            
+
             for fitelement_id in fitelements:
                 if FitElement.objects.filter(id=fitelement_id).exists():
-                    return_json.append(fitelement_id)
-                    fitelement = FitElement.objects.get(id=fitelement_id)   
+                    fitelement = FitElement.objects.get(id=fitelement_id)
+                    fitelement.pk = None
+                    fitelement.save()
+                    return_json.append(fitelement.pk)
                     daily_log_single[0].fit_element.add(fitelement)
             daily_log_single[0].save()
             return JsonResponse(return_json, safe=False, status=200)
