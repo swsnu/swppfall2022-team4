@@ -168,8 +168,25 @@ def routines(request):
             return_json.append(routine_dict)
         return JsonResponse(return_json, safe=False, status=200)
     elif request.method == 'POST':
-        pass
+        user_id = request.GET.get('user_id')
+        
+        req_data = json.loads(request.body.decode())
+        fitelements = req_data["fitelements"]
+        new_routine = Routine(
+            author_id=req_data["user_id"],
+            name="temp"
+        )
 
+        new_routine.save()
+        new_routine.name = "routine"+str(new_routine.pk)
+        for fitelement_id in fitelements:
+            if FitElement.objects.filter(id=fitelement_id).exists():
+                fitelement = FitElement.objects.get(id=fitelement_id)
+                fitelement.pk = None
+                fitelement.save()
+                new_routine.fit_element.add(fitelement)
+        new_routine.save()
+        return HttpResponse(status=201)
 
 @require_http_methods(["GET", "PUT", "DELETE"])
 def routine(request, routine_id):

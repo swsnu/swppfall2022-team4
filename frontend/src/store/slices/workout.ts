@@ -138,7 +138,10 @@ export const workoutLogSlice = createSlice({
     addFitElementsSuccess: (state, { payload }) => {
       state.add_fit_elements.fitelements = payload;
       state.add_fit_elements.status = true;
-    }
+    },
+    createRoutineWithFitElements: (state, action: PayloadAction<workoutLogAPI.createRoutineWithFitElementsRequestType>) => {
+      
+    },
   },
 });
 
@@ -206,6 +209,12 @@ function* addFitElementsSaga(action: PayloadAction<workoutLogAPI.addFitElementsR
   } catch (error) {}
 }
 
+function* createRoutineWithFitElementsSaga(action: PayloadAction<workoutLogAPI.createRoutineWithFitElementsRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.createRoutineWithFitElements, action.payload);
+  } catch (error) {}
+}
+
 export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getFitElement, getFitElementSaga);
   yield takeLatest(workoutLogActions.getDailyLog, getDailyLogSaga);
@@ -216,4 +225,5 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getRoutine, getRoutineSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutine, getSpecificRoutineSaga);
   yield takeLatest(workoutLogActions.addFitElements, addFitElementsSaga);
+  yield takeLatest(workoutLogActions.createRoutineWithFitElements, createRoutineWithFitElementsSaga);
 }

@@ -119,6 +119,11 @@ export type addFitElementsResponseType= {
     fitelements: number[];
 }
 
+export type createRoutineWithFitElementsRequestType = {
+    user_id: number;
+    fitelements: number[];
+}
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
     const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
     return response.data;
@@ -168,6 +173,11 @@ export const getRoutine = async (payload: getRoutineRequestType) => {
 
 export const addFitElements = async (payload: addFitElementsRequestType) => {
     const response = await client.put<addFitElementsResponseType>(`/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`, payload);
+    return response.data;
+}
+
+export const createRoutineWithFitElements = async (payload: createRoutineWithFitElementsRequestType) => {
+    const response = await client.post<createRoutineWithFitElementsRequestType>(`/api/fitelement/routine/?&user_id=${payload.user_id}`, payload);
     return response.data;
 }
 

@@ -11,6 +11,7 @@ import {
   createDailyLogRequestType,
   editMemoRequestType,
   addFitElementsRequestType,
+  createRoutineWithFitElementsRequestType,
 } from 'store/apis/workout';
 import { create } from 'domain';
 
@@ -125,6 +126,21 @@ const WorkoutLog = () => {
     }
   };
 
+  const addRoutineClick = () => {
+    if (dailyLog.isDailyLog === true && dailyFitElements.length > 0) {
+      const fitelements_id_list = dailyFitElements.map(v => {
+        return Number(v.id);
+      });
+      const createRoutineConfig: createRoutineWithFitElementsRequestType = {
+        user_id: 1,
+        fitelements: fitelements_id_list,
+      };
+      dispatch(workoutLogActions.createRoutineWithFitElements(createRoutineConfig));
+  
+      navigate('/routine');
+    }
+  };
+
   const pasteDailyLog = () => {
     setIsCopy(false);
 
@@ -192,16 +208,16 @@ const WorkoutLog = () => {
         <LeftWrapper>
           <LeftUpper>
             <DateWrapper>
-            {isCopy === true
-              ? String(copy_date.getFullYear()) +
-                '.' +
-                String(copy_date.getMonth() + 1) +
-                '.' +
-                String(copy_date.getDate()) +
-                ' ' +
-                '복사중'
+              {isCopy === true
+                ? String(copy_date.getFullYear()) +
+                  '.' +
+                  String(copy_date.getMonth() + 1) +
+                  '.' +
+                  String(copy_date.getDate()) +
+                  ' ' +
+                  '복사중'
                 : '복사 없음'}
-              </DateWrapper>
+            </DateWrapper>
           </LeftUpper>
           <CalendarWrapper>
             <Frame>
@@ -334,6 +350,7 @@ const WorkoutLog = () => {
               </AnyButton>
               <AnyButton onClick={() => copyDailyLog()}>내보내기</AnyButton>
               <AnyButton>저장</AnyButton>
+              <AnyButton onClick={() => addRoutineClick()}>루틴추가</AnyButton>
             </LogUpper>
             <Frame className="right">
               <LogHeader>
