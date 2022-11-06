@@ -1,6 +1,7 @@
 from django.db import models
 from utils.models import AbstractTimeStampedModel
 from users.models import User
+from tags.models import Tag
 
 
 class Post(AbstractTimeStampedModel):
@@ -10,15 +11,28 @@ class Post(AbstractTimeStampedModel):
     title = models.CharField(max_length=60, null=False)
     content = models.TextField()
 
-    # view_num = models.IntegerField(null=False, default=0)
-    like_num = models.IntegerField(null=False, default=0)
-    dislike_num = models.IntegerField(null=False, default=0)
-    scrap_num = models.IntegerField(null=False, default=0)
+    liker = models.ManyToManyField(User, related_name="liked_posts", blank=True)
+    disliker = models.ManyToManyField(User, related_name="disliked_posts", blank=True)
+    scraper = models.ManyToManyField(User, related_name="scraped_posts", blank=True)
+
+    tags = models.ManyToManyField(Tag, related_name="tagged_posts", blank=True)
 
     # Related_name : comments <- comments.Comment
+    def get_like_num(self):
+        """Get number of like"""
+        return self.liker.count()
+
+    def get_dislike_num(self):
+        """Get number of dislike"""
+        return self.disliker.count()
+
+    def get_scrap_num(self):
+        """Get number of scrap"""
+        return self.scraper.count()
+
     def get_eff_like(self):
         """Get effective number of like"""
-        return self.like_num - self.dislike_num
+        return self.get_like_num() - self.get_dislike_num()
 
     def get_comments_num(self):
         """Get the number of comments"""

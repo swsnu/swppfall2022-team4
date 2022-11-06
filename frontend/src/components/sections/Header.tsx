@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'index';
-import { userActions } from 'store/slices/user';
-import useCheckAuth from 'hooks/useCheckAuth';
+import { AiFillHome } from 'react-icons/ai';
+import { BsFillChatDotsFill } from 'react-icons/bs';
 import { IoIosNotifications, IoIosNotificationsOutline } from 'react-icons/io';
 import { HiOutlineDocumentReport, HiUserGroup, HiOutlineAnnotation, HiInformationCircle } from 'react-icons/hi';
 import styled from 'styled-components';
+import { RootState } from 'index';
+import { userActions } from 'store/slices/user';
+import { chatActions } from 'store/slices/chat';
+import useCheckAuth from 'hooks/useCheckAuth';
 
 const Header = () => {
   useCheckAuth();
@@ -18,9 +21,10 @@ const Header = () => {
   const infoRef = useRef<HTMLDivElement>(null);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
-  const { user, notice } = useSelector((state: RootState) => ({
+  const { user, notice, where } = useSelector((state: RootState) => ({
     user: state.user.user,
     notice: state.user.notice,
+    where: state.chat.where,
   }));
 
   useEffect(() => {
@@ -46,9 +50,56 @@ const Header = () => {
     };
   }, [infoRef]);
   useEffect(() => {
+    window.scrollTo(0, 0);
     setNotificationOpen(false);
     setInfoOpen(false);
   }, [location]);
+
+  const ws: React.MutableRefObject<WebSocket | null> = useRef(null);
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://${process.env.REACT_APP_API_SOCKET_URL}/ws/chat/${user && user.username}/`);
+
+    ws.current.onopen = () => {
+      console.log(`CONNECTED`);
+      dispatch(chatActions.setSocket(ws.current));
+    };
+    ws.current.onclose = () => {
+      console.log(`DISCONNECTED`);
+    };
+    ws.current.onerror = error => {
+      console.log(`CONNECTION ERROR`);
+      console.log(error);
+    };
+    ws.current.onmessage = e => {
+      const data = JSON.parse(e.data);
+
+      console.log(data, where, data.where.toString());
+
+      if (data.type === 'CHAT') {
+        if (where === null) {
+          console.log('ignore...');
+        } else if (where !== data.where.toString()) {
+          console.log('update list...');
+          dispatch(chatActions.getChatroomList(user?.username || ''));
+        } else {
+          console.log('update list and message...');
+          dispatch(chatActions.getChatroomList(user?.username || ''));
+          dispatch(chatActions.addMessage(data.data));
+        }
+      }
+    };
+
+    return () => {
+      console.log('CLOSE');
+      if (ws && ws.current) ws.current.close();
+    };
+  }, [where]);
+
+  const onLogout = () => {
+    if (window.confirm('정말 로그아웃하시겠습니까?')) {
+      dispatch(userActions.logout());
+    }
+  };
 
   if (!user) return <div>no user</div>;
   return (
@@ -93,22 +144,31 @@ const Header = () => {
             ) : (
               <IoIosNotificationsOutline onClick={() => setNotificationOpen(!notificationOpen)} />
             )}
-            <Notification open={notificationOpen}>{notificationOpen && <div>Notification!</div>}</Notification>
+            <Notification open={notificationOpen}>{<div>Notification!</div>}</Notification>
           </NotificationWrapper>
           <InfoWrapper ref={infoRef}>
-            <img
+            <HeaderImage
               src={process.env.REACT_APP_API_IMAGE + user.image}
               alt="profile"
               onClick={() => setInfoOpen(!infoOpen)}
             />
-            <Info open={infoOpen}>
-              {infoOpen && (
-                <>
-                  <MypageButton onClick={() => navigate(`/mypage/${user.username}`)}>Mypage</MypageButton>
-                  <LogoutButton onClick={() => dispatch(userActions.logout())}>Logout</LogoutButton>
-                </>
-              )}
-            </Info>
+            <InfoPopUpWrapper open={infoOpen}>
+              <InfoImage src={process.env.REACT_APP_API_IMAGE + user.image} alt="profile" />
+              <InfoPopUpSmallWrapper>
+                <InfoPopUpNickname>{user.nickname}</InfoPopUpNickname>
+                {infoOpen && (
+                  <div style={{ display: 'flex' }}>
+                    <MypageButton onClick={() => navigate(`/profile/${user.username}`)}>
+                      <AiFillHome />
+                    </MypageButton>
+                    <ChatButton onClick={() => navigate(`/chat`)}>
+                      <BsFillChatDotsFill />
+                    </ChatButton>
+                    <LogoutButton onClick={onLogout}>Logout</LogoutButton>
+                  </div>
+                )}
+              </InfoPopUpSmallWrapper>
+            </InfoPopUpWrapper>
           </InfoWrapper>
         </IconWrapper>
       </Wrapper>
@@ -125,12 +185,18 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #ffffff;
   border-bottom: 2px solid #909090;
   padding: 0 20px;
   z-index: 100;
   position: fixed;
   top: 0;
-  background-color: #ffffff;
+
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 `;
 const FakeHeader = styled.div`
   width: 100%;
@@ -260,17 +326,18 @@ const Notification = styled.div<{ open: boolean }>`
 `;
 const InfoWrapper = styled.div`
   position: relative;
-  img {
-    width: 36px;
-    height: 36px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
 `;
-const Info = styled.div<{ open: boolean }>`
+const HeaderImage = styled.img`
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+`;
+const InfoPopUpWrapper = styled.div<{ open: boolean }>`
   position: absolute;
   background-color: #eaffe9;
-  width: 120px;
+  width: 250px;
   border-radius: 5px;
   top: 43px;
   right: -5px;
@@ -278,20 +345,15 @@ const Info = styled.div<{ open: boolean }>`
   font-size: 18px;
 
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 5px;
-  padding: 7.5px;
+  padding: 8px;
 
   transition: opacity 0.15s, height 0.15s;
   opacity: ${props => (props.open ? '1' : '0')};
-  width: 120px;
-  height: ${props => (props.open ? '80px' : '0')};
+  height: ${props => (props.open ? '90px' : '0')};
   box-shadow: 1px 1px 2px 2px #646464;
-  div {
-    cursor: pointer;
-  }
 
   -ms-user-select: none;
   -moz-user-select: -moz-none;
@@ -299,8 +361,27 @@ const Info = styled.div<{ open: boolean }>`
   -khtml-user-select: none;
   user-select: none;
 `;
+const InfoImage = styled.img`
+  width: 72px;
+  height: 72px;
+  border-radius: 5px;
+  border: 1px solid #b1b1b1;
+`;
+const InfoPopUpSmallWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: calc(100% - 80px);
+  height: 60px;
+  margin-top: 12px;
+`;
+const InfoPopUpNickname = styled.div`
+  font-size: 20px;
+  font-weight: 600;
+  font-family: NanumSquareR;
+`;
 const MypageButton = styled.div`
-  width: 100%;
+  width: 30px;
   height: 30px;
   background-color: #349c66;
   color: white;
@@ -316,7 +397,25 @@ const MypageButton = styled.div`
     background-color: #3bb978;
   }
 `;
-const LogoutButton = styled(MypageButton)`
+const ChatButton = styled(MypageButton)`
+  background-color: #3f6cd1;
+  &:hover {
+    background-color: #5b84df;
+  }
+  margin: 0 6px;
+`;
+const LogoutButton = styled.div`
+  width: 80px;
+  height: 30px;
+  background-color: #349c66;
+  color: white;
+  border: 0;
+  border-radius: 5px;
+  font-family: FugazOne;
+  font-size: 18px;
+  padding-top: 5.5px;
+  text-align: center;
+  cursor: pointer;
   background-color: #9c3434;
   &:hover {
     background-color: #c74e4e;
