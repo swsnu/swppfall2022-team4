@@ -156,6 +156,16 @@ export const getRoutine = async (payload: getRoutineRequestType) => {
 
 export const getSpecificRoutine = async (payload: getSpecificRoutineRequestType) => {
     const response = await client.get<getSpecificRoutineResponseType>(`/api/fitelement/routine/${payload.routine_id}/?&user_id=${payload.user_id}`);
-    console.log(response.data)
-    return response.data;
+    
+    const temp_list = await Promise.all(
+        response.data.fitelements.map(id => {
+          return client.get<getFitElementResponseType>(`/api/fitelement/${id}/`);
+        })
+    );
+    
+    const return_list = temp_list.map((v) => {
+        return v.data
+    })
+
+    return [response.data, return_list];
 }

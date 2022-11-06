@@ -33,7 +33,7 @@ interface WorkoutLogState {
     dailylog_date: Date | null;
   };
   calendar_info: workoutLogAPI.calendarInfoResponse[];
-  selected_routine: workoutLogAPI.getSpecificRoutineResponseType;
+  selected_routine_fit_elements: Array<any>;
 }
 
 const initialState: WorkoutLogState = {
@@ -65,10 +65,7 @@ const initialState: WorkoutLogState = {
     dailylog_date: null,
   },
   calendar_info: [],
-  selected_routine: {
-    name: '',
-    fitelements: [],
-  },
+  selected_routine_fit_elements: [],
 };
 
 export const workoutLogSlice = createSlice({
@@ -118,7 +115,7 @@ export const workoutLogSlice = createSlice({
     },
     getSpecificRoutine: (state, action: PayloadAction<workoutLogAPI.getSpecificRoutineRequestType>) => {},
     getSpecificRoutineSuccess: (state, { payload }) => {
-      state.selected_routine = payload;
+      state.selected_routine_fit_elements = payload[1];
     },
   },
 });

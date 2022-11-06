@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { workoutLogActions } from 'store/slices/workout';
+import { FitElement } from 'components/fitelement/FitElement';
 import { getRoutineRequestType, getRoutineResponseType } from 'store/apis/workout';
 
 const Routine = () => {
@@ -28,11 +29,13 @@ const Routine = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(workoutLogActions.getSpecificRoutine({ user_id: 1, routine_id: routine_id }));
+    if (routine_id !== -1) {
+      dispatch(workoutLogActions.getSpecificRoutine({ user_id: 1, routine_id: routine_id }));
+    }
   }, [routine_id]);
 
   const routines = useSelector((rootState: RootState) => rootState.workout_log.routine);
-  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine);
+  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine_fit_elements);
   console.log(routines);
   console.log(selected_routine);
 
@@ -57,7 +60,23 @@ const Routine = () => {
           <RoutineTitleWrapper>운동 루틴</RoutineTitleWrapper>
         </RightUpper>
         <Frame className="right">
-          <LogWrapper>{routine_id === -1 ? '입력해주세요' : '구현대기'}</LogWrapper>
+          <LogWrapper>
+            {routine_id === -1
+              ? '루틴을 눌러주세요.'
+              : selected_routine.map((fitelement, index) => (
+                  <FitElement
+                    key={index}
+                    id={index + 1}
+                    type={fitelement.type}
+                    workout_type={fitelement.workout_type}
+                    category={fitelement.category}
+                    weight={fitelement.weight}
+                    rep={fitelement.rep}
+                    set={fitelement.set}
+                    time={fitelement.time}
+                  />
+                ))}
+          </LogWrapper>
         </Frame>
       </RightWrapper>
     </Wrapper>
@@ -181,5 +200,5 @@ const LogWrapper = styled.div`
   min-height: 80vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
 `;
