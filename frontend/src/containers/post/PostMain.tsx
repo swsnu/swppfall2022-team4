@@ -11,6 +11,7 @@ import { tagActions } from 'store/slices/tag';
 import { BlueBigBtn } from 'components/post/button';
 import { TagBubbleCompact } from 'components/tag/tagbubble';
 import { articleItemGrid } from 'components/post/layout';
+import { LoadingWithoutMinHeight } from 'components/common/Loading';
 
 interface IPropsPageIndicator {
   isActive?: boolean;
@@ -73,7 +74,7 @@ const PostMain = () => {
           );
         })
       ) : (
-        <span></span>
+        <LoadingWithoutMinHeight />
       )}
       <ArticleFooter>
         <PageNumberIndicator isActive={page >= 2} onClick={() => setPage(1)}>

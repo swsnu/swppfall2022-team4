@@ -37,31 +37,30 @@ export const tagSlice = createSlice({
       //create!
     },
     createTagClassSuccess: (state, { payload }) => {
-      // console.log(payload);
+      //create success
     },
     createTagClassFailure: (state, { payload }) => {
-      // console.log(payload);
+      //create failure
     },
     createTag: (state, action: PayloadAction<tagAPI.createTagRequestType>) => {
       //create!
       state.tagCreate = null;
     },
     createTagSuccess: (state, { payload }) => {
-      //console.log(payload);
+      //create success
       state.tagCreate = payload.tags;
     },
     createTagFailure: (state, { payload }) => {
-      // console.log(payload);
+      //create failure
     },
     searchTag: (state, action: PayloadAction<tagAPI.searchTagRequestType>) => {
       //search!
     },
     searchTagSuccess: (state, { payload }) => {
-      // console.log(payload);
       state.tagSearch = payload.tags;
     },
     searchTagFailure: (state, { payload }) => {
-      // console.log(payload);
+      //search failure
     },
     searchTagClear: state => {
       state.tagSearch = null;

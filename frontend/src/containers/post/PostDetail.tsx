@@ -9,7 +9,7 @@ import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { Comment } from 'store/apis/comment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
-import Loading from 'components/common/Loading';
+import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
@@ -351,7 +351,11 @@ const PostDetail = () => {
               <TagBubbleWrapper>
                 {post.tags.map(tags => {
                   return (
-                    <TagBubble key={tags.id} color={tags.color} isPrime={tags.id === post.prime_tag.id}>
+                    <TagBubble
+                      key={tags.id}
+                      color={tags.color}
+                      isPrime={post.prime_tag && tags.id === post.prime_tag.id}
+                    >
                       {tags.name}
                     </TagBubble>
                   );
@@ -378,7 +382,7 @@ const PostDetail = () => {
           </ArticleCommentWrapper>
         </ArticleItem>
       ) : (
-        <Loading />
+        <LoadingWithoutMinHeight />
       )}
     </ArticleDetailWrapper>
   );
@@ -411,6 +415,7 @@ const TagBubbleWrapper = styled.div`
   }
 `;
 const ArticleBodyFooter = styled.div`
+  padding: 10px 20px;
   display: flex;
   justify-content: flex-start;
   width: 100%;
@@ -426,6 +431,16 @@ const ArticleDetailWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  /* Scroll Shadow */
+  background-image: linear-gradient(to top, white, white), linear-gradient(to top, white, white),
+    linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));
+  background-position: bottom center, top center, bottom center, top center;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
+  background-attachment: local, local, scroll, scroll;
 `;
 
 const SideBarItem = styled.div`
@@ -435,7 +450,7 @@ const SideBarItem = styled.div`
 `;
 
 const ArticleBody = styled.div`
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   font-size: 14px;
   width: 100%;
   height: 80%;
@@ -447,10 +462,10 @@ const ArticleBody = styled.div`
 `;
 
 const ArticleItem = styled.div`
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   font-size: 14px;
   width: 100%;
-  height: 100%;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -463,7 +478,9 @@ const ArticleItem = styled.div`
 // Article Title
 const ArticleTitleWrapper = styled.div`
   width: 100%;
-  height: 50px;
+  padding: 5px 40px 0px 40px;
+  background-color: var(--fit-white);
+  height: fit-content;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -522,18 +539,18 @@ const ArticleBodyContent = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  /* min-height: 360px; */
+  padding: 10px 20px;
+  min-height: 360px;
 `;
 
 // Article Comment List
 const ArticleCommentWrapper = styled.div`
   width: 100%;
-  background-color: var(--fit-white);
 `;
 
 const CommentWrapper = styled.div`
   width: 100%;
-  background-color: var(--fit-white);
+  padding: 0px 20px;
 `;
 
 const CommentReplyWrapper = styled.div`
@@ -669,6 +686,7 @@ const CommentForm = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+  padding: 10px 20px;
 `;
 
 const CommentReplyForm = styled.div`

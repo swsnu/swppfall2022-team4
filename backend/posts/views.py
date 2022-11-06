@@ -106,11 +106,14 @@ def post_detail(request, query_id):
                     }
                 )
 
-            prime_tag_response = {
-                "id": post_obj.prime_tag.pk,
-                "name": post_obj.prime_tag.tag_name,
-                "color": post_obj.prime_tag.tag_class.color,
-            }
+            if post_obj.prime_tag:
+                prime_tag_response = {
+                    "id": post_obj.prime_tag.pk,
+                    "name": post_obj.prime_tag.tag_name,
+                    "color": post_obj.prime_tag.tag_class.color,
+                }
+            else:
+                prime_tag_response = None
 
             post_response = {
                 "id": post_obj.pk,
