@@ -27,20 +27,20 @@ def post_home(request):
         offset = (query_args["page_num"] - 1) * query_args["page_size"]
         limit = query_args["page_num"] * query_args["page_size"]
 
+        posts = Post.objects.all()
         if query_args["keyword"]:
             filter_args = {}
             filter_args["title__icontains"] = query_args["keyword"]
-            posts = Post.objects.all().filter(**filter_args)[offset:limit]
-        else:
-            posts = Post.objects.all()[offset:limit]
+            posts = posts.filter(**filter_args)
 
-        posts_serializable = list(posts.values())
+        posts_serializable = list(posts[offset:limit].values())
         for index, _ in enumerate(posts_serializable):
             posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
             posts_serializable[index]["author_name"] = posts[index].author.username
             posts_serializable[index]["like_num"] = posts[index].get_like_num()
             posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
             posts_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
+            posts_serializable[index]["prime_tag"] = None
 
             if posts[index].prime_tag:
                 posts_serializable[index]["prime_tag"] = {
@@ -48,8 +48,6 @@ def post_home(request):
                     "name": posts[index].prime_tag.tag_name,
                     "color": posts[index].prime_tag.tag_class.color,
                 }
-            else:
-                posts_serializable[index]["prime_tag"] = None
 
             del posts_serializable[index]["author_id"]
             del posts_serializable[index]["prime_tag_id"]
@@ -107,14 +105,13 @@ def post_detail(request, query_id):
                     }
                 )
 
+            prime_tag_response = None
             if post_obj.prime_tag:
                 prime_tag_response = {
                     "id": post_obj.prime_tag.pk,
                     "name": post_obj.prime_tag.tag_name,
                     "color": post_obj.prime_tag.tag_class.color,
                 }
-            else:
-                prime_tag_response = None
 
             post_response = {
                 "id": post_obj.pk,
