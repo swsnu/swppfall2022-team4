@@ -13,10 +13,7 @@ import Loading from 'components/common/Loading';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
-
-interface IPropsColorButton {
-  color?: string;
-}
+import { TagBubble } from 'components/tag/tagbubble';
 
 interface IPropsComment {
   isChild?: boolean;
@@ -412,20 +409,6 @@ const TagBubbleWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-`;
-const TagBubble = styled.button<IPropsColorButton>`
-  height: 20px;
-  width: fit-content;
-  border-radius: 25px;
-  padding: 1px 12px;
-  border: none;
-  white-space: nowrap;
-  margin: 1px 3px;
-  ${({ color }) =>
-    color &&
-    `
-      background: ${color};
-    `}
 `;
 const ArticleBodyFooter = styled.div`
   display: flex;

@@ -65,7 +65,6 @@ export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element
 );
 
 export const SideBarWrapper = styled.div`
-  /* border: 1px solid black; */
   width: 100%;
 `;
 
