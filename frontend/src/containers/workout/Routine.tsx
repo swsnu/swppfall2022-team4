@@ -2,12 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { RootState } from 'index';
+import { workoutLogActions } from 'store/slices/workout';
+import { getRoutineRequestType, getRoutineResponseType } from 'store/apis/workout';
 
 const Routine = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const calendarButtonClick = () => {
     navigate('/workout');
   };
+
+  const routineClick = (id: number) => {
+    setRoutineId(id);
+  };
+
+  const [routine_id, setRoutineId] = useState<number>(-1);
+
+  const defaultRoutineRequest: getRoutineRequestType = {
+    user_id: 1,
+  };
+
+  useEffect(() => {
+    dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
+  }, []);
+
+  useEffect(() => {
+    dispatch(workoutLogActions.getSpecificRoutine({ user_id: 1, routine_id: routine_id }));
+  }, [routine_id]);
+
+  const routines = useSelector((rootState: RootState) => rootState.workout_log.routine);
+  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine);
+  console.log(routines);
+  console.log(selected_routine);
+
   return (
     <Wrapper>
       <LeftWrapper>
@@ -15,7 +43,13 @@ const Routine = () => {
           <ReturnButtonWrapper onClick={() => calendarButtonClick()}>{'< '} 달력으로 돌아가기</ReturnButtonWrapper>
         </LeftUpper>
         <Frame>
-          <RoutineListWrapper></RoutineListWrapper>
+          <RoutineListWrapper>
+            {routines.map((routine, index) => (
+              <RoutineName key={index} onClick={() => routineClick(Number(routine.id))}>
+                {routine.name}
+              </RoutineName>
+            ))}
+          </RoutineListWrapper>
         </Frame>
       </LeftWrapper>
       <RightWrapper>
@@ -23,7 +57,7 @@ const Routine = () => {
           <RoutineTitleWrapper>운동 루틴</RoutineTitleWrapper>
         </RightUpper>
         <Frame className="right">
-          <LogWrapper></LogWrapper>
+          <LogWrapper>{routine_id === -1 ? '입력해주세요' : '구현대기'}</LogWrapper>
         </Frame>
       </RightWrapper>
     </Wrapper>
@@ -38,6 +72,18 @@ const Wrapper = styled.div`
   min-height: 100vh;
   background-color: #ffffff;
   display: flex;
+`;
+
+const RoutineName = styled.div`
+  width: 100%;
+  height: 100%;
+  min-height: 10vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid black;
+  font-weight: normal;
 `;
 
 const LeftUpper = styled.div`
@@ -78,6 +124,7 @@ const RoutineTitleWrapper = styled.div`
   font-size: 20px;
   font-weight: 600;
   justify-content: center;
+  align-items: center;
 `;
 
 const LeftWrapper = styled.div`
@@ -123,7 +170,9 @@ const RoutineListWrapper = styled.div`
   height: 100%;
   min-height: 80vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
 `;
 
 const LogWrapper = styled.div`

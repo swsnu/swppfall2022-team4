@@ -86,6 +86,27 @@ export type getCalendarInfoResponseType = {
     fitelements: calendarInfoResponse[];
 }
 
+export type getRoutineRequestType = {
+    user_id: number;
+    
+}
+
+export type getRoutineResponseType = {
+    id: number;
+    name: string;
+    fitelements: getFitElementResponseType[];
+}
+
+export type getSpecificRoutineRequestType = {
+    user_id: number;
+    routine_id: number;
+}
+
+export type getSpecificRoutineResponseType = {
+    name: string;
+    fitelements: getFitElementResponseType[];
+}
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
     const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
     return response.data;
@@ -124,6 +145,17 @@ export const editMemo = async (payload: editMemoRequestType) => {
 
 export const getCalendarInfo = async (payload: getCalendarInfoRequestType) => {
     const response = await client.get<getCalendarInfoResponseType>(`/api/fitelement/${payload.year}/${payload.month}/?&user_id=${payload.user_id}`);
+    console.log(response.data)
+    return response.data;
+}
+
+export const getRoutine = async (payload: getRoutineRequestType) => {
+    const response = await client.get<getRoutineResponseType>(`/api/fitelement/routine/?&user_id=${payload.user_id}`);
+    return response.data;
+}
+
+export const getSpecificRoutine = async (payload: getSpecificRoutineRequestType) => {
+    const response = await client.get<getSpecificRoutineResponseType>(`/api/fitelement/routine/${payload.routine_id}/?&user_id=${payload.user_id}`);
     console.log(response.data)
     return response.data;
 }

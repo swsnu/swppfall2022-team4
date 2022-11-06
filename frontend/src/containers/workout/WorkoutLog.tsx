@@ -9,9 +9,7 @@ import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
   createDailyLogRequestType,
-  editMemoRequestType,
-  getCalendarInfoRequestType,
-  getCalendarInfo,
+  editMemoRequestType
 } from 'store/apis/workout';
 
 const WorkoutLog = () => {
@@ -33,6 +31,8 @@ const WorkoutLog = () => {
   const [selected_month, setSelectedMonth] = useState(date.getMonth());
   const [selected_date, setSelectedDay] = useState(date.getDate());
   const [workout_type, setWorkoutType] = useState('');
+  //TODO: workout_type이 비어있을 경우, alert
+  //TODO: fitelement 추가 후, 값 비우기
   const [workout_category, setWorkoutCategory] = useState('leg');
   const [rep, setRep] = useState<number | null>(null);
   const [weight, setWeight] = useState<number | null>(null);

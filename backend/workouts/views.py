@@ -149,8 +149,7 @@ def routines(request):
     POST: create a routine
     """
     if request.method == 'GET':
-        req_data = json.loads(request.body.decode())
-        user_id = req_data['user_id']
+        user_id = request.GET.get('user_id')
 
         return_json = []
         routines_all = Routine.objects.all()
@@ -160,7 +159,8 @@ def routines(request):
             routine_dict = {
                 'id': routine_single.id,
                 'author': routine_single.author.id,  # id or name
-                'name': routine_single.name
+                'name': routine_single.name,
+                'fitelements': list(routine_single.fit_element.values_list('id', flat=True))
             }
             return_json.append(routine_dict)
         return JsonResponse(return_json, safe=False, status=200)
