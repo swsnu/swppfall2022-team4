@@ -17,12 +17,15 @@ import Mypage from 'containers/user/Mypage';
 import EditProfile from 'containers/user/EditProfile';
 import EditPassword from 'containers/user/EditPassword';
 
+import Chat from 'containers/chat/Chat';
+
 import PostMain from 'containers/post/PostMain';
 import PostCreate from 'containers/post/PostCreate';
 import PostEdit from 'containers/post/PostEdit';
 import PostDetail from 'containers/post/PostDetail';
 
 import WorkoutLog from 'containers/workout/WorkoutLog';
+import InformationLobby from 'containers/information/InformationLobby';
 
 import GroupList from 'containers/group/GroupList';
 import GroupDetail from 'containers/group/GroupDetail';
@@ -64,6 +67,9 @@ const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
     min-height: 100%;
     line-height: 1;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
   #root {
     min-height: 100%;
@@ -115,16 +121,19 @@ const InsideComponent = () => {
             <Routes>
               <Route path="" element={<Main />} />
 
+              <Route path="profile/:username" element={<Mypage />} />
+              <Route path="edit_profile" element={<EditProfile />} />
+              <Route path="edit_password" element={<EditPassword />} />
+
+              <Route path="chat" element={<Chat />} />
+              <Route path="chat/:id" element={<Chat />} />
+
               <Route path="post/*">
                 <Route path="" element={<PostMain />} />
                 <Route path="create" element={<PostCreate />} />
                 <Route path=":id" element={<PostDetail />} />
                 <Route path=":id/edit" element={<PostEdit />} />
               </Route>
-
-              <Route path="profile/:username" element={<Mypage />} />
-              <Route path="edit_profile" element={<EditProfile />} />
-              <Route path="edit_password" element={<EditPassword />} />
 
               <Route path="workout" element={<WorkoutLog />} />
 
@@ -134,6 +143,8 @@ const InsideComponent = () => {
                 <Route path="detail/:group_id/member" element={<GroupMembers />} />
                 <Route path="create" element={<GroupCreate />} />
               </Route>
+
+              <Route path="information" element={<InformationLobby />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
@@ -155,4 +166,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
