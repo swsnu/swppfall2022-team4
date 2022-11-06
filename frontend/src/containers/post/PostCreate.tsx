@@ -5,6 +5,7 @@ import { postActions } from 'store/slices/post';
 import { useNavigate } from 'react-router';
 import { PostEditorLayout } from './PostEditorLayout';
 import { TagVisual } from 'store/apis/tag';
+import { tagActions } from 'store/slices/tag';
 
 const PostCreate = () => {
   const [title, setTitle] = useState('');
@@ -25,6 +26,7 @@ const PostCreate = () => {
     if (postCreateStatus.status) {
       navigate(`/post/${postCreateStatus.post_id}`);
       dispatch(postActions.stateRefresh());
+      dispatch(tagActions.clearTagState());
     }
   }, [postCreateStatus]);
   const confirmOnClick = () => {

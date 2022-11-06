@@ -70,7 +70,10 @@ def post_home(request):
             data = json.loads(request.body.decode())
 
             author = User.objects.get(username=data["author_name"])
-            prime_tag = Tag.objects.get(pk=data["prime_tag"]["id"])
+            if data["prime_tag"]:
+                prime_tag = Tag.objects.get(pk=data["prime_tag"]["id"])
+            else:
+                prime_tag = None
             created_post = Post.objects.create(
                 author=author, title=data["title"], content=data["content"], prime_tag=prime_tag
             )

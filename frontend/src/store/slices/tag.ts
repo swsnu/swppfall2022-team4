@@ -65,6 +65,10 @@ export const tagSlice = createSlice({
     searchTagClear: state => {
       state.tagSearch = null;
     },
+    clearTagState: state => {
+      state.tagCreate = null;
+      state.tagSearch = null;
+    },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
 });
