@@ -23,7 +23,6 @@ def general_group(request):
     else: ## post
         try:
             req_data = json.loads(request.body.decode())
-            print(req_data)
             group = Group(
                 group_name = req_data["group_name"],
                 number = req_data["number"],
@@ -82,7 +81,6 @@ def group_detail(request, group_id):
         try:
             gr_id = int(group_id)
             gr_obj = Group.objects.get(id = gr_id)
-
             response_dict = {
                 "group_name" : gr_obj.group_name,
                 "number" : gr_obj.number,
@@ -109,7 +107,6 @@ def group_detail(request, group_id):
             gr_id = int(group_id)
             gr_obj = Group.objects.get(id = gr_id)
             gr_obj.delete()
-
             return JsonResponse({"message":"success"}, status = 200)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
@@ -140,8 +137,6 @@ def group_member(request, group_id):
             req_data = json.loads(request.body.decode())
             gr_id = int(group_id)
             gr_obj = Group.objects.get(id = gr_id)
-            print(gr_obj)
-            print(req_data)
             member = user_model.User.objects.get(username=req_data['member'])
             gr_obj.members.add(member)
             gr_obj.save()
@@ -163,3 +158,25 @@ def group_member(request, group_id):
             return HttpResponseNotFound()
         except Exception:
             return HttpResponseBadRequest()
+
+@require_http_methods(["GET"])
+def group_member_check(request, group_id):
+    """
+    GET : get member's status
+    """
+    try:
+        gr_id = int(group_id)
+        gr_obj = Group.objects.get(id = gr_id)
+        req_data = json.loads(request.body.decode())
+        username=req_data['member']
+        if gr_obj.group_leader.username == username:
+            response_dict = {"member_status": "group_leader"}
+        elif gr_obj.members.filter(username = username):
+            response_dict = {"member_status": "group_member"}
+        else:
+            response_dict = {"member_status": "not_member"}
+        return JsonResponse(response_dict, safe=False)
+    except Group.DoesNotExist:
+        return HttpResponseNotFound()
+    except Exception:
+        return HttpResponseBadRequest()
