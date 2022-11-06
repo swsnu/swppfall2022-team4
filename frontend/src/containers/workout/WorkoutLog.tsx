@@ -9,7 +9,8 @@ import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
   createDailyLogRequestType,
-  editMemoRequestType
+  editMemoRequestType,
+  addFitElementsRequestType,
 } from 'store/apis/workout';
 
 const WorkoutLog = () => {
@@ -41,6 +42,9 @@ const WorkoutLog = () => {
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
   const [memo, setMemo] = useState('');
+  const [isCopy, setIsCopy] = useState<boolean>(false);
+  const [copy_date, setCopyDate] = useState<Date>(new Date());
+  const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -82,9 +86,9 @@ const WorkoutLog = () => {
   };
 
   const routineClick = () => {
-    // aTODO: edit 도중 나가는 이벤트
+    // TODO: edit 도중 나가는 이벤트
     navigate('/routine');
-  }
+  };
 
   const createWorkoutLog = () => {
     console.log('create', year, month, day);
@@ -101,6 +105,30 @@ const WorkoutLog = () => {
       date: new Date(year, month, day + 1),
     };
     dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
+    setWorkoutType('');
+    setRep(0);
+    setWeight(0);
+    setSet(0);
+    setWorkoutTime(0);
+  };
+
+  const copyDailyLog = () => {
+    setIsCopy(true);
+    setCopyDate(new Date(year, month, day));
+    setCopiedFitElements(dailyFitElements.map(v => { return Number(v.id) }));
+  };
+
+  const pasteDailyLog = () => {
+    setIsCopy(false); // 여러번 paste 가능하게 할까? 고민
+
+    const addFitElementConfig: addFitElementsRequestType = {
+      user_id: 1,
+      fitelements: copied_fitelements,
+      year: year,
+      month: month + 1,
+      specific_date: day,
+    };
+    dispatch(workoutLogActions.addFitElements(addFitElementConfig));
   };
 
   const memoOnClick = () => {
@@ -136,10 +164,11 @@ const WorkoutLog = () => {
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
   const calendarInfo = useSelector((rootState: RootState) => rootState.workout_log.calendar_info);
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
+  const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
-  }, [createDailyLogStatus]);
+  }, [createDailyLogStatus, pasteStatus]);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '연필 클릭 후 메모를 추가해 보세요.');
@@ -147,7 +176,7 @@ const WorkoutLog = () => {
 
   useEffect(() => {
     dispatch(workoutLogActions.getCalendarInfo({ user_id: 1, year: year, month: month + 1 }));
-  }, []);
+  }, [isCopy]);
 
   useEffect(() => {
     setDay(date.getDate());
@@ -166,6 +195,17 @@ const WorkoutLog = () => {
     <Wrapper>
       <InnerWrapper>
         <LeftWrapper>
+          <LeftUpper>
+            {isCopy === true
+              ? String(copy_date.getFullYear()) +
+                '.' +
+                String(copy_date.getMonth() + 1) +
+                '.' +
+                String(copy_date.getDate()) +
+                ' ' +
+                '복사중'
+              : '복사 없음'}
+          </LeftUpper>
           <CalendarWrapper>
             <Frame>
               <CalendarHeader>
@@ -281,8 +321,21 @@ const WorkoutLog = () => {
                 {selected_year}.{selected_month + 1}.{selected_date}
               </DateWrapper>
               <AnyButton onClick={() => routineClick()}>루틴</AnyButton>
-              <AnyButton>불러오기</AnyButton>
-              <AnyButton>내보내기</AnyButton>
+              <AnyButton
+                disabled={
+                  isCopy
+                    ? copy_date.getFullYear() === selected_year &&
+                      copy_date.getMonth() === selected_month &&
+                      copy_date.getDate() === selected_date
+                      ? true
+                      : false
+                    : true
+                }
+                onClick={() => pasteDailyLog()}
+              >
+                불러오기
+              </AnyButton>
+              <AnyButton onClick={() => copyDailyLog()}>내보내기</AnyButton>
               <AnyButton>저장</AnyButton>
             </LogUpper>
             <Frame className="right">
@@ -388,6 +441,7 @@ const LeftWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: start;
+  align-items: center;
 `;
 
 const CalendarWrapper = styled.div`
@@ -396,7 +450,6 @@ const CalendarWrapper = styled.div`
   min-height: 50vh;
   max-height: 50vh;
   min-width: 40vw;
-  margin-top: 10vh;
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
@@ -602,6 +655,15 @@ const RightWrapper = styled.div`
   justify-content: center;
   align-items: start;
   background-color: #ffffff;
+`;
+
+const LeftUpper = styled.div`
+  width: 80%;
+  height: 5%;
+  min-height: 5vh;
+  margin-top: 5vh;
+  display: flex;
+  justify-content: start;
 `;
 
 const LogUpper = styled.div`

@@ -37,6 +37,9 @@ interface WorkoutLogState {
     name: string;
     fitelements: Array<any>;
   };
+  add_fit_elements: {
+    status: Boolean;
+  }
 }
 
 const initialState: WorkoutLogState = {
@@ -72,6 +75,9 @@ const initialState: WorkoutLogState = {
     name: '',
     fitelements: [],
   },
+  add_fit_elements: {
+    status: false
+  }
 };
 
 export const workoutLogSlice = createSlice({
@@ -124,6 +130,12 @@ export const workoutLogSlice = createSlice({
       state.selected_routine.name = payload[0].name;
       state.selected_routine.fitelements = payload[1];
     },
+    addFitElements: (state, action: PayloadAction<workoutLogAPI.addFitElementsRequestType>) => {
+      
+    },
+    addFitElementsSuccess: (state, { payload }) => {
+      state.add_fit_elements.status = true;
+    }
   },
 });
 
@@ -184,6 +196,13 @@ function* getSpecificRoutineSaga(action: PayloadAction<workoutLogAPI.getSpecific
   } catch (error) {}
 }
 
+function* addFitElementsSaga(action: PayloadAction<workoutLogAPI.addFitElementsRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.addFitElements, action.payload);
+    yield put(workoutLogActions.addFitElementsSuccess(response));
+  } catch (error) {}
+}
+
 export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getFitElement, getFitElementSaga);
   yield takeLatest(workoutLogActions.getDailyLog, getDailyLogSaga);
@@ -193,4 +212,5 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getCalendarInfo, getCalendarInfoSaga);
   yield takeLatest(workoutLogActions.getRoutine, getRoutineSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutine, getSpecificRoutineSaga);
+  yield takeLatest(workoutLogActions.addFitElements, addFitElementsSaga);
 }

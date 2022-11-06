@@ -248,9 +248,38 @@ def daily_log(request, year, month, specific_date):
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
         daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
 
-        if len(daily_log_single) > 0:
-            req_data = json.loads(request.body.decode())
+        req_data = json.loads(request.body.decode())
+        return_json = []
+        if "memo" in req_data:
             memo = req_data["memo"]
             daily_log_single[0].memo = memo
             daily_log_single[0].save()
             return HttpResponse(status=201)
+        else:
+            fitelements = req_data["fitelements"]
+            if len(daily_log_single) == 0:
+                try:
+                    req_data = json.loads(request.body.decode())
+                    new_daily_log = DailyLog(
+                        author_id=req_data["user_id"],
+                        memo="",
+                        date=str(year)+'-'+str(month)+'-'+str(specific_date),
+                    )
+                    new_daily_log.save()
+                    for fitelement_id in fitelements:
+                        if FitElement.objects.filter(id=fitelement_id).exists():
+                            return_json.append(fitelement_id)
+                            fitelement = FitElement.objects.get(id=fitelement_id)   
+                            new_daily_log.fit_element.add(fitelement)
+                    new_daily_log.save()
+                    return JsonResponse({"dailylog_date": new_daily_log.date}, status=201)
+                except (KeyError, json.JSONDecodeError):
+                    return HttpResponseBadRequest()
+            
+            for fitelement_id in fitelements:
+                if FitElement.objects.filter(id=fitelement_id).exists():
+                    return_json.append(fitelement_id)
+                    fitelement = FitElement.objects.get(id=fitelement_id)   
+                    daily_log_single[0].fit_element.add(fitelement)
+            daily_log_single[0].save()
+            return JsonResponse(return_json, safe=False, status=200)

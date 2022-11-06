@@ -107,6 +107,18 @@ export type getSpecificRoutineResponseType = {
     fitelements: getFitElementResponseType[];
 }
 
+export type addFitElementsRequestType = {
+    user_id: number;
+    fitelements: number[];
+    year: number;
+    month: number;
+    specific_date: number;
+}
+
+export type addFitElementsResponseType= {
+    fitelements: number[];
+}
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
     const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
     return response.data;
@@ -151,6 +163,11 @@ export const getCalendarInfo = async (payload: getCalendarInfoRequestType) => {
 
 export const getRoutine = async (payload: getRoutineRequestType) => {
     const response = await client.get<getRoutineResponseType>(`/api/fitelement/routine/?&user_id=${payload.user_id}`);
+    return response.data;
+}
+
+export const addFitElements = async (payload: addFitElementsRequestType) => {
+    const response = await client.put<addFitElementsResponseType>(`/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`, payload);
     return response.data;
 }
 
