@@ -8,9 +8,9 @@ export const getGroups = async (payload: string) => {
 export type Group = {
   id: number;
   group_name: string;
-  number: number;
-  start_date: string;
-  end_date: string;
+  number: number | null;
+  start_date: string | null;
+  end_date: string | null;
 };
 
 export type getGroupsResponseType = {
@@ -29,9 +29,9 @@ export type Fitelement = {
 
 export type postGroupRequestType = {
   group_name: string;
-  number: number;
-  start_date: string;
-  end_date: string;
+  number: number | null;
+  start_date: string | null;
+  end_date: string | null;
   description: string;
   free: boolean;
   group_leader: string | null;
@@ -46,9 +46,9 @@ export type GroupLeader = {
 export type GroupDetail = {
   group_id: number;
   group_name: string;
-  number: number;
-  start_date: string;
-  end_date: string;
+  number: number | null;
+  start_date: string | null;
+  end_date: string | null;
   description: string;
   free: boolean;
   group_leader: GroupLeader;

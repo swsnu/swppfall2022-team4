@@ -32,18 +32,28 @@ const GroupCreate = () => {
   };
 
   const saveOnClick = () => {
-    dispatch(
-      groupActions.createGroup({
-        group_name: group_name,
-        number: group_num,
-        start_date: start_date,
-        end_date: end_date,
-        description: description,
-        free: free,
-        group_leader: user?.username ?? null,
-        goal: [example_fit, example_fit],
-      }),
-    );
+    if (group_name && (!max_num || group_num) && (!set_date || start_date) && (!set_date || end_date) && description) {
+      const param_num = max_num ? group_num : null;
+      const param_start_date = set_date ? start_date : null;
+      const param_end_date = set_date ? end_date : null;
+
+      if (user) {
+        dispatch(
+          groupActions.createGroup({
+            group_name: group_name,
+            number: param_num,
+            start_date: param_start_date,
+            end_date: param_end_date,
+            description: description,
+            free: free,
+            group_leader: user.username,
+            goal: [example_fit, example_fit],
+          }),
+        );
+      }
+    } else {
+      alert('모든 부분을 다 채워주세요!');
+    }
   };
 
   useEffect(() => {

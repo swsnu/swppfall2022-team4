@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router';
 export interface IProps {
   id: number;
   group_name: string;
-  number: number;
-  start_date: string;
-  end_date: string;
+  number: number | null;
+  start_date: string | null;
+  end_date: string | null;
 }
 
 export const GroupElement = (props: IProps) => {
@@ -16,9 +16,9 @@ export const GroupElement = (props: IProps) => {
       <LogImage src={require('assets/images/workout_log/fitelement_category/example.png')} />
       <GroupElementLine>이미지 삽입 todo</GroupElementLine>
       <GroupElementLine>그룹명 : {props.group_name}</GroupElementLine>
-      <GroupElementLine>최대인원 : {props.number}</GroupElementLine>
-      <GroupElementLine>시작일 : {props.start_date}</GroupElementLine>
-      <GroupElementLine>마감일 : {props.end_date}</GroupElementLine>
+      <GroupElementLine>최대인원 : {props.number ?? '제한없음'}</GroupElementLine>
+      <GroupElementLine>시작일 : {props.start_date ?? '기한없음'}</GroupElementLine>
+      <GroupElementLine>마감일 : {props.end_date ?? '기한없음'}</GroupElementLine>
       <GroupDetailBtn onClick={() => navigate(`/group/detail/${props.id}/`)}>자세히 보기</GroupDetailBtn>
     </GroupElementWrapper>
   );

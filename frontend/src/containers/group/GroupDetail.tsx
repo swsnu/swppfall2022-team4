@@ -76,9 +76,9 @@ const GroupDetail = () => {
     <Wrapper>
       <GroupDetailHeader>
         <div>그룹명 : {group_detail?.group_name}</div>
-        <div>시작일 : {group_detail?.start_date}</div>
-        <div>마감일 : {group_detail?.end_date}</div>
-        <div>최대인원수 : {group_detail?.number}</div>
+        <div>시작일 : {group_detail?.start_date ?? '기한없음'}</div>
+        <div>마감일 : {group_detail?.end_date ?? '기한없음'}</div>
+        <div>최대인원수 : {group_detail?.number ?? '제한없음'}</div>
       </GroupDetailHeader>
       <GroupDetailWrapper>
         <h1>About</h1>
@@ -88,8 +88,8 @@ const GroupDetail = () => {
       </GroupDetailWrapper>
       <GroupDetailWrapper>
         <h1>Specification</h1>
-        <div>시작일 : {group_detail?.start_date}</div>
-        <div>마감일 : {group_detail?.end_date}</div>
+        <div>시작일 : {group_detail?.start_date ?? '기한없음'}</div>
+        <div>마감일 : {group_detail?.end_date ?? '기한없음'}</div>
         {group_detail?.goal.map((goal, index) => (
           <FitElement
             key={index}
