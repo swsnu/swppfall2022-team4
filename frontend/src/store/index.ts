@@ -10,7 +10,7 @@ import chatSaga, { chatSlice } from './slices/chat';
 export const rootReducer = combineReducers({
   user: userSlice.reducer,
   post: postSlice.reducer,
-  workout_log: workoutLogSlice.reducer
+  workout_log: workoutLogSlice.reducer,
   group: groupSlice.reducer,
   tag: tagSlice.reducer,
   chat: chatSlice.reducer,
