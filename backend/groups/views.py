@@ -34,6 +34,7 @@ def general_group(request):
                 group_leader = user_model.User.objects.get(username=req_data['group_leader']),
             )
             group.save()
+            group.members.add(user_model.User.objects.get(username=req_data['group_leader']))
         except (KeyError, JSONDecodeError):
             return HttpResponse(status = 400)
         goal_list = req_data["goal"]
@@ -109,6 +110,54 @@ def group_detail(request, group_id):
             gr_obj = Group.objects.get(id = gr_id)
             gr_obj.delete()
 
+            return JsonResponse({"message":"success"}, status = 200)
+        except Group.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception:
+            return HttpResponseBadRequest()
+
+@require_http_methods(["GET", "POST", "DELETE"])
+def group_member(request, group_id):
+    """
+    GET : get group members
+    POST : join group
+    DELETE : exit group
+    """
+    if request.method == "GET":
+        try:
+            gr_id = int(group_id)
+            gr_obj = Group.objects.get(id = gr_id)
+            response_dict = [member for member in gr_obj.members.values(
+                "id", "username", "nickname", "image", "exp", "level"
+            )]
+            return JsonResponse(response_dict, safe=False)
+        except Group.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception:
+            return HttpResponseBadRequest()
+    elif request.method == "POST":
+        try:
+            req_data = json.loads(request.body.decode())
+            gr_id = int(group_id)
+            gr_obj = Group.objects.get(id = gr_id)
+            print(gr_obj)
+            print(req_data)
+            member = user_model.User.objects.get(username=req_data['member'])
+            gr_obj.members.add(member)
+            gr_obj.save()
+            return JsonResponse({"message":"success"}, status = 201)
+        except Group.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception:
+            return HttpResponseBadRequest()
+    else: ## DELETE
+        try:
+            req_data = json.loads(request.body.decode())
+            gr_id = int(group_id)
+            gr_obj = Group.objects.get(id = gr_id)
+            member = user_model.User.objects.get(username=req_data['member'])
+            gr_obj.members.remove(member)
+            gr_obj.save()
             return JsonResponse({"message":"success"}, status = 200)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
