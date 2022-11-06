@@ -7,6 +7,7 @@ export interface IProps {
   number: number | null;
   start_date: string | null;
   end_date: string | null;
+  member_number: number;
 }
 
 export const GroupElement = (props: IProps) => {
@@ -17,6 +18,7 @@ export const GroupElement = (props: IProps) => {
       <GroupElementLine>이미지 삽입 todo</GroupElementLine>
       <GroupElementLine>그룹명 : {props.group_name}</GroupElementLine>
       <GroupElementLine>최대인원 : {props.number ?? '제한없음'}</GroupElementLine>
+      <GroupElementLine>현재인원 : {props.member_number}</GroupElementLine>
       <GroupElementLine>시작일 : {props.start_date ?? '기한없음'}</GroupElementLine>
       <GroupElementLine>마감일 : {props.end_date ?? '기한없음'}</GroupElementLine>
       <GroupDetailBtn onClick={() => navigate(`/group/detail/${props.id}/`)}>자세히 보기</GroupDetailBtn>

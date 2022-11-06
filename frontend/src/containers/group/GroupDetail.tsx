@@ -79,6 +79,7 @@ const GroupDetail = () => {
         <div>시작일 : {group_detail?.start_date ?? '기한없음'}</div>
         <div>마감일 : {group_detail?.end_date ?? '기한없음'}</div>
         <div>최대인원수 : {group_detail?.number ?? '제한없음'}</div>
+        <div>현재인원수 : {group_detail?.member_number}</div>
       </GroupDetailHeader>
       <GroupDetailWrapper>
         <h1>About</h1>

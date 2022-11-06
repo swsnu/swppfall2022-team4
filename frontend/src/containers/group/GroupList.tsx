@@ -28,6 +28,7 @@ const GroupList = () => {
             number={groupelement.number}
             start_date={groupelement.start_date}
             end_date={groupelement.end_date}
+            member_number={groupelement.member_number}
           />
         ))}
       </GroupListWrapper>

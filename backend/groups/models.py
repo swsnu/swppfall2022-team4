@@ -8,7 +8,8 @@ class Group(models.Model):
     group_leader = models.ForeignKey(
         User, on_delete = models.CASCADE, related_name = 'own_group', null = False)
     members = models.ManyToManyField(User, related_name = 'group')
-    number = models. IntegerField(null = True)
+    number = models.IntegerField(null = True)
+    member_number = models.IntegerField(default = 0)
     start_date = models.DateField(null = True)
     end_date = models.DateField(null = True)
     description = models.TextField(blank = False)

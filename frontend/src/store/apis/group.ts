@@ -11,6 +11,7 @@ export type Group = {
   number: number | null;
   start_date: string | null;
   end_date: string | null;
+  member_number: number;
 };
 
 export type getGroupsResponseType = {
@@ -53,6 +54,7 @@ export type GroupDetail = {
   free: boolean;
   group_leader: GroupLeader;
   goal: Fitelement[];
+  member_number: number;
 };
 
 export const postGroup = async (payload: postGroupRequestType) => {

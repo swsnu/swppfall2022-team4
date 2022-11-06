@@ -6,8 +6,6 @@ from json.decoder import JSONDecodeError
 from users import models as user_model
 from .models import Group
 from workouts.models import FitElement
-from django.forms.models import model_to_dict
-
 
 @require_http_methods(['GET', 'POST'])
 def general_group(request):
@@ -17,7 +15,7 @@ def general_group(request):
     """
     if request.method  == 'GET':
         group_list = [group for group in Group.objects.all().values(
-            "id", "group_name", "number", "start_date", "end_date"
+            "id", "group_name", "number", "start_date", "end_date", "member_number", "member_number"
         )]
         return JsonResponse(group_list, safe=False)
     else: ## post
@@ -34,6 +32,8 @@ def general_group(request):
             )
             group.save()
             group.members.add(user_model.User.objects.get(username=req_data['group_leader']))
+            group.member_number += 1
+            group.save()
         except (KeyError, JSONDecodeError):
             return HttpResponse(status = 400)
         goal_list = req_data["goal"]
@@ -61,6 +61,7 @@ def general_group(request):
             "start_date" : group.start_date,
             "end_date" : group.end_date,
             "description" : group.description,
+            "member_number" : group.member_number,
             "free" : group.free,
             "group_leader": {
                 "username": group.group_leader.username,
@@ -88,6 +89,7 @@ def group_detail(request, group_id):
                 "end_date" : gr_obj.end_date,
                 "description" : gr_obj.description,
                 "free" : gr_obj.free,
+                "member_number":gr_obj.member_number,
                 "group_leader": {
                     "username": gr_obj.group_leader.username,
                     "nickname": gr_obj.group_leader.nickname
@@ -134,12 +136,12 @@ def group_members(request, group_id):
             return HttpResponseBadRequest()
     else: ## POST
         try:
-            print(request)
             req_data = json.loads(request.body.decode())
             gr_id = int(group_id)
             gr_obj = Group.objects.get(id = gr_id)
             member = user_model.User.objects.get(username=req_data['member'])
             gr_obj.members.add(member)
+            gr_obj.member_number += 1
             gr_obj.save()
             return JsonResponse({"member_status":"group_member"}, status = 201)
         except Group.DoesNotExist:
@@ -158,6 +160,7 @@ def group_member(request, group_id, member):
             gr_obj = Group.objects.get(id = gr_id)
             member_obj = user_model.User.objects.get(username=member)
             gr_obj.members.remove(member_obj)
+            gr_obj.member_number -= 1
             gr_obj.save()
             return JsonResponse({"member_status":"not_member"}, status = 200)
         except Group.DoesNotExist:
