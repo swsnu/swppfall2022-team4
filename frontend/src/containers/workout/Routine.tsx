@@ -48,7 +48,11 @@ const Routine = () => {
         <Frame>
           <RoutineListWrapper>
             {routines.map((routine, index) => (
-              <RoutineName key={index} className={(routine.id === routine_id)? "type1" : "type2"} onClick={() => routineClick(Number(routine.id))}>
+              <RoutineName
+                key={index}
+                className={routine.id === routine_id ? (index == 0 ? 'type2' : 'type1') : ''}
+                onClick={() => routineClick(Number(routine.id))}
+              >
                 {routine.name}
               </RoutineName>
             ))}
@@ -119,12 +123,14 @@ const RoutineName = styled.div`
   border-bottom: 1px solid black;
   font-weight: normal;
 
-  &&.type1{
+  &&.type1 {
     background-color: #84e0ed;
   }
 
-  &&.type2{
-
+  &&.type2 {
+    background-color: #84e0ed;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
 `;
 
@@ -224,6 +230,7 @@ const LeftWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: #ffffff;
 `;
 
 const RightWrapper = styled.div`
@@ -257,6 +264,7 @@ const RoutineListWrapper = styled.div`
   width: 100%;
   height: 100%;
   min-height: 80vh;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   justify-content: start;
