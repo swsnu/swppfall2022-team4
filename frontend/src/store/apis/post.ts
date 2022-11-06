@@ -27,6 +27,7 @@ export type Post = {
   scrap_num: number;
   comments_num: number;
   tags: TagVisual[];
+  prime_tag: TagVisual;
   liked?: boolean;
   disliked?: boolean;
   scraped?: boolean;
@@ -55,6 +56,7 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
   tags: TagVisual[];
+  prime_tag: TagVisual | null;
 };
 
 export const getPostDetail = async (payload: postIdentifyingRequestType) => {
@@ -77,6 +79,7 @@ export type editPostRequestType = {
   title: string;
   content: string;
   tags: TagVisual[];
+  prime_tag: TagVisual | null;
 };
 
 // Used in createPostRequest, deletePostRequest

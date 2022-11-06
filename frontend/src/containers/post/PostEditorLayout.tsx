@@ -1,6 +1,6 @@
 import { tagActions } from 'store/slices/tag';
 import { RootState } from 'index';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -33,10 +33,13 @@ export const PostEditorLayout = (
   confirmOnClick: () => void,
   selectedTags: TagVisual[],
   setSelectedTags: (value: React.SetStateAction<TagVisual[]>) => void,
+  primeTag: TagVisual | null,
+  setPrimeTag: (value: React.SetStateAction<TagVisual | null>) => void,
 ) => {
   const dispatch = useDispatch();
   const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
   const tagSearch = useSelector((rootState: RootState) => rootState.tag.tagSearch);
+  const tagCreate = useSelector((rootState: RootState) => rootState.tag.tagCreate);
 
   const [tagInput, setTagInput] = useState(''); // Tag creation name input
   const [tagClassInput, setTagClassInput] = useState(''); // Tag Class creation name input
@@ -56,7 +59,9 @@ export const PostEditorLayout = (
   useEffect(() => {
     setTagRandColor(getRandomColor());
   }, []);
-
+  useEffect(() => {
+    if (tagCreate) setSelectedTags(s => [...s, { id: tagCreate?.id, name: tagCreate?.name, color: tagCreate?.color }]);
+  }, [tagCreate]);
   const getRandomColor = () => {
     return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
   };
@@ -196,13 +201,14 @@ export const PostEditorLayout = (
               <GreenBigBtn
                 disabled={tagInput === ''}
                 onClick={() => {
-                  if (currentTagClass)
+                  if (currentTagClass) {
                     dispatch(
                       tagActions.createTag({
                         name: tagInput,
                         classId: currentTagClass.id.toString(),
                       }),
                     );
+                  }
                   dispatch(tagActions.getTags());
                   setTagInput('');
                   setTagUpdate(Date.now());
@@ -221,7 +227,7 @@ export const PostEditorLayout = (
       {selectedTags.map(tags => {
         return (
           <TagBubble key={tags.id} color={tags.color}>
-            {tags.name}
+            <span onClick={() => setPrimeTag(tags)}>{tags.name}</span>
             <TagBubbleFunc onClick={tagOnRemove} data-value={tags.id}>
               <FontAwesomeIcon icon={faX} />
             </TagBubbleFunc>
@@ -230,7 +236,11 @@ export const PostEditorLayout = (
       })}
     </TagBubbleWrapper>
   );
-
+  const primeTagComponent = (
+    <TagBubbleWrapper>
+      {primeTag ? <TagBubble color={primeTag.color}>{primeTag.name}</TagBubble> : <span>Not specified</span>}
+    </TagBubbleWrapper>
+  );
   const TagPanel = (
     <TagWrapper>
       <TagWrapperIn>
@@ -265,6 +275,14 @@ export const PostEditorLayout = (
       {selectedTagsComponent}
     </TagWrapper>
   );
+  const PrimeTagPanel = (
+    <PrimeTagWrapper>
+      <TagWrapperIn>
+        <TagTitle>대표 태그</TagTitle>
+      </TagWrapperIn>
+      {primeTagComponent}
+    </PrimeTagWrapper>
+  );
 
   return (
     <PostPageWrapper>
@@ -282,7 +300,10 @@ export const PostEditorLayout = (
               </BlueBigActiveBtn>
             </CreateBtnWrapper>
           </ContentWrapper>
-          <SideBarWrapper>{TagPanel}</SideBarWrapper>
+          <SideBarWrapper>
+            {TagPanel}
+            {PrimeTagPanel}
+          </SideBarWrapper>
         </Main_SideWrapper>
       </PostContentWrapper>
     </PostPageWrapper>
@@ -335,11 +356,7 @@ const TagBubble = styled.button<IPropsColorButton>`
     color &&
     `
       background: ${color};
-    `}/* &:hover ${TagBubbleFunc} {
-    visibility: visible;
-    width: fit-content;
-    height: fit-content;
-  } */
+    `}
 `;
 const TagTitle = styled.span`
   margin: 10px 0px;
@@ -359,6 +376,14 @@ const TagWrapper = styled.div`
   justify-content: space-between;
   background-color: var(--fit-white);
   height: 60%;
+`;
+const PrimeTagWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--fit-white);
+  margin-top: 15px;
+  height: fit-content;
 `;
 const TagInput = styled.input`
   padding: 5px 8px;

@@ -10,6 +10,7 @@ const PostCreate = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
+  const [primeTag, setPrimeTag] = useState<TagVisual | null>(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const PostCreate = () => {
           content: content,
           author_name: user.username,
           tags: selectedTags,
+          prime_tag: primeTag,
         }),
       );
     }
@@ -47,6 +49,8 @@ const PostCreate = () => {
     confirmOnClick,
     selectedTags,
     setSelectedTags,
+    primeTag,
+    setPrimeTag,
   );
 };
 

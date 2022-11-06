@@ -58,8 +58,8 @@ const PostMain = () => {
         postList.map((post, id) => {
           return (
             <ArticleItem key={id} onClick={() => navigate(`/post/${post.id}`)}>
-              {post.tags && post.tags.length !== 0 ? (
-                <TagBubbleCompact color={post.tags[0].color}>{post.tags[0].name}</TagBubbleCompact>
+              {post.prime_tag ? (
+                <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
               ) : (
                 <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
               )}

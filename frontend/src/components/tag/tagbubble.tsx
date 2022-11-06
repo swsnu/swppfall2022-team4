@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 import 'styles/color.css';
 
-interface IPropsColorButton {
+interface IPropsTagBubble {
   color?: string;
+  isPrime?: boolean;
 }
 
-export const TagBubble = styled.button<IPropsColorButton>`
+export const TagBubble = styled.button<IPropsTagBubble>`
   height: 20px;
   width: fit-content;
   border-radius: 25px;
@@ -18,8 +19,13 @@ export const TagBubble = styled.button<IPropsColorButton>`
     `
       background: ${color};
     `}
+  ${({ isPrime }) =>
+    isPrime &&
+    `
+      border: 2px solid green;
+    `}
 `;
-export const TagBubbleCompact = styled.button<IPropsColorButton>`
+export const TagBubbleCompact = styled.button<IPropsTagBubble>`
   height: fit-content;
   width: fit-content;
   border-radius: 20px;

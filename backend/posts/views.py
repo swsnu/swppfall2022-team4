@@ -37,22 +37,22 @@ def post_home(request):
         posts_serializable = list(posts.values())
         for index, _ in enumerate(posts_serializable):
             posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
-            del posts_serializable[index]["author_id"]
             posts_serializable[index]["author_name"] = posts[index].author.username
             posts_serializable[index]["like_num"] = posts[index].get_like_num()
             posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
             posts_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
 
-            posts_serializable[index]["tags"] = []
-            for tag in list(posts[index].tags.all().values()):
-                tag_class = TagClass.objects.get(pk=tag['tag_class_id'])
-                posts_serializable[index]["tags"].append(
-                    {
-                        "id": tag['id'],
-                        "name": tag['tag_name'],
-                        "color": tag_class.color,
-                    }
-                )
+            if posts[index].prime_tag:
+                posts_serializable[index]["prime_tag"] = {
+                    "id": posts[index].prime_tag.pk,
+                    "name": posts[index].prime_tag.tag_name,
+                    "color": posts[index].prime_tag.tag_class.color,
+                }
+            else:
+                posts_serializable[index]["prime_tag"] = None
+
+            del posts_serializable[index]["author_id"]
+            del posts_serializable[index]["prime_tag_id"]
 
         # Total page number calculation.
         response = JsonResponse(
@@ -70,15 +70,16 @@ def post_home(request):
             data = json.loads(request.body.decode())
 
             author = User.objects.get(username=data["author_name"])
+            prime_tag = Tag.objects.get(pk=data["prime_tag"]["id"])
             created_post = Post.objects.create(
-                author=author, title=data["title"], content=data["content"]
+                author=author, title=data["title"], content=data["content"], prime_tag=prime_tag
             )
             for tag in data["tags"]:
                 tag = Tag.objects.get(pk=tag["id"])
                 created_post.tags.add(tag)
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
-        except (KeyError, json.JSONDecodeError, User.DoesNotExist):
+        except (KeyError, json.JSONDecodeError, User.DoesNotExist, Tag.DoesNotExist):
             return HttpResponseBadRequest()
 
 
@@ -105,6 +106,12 @@ def post_detail(request, query_id):
                     }
                 )
 
+            prime_tag_response = {
+                "id": post_obj.prime_tag.pk,
+                "name": post_obj.prime_tag.tag_name,
+                "color": post_obj.prime_tag.tag_class.color,
+            }
+
             post_response = {
                 "id": post_obj.pk,
                 "title": post_obj.title,
@@ -120,6 +127,7 @@ def post_detail(request, query_id):
                 "disliked": post_obj.disliker.all().filter(username=request.user.username).exists(),
                 "scraped": post_obj.scraper.all().filter(username=request.user.username).exists(),
                 "tags": tag_response,
+                "prime_tag": prime_tag_response,
             }
             return JsonResponse(post_response, status=200)
         except Post.DoesNotExist:
@@ -136,6 +144,7 @@ def post_detail(request, query_id):
             post_obj.title = data["title"]
             post_obj.content = data["content"]
             tags = data["tags"]
+            post_obj.prime_tag = Tag.objects.get(pk=data["prime_tag"]["id"])
             post_obj.tags.clear()
             for tag in tags:
                 tag = Tag.objects.get(pk=tag["id"])

@@ -6,11 +6,13 @@ import * as tagAPI from 'store/apis/tag';
 interface TagState {
   tagList: tagAPI.TagClass[] | null;
   tagSearch: tagAPI.TagVisual[] | null;
+  tagCreate: tagAPI.TagVisual | null;
   error: string | null;
 }
 const initialState: TagState = {
   tagList: null,
   tagSearch: null,
+  tagCreate: null,
   error: null,
 };
 
@@ -35,16 +37,18 @@ export const tagSlice = createSlice({
       //create!
     },
     createTagClassSuccess: (state, { payload }) => {
-      //console.log(payload);
+      // console.log(payload);
     },
     createTagClassFailure: (state, { payload }) => {
       // console.log(payload);
     },
     createTag: (state, action: PayloadAction<tagAPI.createTagRequestType>) => {
       //create!
+      state.tagCreate = null;
     },
     createTagSuccess: (state, { payload }) => {
       //console.log(payload);
+      state.tagCreate = payload.tags;
     },
     createTagFailure: (state, { payload }) => {
       // console.log(payload);

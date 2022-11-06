@@ -11,6 +11,7 @@ from tags.models import Tag, TagClass
 def tag_home(request):
     """
     GET : Get tag lists.
+    POST : Create tag.
     """
     if request.method == "GET":
         tag_classes = TagClass.objects.all()
@@ -32,8 +33,14 @@ def tag_home(request):
             tag_name = data["name"]
             class_id = data["classId"]
             parent_class = TagClass.objects.get(pk=class_id)
-            Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
-            return JsonResponse({"message": "Success!"}, status=201)
+            created_tag = Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
+            return JsonResponse({
+                "tags": {
+                    "id" : created_tag.pk,
+                    "name" : tag_name,
+                    "color" : parent_class.color
+                },
+            }, status=201)
         except (KeyError, json.JSONDecodeError, TagClass.DoesNotExist):
             return HttpResponseBadRequest()
 
@@ -41,7 +48,7 @@ def tag_home(request):
 @require_http_methods(["POST"])
 def tag_class(request):
     """
-    GET : Get tag lists.
+    POST : Create tag class.
     """
     try:
         data = json.loads(request.body.decode())

@@ -11,6 +11,7 @@ const PostEdit = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
+  const [primeTag, setPrimeTag] = useState<TagVisual | null>(null);
 
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postEditStatus = useSelector(({ post }: RootState) => post.postEdit);
@@ -28,6 +29,7 @@ const PostEdit = () => {
       setTitle(post.title);
       setContent(post.content);
       setSelectedTags(post.tags);
+      setPrimeTag(post.prime_tag);
     }
   }, [post]);
   useEffect(() => {
@@ -53,6 +55,7 @@ const PostEdit = () => {
           title: title,
           content: content,
           tags: selectedTags,
+          prime_tag: primeTag,
         }),
       );
     }
@@ -66,6 +69,8 @@ const PostEdit = () => {
     confirmOnClick,
     selectedTags,
     setSelectedTags,
+    primeTag,
+    setPrimeTag,
   );
 };
 

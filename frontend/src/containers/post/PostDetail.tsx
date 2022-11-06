@@ -351,7 +351,7 @@ const PostDetail = () => {
               <TagBubbleWrapper>
                 {post.tags.map(tags => {
                   return (
-                    <TagBubble key={tags.id} color={tags.color}>
+                    <TagBubble key={tags.id} color={tags.color} isPrime={tags.id === post.prime_tag.id}>
                       {tags.name}
                     </TagBubble>
                   );
