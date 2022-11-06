@@ -12,6 +12,7 @@ import {
   editMemoRequestType,
   addFitElementsRequestType,
 } from 'store/apis/workout';
+import { create } from 'domain';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -125,7 +126,7 @@ const WorkoutLog = () => {
   };
 
   const pasteDailyLog = () => {
-    setIsCopy(false); // 여러번 paste 가능하게 할까? 고민
+    setIsCopy(false);
 
     const addFitElementConfig: addFitElementsRequestType = {
       user_id: 1,
@@ -170,7 +171,7 @@ const WorkoutLog = () => {
 
   useEffect(() => {
     dispatch(workoutLogActions.getCalendarInfo({ user_id: 1, year: year, month: month + 1 }));
-  }, [isCopy]);
+  }, [isCopy, createDailyLogStatus]);
 
   useEffect(() => {
     setDay(date.getDate());
@@ -286,7 +287,7 @@ const WorkoutLog = () => {
                           }
                         }}
                       >
-                        {d > 0 ? (d <= days[month] ? d : '') : ''}
+                        <DayContent className={day_type}>{d > 0 ? (d <= days[month] ? d : '') : ''}</DayContent>
                       </Day>
                     );
                   })}
@@ -384,19 +385,23 @@ const WorkoutLog = () => {
                 </LogInputBody_button>
               </LogInputBody>
               <LogBody>
-                {dailyFitElements.map((fitelement, index) => (
-                  <FitElement
-                    key={index}
-                    id={index + 1}
-                    type={fitelement.type}
-                    workout_type={fitelement.workout_type}
-                    category={fitelement.category}
-                    weight={fitelement.weight}
-                    rep={fitelement.rep}
-                    set={fitelement.set}
-                    time={fitelement.time}
-                  />
-                ))}
+                {dailyFitElements.length === 0 ? (
+                  <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
+                ) : (
+                  dailyFitElements.map((fitelement, index) => (
+                    <FitElement
+                      key={index}
+                      id={index + 1}
+                      type={fitelement.type}
+                      workout_type={fitelement.workout_type}
+                      category={fitelement.category}
+                      weight={fitelement.weight}
+                      rep={fitelement.rep}
+                      set={fitelement.set}
+                      time={fitelement.time}
+                    />
+                  ))
+                )}
               </LogBody>
               <LogFooter></LogFooter>
             </Frame>
@@ -539,23 +544,38 @@ const Day = styled.div`
   &&.future_day {
     color: #818281;
   }
+`;
+
+
+const DayContent = styled.div`
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: IBMPlexSansThaiLooped;
+  cursor: pointer;
+  color: black;
 
   &&.selected_day {
     color: #0000cc;
     background-color: #818281;
     font-weight: bold;
+    border-radius: 50%;
   }
 
   &&.today {
     color: black;
     font-weight: bold;
     background-color: #99ffff;
+    border-radius: 50%;
   }
 
   &&.type1 {
     color: black;
     font-weight: bold;
     background-color: #d7efe3;
+    border-radius: 50%;
   }
 
   &&.type2 {
@@ -615,8 +635,21 @@ const MemoContentWrapper = styled.div`
   height: 80%;
   align-items: center;
   font-family: IBMPlexSansThaiLooped;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 600;
+  color: #818281;
+`;
+
+const CenterContentWrapper = styled.div`
+  display:flex;
+  width: 100%;
+  min-height: 60vh;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  font-family: IBMPlexSansThaiLooped;
+  font-size: 30px;
+  font-weight: 400;
   color: #818281;
 `;
 

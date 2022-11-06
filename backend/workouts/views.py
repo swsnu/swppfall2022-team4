@@ -285,7 +285,8 @@ def daily_log(request, year, month, specific_date):
                             fitelement = FitElement.objects.get(
                                 id=fitelement_id)
                             fitelement.pk = None
-                            fitelement.date = str(year)+'-'+str(month)+'-'+str(specific_date)
+                            fitelement.date = str(
+                                year)+'-'+str(month)+'-'+str(specific_date)
                             fitelement.save()
                             return_json.append(fitelement.pk)
                             new_daily_log.fit_element.add(fitelement)
@@ -298,7 +299,8 @@ def daily_log(request, year, month, specific_date):
                 if FitElement.objects.filter(id=fitelement_id).exists():
                     fitelement = FitElement.objects.get(id=fitelement_id)
                     fitelement.pk = None
-                    fitelement.date = str(year)+'-'+str(month)+'-'+str(specific_date)
+                    fitelement.date = str(year)+'-' + \
+                        str(month)+'-'+str(specific_date)
                     fitelement.save()
                     return_json.append(fitelement.pk)
                     daily_log_single[0].fit_element.add(fitelement)
