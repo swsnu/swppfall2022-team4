@@ -52,6 +52,7 @@ const GroupListWrapper = styled.div`
   min-height: 100%;
   background-color: #ffffff;
   position: relative;
+  left: 30%;
 `;
 
 const CreateGroupBtn = styled.button`

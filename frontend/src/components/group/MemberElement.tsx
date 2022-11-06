@@ -12,9 +12,9 @@ export const MemberElement = (props: IProps) => {
   return (
     <MemberElementWrapper>
       <MemberElementLine>{props.image}</MemberElementLine>
-      <MemberElementLine>{props.username}</MemberElementLine>
-      <MemberElementLine>{props.cert_days}</MemberElementLine>
-      <MemberElementLine>{props.level}</MemberElementLine>
+      <MemberElementLine>{props.username} 님은</MemberElementLine>
+      <MemberElementLine>{props.cert_days} 일째 진행중입니다. </MemberElementLine>
+      <MemberElementLine>level: {props.level}</MemberElementLine>
     </MemberElementWrapper>
   );
 };

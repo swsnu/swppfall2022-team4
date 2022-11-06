@@ -79,7 +79,10 @@ const GroupCreate = () => {
   return (
     <Wrapper>
       <CreateWrapper>
+        <div>그룹명</div>
         <input type="text" value={group_name} onChange={e => setGroupName(e.target.value)} />
+        <div>인원 설정</div>
+        <span>최대 인원 설정 여부</span>
         <input type="checkbox" checked={max_num} onChange={maxnumCheck} />
         <input
           type="number"
@@ -88,12 +91,16 @@ const GroupCreate = () => {
           max="100"
           onChange={e => setGroupNum(e.target.valueAsNumber)}
         />
+        <div>기간 설정</div>
+        <span>기간 설정 여부</span>
         <input type="checkbox" checked={set_date} onChange={setdateCheck} />
         <DateWrapper>
           <input type="date" className="input-date" disabled={!set_date} onChange={e => setStartDate(e.target.value)} />
           <input type="date" className="input-date" disabled={!set_date} onChange={e => setEndDate(e.target.value)} />
         </DateWrapper>
+        <div>그룹 설명</div>
         <textarea rows={5} value={description} onChange={e => setDescription(e.target.value)} />
+        <div>자유 가입 여부</div>
         <input type="checkbox" checked={free} onChange={freeCheck} />
       </CreateWrapper>
       <AnyButton onClick={saveOnClick}>저장</AnyButton>
@@ -119,6 +126,7 @@ const CreateWrapper = styled.div`
   min-height: 100%;
   background-color: #ffffff;
   position: relative;
+  left: 30%;
 `;
 
 const DateWrapper = styled.div`

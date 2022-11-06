@@ -13,11 +13,12 @@ export const GroupElement = (props: IProps) => {
   const navigate = useNavigate();
   return (
     <GroupElementWrapper>
+      <LogImage src={require('assets/images/workout_log/fitelement_category/example.png')} />
       <GroupElementLine>이미지 삽입 todo</GroupElementLine>
-      <GroupElementLine>{props.group_name}</GroupElementLine>
-      <GroupElementLine>{props.number}</GroupElementLine>
-      <GroupElementLine>{props.start_date}</GroupElementLine>
-      <GroupElementLine>{props.end_date}</GroupElementLine>
+      <GroupElementLine>그룹명 : {props.group_name}</GroupElementLine>
+      <GroupElementLine>최대인원 : {props.number}</GroupElementLine>
+      <GroupElementLine>시작일 : {props.start_date}</GroupElementLine>
+      <GroupElementLine>마감일 : {props.end_date}</GroupElementLine>
       <GroupDetailBtn onClick={() => navigate(`/group/detail/${props.id}/`)}>자세히 보기</GroupDetailBtn>
     </GroupElementWrapper>
   );
@@ -36,7 +37,7 @@ const GroupElementWrapper = styled.div`
 `;
 
 const GroupElementLine = styled.div`
-  width: 10%;
+  width: 70%;
   height: 20px;
   font-size: 10px;
   display: flex;
@@ -44,6 +45,13 @@ const GroupElementLine = styled.div`
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
   color: black;
+`;
+
+const LogImage = styled.img`
+  width: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const GroupDetailBtn = styled.button`
