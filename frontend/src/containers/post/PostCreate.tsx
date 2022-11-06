@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate } from 'react-router';
-import { PostEditorLayout, TagVisual } from './PostEditorLayout';
+import { PostEditorLayout } from './PostEditorLayout';
+import { TagVisual } from 'store/apis/tag';
 
 const PostCreate = () => {
   const [title, setTitle] = useState('');

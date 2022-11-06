@@ -38,7 +38,6 @@ export const PostContentWrapper = styled.div`
 
 export const TopElementWrapperWithoutPadding = styled.div`
   margin: 40px 0px 15px 0px;
-  border: 1px solid black;
   width: 100%;
   background-color: var(--fit-white);
 `;

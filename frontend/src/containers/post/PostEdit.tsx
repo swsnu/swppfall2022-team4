@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
-import { PostEditorLayout, TagVisual } from './PostEditorLayout';
+import { PostEditorLayout } from './PostEditorLayout';
+import { TagVisual } from 'store/apis/tag';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();

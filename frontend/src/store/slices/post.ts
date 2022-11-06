@@ -69,7 +69,6 @@ export const postSlice = createSlice({
       state.postList.error = null;
     },
     getPostsSuccess: (state, { payload }) => {
-      // console.log(payload);
       state.postList.posts = payload.posts;
       state.postList.pageNum = payload.page;
       state.postList.pageSize = payload.page_size;
@@ -84,13 +83,12 @@ export const postSlice = createSlice({
       //create!
     },
     createPostSuccess: (state, { payload }) => {
-      // console.log(payload);
       state.postCreate.post_id = payload.post_id;
       state.postCreate.status = true;
     },
-    createPostFailure: (state, { payload }) => {
-      // console.log(payload);
-    },
+    // createPostFailure: (state, { payload }) => {
+    //   // console.log(payload);
+    // },
     // getPostDetail ------------------------------------------------------------------------
     getPostDetail: (state, action: PayloadAction<postAPI.postIdentifyingRequestType>) => {
       state.postDetail.post = null;
@@ -136,7 +134,6 @@ export const postSlice = createSlice({
       state.postComment.error = null;
     },
     getPostCommentSuccess: (state, { payload }) => {
-      // console.log(payload);
       state.postComment.comments = payload.comments;
     },
     getPostCommentFailure: (state, { payload }) => {
@@ -146,12 +143,8 @@ export const postSlice = createSlice({
     createComment: (state, action: PayloadAction<commentAPI.createCommentRequestType>) => {
       //create!
     },
-    createCommentSuccess: (state, { payload }) => {
-      // console.log(payload);
-    },
-    createCommentFailure: (state, { payload }) => {
-      // console.log(payload);
-    },
+    // createCommentSuccess: (state, { payload }) => {},
+    // createCommentFailure: (state, { payload }) => {},
     editComment: (state, action: PayloadAction<commentAPI.editCommentRequestType>) => {
       //edit!
     },
@@ -221,7 +214,7 @@ function* createPostSaga(action: PayloadAction<postAPI.createPostRequestType>) {
     const response: AxiosResponse = yield call(postAPI.createPost, action.payload);
     yield put(postActions.createPostSuccess(response));
   } catch (error) {
-    yield put(postActions.createPostFailure(error));
+    // yield put(postActions.createPostFailure(error));
   }
 }
 

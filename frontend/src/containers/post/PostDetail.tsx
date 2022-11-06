@@ -12,15 +12,10 @@ import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import Loading from 'components/common/Loading';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
+import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
 
 interface IPropsColorButton {
   color?: string;
-}
-
-interface IPropsCommentSubmitBtn {
-  disabled?: boolean;
-  isActive?: boolean;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 interface IPropsComment {
@@ -301,14 +296,13 @@ const PostDetail = () => {
                 value={commentReplyInput}
                 onChange={e => setCommentReplyInput(e.target.value)}
               ></CommentInput>
-              <CommentSubmitBtn
-                isActive={commentReplyInput !== ''}
+              <GreenCommentSubmitBtn
                 disabled={commentReplyInput === ''}
                 onClick={commentCreateOnClick}
                 data-parent_comment={comment.id}
               >
                 작성
-              </CommentSubmitBtn>
+              </GreenCommentSubmitBtn>
             </CommentReplyForm>
           )}
         </CommentReplyFormWrapper>
@@ -376,14 +370,13 @@ const PostDetail = () => {
                 value={commentInput}
                 onChange={e => setCommentInput(e.target.value)}
               ></CommentInput>
-              <CommentSubmitBtn
-                isActive={commentInput !== ''}
+              <GreenCommentSubmitBtn
                 disabled={commentInput === ''}
                 onClick={commentCreateOnClick}
                 data-parent_comment={null}
               >
                 작성
-              </CommentSubmitBtn>
+              </GreenCommentSubmitBtn>
             </CommentForm>
           </ArticleCommentWrapper>
         </ArticleItem>
@@ -392,13 +385,13 @@ const PostDetail = () => {
       )}
     </ArticleDetailWrapper>
   );
-  const CreateBtn = <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>;
+  const CreateBtn = <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
     user?.username == post?.author_name ? (
       <PostPanelWrapper>
         {CreateBtn}
-        <CreatePostBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</CreatePostBtn>
-        <CreatePostBtn onClick={deleteOnClick}>글 삭제</CreatePostBtn>
+        <BlueBigBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</BlueBigBtn>
+        <BlueBigBtn onClick={deleteOnClick}>글 삭제</BlueBigBtn>
       </PostPanelWrapper>
     ) : (
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
@@ -560,35 +553,6 @@ const CommentWrapper = styled.div`
   background-color: var(--fit-white);
 `;
 
-const CommentGreenBtn = styled.button`
-  padding: 4px 8px;
-  font-size: 10px;
-  background-color: var(--fit-green-small-btn1);
-  border: none;
-  border-radius: 4px;
-  margin: 0px 4px;
-  margin-right: 4px;
-  cursor: pointer;
-  :disabled {
-    cursor: default;
-  }
-`;
-
-const CommentRedBtn = styled.button`
-  padding: 4px 8px;
-  font-size: 10px;
-  background-color: #dd5454;
-  border: none;
-  border-radius: 4px;
-  margin: 0px 4px;
-  margin-right: 4px;
-  color: #dddddd;
-  cursor: pointer;
-  :disabled {
-    cursor: default;
-  }
-`;
-
 const CommentReplyWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -742,40 +706,11 @@ const CommentInput = styled.input`
   padding: 10px 12px;
 `;
 
-const CommentSubmitBtn = styled.button<IPropsCommentSubmitBtn>`
-  width: 10%;
-  padding: 10px 6px;
-  background-color: var(--fit-disabled-gray);
-  border: none;
-  margin-left: 5px;
-  &:disabled {
-  }
-  cursor: pointer;
-
-  ${({ isActive }) =>
-    isActive &&
-    `
-    background: var(--fit-green-mid-btn1);
-  `}
-`;
-
 const PostPanelWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const CreatePostBtn = styled.button`
-  padding: 8px 20px;
-  width: 100%;
-  border: none;
-  background-color: #35c9ea;
-  font-size: 15px;
-  margin-bottom: 10px;
-  &:hover {
-    background-color: #45d9fa;
-  }
 `;
 
 export default PostDetail;

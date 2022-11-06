@@ -16,16 +16,18 @@ export function* getPostCommentSaga(action: PayloadAction<commentAPI.getPostComm
 
 export function* createCommentSaga(action: PayloadAction<commentAPI.createCommentRequestType>) {
   try {
-    const response: AxiosResponse = yield call(commentAPI.createComment, action.payload);
-    yield put(postActions.createCommentSuccess(response));
+    yield call(commentAPI.createComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.createComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
   } catch (error) {
-    yield put(postActions.createCommentFailure(error));
+    // yield put(postActions.createCommentFailure(error));
   }
 }
 
 export function* editCommentSaga(action: PayloadAction<commentAPI.editCommentRequestType>) {
   try {
-    const response: AxiosResponse = yield call(commentAPI.editComment, action.payload);
+    yield call(commentAPI.editComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.editComment, action.payload);
     // yield put(postActions.createCommentSuccess(response));
   } catch (error) {
     // yield put(postActions.createCommentFailure(error));
@@ -34,7 +36,8 @@ export function* editCommentSaga(action: PayloadAction<commentAPI.editCommentReq
 
 export function* deleteCommentSaga(action: PayloadAction<commentAPI.deleteCommentRequestType>) {
   try {
-    const response: AxiosResponse = yield call(commentAPI.deleteComment, action.payload);
+    yield call(commentAPI.deleteComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.deleteComment, action.payload);
     // yield put(postActions.createCommentSuccess(response));
   } catch (error) {
     // yield put(postActions.createCommentFailure(error));

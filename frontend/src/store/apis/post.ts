@@ -1,5 +1,5 @@
-import { TagVisual } from '../../containers/post/PostEditorLayout';
 import client from './client';
+import { TagVisual } from './tag';
 
 export const getPosts = async (payload: getPostsRequestType) => {
   let response;

@@ -10,25 +10,15 @@ import {
   SideBarWrapper,
   TopElementWrapperWithoutPadding,
 } from './PostLayout';
-import { TagClass } from 'store/apis/tag';
+import { TagClass, TagVisual } from 'store/apis/tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
+import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn } from 'components/post/button';
 
 interface IPropsColorButton {
   color?: string;
 }
-
-interface IPropsBtn {
-  isActive?: boolean;
-  onClick?: () => void;
-}
-
-export type TagVisual = {
-  id: string;
-  name: string;
-  color: string;
-};
 
 const DEFAULT_OPTION = '$NONE$';
 const NEW_OPTION = '$NEW$';
@@ -118,7 +108,7 @@ export const PostEditorLayout = (
               <FontAwesomeIcon size="xl" icon={faDice} />
             </RandColorBtn>
           </TagClassColorWrapper>
-          <TagGreenBtn
+          <GreenBigBtn
             disabled={tagClassInput === ''}
             onClick={() => {
               dispatch(
@@ -133,7 +123,7 @@ export const PostEditorLayout = (
             }}
           >
             분류 생성
-          </TagGreenBtn>
+          </GreenBigBtn>
         </TagClassFuncWrapper>
       );
     }
@@ -146,7 +136,7 @@ export const PostEditorLayout = (
             value={tagSearchInput}
             onChange={e => setTagSearchInput(e.target.value)}
           ></TagInput>
-          <TagGreenBtn
+          <GreenBigBtn
             disabled={tagSearchInput === ''}
             onClick={() => {
               dispatch(
@@ -158,7 +148,7 @@ export const PostEditorLayout = (
             }}
           >
             검색
-          </TagGreenBtn>
+          </GreenBigBtn>
           {tagSearchInput !== '' && tagSearch && (
             <TagBubbleWrapper>
               {tagSearch.map(tag => {
@@ -203,7 +193,7 @@ export const PostEditorLayout = (
             <TagClassFuncWrapper>
               {/* 태그 만들기 */}
               <TagInput value={tagInput} onChange={e => setTagInput(e.target.value)}></TagInput>
-              <TagGreenBtn
+              <GreenBigBtn
                 disabled={tagInput === ''}
                 onClick={() => {
                   if (currentTagClass)
@@ -219,7 +209,7 @@ export const PostEditorLayout = (
                 }}
               >
                 생성
-              </TagGreenBtn>
+              </GreenBigBtn>
             </TagClassFuncWrapper>
           )}
         </TagSubWrapper>
@@ -286,14 +276,10 @@ export const PostEditorLayout = (
           <ContentWrapper>
             <ContentTextArea placeholder="내용" value={content} onChange={e => setContent(e.target.value)} />
             <CreateBtnWrapper>
-              <CancelPostBtn onClick={cancelOnClick}>취소</CancelPostBtn>
-              <CreatePostBtn
-                onClick={confirmOnClick}
-                isActive={title !== '' && content !== ''}
-                disabled={title === '' || content === ''}
-              >
+              <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
+              <BlueBigActiveBtn onClick={confirmOnClick} disabled={title === '' || content === ''}>
                 완료
-              </CreatePostBtn>
+              </BlueBigActiveBtn>
             </CreateBtnWrapper>
           </ContentWrapper>
           <SideBarWrapper>{TagPanel}</SideBarWrapper>
@@ -302,20 +288,6 @@ export const PostEditorLayout = (
     </PostPageWrapper>
   );
 };
-
-const TagGreenBtn = styled.button`
-  padding: 5px 8px;
-  margin: 6px 10px;
-  font-size: 14px;
-  background-color: var(--fit-green-small-btn1);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  :disabled {
-    background-color: var(--fit-disabled-gray);
-    cursor: default;
-  }
-`;
 
 const TagClassColorWrapper = styled.div`
   display: flex;
@@ -424,7 +396,8 @@ const TitleInput = styled.input`
   width: 100%;
   height: 100%;
   padding: 8px 20px;
-  font-size: 28px;
+  font-size: 24px;
+  border: none;
 `;
 const ContentTextArea = styled.textarea`
   width: 100%;
@@ -432,14 +405,13 @@ const ContentTextArea = styled.textarea`
   padding: 16px 30px;
   font-size: 20px;
   resize: none;
+  border: none;
 `;
 const CreateBtnWrapper = styled.div`
-  border: 1px solid black;
-  margin-right: 15px;
   width: 100%;
   height: 10%;
   position: absolute;
-  bottom: 0px;
+  bottom: -5px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -448,36 +420,4 @@ const ContentWrapper = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
-`;
-const CreatePostBtn = styled.button<IPropsBtn>`
-  padding: 0px 14px;
-  width: 200px;
-  height: 30px;
-  border-radius: 15px;
-  background-color: var(--fit-disabled-gray);
-  font-size: 15px;
-  letter-spacing: 0.5px;
-  margin: 5px 20px;
-
-  ${({ isActive }) =>
-    isActive &&
-    `
-      background: var(--fit-green-mid-btn1);
-      &:hover {
-        background-color: #45d9fa;
-      }
-    `}
-`;
-const CancelPostBtn = styled.button`
-  padding: 0px 14px;
-  width: 200px;
-  height: 30px;
-  border-radius: 15px;
-  background-color: #f53333;
-  font-size: 15px;
-  letter-spacing: 0.5px;
-  margin: 5px 20px;
-  &:hover {
-    background-color: #ff4444;
-  }
 `;

@@ -8,6 +8,7 @@ import { timeAgoFormat } from 'utils/datetime';
 import { useNavigate } from 'react-router';
 import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { tagActions } from 'store/slices/tag';
+import { BlueBigBtn } from 'components/post/button';
 
 interface IPropsPageIndicator {
   isActive?: boolean;
@@ -36,7 +37,7 @@ const PostMain = () => {
   const SideBar = (
     <SideBarWrapper>
       <PostPanelWrapper>
-        <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
+        <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
       </PostPanelWrapper>
       <SideBarItem>태그 목록</SideBarItem>
       <SideBarItem>사이드바 공간2</SideBarItem>
@@ -156,17 +157,6 @@ const PostPanelWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-const CreatePostBtn = styled.button`
-  padding: 8px 20px;
-  width: 100%;
-  border: none;
-  background-color: #35c9ea;
-  font-size: 15px;
-  margin-bottom: 10px;
-  &:hover {
-    background-color: #45d9fa;
-  }
 `;
 const PageNumberIndicator = styled.span<IPropsPageIndicator>`
   margin: 0px 5px;
