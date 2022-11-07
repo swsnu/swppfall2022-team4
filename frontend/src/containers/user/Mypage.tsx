@@ -3,12 +3,28 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineEdit } from 'react-icons/ai';
 import styled from 'styled-components';
+import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
-import { dateDiff } from 'utils/datetime';
+import { dateDiff, timeAgoFormat } from 'utils/datetime';
 
-import Loading from 'components/common/Loading';
+import Loading, { LoadingWithoutMinHeight } from 'components/common/Loading';
 import Button3 from 'components/common/buttons/Button3';
+import { TagBubbleCompact } from 'components/tag/tagbubble';
+import { ArticleItem } from 'containers/post/PostMain';
+import {
+  CommentContent,
+  CommentContentWrapper,
+  CommentFuncBtn,
+  CommentFuncNumIndicator,
+  CommentFuncTimeIndicator,
+  CommentFuncWrapper,
+  FuncBtnStatus,
+  IPropsComment,
+} from 'containers/post/PostDetail';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -16,15 +32,17 @@ const Mypage = () => {
 
   const { username } = useParams();
   const [type, setType] = useState(0);
-  const { user, profile, loading, profileError } = useSelector(({ user }: RootState) => ({
+  const { user, profile, loading, profileError, profileContent } = useSelector(({ user }: RootState) => ({
     user: user.user,
     profile: user.profile,
     loading: user.loading,
     profileError: user.profileError,
+    profileContent: user.profileContent,
   }));
 
   useEffect(() => {
     dispatch(userActions.getProfile(username || ''));
+    dispatch(userActions.getProfileContent(username || ''));
     return () => {
       dispatch(userActions.resetProfile());
     };
@@ -78,7 +96,12 @@ const Mypage = () => {
           <Category active={type === 0} onClick={() => changeType(0)}>
             요약
           </Category>
-          <Category active={type === 1} onClick={() => changeType(1)}>
+          <Category
+            active={type === 1}
+            onClick={() => {
+              changeType(1);
+            }}
+          >
             내 글
           </Category>
           <Category active={type === 2} onClick={() => changeType(2)}>
@@ -94,7 +117,100 @@ const Mypage = () => {
             내 그룹
           </Category>
         </CategoryWrapper>
-        <div>{`${type} 선택됨`}</div>
+        <ProfileContentLayout>
+          {
+            {
+              0: <span>0</span>,
+              1: (
+                <ProfileContentWrapper>
+                  {profileContent.post ? (
+                    profileContent.post.map((post, id) => {
+                      return (
+                        <ArticleItem key={id} onClick={() => navigate(`/post/${post.id}`)}>
+                          {post.prime_tag ? (
+                            <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
+                          ) : (
+                            <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
+                          )}
+                          <span>
+                            {post.title} <span>[{post.comments_num}]</span>
+                          </span>
+                          <span>{post.author_name}</span>
+                          <span>{post.like_num - post.dislike_num}</span>
+                          <span>{timeAgoFormat(post.created)}</span>
+                        </ArticleItem>
+                      );
+                    })
+                  ) : (
+                    <LoadingWithoutMinHeight />
+                  )}
+                </ProfileContentWrapper>
+              ),
+              2: (
+                <ProfileContentWrapper>
+                  {profileContent.comment ? (
+                    profileContent.comment.map(comment => (
+                      <CommentItem
+                        key={comment.id}
+                        isChild={comment.parent_comment !== null}
+                        onClick={() => navigate(`/post/${comment.post_id}`)}
+                      >
+                        {comment.parent_comment !== null && (
+                          <CommentChildIndicator>
+                            <FontAwesomeIcon icon={faArrowRight} />
+                          </CommentChildIndicator>
+                        )}
+                        <CommentContentWrapper>
+                          <CommentContent>{comment.content}</CommentContent>
+                        </CommentContentWrapper>
+                        <CommentFuncWrapper>
+                          <CommentFuncBtn color={comment.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}>
+                            <FontAwesomeIcon icon={faThumbsUp} />
+                          </CommentFuncBtn>
+                          <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
+                          <CommentFuncBtn color={comment.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}>
+                            <FontAwesomeIcon icon={faThumbsDown} />
+                          </CommentFuncBtn>
+                          <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
+                          <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
+                        </CommentFuncWrapper>
+                      </CommentItem>
+                    ))
+                  ) : (
+                    <LoadingWithoutMinHeight />
+                  )}
+                </ProfileContentWrapper>
+              ),
+              3: <span>3</span>,
+              4: (
+                <ProfileContentWrapper>
+                  {profileContent.scrap ? (
+                    profileContent.scrap.map((post, id) => {
+                      return (
+                        <ArticleItem key={id} onClick={() => navigate(`/post/${post.id}`)}>
+                          {post.prime_tag ? (
+                            <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
+                          ) : (
+                            <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
+                          )}
+                          <span>
+                            {post.title} <span>[{post.comments_num}]</span>
+                          </span>
+                          <span>{post.author_name}</span>
+                          <span>{post.like_num - post.dislike_num}</span>
+                          <span>{timeAgoFormat(post.created)}</span>
+                        </ArticleItem>
+                      );
+                    })
+                  ) : (
+                    <LoadingWithoutMinHeight />
+                  )}
+                </ProfileContentWrapper>
+              ),
+              5: <span>5</span>,
+            }[type]
+          }
+        </ProfileContentLayout>
       </ContentWrapper>
     </Wrapper>
   );
@@ -252,11 +368,15 @@ const EditIcon = styled(AiOutlineEdit)`
 const ContentWrapper = styled.div`
   width: 100%;
   min-height: 600px;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   border: 2px solid black;
-  border-radius: 30px;
+  border-radius: 20px;
   margin-top: 25px;
+  overflow: hidden;
+  /* overflow-wrap: normal; */
+  /* flex-wrap: wrap; */
 `;
 const CategoryWrapper = styled.div`
   display: flex;
@@ -276,6 +396,7 @@ const Category = styled.div<{ active: boolean }>`
   font-family: NanumSquareR;
   border-bottom: 1px solid black;
   padding-top: 11px;
+
   cursor: pointer;
   &:hover {
     font-weight: 600;
@@ -288,4 +409,58 @@ const Category = styled.div<{ active: boolean }>`
     font-size: 16px;
     font-family: 'Noto Sans KR', sans-serif;
   }
+`;
+
+const ProfileContentLayout = styled.div`
+  width: 100%;
+  height: 555px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Scroll Shadow */
+  background-image: linear-gradient(to top, white, white), linear-gradient(to top, white, white),
+    linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));
+  background-position: bottom center, top center, bottom center, top center;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
+  background-attachment: local, local, scroll, scroll;
+`;
+
+const ProfileContentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 0px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  /* overflow-y: auto; */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const CommentItem = styled.div<IPropsComment>`
+  padding: 5px 30px;
+  font-size: 14px;
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid gray;
+  cursor: pointer;
+  ${({ isChild }) =>
+    isChild &&
+    `
+    padding-left: 30px;
+  `}
+`;
+
+const CommentChildIndicator = styled.div`
+  margin-right: 12px;
 `;

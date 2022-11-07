@@ -143,7 +143,7 @@ const ArticleHeader = styled(articleItemGrid)`
   border-bottom: 1px solid black;
 `;
 
-const ArticleItem = styled(articleItemGrid)`
+export const ArticleItem = styled(articleItemGrid)`
   padding: 8px 10px 8px 10px;
   font-size: 14px;
   width: 100%;

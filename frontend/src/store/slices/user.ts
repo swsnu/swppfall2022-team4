@@ -3,6 +3,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as userAPI from 'store/apis/user';
+import * as postAPI from 'store/apis/post';
+import * as commentAPI from 'store/apis/comment';
 
 interface UserState {
   user: {
@@ -13,6 +15,11 @@ interface UserState {
   error: AxiosError | null;
 
   profile: userAPI.profileType | null;
+  profileContent: {
+    post: postAPI.Post[] | null;
+    comment: commentAPI.Comment[] | null;
+    scrap: postAPI.Post[] | null;
+  };
   loading: boolean;
   editProfile: boolean;
   deleteProfile: boolean;
@@ -25,6 +32,11 @@ export const initialState: UserState = {
   error: null,
 
   profile: null,
+  profileContent: {
+    post: null,
+    comment: null,
+    scrap: null,
+  },
   loading: false,
   editProfile: false,
   deleteProfile: false,
@@ -46,6 +58,9 @@ export const userSlice = createSlice({
       state.editProfile = false;
       state.deleteProfile = false;
       state.profileError = null;
+      state.profileContent.post = null;
+      state.profileContent.comment = null;
+      state.profileContent.scrap = null;
     },
     token: state => state,
 
@@ -135,6 +150,18 @@ export const userSlice = createSlice({
       state.profileError = payload;
       alert(payload.response?.data.message);
     },
+
+    getProfileContent: (state, action: PayloadAction<string>) => {
+      // Hey
+      state.profileContent.post = null;
+      state.profileContent.comment = null;
+      state.profileContent.scrap = null;
+    },
+    getProfileContentSuccess: (state, { payload }) => {
+      state.profileContent.post = payload.posts;
+      state.profileContent.comment = payload.comments;
+      state.profileContent.scrap = payload.scraps;
+    },
   },
 });
 export const userActions = userSlice.actions;
@@ -195,6 +222,15 @@ function* signoutSaga(action: PayloadAction<string>) {
   }
 }
 
+function* getProfileContentSaga(action: PayloadAction<string>) {
+  try {
+    const response: AxiosResponse = yield call(userAPI.getProfileContent, action.payload);
+    yield put(userActions.getProfileContentSuccess(response));
+  } catch (error) {
+    // yield put(userActions.getProfileFailure(error));
+  }
+}
+
 export default function* userSaga() {
   yield takeLatest(userActions.token, tokenSaga);
   yield takeLatest(userActions.signup, signupSaga);
@@ -202,6 +238,7 @@ export default function* userSaga() {
   yield takeLatest(userActions.check, checkSaga);
   yield takeLatest(userActions.logout, logoutSaga);
   yield takeLatest(userActions.getProfile, getProfileSaga);
+  yield takeLatest(userActions.getProfileContent, getProfileContentSaga);
   yield takeLatest(userActions.editProfile, editProfileSaga);
   yield takeLatest(userActions.signout, signoutSaga);
 }
