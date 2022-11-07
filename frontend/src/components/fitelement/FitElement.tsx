@@ -29,7 +29,7 @@ export const FitElement = (props: IProps) => {
 const FitElementLog = styled.div`
   width: 100%;
   height: 100%;
-  min-height: 10vh;
+  min-height: 80px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
