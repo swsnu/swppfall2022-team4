@@ -400,7 +400,7 @@ const PostDetail = () => {
   const SideBar = (
     <SideBarWrapper>
       {PostAuthorPanel}
-      <SideBarItem>사이드바 공간2</SideBarItem>
+      {/* <SideBarItem>사이드바 공간2</SideBarItem> */}
     </SideBarWrapper>
   );
   return PostPageWithSearchBar(PostDetailContent, SideBar);
@@ -541,6 +541,7 @@ const ArticleBodyContent = styled.div`
   height: 100%;
   padding: 10px 20px;
   min-height: 360px;
+  font-size: 16px;
 `;
 
 // Article Comment List

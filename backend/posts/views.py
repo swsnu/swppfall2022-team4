@@ -33,7 +33,8 @@ def post_home(request):
             filter_args["title__icontains"] = query_args["keyword"]
             posts = posts.filter(**filter_args)
 
-        posts_serializable = list(posts[offset:limit].values())
+        posts = posts[offset:limit]
+        posts_serializable = list(posts.values())
         for index, _ in enumerate(posts_serializable):
             posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
             posts_serializable[index]["author_name"] = posts[index].author.username

@@ -296,18 +296,18 @@ def profile_post(request, user_id):
 
     scraps_serializable = list(scraps.values())
     for index, _ in enumerate(scraps_serializable):
-        scraps_serializable[index]["comments_num"] = posts[index].get_comments_num()
-        scraps_serializable[index]["author_name"] = posts[index].author.username
-        scraps_serializable[index]["like_num"] = posts[index].get_like_num()
-        scraps_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
-        scraps_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
+        scraps_serializable[index]["comments_num"] = scraps[index].get_comments_num()
+        scraps_serializable[index]["author_name"] = scraps[index].author.username
+        scraps_serializable[index]["like_num"] = scraps[index].get_like_num()
+        scraps_serializable[index]["dislike_num"] = scraps[index].get_dislike_num()
+        scraps_serializable[index]["scrap_num"] = scraps[index].get_scrap_num()
         scraps_serializable[index]["prime_tag"] = None
 
-        if posts[index].prime_tag:
+        if scraps[index].prime_tag:
             scraps_serializable[index]["prime_tag"] = {
-                "id": posts[index].prime_tag.pk,
-                "name": posts[index].prime_tag.tag_name,
-                "color": posts[index].prime_tag.tag_class.color,
+                "id": scraps[index].prime_tag.pk,
+                "name": scraps[index].prime_tag.tag_name,
+                "color": scraps[index].prime_tag.tag_class.color,
             }
 
         del scraps_serializable[index]["author_id"]

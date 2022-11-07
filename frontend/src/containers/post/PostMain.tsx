@@ -42,8 +42,10 @@ const PostMain = () => {
       <PostPanelWrapper>
         <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
       </PostPanelWrapper>
-      <SideBarItem>태그 목록</SideBarItem>
-      <SideBarItem>사이드바 공간2</SideBarItem>
+      {/* <SideBarItem>태그 목록</SideBarItem>
+      <SideBarItem>
+        <span>최근 댓글이 달린 글</span>
+      </SideBarItem> */}
     </SideBarWrapper>
   );
   const MainContent = (
@@ -173,4 +175,12 @@ const PageNumberIndicator = styled.span<IPropsPageIndicator>`
     color: #62bf45;
   `}
 `;
+
+// const Sidebar1 = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: flex-start;
+//   background-color: var(--fit-white);
+//   height: 60%;
+// `;
 export default PostMain;

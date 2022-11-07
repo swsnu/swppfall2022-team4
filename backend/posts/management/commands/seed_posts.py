@@ -63,5 +63,7 @@ class Command(BaseCommand):
             for tag in Tag.objects.all():
                 if random.randint(1, 100) <= 5:
                     post.tags.add(tag)
+                    post.prime_tag = tag
+                    post.save()
 
         self.stdout.write(self.style.SUCCESS(f"{number} Posts are generated automatically."))

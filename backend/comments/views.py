@@ -1,4 +1,5 @@
 import json
+import copy
 from django.http import (
     HttpResponseBadRequest,
     HttpResponseNotFound,
@@ -27,9 +28,7 @@ def comment_home(request):
         post = Post.objects.get(pk=post_id)
 
         if parent_comment == "none":
-            Comment.objects.create(
-                author=author, post=post, content=content, parent_comment=None
-            )
+            Comment.objects.create(author=author, post=post, content=content, parent_comment=None)
         else:
             parent_comment = Comment.objects.get(pk=parent_comment)
             Comment.objects.create(
@@ -106,6 +105,53 @@ def comment_func(request, query_id):
             HttpResponseBadRequest()
         return JsonResponse({"message": "success"}, status=200)
     except (Comment.DoesNotExist, User.DoesNotExist):
+        return HttpResponseNotFound()
+    except Exception as error:
+        print(error)
+        return HttpResponseBadRequest()
+
+
+@require_http_methods(["GET"])
+def recent_comment(request):
+    """
+    GET : get recent comment list.
+    """
+    try:
+        comments = Comment.objects.order_by("-created")
+        print(comments)
+        proc_comm = list(comments.values())
+        for index, _ in enumerate(proc_comm):
+            proc_comm[index]["like_num"] = comments[index].get_like_num()
+            proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
+            proc_comm[index]["liked"] = (
+                comments[index].liker.all().filter(username=request.user.username).exists()
+            )
+            proc_comm[index]["disliked"] = (
+                comments[index].disliker.all().filter(username=request.user.username).exists()
+            )
+            proc_comm[index]["author_name"] = comments[index].author.username
+            proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]
+            del proc_comm[index]["author_id"]
+            del proc_comm[index]["parent_comment_id"]
+
+        # Re-ordering.
+        comment_reservoir = copy.deepcopy(proc_comm)
+        comment_response = []
+        parent_id = None
+        while len(comment_reservoir) != 0:
+            proc_comm = copy.deepcopy(comment_reservoir)
+            for comment in proc_comm:
+                if parent_id:
+                    if comment["parent_comment"] == parent_id:
+                        comment_response.append(comment)
+                        comment_reservoir.remove(comment)
+                else:
+                    comment_response.append(comment)
+                    parent_id = comment["id"]
+                    comment_reservoir.remove(comment)
+            parent_id = None
+        return JsonResponse({"comments": comment_response}, status=200)
+    except Post.DoesNotExist:
         return HttpResponseNotFound()
     except Exception as error:
         print(error)
