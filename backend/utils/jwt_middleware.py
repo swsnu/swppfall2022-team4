@@ -25,7 +25,8 @@ class JsonWebTokenMiddleWare:
                 "/api/user/login/",
                 "/api/user/social_login/",
                 "/api/user/signup/",
-                "/api/user/token/"
+                "/api/user/token/",
+                "/api/image/"
             ) and not request.path[:6] == "/admin":
                 access_token = request.COOKIES.get("access_token", None)
                 if not access_token:
