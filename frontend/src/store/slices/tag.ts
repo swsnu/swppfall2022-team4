@@ -5,10 +5,14 @@ import * as tagAPI from 'store/apis/tag';
 
 interface TagState {
   tagList: tagAPI.TagClass[] | null;
+  tagSearch: tagAPI.TagVisual[] | null;
+  tagCreate: tagAPI.TagVisual | null;
   error: string | null;
 }
 const initialState: TagState = {
   tagList: null,
+  tagSearch: null,
+  tagCreate: null,
   error: null,
 };
 
@@ -33,19 +37,37 @@ export const tagSlice = createSlice({
       //create!
     },
     createTagClassSuccess: (state, { payload }) => {
-      console.log(payload);
+      //create success
     },
     createTagClassFailure: (state, { payload }) => {
-      // console.log(payload);
+      //create failure
     },
     createTag: (state, action: PayloadAction<tagAPI.createTagRequestType>) => {
       //create!
+      state.tagCreate = null;
     },
     createTagSuccess: (state, { payload }) => {
-      console.log(payload);
+      //create success
+      state.tagCreate = payload.tags;
     },
     createTagFailure: (state, { payload }) => {
-      // console.log(payload);
+      //create failure
+    },
+    searchTag: (state, action: PayloadAction<tagAPI.searchTagRequestType>) => {
+      //search!
+    },
+    searchTagSuccess: (state, { payload }) => {
+      state.tagSearch = payload.tags;
+    },
+    searchTagFailure: (state, { payload }) => {
+      //search failure
+    },
+    searchTagClear: state => {
+      state.tagSearch = null;
+    },
+    clearTagState: state => {
+      state.tagCreate = null;
+      state.tagSearch = null;
     },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
@@ -80,8 +102,18 @@ function* createTagSaga(action: PayloadAction<tagAPI.createTagRequestType>) {
   }
 }
 
+function* searchTagSaga(action: PayloadAction<tagAPI.searchTagRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(tagAPI.searchTag, action.payload);
+    yield put(tagActions.searchTagSuccess(response));
+  } catch (error) {
+    yield put(tagActions.searchTagFailure(error));
+  }
+}
+
 export default function* tagSaga() {
   yield takeLatest(tagActions.getTags, getTagsSaga);
   yield takeLatest(tagActions.createTag, createTagSaga);
   yield takeLatest(tagActions.createTagClass, createTagClassSaga);
+  yield takeLatest(tagActions.searchTag, searchTagSaga);
 }

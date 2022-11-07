@@ -1,6 +1,6 @@
 import { tagActions } from 'store/slices/tag';
 import { RootState } from 'index';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -10,23 +10,14 @@ import {
   SideBarWrapper,
   TopElementWrapperWithoutPadding,
 } from './PostLayout';
-import { TagClass } from 'store/apis/tag';
+import { TagClass, TagVisual } from 'store/apis/tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDice } from '@fortawesome/free-solid-svg-icons';
+import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
+import 'styles/color.css';
+import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn } from 'components/post/button';
 
 interface IPropsColorButton {
   color?: string;
-}
-
-interface IPropsBtn {
-  isActive?: boolean;
-  onClick?: () => void;
-}
-
-export interface TagVisual {
-  id: string;
-  name: string;
-  color: string;
 }
 
 const DEFAULT_OPTION = '$NONE$';
@@ -42,9 +33,13 @@ export const PostEditorLayout = (
   confirmOnClick: () => void,
   selectedTags: TagVisual[],
   setSelectedTags: (value: React.SetStateAction<TagVisual[]>) => void,
+  primeTag: TagVisual | null,
+  setPrimeTag: (value: React.SetStateAction<TagVisual | null>) => void,
 ) => {
   const dispatch = useDispatch();
   const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
+  const tagSearch = useSelector((rootState: RootState) => rootState.tag.tagSearch);
+  const tagCreate = useSelector((rootState: RootState) => rootState.tag.tagCreate);
 
   const [tagInput, setTagInput] = useState(''); // Tag creation name input
   const [tagClassInput, setTagClassInput] = useState(''); // Tag Class creation name input
@@ -64,24 +59,44 @@ export const PostEditorLayout = (
   useEffect(() => {
     setTagRandColor(getRandomColor());
   }, []);
-
+  useEffect(() => {
+    if (tagCreate) setSelectedTags(s => [...s, { id: tagCreate?.id, name: tagCreate?.name, color: tagCreate?.color }]);
+  }, [tagCreate]);
   const getRandomColor = () => {
     return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
   };
 
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.options[e.target.selectedIndex].value;
-    setTagSelect(newValue);
-    if (newValue !== NEW_OPTION) {
+    const tagId = e.target.options[e.target.selectedIndex].value;
+    const tagName = e.target.options[e.target.selectedIndex].text;
+    setTagSelect(tagId);
+    if (tagId !== NEW_OPTION) {
       setSelectedTags(s => {
-        const tagName = e.target.options[e.target.selectedIndex].text;
-        if (currentTagClass && s.filter(item => item.id == newValue).length === 0)
-          return [...s, { id: newValue, name: tagName, color: currentTagClass.color }];
+        if (currentTagClass && s.filter(item => item.id == tagId).length === 0)
+          return [...s, { id: tagId, name: tagName, color: currentTagClass.color }];
         else return s;
       });
       setTagSelect(DEFAULT_OPTION);
     }
   };
+  const searchedTagOnClick = (e: React.MouseEvent) => {
+    const tagId = e.currentTarget.getAttribute('data-id');
+    const tagName = e.currentTarget.getAttribute('data-name');
+    const tagColor = e.currentTarget.getAttribute('data-color');
+
+    if (tagId && tagName && tagColor) {
+      setSelectedTags(s => {
+        if (s.filter(item => item.id == tagId).length === 0)
+          return [...s, { id: tagId, name: tagName, color: tagColor }];
+        else return s;
+      });
+    }
+  };
+  const tagOnRemove = (e: React.MouseEvent) => {
+    const tagId = e.currentTarget.getAttribute('data-value');
+    setSelectedTags(s => s.filter(item => item.id != tagId));
+  };
+
   const tagNames = () => {
     if (tagClassSelect === NEW_OPTION) {
       return (
@@ -98,7 +113,7 @@ export const PostEditorLayout = (
               <FontAwesomeIcon size="xl" icon={faDice} />
             </RandColorBtn>
           </TagClassColorWrapper>
-          <TagGreenBtn
+          <GreenBigBtn
             disabled={tagClassInput === ''}
             onClick={() => {
               dispatch(
@@ -113,31 +128,50 @@ export const PostEditorLayout = (
             }}
           >
             분류 생성
-          </TagGreenBtn>
+          </GreenBigBtn>
         </TagClassFuncWrapper>
       );
     }
     if (tagClassSelect === SEARCH_OPTION) {
       return (
         <TagClassFuncWrapper>
+          <TagInput placeholder="카테고리" onChange={e => setTagSearchInput(e.target.value)} disabled></TagInput>
           <TagInput
-            placeholder="키워드"
+            placeholder="태그 이름"
             value={tagSearchInput}
             onChange={e => setTagSearchInput(e.target.value)}
           ></TagInput>
-          <TagGreenBtn
+          <GreenBigBtn
             disabled={tagSearchInput === ''}
             onClick={() => {
-              //   dispatch(
-              //     tagActions.createTag({
-              //       name: tagSearchInput,
-              //       classId: '1',
-              //     }),
-              //   );
+              dispatch(
+                tagActions.searchTag({
+                  class_name: '',
+                  tag_name: tagSearchInput,
+                }),
+              );
             }}
           >
             검색
-          </TagGreenBtn>
+          </GreenBigBtn>
+          {tagSearchInput !== '' && tagSearch && (
+            <TagBubbleWrapper>
+              {tagSearch.map(tag => {
+                return (
+                  <TagBubble
+                    key={tag.id}
+                    color={tag.color}
+                    onClick={searchedTagOnClick}
+                    data-id={tag.id}
+                    data-color={tag.color}
+                    data-name={tag.name}
+                  >
+                    {tag.name}
+                  </TagBubble>
+                );
+              })}
+            </TagBubbleWrapper>
+          )}
         </TagClassFuncWrapper>
       );
     }
@@ -164,23 +198,24 @@ export const PostEditorLayout = (
             <TagClassFuncWrapper>
               {/* 태그 만들기 */}
               <TagInput value={tagInput} onChange={e => setTagInput(e.target.value)}></TagInput>
-              <TagGreenBtn
+              <GreenBigBtn
                 disabled={tagInput === ''}
                 onClick={() => {
-                  if (currentTagClass)
+                  if (currentTagClass) {
                     dispatch(
                       tagActions.createTag({
                         name: tagInput,
                         classId: currentTagClass.id.toString(),
                       }),
                     );
+                  }
                   dispatch(tagActions.getTags());
                   setTagInput('');
                   setTagUpdate(Date.now());
                 }}
               >
                 생성
-              </TagGreenBtn>
+              </GreenBigBtn>
             </TagClassFuncWrapper>
           )}
         </TagSubWrapper>
@@ -192,13 +227,20 @@ export const PostEditorLayout = (
       {selectedTags.map(tags => {
         return (
           <TagBubble key={tags.id} color={tags.color}>
-            {tags.name}
+            <ClickableSpan onClick={() => setPrimeTag(tags)}>{tags.name}</ClickableSpan>
+            <TagBubbleFunc onClick={tagOnRemove} data-value={tags.id}>
+              <FontAwesomeIcon icon={faX} />
+            </TagBubbleFunc>
           </TagBubble>
         );
       })}
     </TagBubbleWrapper>
   );
-
+  const primeTagComponent = (
+    <TagBubbleWrapper>
+      {primeTag ? <TagBubble color={primeTag.color}>{primeTag.name}</TagBubble> : <span>Not specified</span>}
+    </TagBubbleWrapper>
+  );
   const TagPanel = (
     <TagWrapper>
       <TagWrapperIn>
@@ -210,6 +252,8 @@ export const PostEditorLayout = (
             const targetValue = e.target.options[e.target.selectedIndex].value;
             setTagSelect(DEFAULT_OPTION);
             setTagClassSelect(targetValue);
+            setTagSearchInput('');
+            dispatch(tagActions.searchTagClear());
             setCurrentTagClass(tagList ? tagList.filter(tagClass => tagClass.id.toString() === targetValue)[0] : null);
           }}
         >
@@ -231,6 +275,14 @@ export const PostEditorLayout = (
       {selectedTagsComponent}
     </TagWrapper>
   );
+  const PrimeTagPanel = (
+    <PrimeTagWrapper>
+      <TagWrapperIn>
+        <TagTitle>대표 태그</TagTitle>
+      </TagWrapperIn>
+      {primeTagComponent}
+    </PrimeTagWrapper>
+  );
 
   return (
     <PostPageWrapper>
@@ -242,35 +294,24 @@ export const PostEditorLayout = (
           <ContentWrapper>
             <ContentTextArea placeholder="내용" value={content} onChange={e => setContent(e.target.value)} />
             <CreateBtnWrapper>
-              <CancelPostBtn onClick={cancelOnClick}>취소</CancelPostBtn>
-              <CreatePostBtn
-                onClick={confirmOnClick}
-                isActive={title !== '' && content !== ''}
-                disabled={title === '' || content === ''}
-              >
+              <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
+              <BlueBigActiveBtn onClick={confirmOnClick} disabled={title === '' || content === ''}>
                 완료
-              </CreatePostBtn>
+              </BlueBigActiveBtn>
             </CreateBtnWrapper>
           </ContentWrapper>
-          <SideBarWrapper>{TagPanel}</SideBarWrapper>
+          <SideBarWrapper>
+            {TagPanel}
+            {PrimeTagPanel}
+          </SideBarWrapper>
         </Main_SideWrapper>
       </PostContentWrapper>
     </PostPageWrapper>
   );
 };
 
-const TagGreenBtn = styled.button`
-  padding: 5px 8px;
-  margin: 6px 10px;
-  font-size: 14px;
-  background-color: #54dd6d;
-  border: none;
-  border-radius: 4px;
+const ClickableSpan = styled.div`
   cursor: pointer;
-  :disabled {
-    background-color: #9b9b9b;
-    cursor: default;
-  }
 `;
 
 const TagClassColorWrapper = styled.div`
@@ -296,12 +337,25 @@ const TagBubbleWrapper = styled.div`
   align-items: flex-end;
   padding: 8px 5px;
 `;
+const TagBubbleFunc = styled.div`
+  margin-left: 5px;
+  font-size: 10px;
+  color: red;
+  width: fit-content;
+  height: fit-content;
+  display: block;
+  cursor: pointer;
+`;
 const TagBubble = styled.button<IPropsColorButton>`
   height: 25px;
   border-radius: 30px;
   padding: 1px 10px;
   border: none;
   margin: 1px 2px;
+  width: fit-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   ${({ color }) =>
     color &&
     `
@@ -318,15 +372,22 @@ const TagWrapperIn = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
 `;
 const TagWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
   height: 60%;
-  overflow-y: scroll;
+`;
+const PrimeTagWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--fit-white);
+  margin-top: 15px;
+  height: fit-content;
 `;
 const TagInput = styled.input`
   padding: 5px 8px;
@@ -352,7 +413,7 @@ const RandColorBtn = styled.button`
   background: none;
   border: none;
   &:active {
-    color: #55dd54;
+    color: var(--fit-green-small-btn1);
   }
 `;
 const TagSubWrapper = styled.div`
@@ -364,7 +425,8 @@ const TitleInput = styled.input`
   width: 100%;
   height: 100%;
   padding: 8px 20px;
-  font-size: 28px;
+  font-size: 24px;
+  border: none;
 `;
 const ContentTextArea = styled.textarea`
   width: 100%;
@@ -372,14 +434,13 @@ const ContentTextArea = styled.textarea`
   padding: 16px 30px;
   font-size: 20px;
   resize: none;
+  border: none;
 `;
 const CreateBtnWrapper = styled.div`
-  border: 1px solid black;
-  margin-right: 15px;
   width: 100%;
   height: 10%;
   position: absolute;
-  bottom: 0px;
+  bottom: -5px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -388,36 +449,4 @@ const ContentWrapper = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
-`;
-const CreatePostBtn = styled.button<IPropsBtn>`
-  padding: 0px 14px;
-  width: 200px;
-  height: 30px;
-  border-radius: 15px;
-  background-color: #dddddd;
-  font-size: 15px;
-  letter-spacing: 0.5px;
-  margin: 5px 20px;
-
-  ${({ isActive }) =>
-    isActive &&
-    `
-      background: #8ee5b9;
-      &:hover {
-        background-color: #45d9fa;
-      }
-    `}
-`;
-const CancelPostBtn = styled.button`
-  padding: 0px 14px;
-  width: 200px;
-  height: 30px;
-  border-radius: 15px;
-  background-color: #f53333;
-  font-size: 15px;
-  letter-spacing: 0.5px;
-  margin: 5px 20px;
-  &:hover {
-    background-color: #ff4444;
-  }
 `;

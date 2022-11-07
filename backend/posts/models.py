@@ -16,6 +16,9 @@ class Post(AbstractTimeStampedModel):
     scraper = models.ManyToManyField(User, related_name="scraped_posts", blank=True)
 
     tags = models.ManyToManyField(Tag, related_name="tagged_posts", blank=True)
+    prime_tag = models.ForeignKey(
+        Tag, related_name="prime_tagged_posts", on_delete=models.SET_NULL, blank=True, null=True
+    )
 
     # Related_name : comments <- comments.Comment
     def get_like_num(self):

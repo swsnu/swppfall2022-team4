@@ -1,12 +1,17 @@
 import client from './client';
+import { postIdentifyingRequestType } from './post';
 
-export const getPostComment = async (payload: getPostCommentRequestType) => {
+export type commentIdentifyingRequestType = {
+  comment_id: string;
+};
+
+export const getPostComment = async (payload: postIdentifyingRequestType) => {
   const response = await client.get<getPostCommentResponseType>(`/api/post/${payload.post_id}/comment/`);
   return response.data;
 };
 
 export type Comment = {
-  id: number;
+  id: string;
   author_name: string;
   content: string;
   created: string;
@@ -18,10 +23,6 @@ export type Comment = {
   editActive?: boolean;
   liked?: boolean;
   disliked?: boolean;
-};
-
-export type getPostCommentRequestType = {
-  post_id: string;
 };
 
 export type getPostCommentResponseType = {
@@ -41,20 +42,12 @@ export type createCommentRequestType = {
 };
 
 export type createCommentReplyType = {
-  parent_comment: number;
+  parent_comment: string;
 };
 
-export type editToggleActionType = {
-  comment_id: number;
-};
-
-export const deleteComment = async (payload: deleteCommentRequestType) => {
+export const deleteComment = async (payload: commentIdentifyingRequestType) => {
   const response = await client.delete(`/api/comment/${payload.comment_id}/`);
   return response.data;
-};
-
-export type deleteCommentRequestType = {
-  comment_id: string;
 };
 
 export const editComment = async (payload: editCommentRequestType) => {
@@ -63,7 +56,7 @@ export const editComment = async (payload: editCommentRequestType) => {
 };
 
 export type editCommentRequestType = {
-  comment_id: number;
+  comment_id: string;
   content: string;
 };
 
@@ -73,6 +66,6 @@ export const commentFunc = async (payload: commentFuncRequestType) => {
 };
 
 export type commentFuncRequestType = {
-  comment_id: number;
+  comment_id: string;
   func_type: string;
 };

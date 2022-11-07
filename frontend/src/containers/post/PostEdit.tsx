@@ -3,13 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router';
-import { PostEditorLayout, TagVisual } from './PostEditorLayout';
+import { PostEditorLayout } from './PostEditorLayout';
+import { TagVisual } from 'store/apis/tag';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
+  const [primeTag, setPrimeTag] = useState<TagVisual | null>(null);
 
   const post = useSelector(({ post }: RootState) => post.postDetail.post);
   const postEditStatus = useSelector(({ post }: RootState) => post.postEdit);
@@ -27,6 +29,7 @@ const PostEdit = () => {
       setTitle(post.title);
       setContent(post.content);
       setSelectedTags(post.tags);
+      setPrimeTag(post.prime_tag);
     }
   }, [post]);
   useEffect(() => {
@@ -52,6 +55,7 @@ const PostEdit = () => {
           title: title,
           content: content,
           tags: selectedTags,
+          prime_tag: primeTag,
         }),
       );
     }
@@ -65,6 +69,8 @@ const PostEdit = () => {
     confirmOnClick,
     selectedTags,
     setSelectedTags,
+    primeTag,
+    setPrimeTag,
   );
 };
 

@@ -6,6 +6,10 @@ class TagClass(AbstractTimeStampedModel):
     class_name = models.CharField(max_length=10)
     color = models.CharField(max_length=7)
 
+    def __str__(self):
+        """To string method"""
+        return str(self.class_name)
+
 
 class Tag(AbstractTimeStampedModel):
     tag_name = models.CharField(max_length=10)

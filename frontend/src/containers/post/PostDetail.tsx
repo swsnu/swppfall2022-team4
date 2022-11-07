@@ -9,18 +9,11 @@ import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { Comment } from 'store/apis/comment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
-import Loading from 'components/common/Loading';
+import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
-
-interface IPropsColorButton {
-  color?: string;
-}
-
-interface IPropsCommentSubmitBtn {
-  disabled?: boolean;
-  isActive?: boolean;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-}
+import 'styles/color.css';
+import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
+import { TagBubble } from 'components/tag/tagbubble';
 
 interface IPropsComment {
   isChild?: boolean;
@@ -300,14 +293,13 @@ const PostDetail = () => {
                 value={commentReplyInput}
                 onChange={e => setCommentReplyInput(e.target.value)}
               ></CommentInput>
-              <CommentSubmitBtn
-                isActive={commentReplyInput !== ''}
+              <GreenCommentSubmitBtn
                 disabled={commentReplyInput === ''}
                 onClick={commentCreateOnClick}
                 data-parent_comment={comment.id}
               >
                 작성
-              </CommentSubmitBtn>
+              </GreenCommentSubmitBtn>
             </CommentReplyForm>
           )}
         </CommentReplyFormWrapper>
@@ -359,7 +351,11 @@ const PostDetail = () => {
               <TagBubbleWrapper>
                 {post.tags.map(tags => {
                   return (
-                    <TagBubble key={tags.id} color={tags.color}>
+                    <TagBubble
+                      key={tags.id}
+                      color={tags.color}
+                      isPrime={post.prime_tag && tags.id === post.prime_tag.id}
+                    >
                       {tags.name}
                     </TagBubble>
                   );
@@ -375,29 +371,28 @@ const PostDetail = () => {
                 value={commentInput}
                 onChange={e => setCommentInput(e.target.value)}
               ></CommentInput>
-              <CommentSubmitBtn
-                isActive={commentInput !== ''}
+              <GreenCommentSubmitBtn
                 disabled={commentInput === ''}
                 onClick={commentCreateOnClick}
                 data-parent_comment={null}
               >
                 작성
-              </CommentSubmitBtn>
+              </GreenCommentSubmitBtn>
             </CommentForm>
           </ArticleCommentWrapper>
         </ArticleItem>
       ) : (
-        <Loading />
+        <LoadingWithoutMinHeight />
       )}
     </ArticleDetailWrapper>
   );
-  const CreateBtn = <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>;
+  const CreateBtn = <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
     user?.username == post?.author_name ? (
       <PostPanelWrapper>
         {CreateBtn}
-        <CreatePostBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</CreatePostBtn>
-        <CreatePostBtn onClick={deleteOnClick}>글 삭제</CreatePostBtn>
+        <BlueBigBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</BlueBigBtn>
+        <BlueBigBtn onClick={deleteOnClick}>글 삭제</BlueBigBtn>
       </PostPanelWrapper>
     ) : (
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
@@ -419,21 +414,8 @@ const TagBubbleWrapper = styled.div`
     display: none;
   }
 `;
-const TagBubble = styled.button<IPropsColorButton>`
-  height: 20px;
-  width: fit-content;
-  border-radius: 25px;
-  padding: 1px 12px;
-  border: none;
-  white-space: nowrap;
-  margin: 1px 3px;
-  ${({ color }) =>
-    color &&
-    `
-      background: ${color};
-    `}
-`;
 const ArticleBodyFooter = styled.div`
+  padding: 10px 20px;
   display: flex;
   justify-content: flex-start;
   width: 100%;
@@ -443,12 +425,22 @@ const ArticleDetailWrapper = styled.div`
   border: 1px solid black;
   width: 100%;
   height: 100%;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
   position: relative;
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
   }
+
+  /* Scroll Shadow */
+  background-image: linear-gradient(to top, white, white), linear-gradient(to top, white, white),
+    linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));
+  background-position: bottom center, top center, bottom center, top center;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
+  background-attachment: local, local, scroll, scroll;
 `;
 
 const SideBarItem = styled.div`
@@ -458,7 +450,7 @@ const SideBarItem = styled.div`
 `;
 
 const ArticleBody = styled.div`
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   font-size: 14px;
   width: 100%;
   height: 80%;
@@ -470,10 +462,10 @@ const ArticleBody = styled.div`
 `;
 
 const ArticleItem = styled.div`
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   font-size: 14px;
   width: 100%;
-  height: 100%;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -486,7 +478,9 @@ const ArticleItem = styled.div`
 // Article Title
 const ArticleTitleWrapper = styled.div`
   width: 100%;
-  height: 50px;
+  padding: 5px 40px 0px 40px;
+  background-color: var(--fit-white);
+  height: fit-content;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -545,47 +539,18 @@ const ArticleBodyContent = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  /* min-height: 360px; */
+  padding: 10px 20px;
+  min-height: 360px;
 `;
 
 // Article Comment List
 const ArticleCommentWrapper = styled.div`
   width: 100%;
-  background-color: #ffffff;
 `;
 
 const CommentWrapper = styled.div`
   width: 100%;
-  background-color: #ffffff;
-`;
-
-const CommentGreenBtn = styled.button`
-  padding: 4px 8px;
-  font-size: 10px;
-  background-color: #54dd6d;
-  border: none;
-  border-radius: 4px;
-  margin: 0px 4px;
-  margin-right: 4px;
-  cursor: pointer;
-  :disabled {
-    cursor: default;
-  }
-`;
-
-const CommentRedBtn = styled.button`
-  padding: 4px 8px;
-  font-size: 10px;
-  background-color: #dd5454;
-  border: none;
-  border-radius: 4px;
-  margin: 0px 4px;
-  margin-right: 4px;
-  color: #dddddd;
-  cursor: pointer;
-  :disabled {
-    cursor: default;
-  }
+  padding: 0px 20px;
 `;
 
 const CommentReplyWrapper = styled.div`
@@ -717,15 +682,16 @@ const CommentContent = styled.span`
 // Comment Writing Form
 const CommentForm = styled.div`
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+  padding: 10px 20px;
 `;
 
 const CommentReplyForm = styled.div`
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--fit-white);
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
@@ -741,40 +707,11 @@ const CommentInput = styled.input`
   padding: 10px 12px;
 `;
 
-const CommentSubmitBtn = styled.button<IPropsCommentSubmitBtn>`
-  width: 10%;
-  padding: 10px 6px;
-  background-color: #dddddd;
-  border: none;
-  margin-left: 5px;
-  &:disabled {
-  }
-  cursor: pointer;
-
-  ${({ isActive }) =>
-    isActive &&
-    `
-    background: #8ee5b9;
-  `}
-`;
-
 const PostPanelWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const CreatePostBtn = styled.button`
-  padding: 8px 20px;
-  width: 100%;
-  border: none;
-  background-color: #35c9ea;
-  font-size: 15px;
-  margin-bottom: 10px;
-  &:hover {
-    background-color: #45d9fa;
-  }
 `;
 
 export default PostDetail;

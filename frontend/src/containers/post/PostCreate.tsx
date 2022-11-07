@@ -3,12 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { useNavigate } from 'react-router';
-import { PostEditorLayout, TagVisual } from './PostEditorLayout';
+import { PostEditorLayout } from './PostEditorLayout';
+import { TagVisual } from 'store/apis/tag';
+import { tagActions } from 'store/slices/tag';
 
 const PostCreate = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
+  const [primeTag, setPrimeTag] = useState<TagVisual | null>(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,6 +26,7 @@ const PostCreate = () => {
     if (postCreateStatus.status) {
       navigate(`/post/${postCreateStatus.post_id}`);
       dispatch(postActions.stateRefresh());
+      dispatch(tagActions.clearTagState());
     }
   }, [postCreateStatus]);
   const confirmOnClick = () => {
@@ -33,6 +37,7 @@ const PostCreate = () => {
           content: content,
           author_name: user.username,
           tags: selectedTags,
+          prime_tag: primeTag,
         }),
       );
     }
@@ -46,6 +51,8 @@ const PostCreate = () => {
     confirmOnClick,
     selectedTags,
     setSelectedTags,
+    primeTag,
+    setPrimeTag,
   );
 };
 

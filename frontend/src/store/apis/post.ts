@@ -1,5 +1,10 @@
-import { TagVisual } from 'containers/post/PostEditorLayout';
 import client from './client';
+import { TagVisual } from './tag';
+
+// Used in createPostRequest, deletePostRequest, getPostComment
+export type postIdentifyingRequestType = {
+  post_id: string;
+};
 
 export const getPosts = async (payload: getPostsRequestType) => {
   let response;
@@ -16,7 +21,7 @@ export const getPosts = async (payload: getPostsRequestType) => {
 };
 
 export type Post = {
-  id: number;
+  id: string;
   title: string;
   author_name: string;
   content: string;
@@ -27,6 +32,7 @@ export type Post = {
   scrap_num: number;
   comments_num: number;
   tags: TagVisual[];
+  prime_tag: TagVisual;
   liked?: boolean;
   disliked?: boolean;
   scraped?: boolean;
@@ -55,6 +61,7 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
   tags: TagVisual[];
+  prime_tag: TagVisual | null;
 };
 
 export const getPostDetail = async (payload: postIdentifyingRequestType) => {
@@ -77,11 +84,7 @@ export type editPostRequestType = {
   title: string;
   content: string;
   tags: TagVisual[];
-};
-
-// Used in createPostRequest, deletePostRequest
-export type postIdentifyingRequestType = {
-  post_id: string;
+  prime_tag: TagVisual | null;
 };
 
 export const postFunc = async (payload: postFuncRequestType) => {

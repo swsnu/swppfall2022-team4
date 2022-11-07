@@ -8,6 +8,10 @@ import { timeAgoFormat } from 'utils/datetime';
 import { useNavigate } from 'react-router';
 import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { tagActions } from 'store/slices/tag';
+import { BlueBigBtn } from 'components/post/button';
+import { TagBubbleCompact } from 'components/tag/tagbubble';
+import { articleItemGrid } from 'components/post/layout';
+import { LoadingWithoutMinHeight } from 'components/common/Loading';
 
 interface IPropsPageIndicator {
   isActive?: boolean;
@@ -36,7 +40,7 @@ const PostMain = () => {
   const SideBar = (
     <SideBarWrapper>
       <PostPanelWrapper>
-        <CreatePostBtn onClick={() => navigate('/post/create')}>글 쓰기</CreatePostBtn>
+        <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
       </PostPanelWrapper>
       <SideBarItem>태그 목록</SideBarItem>
       <SideBarItem>사이드바 공간2</SideBarItem>
@@ -55,7 +59,11 @@ const PostMain = () => {
         postList.map((post, id) => {
           return (
             <ArticleItem key={id} onClick={() => navigate(`/post/${post.id}`)}>
-              <span>NONE</span>
+              {post.prime_tag ? (
+                <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
+              ) : (
+                <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
+              )}
               <span>
                 {post.title} <span>[{post.comments_num}]</span>
               </span>
@@ -66,7 +74,7 @@ const PostMain = () => {
           );
         })
       ) : (
-        <span></span>
+        <LoadingWithoutMinHeight />
       )}
       <ArticleFooter>
         <PageNumberIndicator isActive={page >= 2} onClick={() => setPage(1)}>
@@ -116,15 +124,6 @@ const ArticleListWrapper = styled.div`
   position: relative;
 `;
 
-const ArticleHeader = styled.div`
-  padding: 10px 20px;
-  font-size: 14px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid black;
-`;
 const ArticleFooter = styled.div`
   padding: 10px 20px;
   font-size: 16px;
@@ -136,38 +135,35 @@ const ArticleFooter = styled.div`
   position: absolute;
   bottom: 0px;
 `;
-const ArticleItem = styled.div`
-  padding: 10px 20px;
+
+const ArticleHeader = styled(articleItemGrid)`
+  padding: 10px 10px 10px 10px;
   font-size: 14px;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  border-bottom: 1px solid black;
+`;
+
+const ArticleItem = styled(articleItemGrid)`
+  padding: 8px 10px 8px 10px;
+  font-size: 14px;
+  width: 100%;
   border-bottom: 1px solid black;
   cursor: pointer;
 `;
+
 const SideBarItem = styled.div`
   margin-top: 15px;
   width: 100%;
   height: 40%;
 `;
+
 const PostPanelWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
-const CreatePostBtn = styled.button`
-  padding: 8px 20px;
-  width: 100%;
-  border: none;
-  background-color: #35c9ea;
-  font-size: 15px;
-  margin-bottom: 10px;
-  &:hover {
-    background-color: #45d9fa;
-  }
-`;
+
 const PageNumberIndicator = styled.span<IPropsPageIndicator>`
   margin: 0px 5px;
   ${({ isActive }) =>
