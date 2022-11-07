@@ -23,6 +23,7 @@ export type Comment = {
   editActive?: boolean;
   liked?: boolean;
   disliked?: boolean;
+  post_id: string;
 };
 
 export type getPostCommentResponseType = {

@@ -145,7 +145,9 @@ def post_detail(request, query_id):
             post_obj.title = data["title"]
             post_obj.content = data["content"]
             tags = data["tags"]
-            post_obj.prime_tag = Tag.objects.get(pk=data["prime_tag"]["id"])
+            post_obj.prime_tag = (
+                Tag.objects.get(pk=data["prime_tag"]["id"]) if data["prime_tag"] else None
+            )
             post_obj.tags.clear()
             for tag in tags:
                 tag = Tag.objects.get(pk=tag["id"])

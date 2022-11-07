@@ -15,11 +15,11 @@ import 'styles/color.css';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
 
-interface IPropsComment {
+export interface IPropsComment {
   isChild?: boolean;
 }
 
-const FuncBtnStatus = {
+export const FuncBtnStatus = {
   None: 'None',
   Like: 'Like',
   Dislike: 'Dislike',
@@ -548,7 +548,7 @@ const ArticleCommentWrapper = styled.div`
   width: 100%;
 `;
 
-const CommentWrapper = styled.div`
+export const CommentWrapper = styled.div`
   width: 100%;
   padding: 0px 20px;
 `;
@@ -611,7 +611,7 @@ const CommentRightWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const CommentFuncWrapper = styled.div`
+export const CommentFuncWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -631,7 +631,7 @@ const handleFuncBtnColor = (color: string) => {
       return '#dddddd';
   }
 };
-const CommentFuncBtn = styled.div<IPropsFuncBtn>`
+export const CommentFuncBtn = styled.div<IPropsFuncBtn>`
   color: ${({ color }) => handleFuncBtnColor(color)};
   cursor: pointer;
   margin-left: 8px;
@@ -641,7 +641,7 @@ const CommentFuncBtnWrapper = styled.div`
   margin-left: 12px;
 `;
 
-const CommentFuncTimeIndicator = styled.span`
+export const CommentFuncTimeIndicator = styled.span`
   font-size: 12px;
   text-align: right;
   margin-left: 12px;
@@ -655,14 +655,14 @@ const CommentNumIndicator = styled.span`
   white-space: nowrap;
   /* margin: 0px 5px; */
 `;
-const CommentFuncNumIndicator = styled.span`
+export const CommentFuncNumIndicator = styled.span`
   font-size: 12px;
   margin-left: 8px;
   min-width: 15px;
   /* margin: 0px 5px; */
 `;
 
-const CommentContentWrapper = styled.div`
+export const CommentContentWrapper = styled.div`
   width: 100%;
   margin-top: 5px;
   text-align: left;
@@ -675,7 +675,7 @@ const CommentEditInput = styled.input`
   margin-bottom: 6px;
 `;
 
-const CommentContent = styled.span`
+export const CommentContent = styled.span`
   text-align: left;
 `;
 

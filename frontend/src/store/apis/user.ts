@@ -35,6 +35,11 @@ export const signout = async (username: string) => {
   return response.data;
 };
 
+export const getProfileContent = async (username: string) => {
+  const response = await client.get<profileType>(`/api/user/profile/${username}/content/`);
+  return response.data;
+};
+
 export type userType = {
   username: string;
   nickname: string;
