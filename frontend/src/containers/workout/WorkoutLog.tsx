@@ -706,8 +706,8 @@ const AnyButton = styled.button`
 const RightWrapper = styled.div`
   width: 60%;
   height: 100%;
-  min-width: 720px;
-  max-width: 720px;
+  min-width: 680px;
+  max-width: 680px;
   margin-right: 30px;
   display: flex;
   justify-content: center;
@@ -780,7 +780,7 @@ const LogInputBody_input = styled.div`
   width: 100%;
   height: 80%;
   display: flex;
-  min-height: 8vh;
+  min-height: 60px;
   font-weight: normal;
 `;
 
@@ -802,7 +802,7 @@ const WorkoutTypeInput = styled.input`
 const LogInputBody_button = styled.div`
   width: 100%;
   height: 20%;
-  min-height: 2vh;
+  min-height: 40px;
   display: flex;
   justify-content: end;
   font-weight: normal;
@@ -811,7 +811,7 @@ const LogInputBody_button = styled.div`
 const LogInputBody = styled.div`
   width: 100%;
   height: 10%;
-  min-height: 10vh;
+  max-height: 90px;
   display: flex;
   flex-direction: column;
   font-weight: normal;

@@ -24,6 +24,9 @@ const Routine = () => {
     user_id: 1,
   };
 
+  const routines = useSelector((rootState: RootState) => rootState.workout_log.routine);
+  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine);
+
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
   }, []);
@@ -32,10 +35,8 @@ const Routine = () => {
     if (routine_id !== -1) {
       dispatch(workoutLogActions.getSpecificRoutine({ user_id: 1, routine_id: routine_id }));
     }
-  }, [routine_id]);
-
-  const routines = useSelector((rootState: RootState) => rootState.workout_log.routine);
-  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine);
+  }, [routine_id, routines]);
+  
   console.log(routines);
   console.log(selected_routine);
 
@@ -278,6 +279,7 @@ const LogWrapper = styled.div`
   height: 100%;
   min-height: 80vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: start;
   align-items: start;
 `;
