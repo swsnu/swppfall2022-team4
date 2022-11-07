@@ -456,19 +456,22 @@ const InnerWrapper = styled.div`
 const LeftWrapper = styled.div`
   width: 40%;
   height: 92vh;
+  min-width: 480px;
+  max-width: 480px;
   margin-left: 30px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: start;
 `;
 
 const CalendarWrapper = styled.div`
   width: 100%;
   height: 80%;
-  min-height: 50vh;
-  max-height: 50vh;
-  min-width: 40vw;
+  min-height: 500px;
+  max-height: 500px;
+  min-width: 480px;
+  max-width: 480px;
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
@@ -562,7 +565,7 @@ const Day = styled.div`
   }
 
   &&.future_day {
-    color: #818281;
+    font-weight: bold;
   }
 `;
 
@@ -601,12 +604,17 @@ const DayContent = styled.div`
     color: black;
     font-weight: bold;
   }
+
+  &&.future_day {
+    font-weight: bold;
+    color: #A9A9A9;
+  }
 `;
 
 const MemoWrapper = styled.div`
   width: 100%;
   height: 20%;
-  min-height: 30vh;
+  min-height: 200px;
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
@@ -614,15 +622,15 @@ const MemoWrapper = styled.div`
 
 const MemoEditButton = styled.img`
   display: flex;
-  height: 50%;
+  height: 75%;
   margin-left: 3px;
   align-items: center;
   justify-content: center;
 `;
 
 const MemoInput = styled.input`
-  width: 80%;
-  height: 100%;
+  width: 400px;
+  height: 50%;
   padding: 8px 20px;
   font-size: 10px;
 `;
@@ -630,7 +638,7 @@ const MemoInput = styled.input`
 const MemoTitleWrapper = styled.div`
   display: flex;
   margin: 10px;
-  height: 20%;
+  height: 10%;
   width: 90%;
   font-family: IBMPlexSansThaiLooped;
   font-size: 20px;
@@ -698,7 +706,8 @@ const AnyButton = styled.button`
 const RightWrapper = styled.div`
   width: 60%;
   height: 100%;
-  min-height: 92vh;
+  min-width: 680px;
+  max-width: 680px;
   margin-right: 30px;
   display: flex;
   justify-content: center;
@@ -771,7 +780,7 @@ const LogInputBody_input = styled.div`
   width: 100%;
   height: 80%;
   display: flex;
-  min-height: 8vh;
+  min-height: 60px;
   font-weight: normal;
 `;
 
@@ -793,7 +802,7 @@ const WorkoutTypeInput = styled.input`
 const LogInputBody_button = styled.div`
   width: 100%;
   height: 20%;
-  min-height: 2vh;
+  min-height: 40px;
   display: flex;
   justify-content: end;
   font-weight: normal;
@@ -802,7 +811,7 @@ const LogInputBody_button = styled.div`
 const LogInputBody = styled.div`
   width: 100%;
   height: 10%;
-  min-height: 10vh;
+  max-height: 90px;
   display: flex;
   flex-direction: column;
   font-weight: normal;
