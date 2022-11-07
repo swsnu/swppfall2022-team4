@@ -11,33 +11,45 @@ export interface IProps {
 export const MemberElement = (props: IProps) => {
   return (
     <MemberElementWrapper>
-      <MemberElementLine>{props.image}</MemberElementLine>
-      <MemberElementLine>{props.username} 님은</MemberElementLine>
-      <MemberElementLine>{props.cert_days} 일째 진행중입니다. </MemberElementLine>
-      <MemberElementLine>level: {props.level}</MemberElementLine>
+      <ProfileImage src={process.env.REACT_APP_API_IMAGE + props.image} alt="profile" />
+      <MemberElementLineWrapper>
+        <MemberElementLine style={{ fontWeight: '600' }}>{props.username}</MemberElementLine>
+        {/* <MemberElementLine>{props.cert_days}</MemberElementLine> */}
+        <MemberElementLine>Level: {props.level}</MemberElementLine>
+      </MemberElementLineWrapper>
     </MemberElementWrapper>
   );
 };
 
 const MemberElementWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  min-height: 10vh;
+  width: 300px;
+  height: 120px;
+  background-color: aliceblue;
+  margin: 10px 0;
+
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  border-bottom: 1px solid black;
-  font-weight: normal;
-  flex-direction: column;
+
+  border-radius: 15px;
+  background-color: #e4fff1;
+  box-shadow: 1px 1px 1px 1px #d4eee0;
+  padding: 15px;
+`;
+const ProfileImage = styled.img`
+  width: 80px;
+  height: 80px;
+  border: 2px solid #00000032;
+  border-radius: 10px;
+  margin-right: 15px;
 `;
 
-const MemberElementLine = styled.div`
-  width: 10%;
-  height: 20px;
-  font-size: 10px;
+const MemberElementLineWrapper = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+`;
+const MemberElementLine = styled.div`
+  font-size: 18px;
   font-family: IBMPlexSansThaiLooped;
-  color: black;
 `;

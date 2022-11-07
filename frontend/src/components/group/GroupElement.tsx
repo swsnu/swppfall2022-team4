@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { useNavigate } from 'react-router';
 
 export interface IProps {
   id: number;
@@ -8,60 +7,58 @@ export interface IProps {
   start_date: string | null;
   end_date: string | null;
   member_number: number;
+  clicked: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export const GroupElement = (props: IProps) => {
-  const navigate = useNavigate();
   return (
-    <GroupElementWrapper>
+    <GroupElementWrapper onClick={props.clicked}>
       <LogImage src={require('assets/images/workout_log/fitelement_category/example.png')} />
-      <GroupElementLine>이미지 삽입 todo</GroupElementLine>
-      <GroupElementLine>그룹명 : {props.group_name}</GroupElementLine>
+      <GroupElementLine style={{ fontSize: '24px', marginBottom: '15px' }}>{props.group_name}</GroupElementLine>
       <GroupElementLine>최대인원 : {props.number ?? '제한없음'}</GroupElementLine>
       <GroupElementLine>현재인원 : {props.member_number}</GroupElementLine>
       <GroupElementLine>시작일 : {props.start_date ?? '기한없음'}</GroupElementLine>
       <GroupElementLine>마감일 : {props.end_date ?? '기한없음'}</GroupElementLine>
-      <GroupDetailBtn onClick={() => navigate(`/group/detail/${props.id}/`)}>자세히 보기</GroupDetailBtn>
     </GroupElementWrapper>
   );
 };
 
 const GroupElementWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  min-height: 10vh;
+  width: calc(33.3% - 20px);
+  height: 270px;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  border-bottom: 1px solid black;
-  font-weight: normal;
   flex-direction: column;
-`;
+  align-items: center;
+  margin: 10px;
+  border-radius: 15px;
+  background-color: #e4fff1;
+  box-shadow: 1px 1px 1px 1px #d4eee0;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  &:hover {
+    background-color: #c4fade;
+  }
+  padding: 15px 0;
+  font-size: 16px;
 
+  @media all and (max-width: 800px) {
+    width: calc(50% - 20px);
+  }
+  @media all and (max-width: 500px) {
+    width: 100%;
+  }
+`;
+const LogImage = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  border: 2px solid #6ab18d;
+  margin-bottom: 15px;
+`;
 const GroupElementLine = styled.div`
   width: 70%;
   height: 20px;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: IBMPlexSansThaiLooped;
-  color: black;
-`;
-
-const LogImage = styled.img`
-  width: 8%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const GroupDetailBtn = styled.button`
-  width: 70px;
-  height: 30px;
-  margin: 5px;
-  background-color: #d7efe3;
-  border-radius: 15px;
-  font-size: 10px;
-  cursor: pointer;
+  font-family: Acme;
+  text-align: center;
+  margin: 3px 0;
 `;

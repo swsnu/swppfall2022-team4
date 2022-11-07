@@ -5,6 +5,7 @@ import reset from 'styled-reset';
 import FugazOne from 'assets/fonts/FugazOne.ttf';
 import IBMPlexSansThaiLooped from 'assets/fonts/IBMPlexSansThaiLooped.ttf';
 import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
+import Acme from 'assets/fonts/Acme.ttf';
 
 import Header from 'components/sections/Header';
 import Footer from 'components/sections/Footer';
@@ -91,6 +92,10 @@ const GlobalStyles = createGlobalStyle`
   @font-face { 
     font-family: NanumSquareR;
     src: url(${NanumSquareR}) format("truetype");
+  }
+  @font-face { 
+    font-family: Acme;
+    src: url(${Acme}) format("truetype");
   }
 `;
 
