@@ -7,5 +7,5 @@ urlpatterns = [
     path('<int:year>/<int:month>/', views.get_calendar_info, name='calendar_info'),
     path('routine/', views.routines, name='routines'),
     path('routine/<int:routine_id>/', views.routine, name='routine'),
-    path('dailylog/<int:year>/<int:month>/<int:date>/', views.daily_log, name='daily_log')
+    path('dailylog/<int:year>/<int:month>/<int:specific_date>/', views.daily_log, name='daily_log')
 ]

@@ -25,6 +25,7 @@ import PostEdit from 'containers/post/PostEdit';
 import PostDetail from 'containers/post/PostDetail';
 
 import WorkoutLog from 'containers/workout/WorkoutLog';
+import Routine from 'containers/workout/Routine';
 import InformationLobby from 'containers/information/InformationLobby';
 
 import GroupList from 'containers/group/GroupList';
@@ -136,6 +137,7 @@ const InsideComponent = () => {
               </Route>
 
               <Route path="workout" element={<WorkoutLog />} />
+              <Route path="routine" element={<Routine />} />
 
               <Route path="group/*">
                 <Route path="" element={<GroupList />} />

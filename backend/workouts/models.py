@@ -24,6 +24,7 @@ class FitElement(models.Model):
 
 class DailyLog(models.Model):
     """ daily log definition """
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='daily_log')
     date = models.DateField(null=False)
     memo = models.TextField(null=True)
     fit_element = models.ManyToManyField(FitElement, blank=True)

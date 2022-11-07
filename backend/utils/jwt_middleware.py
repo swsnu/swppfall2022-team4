@@ -5,12 +5,14 @@ from django.core.exceptions import PermissionDenied
 from jwt.exceptions import ExpiredSignatureError
 from users.models import User
 
+
 def decode_jwt(access_token):
     return jwt.decode(
         access_token,
         os.environ.get("JWT_SECRET"),
         os.environ.get("ALGORITHM")
     )
+
 
 class JsonWebTokenMiddleWare:
 
