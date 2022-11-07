@@ -14,7 +14,7 @@ export type TagClass = {
   id: number;
   class_name: string;
   color: string;
-  tags: Tag[];
+  tags: TagVisual[];
 };
 
 export type TagVisual = {

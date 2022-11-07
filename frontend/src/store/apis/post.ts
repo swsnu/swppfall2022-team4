@@ -51,6 +51,11 @@ export type getPostsResponseType = {
   posts: Post[];
 };
 
+export const getRecentCommentPosts = async () => {
+  const response = await client.get(`/api/comment/recent/`);
+  return response.data;
+};
+
 export const createPost = async (payload: createPostRequestType) => {
   const response = await client.post<postIdentifyingRequestType>(`/api/post/`, payload);
   return response.data;

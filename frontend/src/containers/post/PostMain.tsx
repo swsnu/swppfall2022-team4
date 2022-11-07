@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router';
 import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { tagActions } from 'store/slices/tag';
 import { BlueBigBtn } from 'components/post/button';
-import { TagBubbleCompact } from 'components/tag/tagbubble';
+import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
 import { articleItemGrid } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 
@@ -25,7 +25,8 @@ const PostMain = () => {
   const postList = useSelector((rootState: RootState) => rootState.post.postList.posts);
   const maxPage = useSelector((rootState: RootState) => rootState.post.postList.pageTotal);
   const searchKeyword = useSelector((rootState: RootState) => rootState.post.postSearch);
-  // const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
+  const recentCommentPost = useSelector((rootState: RootState) => rootState.post.recentCommentPosts.comments);
+  const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
   useEffect(() => {
     const defaultPageConfig: getPostsRequestType = {
       pageNum: page,
@@ -33,21 +34,81 @@ const PostMain = () => {
       searchKeyword: searchKeyword ? searchKeyword : undefined,
     };
     dispatch(postActions.getPosts(defaultPageConfig));
+    dispatch(postActions.getRecentCommentPosts());
   }, [page, searchKeyword]);
   useEffect(() => {
     dispatch(tagActions.getTags());
   }, []);
+  const SideBarTitle = styled.span`
+    font-size: 18px;
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid gray;
+    padding-bottom: 5px;
+    margin-bottom: 8px;
+  `;
+  const SideBarCommentItem = styled.div`
+    width: 100%;
+    padding: 3px 8px 3px 6px;
+    margin-bottom: 3px;
+    cursor: pointer;
+  `;
+  const SideBarContentWrapper = styled.div`
+    width: 100%;
+  `;
+  const SideBarCommentTitle = styled.span`
+    font-size: 14px;
+    margin-right: 5px;
+  `;
+  const SideBarCommentTime = styled.span`
+    font-size: 8px;
+  `;
+  const TagBubbleWrapper = styled.div`
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+    padding: 8px 5px;
+  `;
   const SideBar = (
     <SideBarWrapper>
       <PostPanelWrapper>
         <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
       </PostPanelWrapper>
-      {/* <SideBarItem>태그 목록</SideBarItem>
       <SideBarItem>
-        <span>최근 댓글이 달린 글</span>
-      </SideBarItem> */}
+        <SideBarTitle>태그 목록</SideBarTitle>
+        <TagBubbleWrapper>
+          {tagList &&
+            tagList.map(
+              tagCategory =>
+                tagCategory.tags &&
+                tagCategory.tags.map(
+                  (tag, index) =>
+                    index <= 5 && <div key={tag.id}>{<TagBubble color={tag.color}>{tag.name}</TagBubble>}</div>,
+                ),
+            )}
+          ...
+        </TagBubbleWrapper>
+      </SideBarItem>
+      <SideBarItem>
+        <SideBarTitle>최근 댓글이 달린 글</SideBarTitle>
+        <SideBarContentWrapper>
+          {recentCommentPost &&
+            recentCommentPost.map(comment => (
+              <SideBarCommentItem onClick={() => navigate(`/post/${comment.post_id}`)}>
+                •
+                <SideBarCommentTitle>
+                  {comment.content.length > 12 ? comment.content.slice(0, 12) + '...' : comment.content}
+                </SideBarCommentTitle>
+                <SideBarCommentTime>{timeAgoFormat(comment.created)}</SideBarCommentTime>
+              </SideBarCommentItem>
+            ))}
+        </SideBarContentWrapper>
+      </SideBarItem>
     </SideBarWrapper>
   );
+
   const MainContent = (
     <ArticleListWrapper>
       <ArticleHeader>
@@ -157,6 +218,12 @@ const SideBarItem = styled.div`
   margin-top: 15px;
   width: 100%;
   height: 40%;
+  background-color: var(--fit-white);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px 0px;
 `;
 
 const PostPanelWrapper = styled.div`

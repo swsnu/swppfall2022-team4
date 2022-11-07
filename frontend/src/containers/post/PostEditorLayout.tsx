@@ -188,7 +188,7 @@ export const PostEditorLayout = (
               .tags.map(tag => {
                 return (
                   <option value={tag.id} key={tag.id}>
-                    {tag.tag_name}
+                    {tag.name}
                   </option>
                 );
               })}
