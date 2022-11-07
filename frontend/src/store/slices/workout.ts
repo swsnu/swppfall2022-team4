@@ -18,7 +18,7 @@ interface WorkoutLogState {
   };
   routine: Array<any>;
   daily_log: {
-    isDailyLog: Boolean;
+    isDailyLog: boolean;
     date: Date | null;
     memo: string | null;
     fit_element: number[] | null;
@@ -39,8 +39,8 @@ interface WorkoutLogState {
   };
   add_fit_elements: {
     fitelements: Array<any>;
-    status: Boolean;
-  }
+    status: boolean;
+  };
 }
 
 const initialState: WorkoutLogState = {
@@ -78,8 +78,8 @@ const initialState: WorkoutLogState = {
   },
   add_fit_elements: {
     fitelements: [],
-    status: false
-  }
+    status: false,
+  },
 };
 
 export const workoutLogSlice = createSlice({
@@ -87,7 +87,9 @@ export const workoutLogSlice = createSlice({
   initialState,
   reducers: {
     /* eslint-disable @typescript-eslint/no-unused-vars */
-    getFitElement: (state, action: PayloadAction<workoutLogAPI.getFitElementRequestType>) => {},
+    getFitElement: (state, action: PayloadAction<workoutLogAPI.getFitElementRequestType>) => {
+      // Empty function
+    },
     getFitElementSuccess: (state, { payload }) => {
       state.workout_log.type = payload.type;
       state.workout_log.workout_type = payload.workout_type;
@@ -99,13 +101,19 @@ export const workoutLogSlice = createSlice({
       state.workout_log.time = payload.time;
       state.workout_log.date = payload.date;
     },
-    createWorkoutLog: (state, action: PayloadAction<workoutLogAPI.createWorkoutLogRequestType>) => {},
+    createWorkoutLog: (state, action: PayloadAction<workoutLogAPI.createWorkoutLogRequestType>) => {
+      // Empty function
+    },
     createWorkoutLogSuccess: (state, { payload }) => {
       state.workoutCreate.workout_id = payload.workout_id;
       state.workoutCreate.status = true;
     },
-    getDailyLog: (state, action: PayloadAction<workoutLogAPI.getDailyLogRequestType>) => {},
-    createDailyLog: (state, action: PayloadAction<workoutLogAPI.createDailyLogRequestType>) => {},
+    getDailyLog: (state, action: PayloadAction<workoutLogAPI.getDailyLogRequestType>) => {
+      // Empty function
+    },
+    createDailyLog: (state, action: PayloadAction<workoutLogAPI.createDailyLogRequestType>) => {
+      // Empty function
+    },
     createDailyLogSuccess: (state, { payload }) => {
       state.dailyLogCreate.dailylog_date = payload.dailylog_date;
       state.dailyLogCreate.status = true;
@@ -117,30 +125,43 @@ export const workoutLogSlice = createSlice({
       state.daily_log.date = payload[0].date;
       state.daily_fit_elements = payload[1];
     },
-    getDailyFitElements: (state, { payload }) => {},
-    editMemo: (state, action: PayloadAction<workoutLogAPI.editMemoRequestType>) => {},
-    getCalendarInfo: (state, action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) => {},
+    getDailyFitElements: (state, { payload }) => {
+      // Empty function
+    },
+    editMemo: (state, action: PayloadAction<workoutLogAPI.editMemoRequestType>) => {
+      // Empty function
+    },
+    getCalendarInfo: (state, action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) => {
+      // Empty function
+    },
     getCalendarInfoSuccess: (state, { payload }) => {
       state.calendar_info = payload;
     },
-    getRoutine: (state, action: PayloadAction<workoutLogAPI.getRoutineRequestType>) => {},
+    getRoutine: (state, action: PayloadAction<workoutLogAPI.getRoutineRequestType>) => {
+      // Empty function
+    },
     getRoutineSuccess: (state, { payload }) => {
       state.routine = payload;
     },
-    getSpecificRoutine: (state, action: PayloadAction<workoutLogAPI.getSpecificRoutineRequestType>) => {},
+    getSpecificRoutine: (state, action: PayloadAction<workoutLogAPI.getSpecificRoutineRequestType>) => {
+      // Empty function
+    },
     getSpecificRoutineSuccess: (state, { payload }) => {
       state.selected_routine.name = payload[0].name;
       state.selected_routine.fitelements = payload[1];
     },
     addFitElements: (state, action: PayloadAction<workoutLogAPI.addFitElementsRequestType>) => {
-      
+      // Empty function
     },
     addFitElementsSuccess: (state, { payload }) => {
       state.add_fit_elements.fitelements = payload;
       state.add_fit_elements.status = true;
     },
-    createRoutineWithFitElements: (state, action: PayloadAction<workoutLogAPI.createRoutineWithFitElementsRequestType>) => {
-      
+    createRoutineWithFitElements: (
+      state,
+      action: PayloadAction<workoutLogAPI.createRoutineWithFitElementsRequestType>,
+    ) => {
+      // Empty function
     },
   },
 });
@@ -209,7 +230,9 @@ function* addFitElementsSaga(action: PayloadAction<workoutLogAPI.addFitElementsR
   } catch (error) {}
 }
 
-function* createRoutineWithFitElementsSaga(action: PayloadAction<workoutLogAPI.createRoutineWithFitElementsRequestType>) {
+function* createRoutineWithFitElementsSaga(
+  action: PayloadAction<workoutLogAPI.createRoutineWithFitElementsRequestType>,
+) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.createRoutineWithFitElements, action.payload);
   } catch (error) {}

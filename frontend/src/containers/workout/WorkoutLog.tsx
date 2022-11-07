@@ -13,7 +13,6 @@ import {
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
 } from 'store/apis/workout';
-import { create } from 'domain';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -136,7 +135,7 @@ const WorkoutLog = () => {
         fitelements: fitelements_id_list,
       };
       dispatch(workoutLogActions.createRoutineWithFitElements(createRoutineConfig));
-  
+
       navigate('/routine');
     }
   };

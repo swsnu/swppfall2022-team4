@@ -176,3 +176,4 @@ cython_debug/
 .env
 env.tar
 dump.rdb
+media/*.jpeg
