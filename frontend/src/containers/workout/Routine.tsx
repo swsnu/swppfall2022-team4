@@ -36,7 +36,7 @@ const Routine = () => {
       dispatch(workoutLogActions.getSpecificRoutine({ user_id: 1, routine_id: routine_id }));
     }
   }, [routine_id, routines]);
-  
+
   console.log(routines);
   console.log(selected_routine);
 

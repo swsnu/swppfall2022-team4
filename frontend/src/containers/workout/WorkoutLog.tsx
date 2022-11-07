@@ -355,8 +355,8 @@ const WorkoutLog = () => {
               <LogHeader>
                 <LogCategory className="type">종류</LogCategory>
                 <LogCategory className="type2">강도</LogCategory>
-                <LogCategory>반복</LogCategory>
-                <LogCategory>세트</LogCategory>
+                <LogCategory className="type2">반복</LogCategory>
+                <LogCategory className="type2">세트</LogCategory>
                 <LogCategory className="type2">시간</LogCategory>
               </LogHeader>
               <LogInputBody>
@@ -374,14 +374,14 @@ const WorkoutLog = () => {
                     onChange={e => setWeight(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
-                    className="type1"
+                    className="type2"
                     type="number"
                     min="0"
                     value={rep || 0}
                     onChange={e => setRep(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
-                    className="type1"
+                    className="type2"
                     type="number"
                     min="0"
                     value={set || 0}
@@ -607,7 +607,7 @@ const DayContent = styled.div`
 
   &&.future_day {
     font-weight: bold;
-    color: #A9A9A9;
+    color: #a9a9a9;
   }
 `;
 
@@ -788,7 +788,7 @@ const WorkoutTypeInput = styled.input`
   width: 40%;
   height: 100%;
   padding: 8px 20px;
-  font-size: 10px;
+  font-size: 14px;
   margin: 7px;
 
   &&.type1 {
