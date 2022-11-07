@@ -17,7 +17,10 @@ const GroupList = () => {
   const groupList = useSelector((rootState: RootState) => rootState.group.groupList.groups);
 
   useEffect(() => {
-    dispatch(groupActions.getGroups(''));
+    dispatch(groupActions.getGroups());
+    return () => {
+      dispatch(groupActions.stateRefresh());
+    };
   }, []);
 
   if (!groupList) return <Loading />;
@@ -60,13 +63,13 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0 50px 0;
+  padding: 40px 0 50px 0;
 `;
 const SearchWrapper = styled.div`
   width: 100%;
   height: 45px;
   border-bottom: 2px solid #646464;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   padding: 5px 10px;
   svg {
     width: 27px;
