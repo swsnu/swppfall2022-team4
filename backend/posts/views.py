@@ -21,7 +21,7 @@ def post_home(request):
     if request.method == "GET":
         query_args = {}
         query_args["page_num"] = max(int(request.GET.get("page", 1)), 1)
-        query_args["page_size"] = max(int(request.GET.get("pageSize", 10)), 10)
+        query_args["page_size"] = max(int(request.GET.get("pageSize", 15)), 15)
         query_args["keyword"] = request.GET.get("search", None)
 
         offset = (query_args["page_num"] - 1) * query_args["page_size"]

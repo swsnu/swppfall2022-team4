@@ -117,8 +117,7 @@ def recent_comment(request):
     GET : get recent comment list.
     """
     try:
-        comments = Comment.objects.order_by("-created")
-        print(comments)
+        comments = Comment.objects.order_by("-created")[0:10]
         proc_comm = list(comments.values())
         for index, _ in enumerate(proc_comm):
             proc_comm[index]["like_num"] = comments[index].get_like_num()
