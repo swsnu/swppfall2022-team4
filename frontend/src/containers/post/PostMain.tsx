@@ -245,11 +245,4 @@ const PageNumberIndicator = styled.span<IPropsPageIndicator>`
   `}
 `;
 
-// const Sidebar1 = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: flex-start;
-//   background-color: var(--fit-white);
-//   height: 60%;
-// `;
 export default PostMain;
