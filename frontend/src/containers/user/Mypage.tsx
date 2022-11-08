@@ -88,7 +88,7 @@ const Mypage = () => {
             />
           )}
         </ProfileEtcWrapper>
-        <EditIcon onClick={() => navigate('/edit_profile')} />
+        <EditIcon onClick={() => navigate('/edit_profile')} data-testid="editProfileIcon" />
       </ProfileWrapper>
 
       <ContentWrapper>
@@ -112,9 +112,6 @@ const Mypage = () => {
           </Category>
           <Category active={type === 4} onClick={() => changeType(4)}>
             스크랩
-          </Category>
-          <Category active={type === 5} onClick={() => changeType(5)}>
-            내 그룹
           </Category>
         </CategoryWrapper>
         <ProfileContentLayout>

@@ -10,13 +10,13 @@ const simpleProfile = {
   username: 'username',
   nickname: 'nickname',
   image: 'image',
-  gender: 'gemder',
+  gender: 'male',
   height: 180,
   weight: 75,
   age: 23,
   exp: 0,
   level: 1,
-  created: 'created',
+  created: '2011-12-11',
 };
 
 const mockNavigate = jest.fn();
