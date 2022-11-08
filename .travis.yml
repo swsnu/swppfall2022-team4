@@ -3,7 +3,7 @@ jobs:
   include:
   - language: python
     node_js: 16
-    python: 3.9.6
+    python: 3.9.5
     addons:
       sonarcloud:
         organization: swsnu

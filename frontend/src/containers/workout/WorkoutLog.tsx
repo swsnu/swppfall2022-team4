@@ -607,7 +607,7 @@ const DayContent = styled.div`
 
   &&.future_day {
     font-weight: bold;
-    color: #A9A9A9;
+    color: #a9a9a9;
   }
 `;
 
