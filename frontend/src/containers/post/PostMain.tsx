@@ -22,10 +22,12 @@ const PostMain = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
 
-  const postList = useSelector((rootState: RootState) => rootState.post.postList.posts);
-  const maxPage = useSelector((rootState: RootState) => rootState.post.postList.pageTotal);
-  const searchKeyword = useSelector((rootState: RootState) => rootState.post.postSearch);
-  const recentCommentPost = useSelector((rootState: RootState) => rootState.post.recentCommentPosts.comments);
+  const { postList, maxPage, searchKeyword, recentCommentPost } = useSelector(({ post }: RootState) => ({
+    postList: post.postList.posts,
+    maxPage: post.postList.pageTotal,
+    searchKeyword: post.postSearch,
+    recentCommentPost: post.recentCommentPosts.comments,
+  }));
   const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
   useEffect(() => {
     const defaultPageConfig: getPostsRequestType = {

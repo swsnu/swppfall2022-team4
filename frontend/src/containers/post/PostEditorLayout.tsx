@@ -37,9 +37,11 @@ export const PostEditorLayout = (
   setPrimeTag: (value: React.SetStateAction<TagVisual | null>) => void,
 ) => {
   const dispatch = useDispatch();
-  const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
-  const tagSearch = useSelector((rootState: RootState) => rootState.tag.tagSearch);
-  const tagCreate = useSelector((rootState: RootState) => rootState.tag.tagCreate);
+  const { tagList, tagSearch, tagCreate } = useSelector(({ tag }: RootState) => ({
+    tagList: tag.tagList,
+    tagSearch: tag.tagSearch,
+    tagCreate: tag.tagCreate,
+  }));
 
   const [tagInput, setTagInput] = useState(''); // Tag creation name input
   const [tagClassInput, setTagClassInput] = useState(''); // Tag Class creation name input
