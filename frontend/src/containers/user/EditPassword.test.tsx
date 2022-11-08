@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
@@ -8,13 +8,12 @@ import EditPassword from './EditPassword';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
-  ...(jest.requireActual('react-router-dom') as any),
+  ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
-  useParams: () => ({ username: 'username' }),
 }));
 const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
-  ...(jest.requireActual('react-redux') as any),
+  ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
 }));
 beforeEach(() => jest.clearAllMocks());
@@ -46,5 +45,29 @@ describe('[EditPassword Page]', () => {
       });
       expect(mockNavigate).toBeCalledTimes(1);
     });
+  });
+
+  test('confirm', () => {
+    const mockAlert = jest.spyOn(global, 'alert').mockImplementation(msg => msg);
+    setup();
+
+    const button = screen.getByText('Update');
+    fireEvent.click(button);
+    expect(mockAlert).toBeCalledTimes(1);
+
+    fireEvent.change(screen.getByPlaceholderText(''), { target: { value: 'password' } });
+    fireEvent.click(button);
+    expect(mockAlert).toBeCalledTimes(2);
+
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password' } });
+    fireEvent.change(screen.getByPlaceholderText('Password Confirm'), { target: { value: 'password' } });
+    fireEvent.click(button);
+    expect(mockDispatch).toBeCalledTimes(1);
+  });
+
+  test('button', () => {
+    setup();
+    fireEvent.click(screen.getByText('Back'));
+    expect(mockNavigate).toBeCalledTimes(1);
   });
 });
