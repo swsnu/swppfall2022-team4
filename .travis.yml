@@ -33,5 +33,5 @@ jobs:
         - coverage run --source='.' manage.py test
         - coverage report
         - coverage xml
-        - COVERALLS_REPO_TOKEN=$coveralls_repo_token coveralls --merge=../frontend/coverage.json
         - cd .. && sonar-scanner
+        - COVERALLS_REPO_TOKEN=$coveralls_repo_token coveralls --merge=./frontend/coverage.json
