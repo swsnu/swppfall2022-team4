@@ -115,7 +115,7 @@ def post_detail(request, query_id):
                 }
 
             post_response = {
-                "group_id": post_obj.pk,
+                "post_id": post_obj.pk,
                 "title": post_obj.title,
                 "author_name": post_obj.author.username,
                 "content": post_obj.content,
