@@ -21,12 +21,12 @@ const simpleProfile = {
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
-  ...(jest.requireActual('react-router-dom') as any),
+  ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }));
 const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
-  ...(jest.requireActual('react-redux') as any),
+  ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
 }));
 beforeEach(() => jest.clearAllMocks());
@@ -101,5 +101,68 @@ describe('[EditProfile Page]', () => {
     const button = screen.getByText('Update');
     fireEvent.click(button);
     expect(mockAlert).toBeCalledTimes(1);
+
+    act(() => {
+      store.dispatch({
+        type: 'user/getProfileSuccess',
+        payload: { ...simpleProfile, gender: '' },
+      });
+    });
+    fireEvent.click(button);
+    expect(mockAlert).toBeCalledTimes(2);
+
+    act(() => {
+      store.dispatch({
+        type: 'user/getProfileSuccess',
+        payload: { ...simpleProfile, height: '' },
+      });
+    });
+    fireEvent.click(button);
+    expect(mockAlert).toBeCalledTimes(3);
+
+    act(() => {
+      store.dispatch({
+        type: 'user/getProfileSuccess',
+        payload: simpleProfile,
+      });
+    });
+    fireEvent.click(button);
+    expect(mockDispatch).toBeCalledTimes(2);
+
+    const nicknameInput = screen.getByPlaceholderText('Nickname');
+    fireEvent.change(nicknameInput, { target: { value: '' } });
+    fireEvent.click(button);
+    expect(mockAlert).toBeCalledTimes(4);
+  });
+
+  test('signout', () => {
+    const mockConfirm = jest.spyOn(window, 'confirm').mockImplementation(() => true);
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'user/getProfileSuccess',
+        payload: simpleProfile,
+      });
+    });
+
+    const button = screen.getByText('회원 탈퇴');
+    fireEvent.click(button);
+    expect(mockConfirm).toBeCalledTimes(1);
+  });
+
+  test('buttons', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'user/getProfileSuccess',
+        payload: simpleProfile,
+      });
+    });
+
+    fireEvent.click(screen.getByText('Back'));
+    expect(mockNavigate).toBeCalledTimes(1);
+
+    fireEvent.click(screen.getByText('비밀번호 변경'));
+    expect(mockNavigate).toBeCalledTimes(2);
   });
 });
