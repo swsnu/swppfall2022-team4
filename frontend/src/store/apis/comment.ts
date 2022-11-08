@@ -70,3 +70,8 @@ export type commentFuncRequestType = {
   comment_id: string;
   func_type: string;
 };
+
+export const getRecentCommentPosts = async () => {
+  const response = await client.get(`/api/comment/recent/`);
+  return response.data;
+};

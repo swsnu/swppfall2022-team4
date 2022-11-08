@@ -222,7 +222,7 @@ function* getPostsSaga(action: PayloadAction<postAPI.getPostsRequestType>) {
 }
 function* getRecentCommentPostsSaga() {
   try {
-    const response: AxiosResponse = yield call(postAPI.getRecentCommentPosts);
+    const response: AxiosResponse = yield call(commentAPI.getRecentCommentPosts);
     yield put(postActions.getRecentCommentPostsSuccess(response));
   } catch (error) {
     // yield put(postActions.getPostsFailure(error));

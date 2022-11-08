@@ -72,7 +72,7 @@ const PostDetail = () => {
   }, [commentNum, commentFuncStatus]);
   useEffect(() => {
     if (postComment) setCommentList(postComment);
-  }, [postComment]);
+  }, [postComment]); // This looks disposable, but it makes the action smoothly.
   useEffect(() => {
     if (postDeleteStatus) {
       navigate('/post');
