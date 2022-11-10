@@ -20,7 +20,7 @@ import {
   CommentFuncNumIndicator,
   CommentFuncTimeIndicator,
   CommentFuncWrapper,
-  FuncBtnStatus,
+  FuncType,
   IPropsComment,
 } from 'containers/post/PostDetail';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -164,11 +164,11 @@ const Mypage = () => {
                           <CommentContent>{comment.content}</CommentContent>
                         </CommentContentWrapper>
                         <CommentFuncWrapper>
-                          <CommentFuncBtn color={comment.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}>
+                          <CommentFuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
                             <FontAwesomeIcon icon={faThumbsUp} />
                           </CommentFuncBtn>
                           <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-                          <CommentFuncBtn color={comment.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}>
+                          <CommentFuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
                             <FontAwesomeIcon icon={faThumbsDown} />
                           </CommentFuncBtn>
                           <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>

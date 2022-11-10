@@ -54,18 +54,6 @@ export const Main_SideWrapper = styled.div`
   margin-bottom: 50px;
 `;
 
-export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element, sideElement: JSX.Element) => (
-  <PostPageWrapper>
-    <PostContentWrapper>
-      <TopElementWrapperWithoutPadding>{topElement}</TopElementWrapperWithoutPadding>
-      <Main_SideWrapper>
-        {mainElement}
-        {sideElement}
-      </Main_SideWrapper>
-    </PostContentWrapper>
-  </PostPageWrapper>
-);
-
 export const SideBarWrapper = styled.div`
   width: 100%;
 `;

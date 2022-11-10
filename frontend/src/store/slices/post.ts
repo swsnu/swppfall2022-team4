@@ -113,6 +113,16 @@ export const postSlice = createSlice({
       state.postDetail.error = payload;
       alert(payload.response?.data.message);
     },
+    updatePostDetail: (state, action: PayloadAction<postAPI.postIdentifyingRequestType>) => {
+      // Empty body : for update minimization.
+    },
+    updatePostDetailSuccess: (state, { payload }) => {
+      state.postDetail.post = payload;
+    },
+    updatePostDetailFailure: (state, { payload }) => {
+      state.postDetail.error = payload;
+      alert(payload.response?.data.message);
+    },
     // deletePost ------------------------------------------------------------------------
     deletePost: (state, action: PayloadAction<postAPI.postIdentifyingRequestType>) => {
       // delete!
@@ -246,6 +256,14 @@ function* getPostDetailSaga(action: PayloadAction<postAPI.postIdentifyingRequest
     yield put(postActions.getPostDetailFailure(error));
   }
 }
+function* updatePostDetailSaga(action: PayloadAction<postAPI.postIdentifyingRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(postAPI.updatePostDetail, action.payload);
+    yield put(postActions.updatePostDetailSuccess(response));
+  } catch (error) {
+    yield put(postActions.updatePostDetailFailure(error));
+  }
+}
 
 function* deletePostSaga(action: PayloadAction<postAPI.postIdentifyingRequestType>) {
   try {
@@ -279,6 +297,7 @@ export default function* postSaga() {
   yield takeLatest(postActions.getRecentCommentPosts, getRecentCommentPostsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
   yield takeLatest(postActions.getPostDetail, getPostDetailSaga);
+  yield takeLatest(postActions.updatePostDetail, updatePostDetailSaga);
   yield takeLatest(postActions.deletePost, deletePostSaga);
   yield takeLatest(postActions.editPost, editPostSaga);
   yield takeLatest(postActions.getPostComment, getPostCommentSaga);

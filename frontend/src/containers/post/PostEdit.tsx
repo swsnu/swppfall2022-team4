@@ -13,8 +13,11 @@ const PostEdit = () => {
   const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
   const [primeTag, setPrimeTag] = useState<TagVisual | null>(null);
 
-  const post = useSelector(({ post }: RootState) => post.postDetail.post);
-  const postEditStatus = useSelector(({ post }: RootState) => post.postEdit);
+  const { post, postEditStatus, user } = useSelector(({ post, user }: RootState) => ({
+    post: post.postDetail.post,
+    postEditStatus: post.postEdit,
+    user: user.user,
+  }));
   useEffect(() => {
     if (id) {
       dispatch(
@@ -40,7 +43,6 @@ const PostEdit = () => {
   }, [postEditStatus]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(({ user }: RootState) => user.user);
 
   const cancelOnClick = () => {
     // alert('are you sure?');

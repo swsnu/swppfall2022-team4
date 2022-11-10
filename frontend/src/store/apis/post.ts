@@ -68,6 +68,10 @@ export const getPostDetail = async (payload: postIdentifyingRequestType) => {
   const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
   return response.data;
 };
+export const updatePostDetail = async (payload: postIdentifyingRequestType) => {
+  const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
+  return response.data;
+};
 
 export const deletePost = async (payload: postIdentifyingRequestType) => {
   const response = await client.delete(`/api/post/${payload.post_id}/`);
