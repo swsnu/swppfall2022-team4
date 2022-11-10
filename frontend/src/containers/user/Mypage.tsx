@@ -96,12 +96,7 @@ const Mypage = () => {
           <Category active={type === 0} onClick={() => changeType(0)}>
             요약
           </Category>
-          <Category
-            active={type === 1}
-            onClick={() => {
-              changeType(1);
-            }}
-          >
+          <Category active={type === 1} onClick={() => changeType(1)}>
             내 글
           </Category>
           <Category active={type === 2} onClick={() => changeType(2)}>
