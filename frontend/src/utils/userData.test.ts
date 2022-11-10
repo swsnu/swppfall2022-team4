@@ -161,7 +161,7 @@ describe('userData', () => {
     });
   });
 
-  describe('userReducer', () => {
+  describe('checkBody', () => {
     global.alert = jest.fn().mockImplementation(() => null);
     expect(checkBody('0', '100', '20')).toBe(false);
     expect(checkBody('100', '0', '20')).toBe(false);

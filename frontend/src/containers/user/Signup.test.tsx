@@ -85,7 +85,7 @@ describe('[Signup Page]', () => {
     expect(mockDispatch).toBeCalledTimes(1);
   });
 
-  test('signup', () => {
+  test('back to login', () => {
     setup();
     fireEvent.click(screen.getByText('Back to Login'));
     expect(mockNavigate).toBeCalledTimes(1);
