@@ -85,27 +85,40 @@ class ImageTestCase(TestCase):
         return client, csrftoken
 
     def test_chatroom(self):
-        client, _ = self.ready()
+        client, csrftoken = self.ready()
 
-        res = client.get('/api/chat/username2/')
-        self.assertEqual(res.status_code, 403)
+        res = client.get('/api/chat/')
+        self.assertEqual(res.status_code, 200)
 
-        res = client.get('/api/chat/username1/')
+        res = client.post(
+            '/api/chat/',
+            {"username": "username2"},
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken
+        )
+        self.assertEqual(res.status_code, 200)
+
+        res = client.post(
+            '/api/chat/',
+            {"username": "username3"},
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken
+        )
         self.assertEqual(res.status_code, 200)
 
     def test_message(self):
         client, _ = self.ready()
 
-        res = client.get('/api/chat/message/999/')
+        res = client.get('/api/chat/999/')
         self.assertEqual(res.status_code, 404)
 
-        res = client.get('/api/chat/message/3/')
+        res = client.get('/api/chat/3/')
         self.assertEqual(res.status_code, 403)
 
-        res = client.get('/api/chat/message/2/')
+        res = client.get('/api/chat/2/')
         self.assertEqual(res.status_code, 200)
         self.assertIn("content2", res.content.decode())
 
-        res = client.get('/api/chat/message/1/')
+        res = client.get('/api/chat/1/')
         self.assertEqual(res.status_code, 200)
         self.assertIn("content1", res.content.decode())

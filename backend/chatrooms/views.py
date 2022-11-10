@@ -55,7 +55,7 @@ def chatroom(request):
                 Q(username2=request.user.username, username1=target_username)
             )
             return JsonResponse({"id": target_room.id}, status=200)
-        elif len(chatrooms) == 0:
+        else:
             target_room = Chatroom.objects.create(
                 username1=request.user.username,
                 username2=target_username
@@ -67,8 +67,6 @@ def chatroom(request):
                 content=f"{request.user.nickname}님이 채팅방을 개설했습니다."
             )
             return JsonResponse({"id": target_room.id}, status=200)
-        else:
-            return HttpResponse(status=500)
 
 @require_http_methods(["GET"])
 def message(request, room_id):
