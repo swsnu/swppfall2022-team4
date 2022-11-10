@@ -24,8 +24,11 @@ const Routine = () => {
     user_id: 1,
   };
 
-  const routines = useSelector((rootState: RootState) => rootState.workout_log.routine);
-  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine);
+  const { selected_routine, routines } = useSelector(({ workout_log }: RootState) => ({
+    selected_routine: workout_log.selected_routine,
+    routines: workout_log.routine,
+  }));
+  console.log('routines', routines);
 
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
@@ -36,9 +39,6 @@ const Routine = () => {
       dispatch(workoutLogActions.getSpecificRoutine({ user_id: 1, routine_id: routine_id }));
     }
   }, [routine_id, routines]);
-  
-  console.log(routines);
-  console.log(selected_routine);
 
   return (
     <Wrapper>

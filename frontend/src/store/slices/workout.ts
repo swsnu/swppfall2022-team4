@@ -4,7 +4,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as workoutLogAPI from 'store/apis/workout';
 
-interface WorkoutLogState {
+export interface WorkoutLogState {
   workout_log: {
     type: string | null;
     workout_type: string | null;
