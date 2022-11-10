@@ -26,8 +26,6 @@ const editProfileRequest = {
   data: { oldPassword: '11111111', newPassword: '22222222' },
 };
 
-jest.spyOn(global, 'alert').mockImplementation(msg => msg);
-
 describe('slices - user', () => {
   test.each([
     [
@@ -222,6 +220,8 @@ describe('slices - user', () => {
   });
 
   describe('saga failure', () => {
+    global.alert = jest.fn().mockImplementation(() => null);
+
     test('signup', () => {
       return expectSaga(userSaga)
         .withReducer(userSlice.reducer)
