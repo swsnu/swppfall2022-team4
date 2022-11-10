@@ -21,7 +21,7 @@ def post_home(request):
     if request.method == "GET":
         query_args = {}
         query_args["page_num"] = max(int(request.GET.get("page", 1)), 1)
-        query_args["page_size"] = max(int(request.GET.get("pageSize", 10)), 10)
+        query_args["page_size"] = max(int(request.GET.get("pageSize", 15)), 15)
         query_args["keyword"] = request.GET.get("search", None)
 
         offset = (query_args["page_num"] - 1) * query_args["page_size"]
@@ -33,7 +33,8 @@ def post_home(request):
             filter_args["title__icontains"] = query_args["keyword"]
             posts = posts.filter(**filter_args)
 
-        posts_serializable = list(posts[offset:limit].values())
+        posts = posts[offset:limit]
+        posts_serializable = list(posts.values())
         for index, _ in enumerate(posts_serializable):
             posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
             posts_serializable[index]["author_name"] = posts[index].author.username
@@ -114,7 +115,7 @@ def post_detail(request, query_id):
                 }
 
             post_response = {
-                "group_id": post_obj.pk,
+                "post_id": post_obj.pk,
                 "title": post_obj.title,
                 "author_name": post_obj.author.username,
                 "content": post_obj.content,

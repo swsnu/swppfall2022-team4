@@ -35,11 +35,15 @@ const PostDetail = () => {
   const navigate = useNavigate();
 
   const user = useSelector(({ user }: RootState) => user.user);
-  const post = useSelector(({ post }: RootState) => post.postDetail.post);
-  const postComment = useSelector(({ post }: RootState) => post.postComment.comments);
-  const postDeleteStatus = useSelector(({ post }: RootState) => post.postDelete);
-  const postFuncStatus = useSelector(({ post }: RootState) => post.postFunc);
-  const commentFuncStatus = useSelector(({ post }: RootState) => post.postComment.commentFunc);
+  const { post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
+    ({ post }: RootState) => ({
+      post: post.postDetail.post,
+      postComment: post.postComment.comments,
+      postDeleteStatus: post.postDelete,
+      postFuncStatus: post.postFunc,
+      commentFuncStatus: post.postComment.commentFunc,
+    }),
+  );
   const [commentList, setCommentList] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState('');
   const [commentReplyInput, setCommentReplyInput] = useState('');
@@ -68,7 +72,7 @@ const PostDetail = () => {
   }, [commentNum, commentFuncStatus]);
   useEffect(() => {
     if (postComment) setCommentList(postComment);
-  }, [postComment]);
+  }, [postComment]); // This looks disposable, but it makes the action smoothly.
   useEffect(() => {
     if (postDeleteStatus) {
       navigate('/post');
@@ -400,7 +404,7 @@ const PostDetail = () => {
   const SideBar = (
     <SideBarWrapper>
       {PostAuthorPanel}
-      <SideBarItem>사이드바 공간2</SideBarItem>
+      {/* <SideBarItem>사이드바 공간2</SideBarItem> */}
     </SideBarWrapper>
   );
   return PostPageWithSearchBar(PostDetailContent, SideBar);
@@ -541,6 +545,7 @@ const ArticleBodyContent = styled.div`
   height: 100%;
   padding: 10px 20px;
   min-height: 360px;
+  font-size: 16px;
 `;
 
 // Article Comment List

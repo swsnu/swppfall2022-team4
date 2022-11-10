@@ -26,6 +26,9 @@ interface PostState {
     status: boolean;
     post_id: string | null;
   };
+  recentCommentPosts: {
+    comments: commentAPI.Comment[] | null;
+  };
   postEdit: boolean;
   postDelete: boolean;
   postFunc: boolean;
@@ -52,6 +55,9 @@ const initialState: PostState = {
     status: false,
     post_id: null,
   },
+  recentCommentPosts: {
+    comments: null,
+  },
   postEdit: false,
   postDelete: false,
   postFunc: false,
@@ -77,6 +83,12 @@ export const postSlice = createSlice({
     getPostsFailure: (state, { payload }) => {
       state.postList.error = payload;
       alert(payload.response?.data.message);
+    },
+    getRecentCommentPosts: state => {
+      state.recentCommentPosts.comments = null;
+    },
+    getRecentCommentPostsSuccess: (state, { payload }) => {
+      state.recentCommentPosts.comments = payload.comments;
     },
     // createPost ------------------------------------------------------------------------
     createPost: (state, action: PayloadAction<postAPI.createPostRequestType>) => {
@@ -208,6 +220,14 @@ function* getPostsSaga(action: PayloadAction<postAPI.getPostsRequestType>) {
     yield put(postActions.getPostsFailure(error));
   }
 }
+function* getRecentCommentPostsSaga() {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.getRecentCommentPosts);
+    yield put(postActions.getRecentCommentPostsSuccess(response));
+  } catch (error) {
+    // yield put(postActions.getPostsFailure(error));
+  }
+}
 
 function* createPostSaga(action: PayloadAction<postAPI.createPostRequestType>) {
   try {
@@ -256,6 +276,7 @@ function* postFuncSaga(action: PayloadAction<postAPI.postFuncRequestType>) {
 
 export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
+  yield takeLatest(postActions.getRecentCommentPosts, getRecentCommentPostsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
   yield takeLatest(postActions.getPostDetail, getPostDetailSaga);
   yield takeLatest(postActions.deletePost, deletePostSaga);

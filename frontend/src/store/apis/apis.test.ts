@@ -130,6 +130,10 @@ describe('User API TEST', () => {
       const result = await userAPI.getProfile(testUsername);
       expect(result).toBe(`/api/user/profile/11111111/`);
     });
+    test('getProfileContent', async () => {
+      const result = await userAPI.getProfileContent(testUsername);
+      expect(result).toBe(`/api/user/profile/11111111/content/`);
+    });
     test('editProfile', async () => {
       const result = await userAPI.editProfile(editProfileRequest);
       expect(result).toBe(`/api/user/profile/11111111/`);
@@ -199,6 +203,10 @@ describe('User API TEST', () => {
     test('commentFunc', async () => {
       const result = await commentAPI.commentFunc(commentFuncRequest);
       expect(result).toBe(`/api/comment/${commentFuncRequest.comment_id}/func/`);
+    });
+    test('getRecentCommentPosts', async () => {
+      const result = await commentAPI.getRecentCommentPosts();
+      expect(result).toBe(`/api/comment/recent/`);
     });
   });
   describe('Tag', () => {

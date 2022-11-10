@@ -7,27 +7,26 @@ from users.models import User
 
 
 def decode_jwt(access_token):
-    return jwt.decode(
-        access_token,
-        os.environ.get("JWT_SECRET"),
-        os.environ.get("ALGORITHM")
-    )
+    return jwt.decode(access_token, os.environ.get("JWT_SECRET"), os.environ.get("ALGORITHM"))
 
 
 class JsonWebTokenMiddleWare:
-
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
         try:
-            if request.path not in (
-                "/api/user/login/",
-                "/api/user/social_login/",
-                "/api/user/signup/",
-                "/api/user/token/",
-                "/api/image/"
-            ) and not request.path[:6] == "/admin":
+            if (
+                request.path
+                not in (
+                    "/api/user/login/",
+                    "/api/user/social_login/",
+                    "/api/user/signup/",
+                    "/api/user/token/",
+                    "/api/image/",
+                )
+                and request.path[:6] != "/admin"
+            ):
                 access_token = request.COOKIES.get("access_token", None)
                 if not access_token:
                     raise PermissionDenied()

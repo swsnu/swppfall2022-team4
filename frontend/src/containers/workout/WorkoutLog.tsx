@@ -275,14 +275,14 @@ const WorkoutLog = () => {
                     const d = index - (startDay - 2);
                     // {year}.{selected_month + 1}.{day}
                     let day_type = 'future_day';
-                    if (year > today.getFullYear()) {
+                    if (year === selected_year && month === selected_month && d === selected_date) {
+                      day_type = 'selected_day';
+                    } else if (year > today.getFullYear()) {
                       day_type = 'future_day';
                     } else if (year === today.getFullYear() && month > today.getMonth()) {
                       day_type = 'future_day';
                     } else if (year === today.getFullYear() && month === today.getMonth() && d > today.getDate()) {
                       day_type = 'future_day';
-                    } else if (year === selected_year && month === selected_month && d === selected_date) {
-                      day_type = 'selected_day';
                     } else if (year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) {
                       day_type = 'today';
                     } else if (d > 0 && d <= days[month] && calendarInfo.length > 0) {
@@ -299,9 +299,7 @@ const WorkoutLog = () => {
                         className={day_type}
                         key={index}
                         onClick={() => {
-                          if (day_type !== 'future_day') {
-                            clickDate(year, month, d);
-                          }
+                          clickDate(year, month, d);
                         }}
                       >
                         <DayContent className={day_type}>{d > 0 ? (d <= days[month] ? d : '') : ''}</DayContent>
@@ -355,8 +353,8 @@ const WorkoutLog = () => {
               <LogHeader>
                 <LogCategory className="type">종류</LogCategory>
                 <LogCategory className="type2">강도</LogCategory>
-                <LogCategory>반복</LogCategory>
-                <LogCategory>세트</LogCategory>
+                <LogCategory className="type2">반복</LogCategory>
+                <LogCategory className="type2">세트</LogCategory>
                 <LogCategory className="type2">시간</LogCategory>
               </LogHeader>
               <LogInputBody>
@@ -374,14 +372,14 @@ const WorkoutLog = () => {
                     onChange={e => setWeight(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
-                    className="type1"
+                    className="type2"
                     type="number"
                     min="0"
                     value={rep || 0}
                     onChange={e => setRep(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
-                    className="type1"
+                    className="type2"
                     type="number"
                     min="0"
                     value={set || 0}
@@ -607,7 +605,7 @@ const DayContent = styled.div`
 
   &&.future_day {
     font-weight: bold;
-    color: #A9A9A9;
+    color: #a9a9a9;
   }
 `;
 
@@ -788,7 +786,7 @@ const WorkoutTypeInput = styled.input`
   width: 40%;
   height: 100%;
   padding: 8px 20px;
-  font-size: 10px;
+  font-size: 14px;
   margin: 7px;
 
   &&.type1 {
