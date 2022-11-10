@@ -8,6 +8,11 @@ interface ChatState {
   socket: any;
   where: string | null;
 
+  create: {
+    id: string | null;
+    error: AxiosError | null;
+  };
+
   chatroomList: chatAPI.chatroomType[];
   messageList: chatAPI.messageType[];
   error: AxiosError | null;
@@ -15,6 +20,11 @@ interface ChatState {
 export const initialState: ChatState = {
   socket: null,
   where: null,
+
+  create: {
+    id: null,
+    error: null,
+  },
 
   chatroomList: [],
   messageList: [],
@@ -46,6 +56,19 @@ export const chatSlice = createSlice({
       state.error = payload;
       alert(payload.response?.data.message);
     },
+    createChatroom: (state, action: PayloadAction<{ me: string; target: string }>) => {
+      state.create.id = null;
+      state.create.error = null;
+    },
+    createChatroomSuccess: (state, { payload }) => {
+      state.create.id = payload.id;
+      state.create.error = null;
+    },
+    createChatroomFailure: (state, { payload }) => {
+      state.create.id = null;
+      state.create.error = payload;
+      alert(payload.response?.data.message);
+    },
     getMessageList: (state, action: PayloadAction<string>) => {
       state.messageList = [];
       state.error = null;
@@ -71,6 +94,14 @@ function* getChatroomListSaga(action: PayloadAction<string>) {
     yield put(chatActions.getChatroomListFailure(error));
   }
 }
+function* createChatroomSaga(action: PayloadAction<{ me: string; target: string }>) {
+  try {
+    const response: AxiosResponse = yield call(chatAPI.createChatroom, action.payload.me, action.payload.target);
+    yield put(chatActions.createChatroomSuccess(response));
+  } catch (error) {
+    yield put(chatActions.createChatroomFailure(error));
+  }
+}
 function* getMessageListSaga(action: PayloadAction<string>) {
   try {
     const response: AxiosResponse = yield call(chatAPI.getMessageList, action.payload);
@@ -82,5 +113,6 @@ function* getMessageListSaga(action: PayloadAction<string>) {
 
 export default function* chatSaga() {
   yield takeLatest(chatActions.getChatroomList, getChatroomListSaga);
+  yield takeLatest(chatActions.createChatroom, createChatroomSaga);
   yield takeLatest(chatActions.getMessageList, getMessageListSaga);
 }

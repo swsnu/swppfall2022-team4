@@ -6,7 +6,7 @@ export const getChatroomList = async (username: string) => {
   return response.data;
 };
 export const createChatroom = async (username: string, target: string) => {
-  const response = await client.post<string>(`/api/chat/${username}/`, target);
+  const response = await client.post<{ id: number }>(`/api/chat/${username}/`, target);
   return response.data;
 };
 export const getMessageList = async (roomId: string) => {

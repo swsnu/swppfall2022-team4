@@ -16,6 +16,15 @@ describe('slices - chat', () => {
     [chatActions.getChatroomList('11111111'), initialState],
     [chatActions.getChatroomListSuccess('data'), { ...initialState, chatroomList: 'data' }],
     [chatActions.getChatroomListFailure('error'), { ...initialState, error: 'error' }],
+    [chatActions.createChatroom({ me: 'me', target: 'target' }), initialState],
+    [
+      chatActions.createChatroomSuccess({ id: 'data' }),
+      { ...initialState, create: { ...initialState.create, id: 'data' } },
+    ],
+    [
+      chatActions.createChatroomFailure('error'),
+      { ...initialState, create: { ...initialState.create, error: 'error' } },
+    ],
     [chatActions.getMessageList('11111111'), initialState],
     [chatActions.getMessageListSuccess('data'), { ...initialState, messageList: 'data' }],
     [chatActions.getMessageListFailure('error'), { ...initialState, error: 'error' }],
@@ -37,6 +46,15 @@ describe('slices - chat', () => {
         .hasFinalState({ ...initialState, chatroomList: 'data' })
         .silentRun();
     });
+    test('createChatroom', () => {
+      return expectSaga(chatSaga)
+        .withReducer(chatSlice.reducer)
+        .provide([[call(chatAPI.createChatroom, 'me', 'target'), { id: 'id' }]])
+        .put({ type: 'chat/createChatroomSuccess', payload: { id: 'id' } })
+        .dispatch({ type: 'chat/createChatroom', payload: { me: 'me', target: 'target' } })
+        .hasFinalState({ ...initialState, create: { ...initialState.create, id: 'id' } })
+        .silentRun();
+    });
     test('getMessageList', () => {
       return expectSaga(chatSaga)
         .withReducer(chatSlice.reducer)
@@ -56,6 +74,15 @@ describe('slices - chat', () => {
         .put({ type: 'chat/getChatroomListFailure', payload: simpleError })
         .dispatch({ type: 'chat/getChatroomList', payload: '11111111' })
         .hasFinalState({ ...initialState, error: simpleError })
+        .silentRun();
+    });
+    test('createChatroom', () => {
+      return expectSaga(chatSaga)
+        .withReducer(chatSlice.reducer)
+        .provide([[call(chatAPI.createChatroom, 'me', 'target'), throwError(simpleError)]])
+        .put({ type: 'chat/createChatroomFailure', payload: simpleError })
+        .dispatch({ type: 'chat/createChatroom', payload: { me: 'me', target: 'target' } })
+        .hasFinalState({ ...initialState, create: { ...initialState.create, error: simpleError } })
         .silentRun();
     });
     test('getMessageList', () => {
