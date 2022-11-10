@@ -145,16 +145,16 @@ describe('User API TEST', () => {
   });
   describe('Chat', () => {
     test('getChatroomList', async () => {
-      const result = await chatAPI.getChatroomList(testUsername);
-      expect(result).toBe(`/api/chat/11111111/`);
+      const result = await chatAPI.getChatroomList();
+      expect(result).toBe(`/api/chat/`);
     });
     test('createChatroom', async () => {
-      const result = await chatAPI.createChatroom(testUsername, 'target');
-      expect(result).toBe(`/api/chat/11111111/`);
+      const result = await chatAPI.createChatroom({ username: 'target' });
+      expect(result).toBe(`/api/chat/`);
     });
     test('getMessageList', async () => {
-      const result = await chatAPI.getMessageList(testUsername);
-      expect(result).toBe(`/api/chat/message/11111111/`);
+      const result = await chatAPI.getMessageList('1234');
+      expect(result).toBe(`/api/chat/1234/`);
     });
   });
   describe('Post', () => {

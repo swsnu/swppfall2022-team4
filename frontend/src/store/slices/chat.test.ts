@@ -16,7 +16,7 @@ describe('slices - chat', () => {
     [chatActions.getChatroomList('11111111'), initialState],
     [chatActions.getChatroomListSuccess('data'), { ...initialState, chatroomList: 'data' }],
     [chatActions.getChatroomListFailure('error'), { ...initialState, error: 'error' }],
-    [chatActions.createChatroom({ me: 'me', target: 'target' }), initialState],
+    [chatActions.createChatroom({ username: '11111111' }), initialState],
     [
       chatActions.createChatroomSuccess({ id: 'data' }),
       { ...initialState, create: { ...initialState.create, id: 'data' } },
@@ -40,18 +40,18 @@ describe('slices - chat', () => {
     test('getChatroomList', () => {
       return expectSaga(chatSaga)
         .withReducer(chatSlice.reducer)
-        .provide([[call(chatAPI.getChatroomList, '11111111'), 'data']])
+        .provide([[call(chatAPI.getChatroomList), 'data']])
         .put({ type: 'chat/getChatroomListSuccess', payload: 'data' })
-        .dispatch({ type: 'chat/getChatroomList', payload: '11111111' })
+        .dispatch({ type: 'chat/getChatroomList' })
         .hasFinalState({ ...initialState, chatroomList: 'data' })
         .silentRun();
     });
     test('createChatroom', () => {
       return expectSaga(chatSaga)
         .withReducer(chatSlice.reducer)
-        .provide([[call(chatAPI.createChatroom, 'me', 'target'), { id: 'id' }]])
+        .provide([[call(chatAPI.createChatroom, { username: '1234' }), { id: 'id' }]])
         .put({ type: 'chat/createChatroomSuccess', payload: { id: 'id' } })
-        .dispatch({ type: 'chat/createChatroom', payload: { me: 'me', target: 'target' } })
+        .dispatch({ type: 'chat/createChatroom', payload: { username: '1234' } })
         .hasFinalState({ ...initialState, create: { ...initialState.create, id: 'id' } })
         .silentRun();
     });
@@ -70,18 +70,18 @@ describe('slices - chat', () => {
     test('getChatroomList', () => {
       return expectSaga(chatSaga)
         .withReducer(chatSlice.reducer)
-        .provide([[call(chatAPI.getChatroomList, '11111111'), throwError(simpleError)]])
+        .provide([[call(chatAPI.getChatroomList), throwError(simpleError)]])
         .put({ type: 'chat/getChatroomListFailure', payload: simpleError })
-        .dispatch({ type: 'chat/getChatroomList', payload: '11111111' })
+        .dispatch({ type: 'chat/getChatroomList' })
         .hasFinalState({ ...initialState, error: simpleError })
         .silentRun();
     });
     test('createChatroom', () => {
       return expectSaga(chatSaga)
         .withReducer(chatSlice.reducer)
-        .provide([[call(chatAPI.createChatroom, 'me', 'target'), throwError(simpleError)]])
+        .provide([[call(chatAPI.createChatroom, { username: '1234' }), throwError(simpleError)]])
         .put({ type: 'chat/createChatroomFailure', payload: simpleError })
-        .dispatch({ type: 'chat/createChatroom', payload: { me: 'me', target: 'target' } })
+        .dispatch({ type: 'chat/createChatroom', payload: { username: '1234' } })
         .hasFinalState({ ...initialState, create: { ...initialState.create, error: simpleError } })
         .silentRun();
     });
