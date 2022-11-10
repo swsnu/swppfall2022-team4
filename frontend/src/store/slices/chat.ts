@@ -86,7 +86,7 @@ export const chatSlice = createSlice({
 });
 export const chatActions = chatSlice.actions;
 
-function* getChatroomListSaga(action: PayloadAction<string>) {
+function* getChatroomListSaga() {
   try {
     const response: AxiosResponse = yield call(chatAPI.getChatroomList);
     yield put(chatActions.getChatroomListSuccess(response));

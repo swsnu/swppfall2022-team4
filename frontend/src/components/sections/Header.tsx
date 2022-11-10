@@ -84,10 +84,10 @@ const Header = () => {
           console.log('ignore...');
         } else if (where !== data.where.toString()) {
           console.log('update list...');
-          dispatch(chatActions.getChatroomList(user?.username || ''));
+          dispatch(chatActions.getChatroomList());
         } else {
           console.log('update list and message...');
-          dispatch(chatActions.getChatroomList(user?.username || ''));
+          dispatch(chatActions.getChatroomList());
           dispatch(chatActions.addMessage(data.data));
         }
       }
@@ -107,10 +107,10 @@ const Header = () => {
           console.log('ignore...');
         } else if (where !== data.where.toString()) {
           console.log('update list...');
-          dispatch(chatActions.getChatroomList(user?.username || ''));
+          dispatch(chatActions.getChatroomList());
         } else {
           console.log('update list and message...');
-          dispatch(chatActions.getChatroomList(user?.username || ''));
+          dispatch(chatActions.getChatroomList());
           dispatch(chatActions.addMessage(data.data));
         }
       }

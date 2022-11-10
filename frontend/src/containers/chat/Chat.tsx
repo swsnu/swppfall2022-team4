@@ -25,7 +25,7 @@ const Chat = () => {
 
   useEffect(() => {
     dispatch(chatActions.setWhere(id || 'lobby'));
-    dispatch(chatActions.getChatroomList(user?.username || ''));
+    dispatch(chatActions.getChatroomList());
     return () => {
       dispatch(chatActions.setWhere(null));
     };

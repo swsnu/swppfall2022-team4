@@ -91,7 +91,7 @@ const Mypage = () => {
           ) : (
             <Button3
               content="메시지 전송"
-              clicked={() => dispatch(chatActions.createChatroom({ me: user.username, target: username }))}
+              clicked={() => dispatch(chatActions.createChatroom({ username: username }))}
               style={{
                 marginTop: '20px',
               }}
