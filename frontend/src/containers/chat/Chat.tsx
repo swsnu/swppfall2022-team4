@@ -31,6 +31,7 @@ const Chat = () => {
     };
   }, []);
   useEffect(() => {
+    setInput('');
     dispatch(chatActions.setWhere(id || 'lobby'));
     if (id) {
       dispatch(chatActions.getMessageList(id || ''));
@@ -46,7 +47,7 @@ const Chat = () => {
     }
   };
   const onSendMessage = () => {
-    if (input === '' || !user) return;
+    if (!user || input === '') return;
     socket.send(
       JSON.stringify({
         type: '1:1',
