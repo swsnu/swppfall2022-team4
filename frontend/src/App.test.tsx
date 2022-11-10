@@ -27,7 +27,7 @@ const setup = () => {
 };
 
 describe('App', () => {
-  test('login page', () => {
+  test('main page', () => {
     setup();
     window.scrollTo = jest.fn().mockImplementation(() => true);
     expect(screen.getByText('FITogether')).toBeInTheDocument();
