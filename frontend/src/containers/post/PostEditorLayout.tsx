@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn } from 'components/post/button';
+import { columnFlex, rowCenterFlex } from 'components/post/layout';
 
 interface IPropsColorButton {
   color?: string;
@@ -23,6 +24,10 @@ interface IPropsColorButton {
 const DEFAULT_OPTION = '$NONE$';
 const NEW_OPTION = '$NEW$';
 const SEARCH_OPTION = '$SEARCH$';
+
+const getRandomColor = () => {
+  return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
+};
 
 export const PostEditorLayout = (
   title: string,
@@ -64,9 +69,6 @@ export const PostEditorLayout = (
   useEffect(() => {
     if (tagCreate) setSelectedTags(s => [...s, { id: tagCreate?.id, name: tagCreate?.name, color: tagCreate?.color }]);
   }, [tagCreate]);
-  const getRandomColor = () => {
-    return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
-  };
 
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tagId = e.target.options[e.target.selectedIndex].value;
@@ -316,21 +318,17 @@ const ClickableSpan = styled.div`
   cursor: pointer;
 `;
 
-const TagClassColorWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-`;
+const TagClassColorWrapper = styled(rowCenterFlex)``;
+
 const TagClassColorLabel = styled.span`
   font-size: 14px;
   text-align: center;
 `;
-const TagClassFuncWrapper = styled.div`
+
+const TagClassFuncWrapper = styled(columnFlex)`
   width: 100%;
-  display: flex;
-  flex-direction: column;
 `;
+
 const TagBubbleWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -339,6 +337,7 @@ const TagBubbleWrapper = styled.div`
   align-items: flex-end;
   padding: 8px 5px;
 `;
+
 const TagBubbleFunc = styled.div`
   margin-left: 5px;
   font-size: 10px;
@@ -348,6 +347,7 @@ const TagBubbleFunc = styled.div`
   display: block;
   cursor: pointer;
 `;
+
 const TagBubble = styled.button<IPropsColorButton>`
   height: 25px;
   border-radius: 30px;
@@ -364,41 +364,42 @@ const TagBubble = styled.button<IPropsColorButton>`
       background: ${color};
     `}
 `;
+
 const TagTitle = styled.span`
   margin: 10px 0px;
   font-size: 18px;
   text-align: center;
   width: 100%;
 `;
-const TagWrapperIn = styled.div`
-  display: flex;
-  flex-direction: column;
+
+const TagWrapperIn = styled(columnFlex)`
   justify-content: flex-start;
   background-color: var(--fit-white);
 `;
-const TagWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+
+const TagWrapper = styled(columnFlex)`
   justify-content: space-between;
   background-color: var(--fit-white);
   height: 60%;
 `;
-const PrimeTagWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+
+const PrimeTagWrapper = styled(columnFlex)`
   justify-content: space-between;
   background-color: var(--fit-white);
   margin-top: 15px;
   height: fit-content;
 `;
+
 const TagInput = styled.input`
   padding: 5px 8px;
   margin: 6px 10px;
 `;
+
 const TagSelect = styled.select`
   padding: 5px 8px;
   margin: 6px 10px;
 `;
+
 const ColorCircle = styled.button<IPropsColorButton>`
   width: 45px;
   height: 45px;
@@ -411,6 +412,7 @@ const ColorCircle = styled.button<IPropsColorButton>`
       background: ${color};
     `}
 `;
+
 const RandColorBtn = styled.button`
   background: none;
   border: none;
@@ -418,10 +420,8 @@ const RandColorBtn = styled.button`
     color: var(--fit-green-small-btn1);
   }
 `;
-const TagSubWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+
+const TagSubWrapper = styled(columnFlex)``;
 
 const TitleInput = styled.input`
   width: 100%;
@@ -430,6 +430,7 @@ const TitleInput = styled.input`
   font-size: 24px;
   border: none;
 `;
+
 const ContentTextArea = styled.textarea`
   width: 100%;
   height: 90%;
@@ -438,6 +439,7 @@ const ContentTextArea = styled.textarea`
   resize: none;
   border: none;
 `;
+
 const CreateBtnWrapper = styled.div`
   width: 100%;
   height: 10%;
@@ -447,6 +449,7 @@ const CreateBtnWrapper = styled.div`
   flex-direction: row;
   justify-content: flex-end;
 `;
+
 const ContentWrapper = styled.div`
   width: 100%;
   height: 100%;

@@ -14,6 +14,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
+import { columnFlex, rowCenterFlex } from 'components/post/layout';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -404,7 +405,7 @@ const PostDetail = () => {
   const SideBar = (
     <SideBarWrapper>
       {PostAuthorPanel}
-      {/* <SideBarItem>사이드바 공간2</SideBarItem> */}
+      <SideBarItem>사이드바 공간2</SideBarItem>
     </SideBarWrapper>
   );
   return PostPageWithSearchBar(PostDetailContent, SideBar);
@@ -517,14 +518,11 @@ const PostWritterLeftWrapper = styled.div`
   margin-right: 8px;
 `;
 
-const PostWritterAvatar = styled.div`
+const PostWritterAvatar = styled(rowCenterFlex)`
   width: 40px;
   height: 40px;
   border: 1px solid black;
   border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin-bottom: 5px;
   font-size: 8px;
 `;
@@ -558,10 +556,7 @@ export const CommentWrapper = styled.div`
   padding: 0px 20px;
 `;
 
-const CommentReplyWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+const CommentReplyWrapper = styled(columnFlex)``;
 
 const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
@@ -585,21 +580,16 @@ const CommentWritterWrapperO1 = styled.div`
   margin-right: 20px;
 `;
 
-const CommentWritterWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+const CommentWritterWrapper = styled(columnFlex)`
   align-items: center;
   font-size: 8px;
 `;
 
-const CommentWritterAvatar = styled.div`
+const CommentWritterAvatar = styled(rowCenterFlex)`
   width: 40px;
   height: 40px;
   border: 1px solid black;
   border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin-bottom: 5px;
 `;
 
@@ -607,12 +597,10 @@ const CommentWritterText = styled.span`
   font-size: 12px;
 `;
 
-const CommentRightWrapper = styled.div`
-  display: flex;
+const CommentRightWrapper = styled(columnFlex)`
   width: 100%;
   height: 100%;
   min-height: 50px;
-  flex-direction: column;
   justify-content: space-between;
 `;
 

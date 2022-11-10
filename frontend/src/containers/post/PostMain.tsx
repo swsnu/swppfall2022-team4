@@ -10,7 +10,7 @@ import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { tagActions } from 'store/slices/tag';
 import { BlueBigBtn } from 'components/post/button';
 import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
-import { articleItemGrid } from 'components/post/layout';
+import { articleItemGrid, columnFlex } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 
@@ -19,13 +19,13 @@ const PostMain = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
 
-  const { postList, maxPage, searchKeyword, recentCommentPost } = useSelector(({ post }: RootState) => ({
+  const { postList, maxPage, searchKeyword, recentCommentPost, tagList } = useSelector(({ post, tag }: RootState) => ({
     postList: post.postList.posts,
     maxPage: post.postList.pageTotal,
     searchKeyword: post.postSearch,
     recentCommentPost: post.recentCommentPosts.comments,
+    tagList: tag.tagList,
   }));
-  const tagList = useSelector((rootState: RootState) => rootState.tag.tagList);
   useEffect(() => {
     const defaultPageConfig: getPostsRequestType = {
       pageNum: page,
@@ -169,22 +169,18 @@ export const ArticleItem = styled(articleItemGrid)`
   cursor: pointer;
 `;
 
-const SideBarItem = styled.div`
+const SideBarItem = styled(columnFlex)`
   margin-top: 15px;
   width: 100%;
-  height: 40%;
+  height: fit-content;
   background-color: var(--fit-white);
-  display: flex;
-  flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding: 10px 0px;
 `;
 
-const PostPanelWrapper = styled.div`
+const PostPanelWrapper = styled(columnFlex)`
   width: 100%;
-  display: flex;
-  flex-direction: column;
   align-items: center;
 `;
 

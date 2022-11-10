@@ -55,7 +55,6 @@ const PostPaginatorWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid black;
   position: absolute;
   bottom: 0px;
 `;
