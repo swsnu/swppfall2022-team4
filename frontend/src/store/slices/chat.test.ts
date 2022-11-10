@@ -12,6 +12,7 @@ jest.spyOn(global, 'alert').mockImplementation(msg => msg);
 
 describe('slices - chat', () => {
   test.each([
+    [chatActions.resetCreate(), initialState],
     [chatActions.setSocket('socket'), { ...initialState, socket: 'socket' }],
     [chatActions.getChatroomList(), initialState],
     [chatActions.getChatroomListSuccess('data'), { ...initialState, chatroomList: 'data' }],

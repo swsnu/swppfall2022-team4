@@ -33,19 +33,23 @@ const Mypage = () => {
 
   const { username } = useParams();
   const [type, setType] = useState(0);
-  const { user, profile, loading, profileError, profileContent } = useSelector(({ user }: RootState) => ({
-    user: user.user,
-    profile: user.profile,
-    loading: user.loading,
-    profileError: user.profileError,
-    profileContent: user.profileContent,
-  }));
+  const { user, profile, loading, profileError, profileContent, chatroomId } = useSelector(
+    ({ user, chat }: RootState) => ({
+      user: user.user,
+      profile: user.profile,
+      loading: user.loading,
+      profileError: user.profileError,
+      profileContent: user.profileContent,
+      chatroomId: chat.create.id,
+    }),
+  );
 
   useEffect(() => {
     dispatch(userActions.getProfile(username || ''));
     dispatch(userActions.getProfileContent(username || ''));
     return () => {
       dispatch(userActions.resetProfile());
+      dispatch(chatActions.resetCreate());
     };
   }, []);
   useEffect(() => {
@@ -53,6 +57,11 @@ const Mypage = () => {
       navigate('/not_found');
     }
   }, [navigate, profileError]);
+  useEffect(() => {
+    if (chatroomId) {
+      navigate(`/chat/${chatroomId}`);
+    }
+  }, [chatroomId]);
 
   const changeType = (num: number) => {
     setType(num);

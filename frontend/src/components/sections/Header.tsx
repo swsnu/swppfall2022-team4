@@ -94,7 +94,6 @@ const Header = () => {
     };
 
     return () => {
-      console.log('CLOSE');
       if (ws && ws.current) ws.current.close();
     };
   }, []);

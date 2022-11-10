@@ -35,6 +35,11 @@ export const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
+    resetCreate: state => {
+      state.create.id = null;
+      state.create.error = null;
+    },
+
     setSocket: (state, { payload }) => {
       state.socket = payload;
     },

@@ -40,7 +40,7 @@ describe('[Chat Page]', () => {
       setup();
       expect(mockDispatch).toBeCalledTimes(4);
       expect(mockDispatch).toHaveBeenCalledWith({ payload: '1234', type: 'chat/setWhere' });
-      expect(mockDispatch).toHaveBeenCalledWith({ payload: 'username', type: 'chat/getChatroomList' });
+      expect(mockDispatch).toHaveBeenCalledWith({ type: 'chat/getChatroomList' });
       expect(mockDispatch).toHaveBeenCalledWith({ payload: '1234', type: 'chat/getMessageList' });
     });
   });
