@@ -275,14 +275,14 @@ const WorkoutLog = () => {
                     const d = index - (startDay - 2);
                     // {year}.{selected_month + 1}.{day}
                     let day_type = 'future_day';
-                    if (year > today.getFullYear()) {
+                    if (year === selected_year && month === selected_month && d === selected_date) {
+                      day_type = 'selected_day';
+                    } else if (year > today.getFullYear()) {
                       day_type = 'future_day';
                     } else if (year === today.getFullYear() && month > today.getMonth()) {
                       day_type = 'future_day';
                     } else if (year === today.getFullYear() && month === today.getMonth() && d > today.getDate()) {
                       day_type = 'future_day';
-                    } else if (year === selected_year && month === selected_month && d === selected_date) {
-                      day_type = 'selected_day';
                     } else if (year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) {
                       day_type = 'today';
                     } else if (d > 0 && d <= days[month] && calendarInfo.length > 0) {
@@ -299,9 +299,7 @@ const WorkoutLog = () => {
                         className={day_type}
                         key={index}
                         onClick={() => {
-                          if (day_type !== 'future_day') {
-                            clickDate(year, month, d);
-                          }
+                          clickDate(year, month, d);
                         }}
                       >
                         <DayContent className={day_type}>{d > 0 ? (d <= days[month] ? d : '') : ''}</DayContent>
