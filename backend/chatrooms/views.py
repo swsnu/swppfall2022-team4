@@ -6,39 +6,69 @@ from django.core import serializers
 from users.models import User
 from .models import Chatroom, Message
 
-@require_http_methods(["GET"])
-def chatroom(request, user_id):
+@require_http_methods(["GET", "POST"])
+def chatroom(request):
     """
     GET : 채팅방 목록 불러오기
+    POST : 채팅방 개설
     """
-    if request.user.username != user_id:
-        return HttpResponse(status=403)
+    if request.method == "GET":
+        username = request.user.username
+        chatrooms = Chatroom.objects.filter(Q(username1=username) | Q(username2=username)).order_by('-updated')
+        data = json.loads(serializers.serialize('json', chatrooms))
+        response = []
 
-    chatrooms = Chatroom.objects.filter(Q(username1=user_id) | Q(username2=user_id)).order_by('-updated')
-    data = json.loads(serializers.serialize('json', chatrooms))
-    response = []
+        for chatroom_data in data:
+            username1 = chatroom_data['fields']['username1']
+            username2 = chatroom_data['fields']['username2']
+            target_username = username1 if username2 == username else username2
 
-    for chatroom_data in data:
-        username1 = chatroom_data['fields']['username1']
-        username2 = chatroom_data['fields']['username2']
-        target_username = username1 if username2 == user_id else username2
+            if not (User.objects.filter(username=target_username)).exists():
+                user = None
+            else:
+                target = User.objects.get(username=target_username)
+                user = {
+                    "username": target.username,
+                    "nickname": target.nickname,
+                    "image": target.image
+                }
 
-        if not (User.objects.filter(username=target_username)).exists():
-            user = None
+            response.append({
+                "id": chatroom_data['pk'],
+                "user": user,
+            })
+
+        return JsonResponse(response, safe=False)
+
+    else:   # POST
+        data = json.loads(request.body.decode())
+        user = User.objects.get(username=request.user.username)
+        target_username = data["username"]
+
+        chatrooms = Chatroom.objects.filter(
+            Q(username1=request.user.username, username2=target_username) |
+            Q(username2=request.user.username, username1=target_username)
+        )
+        if len(chatrooms) == 1:
+            target_room = Chatroom.objects.get(
+                Q(username1=request.user.username, username2=target_username) |
+                Q(username2=request.user.username, username1=target_username)
+            )
+            return JsonResponse({"id": target_room.id}, status=200)
+        elif len(chatrooms) == 0:
+            target_room = Chatroom.objects.create(
+                username1=request.user.username,
+                username2=target_username
+            )
+            Message.objects.create(
+                room=target_room,
+                group=None,
+                author=user,
+                content=f"{request.user.nickname}님이 채팅방을 개설했습니다."
+            )
+            return JsonResponse({"id": target_room.id}, status=200)
         else:
-            target = User.objects.get(username=target_username)
-            user = {
-                "username": target.username,
-                "nickname": target.nickname,
-                "image": target.image
-            }
-
-        response.append({
-            "id": chatroom_data['pk'],
-            "user": user,
-        })
-
-    return JsonResponse(response, safe=False)
+            return HttpResponse(status=500)
 
 @require_http_methods(["GET"])
 def message(request, room_id):
