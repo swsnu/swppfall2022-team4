@@ -148,6 +148,10 @@ describe('User API TEST', () => {
       const result = await chatAPI.getChatroomList(testUsername);
       expect(result).toBe(`/api/chat/11111111/`);
     });
+    test('createChatroom', async () => {
+      const result = await chatAPI.createChatroom(testUsername, 'target');
+      expect(result).toBe(`/api/chat/11111111/`);
+    });
     test('getMessageList', async () => {
       const result = await chatAPI.getMessageList(testUsername);
       expect(result).toBe(`/api/chat/message/11111111/`);
