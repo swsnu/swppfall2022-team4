@@ -4,9 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineEdit } from 'react-icons/ai';
 import styled from 'styled-components';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
+import { chatActions } from 'store/slices/chat';
 import { dateDiff, timeAgoFormat } from 'utils/datetime';
 
 import Loading, { LoadingWithoutMinHeight } from 'components/common/Loading';
@@ -23,8 +26,6 @@ import {
   FuncType,
   IPropsComment,
 } from 'containers/post/PostDetail';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -32,19 +33,23 @@ const Mypage = () => {
 
   const { username } = useParams();
   const [type, setType] = useState(0);
-  const { user, profile, loading, profileError, profileContent } = useSelector(({ user }: RootState) => ({
-    user: user.user,
-    profile: user.profile,
-    loading: user.loading,
-    profileError: user.profileError,
-    profileContent: user.profileContent,
-  }));
+  const { user, profile, loading, profileError, profileContent, chatroomId } = useSelector(
+    ({ user, chat }: RootState) => ({
+      user: user.user,
+      profile: user.profile,
+      loading: user.loading,
+      profileError: user.profileError,
+      profileContent: user.profileContent,
+      chatroomId: chat.create.id,
+    }),
+  );
 
   useEffect(() => {
     dispatch(userActions.getProfile(username || ''));
     dispatch(userActions.getProfileContent(username || ''));
     return () => {
       dispatch(userActions.resetProfile());
+      dispatch(chatActions.resetCreate());
     };
   }, []);
   useEffect(() => {
@@ -52,12 +57,18 @@ const Mypage = () => {
       navigate('/not_found');
     }
   }, [navigate, profileError]);
+  useEffect(() => {
+    if (chatroomId) {
+      navigate(`/chat/${chatroomId}`);
+    }
+  }, [chatroomId]);
 
   const changeType = (num: number) => {
     setType(num);
   };
 
   if (!user) return <div>no user</div>;
+  if (!username) return <div>empty page</div>;
   if (loading || !profile) return <Loading />;
   return (
     <Wrapper>
@@ -78,7 +89,7 @@ const Mypage = () => {
         <ProfileEtcWrapper>
           <DateDiff>{dateDiff(profile.created)}</DateDiff>
           <DateDiffText>일 째</DateDiffText>
-          {user.username === profile.username && (
+          {user.username === profile.username ? (
             <Button3
               content="프로필 수정"
               clicked={() => navigate('/edit_profile')}
@@ -86,9 +97,17 @@ const Mypage = () => {
                 marginTop: '20px',
               }}
             />
+          ) : (
+            <Button3
+              content="메시지 전송"
+              clicked={() => dispatch(chatActions.createChatroom({ username: username }))}
+              style={{
+                marginTop: '20px',
+              }}
+            />
           )}
         </ProfileEtcWrapper>
-        <EditIcon onClick={() => navigate('/edit_profile')} />
+        <EditIcon onClick={() => navigate('/edit_profile')} data-testid="editProfileIcon" />
       </ProfileWrapper>
 
       <ContentWrapper>
@@ -96,12 +115,7 @@ const Mypage = () => {
           <Category active={type === 0} onClick={() => changeType(0)}>
             요약
           </Category>
-          <Category
-            active={type === 1}
-            onClick={() => {
-              changeType(1);
-            }}
-          >
+          <Category active={type === 1} onClick={() => changeType(1)}>
             내 글
           </Category>
           <Category active={type === 2} onClick={() => changeType(2)}>
@@ -112,9 +126,6 @@ const Mypage = () => {
           </Category>
           <Category active={type === 4} onClick={() => changeType(4)}>
             스크랩
-          </Category>
-          <Category active={type === 5} onClick={() => changeType(5)}>
-            내 그룹
           </Category>
         </CategoryWrapper>
         <ProfileContentLayout>

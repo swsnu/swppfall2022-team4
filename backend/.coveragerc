@@ -1,0 +1,2 @@
+[run]
+omit = *migrations*, *tests*, */management/commands/*, *__init__*

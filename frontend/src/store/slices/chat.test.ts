@@ -12,10 +12,20 @@ jest.spyOn(global, 'alert').mockImplementation(msg => msg);
 
 describe('slices - chat', () => {
   test.each([
+    [chatActions.resetCreate(), initialState],
     [chatActions.setSocket('socket'), { ...initialState, socket: 'socket' }],
-    [chatActions.getChatroomList('11111111'), initialState],
+    [chatActions.getChatroomList(), initialState],
     [chatActions.getChatroomListSuccess('data'), { ...initialState, chatroomList: 'data' }],
     [chatActions.getChatroomListFailure('error'), { ...initialState, error: 'error' }],
+    [chatActions.createChatroom({ username: '11111111' }), initialState],
+    [
+      chatActions.createChatroomSuccess({ id: 'data' }),
+      { ...initialState, create: { ...initialState.create, id: 'data' } },
+    ],
+    [
+      chatActions.createChatroomFailure('error'),
+      { ...initialState, create: { ...initialState.create, error: 'error' } },
+    ],
     [chatActions.getMessageList('11111111'), initialState],
     [chatActions.getMessageListSuccess('data'), { ...initialState, messageList: 'data' }],
     [chatActions.getMessageListFailure('error'), { ...initialState, error: 'error' }],
@@ -31,10 +41,19 @@ describe('slices - chat', () => {
     test('getChatroomList', () => {
       return expectSaga(chatSaga)
         .withReducer(chatSlice.reducer)
-        .provide([[call(chatAPI.getChatroomList, '11111111'), 'data']])
+        .provide([[call(chatAPI.getChatroomList), 'data']])
         .put({ type: 'chat/getChatroomListSuccess', payload: 'data' })
-        .dispatch({ type: 'chat/getChatroomList', payload: '11111111' })
+        .dispatch({ type: 'chat/getChatroomList' })
         .hasFinalState({ ...initialState, chatroomList: 'data' })
+        .silentRun();
+    });
+    test('createChatroom', () => {
+      return expectSaga(chatSaga)
+        .withReducer(chatSlice.reducer)
+        .provide([[call(chatAPI.createChatroom, { username: '1234' }), { id: 'id' }]])
+        .put({ type: 'chat/createChatroomSuccess', payload: { id: 'id' } })
+        .dispatch({ type: 'chat/createChatroom', payload: { username: '1234' } })
+        .hasFinalState({ ...initialState, create: { ...initialState.create, id: 'id' } })
         .silentRun();
     });
     test('getMessageList', () => {
@@ -52,10 +71,19 @@ describe('slices - chat', () => {
     test('getChatroomList', () => {
       return expectSaga(chatSaga)
         .withReducer(chatSlice.reducer)
-        .provide([[call(chatAPI.getChatroomList, '11111111'), throwError(simpleError)]])
+        .provide([[call(chatAPI.getChatroomList), throwError(simpleError)]])
         .put({ type: 'chat/getChatroomListFailure', payload: simpleError })
-        .dispatch({ type: 'chat/getChatroomList', payload: '11111111' })
+        .dispatch({ type: 'chat/getChatroomList' })
         .hasFinalState({ ...initialState, error: simpleError })
+        .silentRun();
+    });
+    test('createChatroom', () => {
+      return expectSaga(chatSaga)
+        .withReducer(chatSlice.reducer)
+        .provide([[call(chatAPI.createChatroom, { username: '1234' }), throwError(simpleError)]])
+        .put({ type: 'chat/createChatroomFailure', payload: simpleError })
+        .dispatch({ type: 'chat/createChatroom', payload: { username: '1234' } })
+        .hasFinalState({ ...initialState, create: { ...initialState.create, error: simpleError } })
         .silentRun();
     });
     test('getMessageList', () => {

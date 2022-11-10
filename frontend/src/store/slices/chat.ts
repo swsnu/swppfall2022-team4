@@ -8,6 +8,11 @@ interface ChatState {
   socket: any;
   where: string | null;
 
+  create: {
+    id: string | null;
+    error: AxiosError | null;
+  };
+
   chatroomList: chatAPI.chatroomType[];
   messageList: chatAPI.messageType[];
   error: AxiosError | null;
@@ -15,6 +20,11 @@ interface ChatState {
 export const initialState: ChatState = {
   socket: null,
   where: null,
+
+  create: {
+    id: null,
+    error: null,
+  },
 
   chatroomList: [],
   messageList: [],
@@ -25,6 +35,11 @@ export const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
+    resetCreate: state => {
+      state.create.id = null;
+      state.create.error = null;
+    },
+
     setSocket: (state, { payload }) => {
       state.socket = payload;
     },
@@ -34,8 +49,7 @@ export const chatSlice = createSlice({
     addMessage: (state, { payload }) => {
       state.messageList.push(payload);
     },
-    getChatroomList: (state, action: PayloadAction<string>) => {
-      state.chatroomList = [];
+    getChatroomList: state => {
       state.error = null;
     },
     getChatroomListSuccess: (state, { payload }) => {
@@ -45,6 +59,19 @@ export const chatSlice = createSlice({
     getChatroomListFailure: (state, { payload }) => {
       state.chatroomList = [];
       state.error = payload;
+      alert(payload.response?.data.message);
+    },
+    createChatroom: (state, action: PayloadAction<{ username: string }>) => {
+      state.create.id = null;
+      state.create.error = null;
+    },
+    createChatroomSuccess: (state, { payload }) => {
+      state.create.id = payload.id;
+      state.create.error = null;
+    },
+    createChatroomFailure: (state, { payload }) => {
+      state.create.id = null;
+      state.create.error = payload;
       alert(payload.response?.data.message);
     },
     getMessageList: (state, action: PayloadAction<string>) => {
@@ -64,12 +91,20 @@ export const chatSlice = createSlice({
 });
 export const chatActions = chatSlice.actions;
 
-function* getChatroomListSaga(action: PayloadAction<string>) {
+function* getChatroomListSaga() {
   try {
-    const response: AxiosResponse = yield call(chatAPI.getChatroomList, action.payload);
+    const response: AxiosResponse = yield call(chatAPI.getChatroomList);
     yield put(chatActions.getChatroomListSuccess(response));
   } catch (error) {
     yield put(chatActions.getChatroomListFailure(error));
+  }
+}
+function* createChatroomSaga(action: PayloadAction<{ username: string }>) {
+  try {
+    const response: AxiosResponse = yield call(chatAPI.createChatroom, action.payload);
+    yield put(chatActions.createChatroomSuccess(response));
+  } catch (error) {
+    yield put(chatActions.createChatroomFailure(error));
   }
 }
 function* getMessageListSaga(action: PayloadAction<string>) {
@@ -83,5 +118,6 @@ function* getMessageListSaga(action: PayloadAction<string>) {
 
 export default function* chatSaga() {
   yield takeLatest(chatActions.getChatroomList, getChatroomListSaga);
+  yield takeLatest(chatActions.createChatroom, createChatroomSaga);
   yield takeLatest(chatActions.getMessageList, getMessageListSaga);
 }
