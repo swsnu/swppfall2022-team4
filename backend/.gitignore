@@ -178,3 +178,4 @@ env.tar
 dump.rdb
 media/*.jpeg
 media/*.png
+!media/profile_default.png
