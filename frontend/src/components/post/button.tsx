@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import '../../styles/color.css';
 
-const BtnBlueprint = styled.button`
+export const BtnBlueprint = styled.button`
   padding: 0px;
   margin: 0px;
   width: auto;

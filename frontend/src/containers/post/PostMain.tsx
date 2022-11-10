@@ -12,10 +12,7 @@ import { BlueBigBtn } from 'components/post/button';
 import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
 import { articleItemGrid } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
-
-interface IPropsPageIndicator {
-  isActive?: boolean;
-}
+import { postPaginator } from 'components/post/paginator';
 
 const PostMain = () => {
   const dispatch = useDispatch();
@@ -141,39 +138,7 @@ const PostMain = () => {
       ) : (
         <LoadingWithoutMinHeight />
       )}
-      <ArticleFooter>
-        <PageNumberIndicator isActive={page >= 2} onClick={() => setPage(1)}>
-          ◀◀
-        </PageNumberIndicator>
-        <PageNumberIndicator isActive={page >= 2} onClick={() => (page >= 2 ? setPage(page => page - 1) : null)}>
-          ◀
-        </PageNumberIndicator>
-        {maxPage &&
-          [...Array(5)]
-            .map((_, i) => Math.floor((page - 1) / 5) * 5 + i + 1)
-            .map(
-              p =>
-                p <= maxPage && (
-                  <PageNumberIndicator isActive={p != page} key={p} onClick={() => (p != page ? setPage(p) : null)}>
-                    {p}
-                  </PageNumberIndicator>
-                ),
-            )}
-        {maxPage && (
-          <PageNumberIndicator
-            isActive={page < maxPage}
-            onClick={() => (page < maxPage ? setPage(page => page + 1) : null)}
-          >
-            ▶︎
-          </PageNumberIndicator>
-        )}
-        {maxPage && (
-          <PageNumberIndicator isActive={page < maxPage} onClick={() => (maxPage ? setPage(maxPage) : null)}>
-            ▶︎▶︎
-          </PageNumberIndicator>
-        )}
-        현재 페이지 : {page}
-      </ArticleFooter>
+      {postPaginator({ page, setPage, maxPage })}
     </ArticleListWrapper>
   );
 
@@ -187,18 +152,6 @@ const ArticleListWrapper = styled.div`
   min-height: 100%;
   background-color: #ffffff;
   position: relative;
-`;
-
-const ArticleFooter = styled.div`
-  padding: 10px 20px;
-  font-size: 16px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-top: 1px solid black;
-  position: absolute;
-  bottom: 0px;
 `;
 
 const ArticleHeader = styled(articleItemGrid)`
@@ -233,16 +186,6 @@ const PostPanelWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const PageNumberIndicator = styled.span<IPropsPageIndicator>`
-  margin: 0px 5px;
-  ${({ isActive }) =>
-    isActive &&
-    `
-    cursor: pointer;
-    color: #62bf45;
-  `}
 `;
 
 export default PostMain;
