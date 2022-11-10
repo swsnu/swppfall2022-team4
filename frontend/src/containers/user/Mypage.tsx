@@ -4,9 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineEdit } from 'react-icons/ai';
 import styled from 'styled-components';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
+import { chatActions } from 'store/slices/chat';
 import { dateDiff, timeAgoFormat } from 'utils/datetime';
 
 import Loading, { LoadingWithoutMinHeight } from 'components/common/Loading';
@@ -23,8 +26,6 @@ import {
   FuncBtnStatus,
   IPropsComment,
 } from 'containers/post/PostDetail';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ const Mypage = () => {
   };
 
   if (!user) return <div>no user</div>;
+  if (!username) return <div>empty page</div>;
   if (loading || !profile) return <Loading />;
   return (
     <Wrapper>
@@ -78,10 +80,18 @@ const Mypage = () => {
         <ProfileEtcWrapper>
           <DateDiff>{dateDiff(profile.created)}</DateDiff>
           <DateDiffText>일 째</DateDiffText>
-          {user.username === profile.username && (
+          {user.username === profile.username ? (
             <Button3
               content="프로필 수정"
               clicked={() => navigate('/edit_profile')}
+              style={{
+                marginTop: '20px',
+              }}
+            />
+          ) : (
+            <Button3
+              content="메시지 전송"
+              clicked={() => dispatch(chatActions.createChatroom({ me: user.username, target: username }))}
               style={{
                 marginTop: '20px',
               }}

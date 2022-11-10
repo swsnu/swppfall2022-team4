@@ -4,15 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AiFillHome } from 'react-icons/ai';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { IoIosNotifications, IoIosNotificationsOutline } from 'react-icons/io';
-import { HiOutlineDocumentReport, HiUserGroup, HiOutlineAnnotation, HiInformationCircle } from 'react-icons/hi';
+import {
+  HiOutlineDocumentReport,
+  HiUserGroup,
+  HiOutlineAnnotation,
+  HiPhotograph,
+  HiInformationCircle,
+} from 'react-icons/hi';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
 import { chatActions } from 'store/slices/chat';
-import useCheckAuth from 'hooks/useCheckAuth';
 
 const Header = () => {
-  useCheckAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -27,6 +31,9 @@ const Header = () => {
     where: state.chat.where,
   }));
 
+  useEffect(() => {
+    if (!user) navigate('/login');
+  }, [navigate, user]);
   useEffect(() => {
     function handleClickOutside(e: MouseEvent): void {
       if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
@@ -58,7 +65,6 @@ const Header = () => {
   const ws: React.MutableRefObject<WebSocket | null> = useRef(null);
   useEffect(() => {
     ws.current = new WebSocket(`ws://${process.env.REACT_APP_API_SOCKET_URL}/ws/chat/${user && user.username}/`);
-
     ws.current.onopen = () => {
       console.log(`CONNECTED`);
       dispatch(chatActions.setSocket(ws.current));
@@ -72,9 +78,7 @@ const Header = () => {
     };
     ws.current.onmessage = e => {
       const data = JSON.parse(e.data);
-
       console.log(data, where, data.where.toString());
-
       if (data.type === 'CHAT') {
         if (where === null) {
           console.log('ignore...');
@@ -92,6 +96,24 @@ const Header = () => {
     return () => {
       console.log('CLOSE');
       if (ws && ws.current) ws.current.close();
+    };
+  }, []);
+  useEffect(() => {
+    if (!ws.current) return;
+    ws.current.onmessage = e => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'CHAT') {
+        if (where === null) {
+          console.log('ignore...');
+        } else if (where !== data.where.toString()) {
+          console.log('update list...');
+          dispatch(chatActions.getChatroomList(user?.username || ''));
+        } else {
+          console.log('update list and message...');
+          dispatch(chatActions.getChatroomList(user?.username || ''));
+          dispatch(chatActions.addMessage(data.data));
+        }
+      }
     };
   }, [where]);
 
@@ -120,6 +142,9 @@ const Header = () => {
           <Category to="/post" className={({ isActive }) => (isActive ? 'active' : '')}>
             커뮤니티
           </Category>
+          <Category to="/place" className={({ isActive }) => (isActive ? 'active' : '')}>
+            장소
+          </Category>
           <Category to="/information" className={({ isActive }) => (isActive ? 'active' : '')}>
             운동정보
           </Category>
@@ -132,6 +157,9 @@ const Header = () => {
           <CategoryIcon to="/post" className={({ isActive }) => (isActive ? 'active' : '')}>
             <HiOutlineAnnotation />
           </CategoryIcon>
+          <CategoryIcon to="/place" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <HiPhotograph />
+          </CategoryIcon>
           <CategoryIcon to="/information" className={({ isActive }) => (isActive ? 'active' : '')}>
             <HiInformationCircle />
           </CategoryIcon>
@@ -140,17 +168,24 @@ const Header = () => {
         <IconWrapper>
           <NotificationWrapper ref={notificationRef}>
             {notice.length > 0 ? (
-              <IoIosNotifications onClick={() => setNotificationOpen(!notificationOpen)} />
+              <IoIosNotifications
+                onClick={() => setNotificationOpen(!notificationOpen)}
+                data-testid="notificationIcon"
+              />
             ) : (
-              <IoIosNotificationsOutline onClick={() => setNotificationOpen(!notificationOpen)} />
+              <IoIosNotificationsOutline
+                onClick={() => setNotificationOpen(!notificationOpen)}
+                data-testid="notificationIcon"
+              />
             )}
-            <Notification open={notificationOpen}>{<div>Notification!</div>}</Notification>
+            <Notification open={notificationOpen}>{<div>알림</div>}</Notification>
           </NotificationWrapper>
           <InfoWrapper ref={infoRef}>
             <HeaderImage
               src={process.env.REACT_APP_API_IMAGE + user.image}
               alt="profile"
               onClick={() => setInfoOpen(!infoOpen)}
+              data-testid="infoIcon"
             />
             <InfoPopUpWrapper open={infoOpen}>
               <InfoImage src={process.env.REACT_APP_API_IMAGE + user.image} alt="profile" />
@@ -158,13 +193,15 @@ const Header = () => {
                 <InfoPopUpNickname>{user.nickname}</InfoPopUpNickname>
                 {infoOpen && (
                   <div style={{ display: 'flex' }}>
-                    <MypageButton onClick={() => navigate(`/profile/${user.username}`)}>
+                    <MypageButton onClick={() => navigate(`/profile/${user.username}`)} data-testid="mypageButton">
                       <AiFillHome />
                     </MypageButton>
-                    <ChatButton onClick={() => navigate(`/chat`)}>
+                    <ChatButton onClick={() => navigate(`/chat`)} data-testid="chatButton">
                       <BsFillChatDotsFill />
                     </ChatButton>
-                    <LogoutButton onClick={onLogout}>Logout</LogoutButton>
+                    <LogoutButton onClick={onLogout} data-testid="logoutButton">
+                      Logout
+                    </LogoutButton>
                   </div>
                 )}
               </InfoPopUpSmallWrapper>
@@ -220,7 +257,7 @@ const TitleText2 = styled.div`
   letter-spacing: -2px;
   color: #349c66;
 
-  @media all and (max-width: 575px) {
+  @media all and (max-width: 600px) {
     display: none;
   }
 `;
@@ -238,23 +275,32 @@ const CategoryWrapper = styled.div`
   }
   gap: 80px;
 
-  @media all and (max-width: 875px) {
+  @media all and (max-width: 950px) {
     gap: 60px;
   }
-  @media all and (max-width: 800px) {
+  @media all and (max-width: 840px) {
     gap: 40px;
   }
-  @media all and (max-width: 700px) {
+  @media all and (max-width: 740px) {
     gap: 25px;
   }
-  @media all and (max-width: 635px) {
+  @media all and (max-width: 670px) {
     gap: 10px;
   }
-  @media all and (max-width: 460px) {
+  @media all and (max-width: 600px) {
     gap: 20px;
   }
-  @media all and (max-width: 400px) {
+  @media all and (max-width: 530px) {
     gap: 10px;
+  }
+  @media all and (max-width: 485px) {
+    gap: 20px;
+  }
+  @media all and (max-width: 415px) {
+    gap: 10px;
+  }
+  @media all and (max-width: 360px) {
+    gap: 3px;
   }
 `;
 const Category = styled(NavLink)`
@@ -266,7 +312,7 @@ const Category = styled(NavLink)`
     color: #1c6758;
   }
 
-  @media all and (max-width: 460px) {
+  @media all and (max-width: 485px) {
     display: none;
   }
 `;
@@ -284,7 +330,7 @@ const CategoryIcon = styled(NavLink)`
     }
   }
 
-  @media all and (max-width: 460px) {
+  @media all and (max-width: 485px) {
     display: block;
   }
 `;
@@ -313,6 +359,7 @@ const Notification = styled.div<{ open: boolean }>`
   font-size: 15px;
 
   transition: opacity 0.15s, height 0.15s, padding 0.15s;
+  z-index: ${props => (props.open ? '1' : '-100')};
   opacity: ${props => (props.open ? '1' : '0')};
   height: ${props => (props.open ? 'fit-content' : '0')};
   padding: ${props => (props.open ? '15px' : '0')};
@@ -351,6 +398,7 @@ const InfoPopUpWrapper = styled.div<{ open: boolean }>`
   padding: 8px;
 
   transition: opacity 0.15s, height 0.15s;
+  z-index: ${props => (props.open ? '1' : '-100')};
   opacity: ${props => (props.open ? '1' : '0')};
   height: ${props => (props.open ? '90px' : '0')};
   box-shadow: 1px 1px 2px 2px #646464;
