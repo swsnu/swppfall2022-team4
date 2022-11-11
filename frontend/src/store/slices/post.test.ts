@@ -164,9 +164,9 @@ describe('slices - posts', () => {
       [postActions.toggleCommentReply(createCommentReplyRequest), initialState],
       [postActions.toggleCommentEdit(editCommentRequest), initialState],
       [postActions.resetPost(), initialState],
-      [postActions.createComment(createCommentRequest), initialState],
-      [postActions.editComment(editCommentRequest), initialState],
-      [postActions.deleteComment(deleteCommentRequest), initialState],
+      // [postActions.createComment(createCommentRequest), initialState],
+      // [postActions.editComment(editCommentRequest), initialState],
+      // [postActions.deleteComment(deleteCommentRequest), initialState],
     ])('reducer', (action, state) => {
       const store = configureStore({
         reducer: rootReducer,
@@ -319,6 +319,30 @@ describe('slices - posts', () => {
             commentFunc: true,
           },
         })
+        .silentRun();
+    });
+    test('createComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.createComment, createCommentRequest), undefined]])
+        .dispatch({ type: 'post/createComment', payload: createCommentRequest })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('editComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.editComment, editCommentRequest), undefined]])
+        .dispatch({ type: 'post/editComment', payload: editCommentRequest })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('deleteComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.deleteComment, deleteCommentRequest), undefined]])
+        .dispatch({ type: 'post/deleteComment', payload: deleteCommentRequest })
+        .hasFinalState(initialState)
         .silentRun();
     });
   });

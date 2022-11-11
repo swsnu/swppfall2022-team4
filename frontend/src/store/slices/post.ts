@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as postAPI from 'store/apis/post';
 import * as commentAPI from 'store/apis/comment';
-import { commentFuncSaga, createCommentSaga, deleteCommentSaga, editCommentSaga, getPostCommentSaga } from './comment';
 
 interface PostState {
   postList: {
@@ -278,6 +277,55 @@ function* postFuncSaga(action: PayloadAction<postAPI.postFuncRequestType>) {
     yield put(postActions.postFuncSuccess(response));
   } catch (error) {
     yield put(postActions.postFuncFailure(error));
+  }
+}
+
+// Comment-related saga generator function.
+function* getPostCommentSaga(action: PayloadAction<postAPI.postIdentifyingType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.getPostComment, action.payload);
+    yield put(postActions.getPostCommentSuccess(response));
+  } catch (error) {
+    yield put(postActions.getPostCommentFailure(error));
+  }
+}
+
+function* createCommentSaga(action: PayloadAction<commentAPI.createCommentRequestType>) {
+  try {
+    yield call(commentAPI.createComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.createComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    // yield put(postActions.createCommentFailure(error));
+  }
+}
+
+function* editCommentSaga(action: PayloadAction<commentAPI.editCommentRequestType>) {
+  try {
+    yield call(commentAPI.editComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.editComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    // yield put(postActions.createCommentFailure(error));
+  }
+}
+
+function* deleteCommentSaga(action: PayloadAction<commentAPI.commentIdentifyingRequestType>) {
+  try {
+    yield call(commentAPI.deleteComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.deleteComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    // yield put(postActions.createCommentFailure(error));
+  }
+}
+
+function* commentFuncSaga(action: PayloadAction<commentAPI.commentFuncRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.commentFunc, action.payload);
+    yield put(postActions.commentFuncSuccess(response));
+  } catch (error) {
+    // yield put(commentActions.editcommentFailure(error));
   }
 }
 
