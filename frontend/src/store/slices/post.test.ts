@@ -4,8 +4,10 @@ import * as postAPI from '../apis/post';
 import * as commentAPI from '../apis/comment';
 import * as tagAPI from '../apis/tag';
 import postSaga, { initialState, postSlice } from './post';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 // Mock objects
+const simpleError = new Error('error!');
 const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
 const simplePosts: postAPI.Post[] = [
   {
@@ -78,6 +80,15 @@ const createPostRequest: postAPI.createPostRequestType = {
   prime_tag: simpleTagVisuals[0],
 };
 const updatePostDetailRequest: postAPI.postIdentifyingType = simplePostID;
+const deletePostRequest: postAPI.postIdentifyingType = simplePostID;
+const editPostRequest: postAPI.editPostRequestType = {
+  post_id: '1',
+  title: 'title modified',
+  content: 'content modified',
+  tags: simpleTagVisuals,
+  prime_tag: simpleTagVisuals[0],
+};
+const getPostCommentRequest: postAPI.postIdentifyingType = simplePostID;
 
 // Responses
 const getPostsResponse: postAPI.getPostsResponseType = {
@@ -91,6 +102,9 @@ const getRecentCommentsResponse = {
 };
 const createPostResponse: postAPI.postIdentifyingType = simplePostID;
 const updatePostDetailResponse: postAPI.Post = simplePosts[0];
+const getPostCommentResponse: commentAPI.getPostCommentResponseType = {
+  comments: simpleComments,
+};
 
 describe('slices - posts', () => {
   describe('saga success', () => {
@@ -141,7 +155,7 @@ describe('slices - posts', () => {
         })
         .silentRun();
     });
-    test('getPostDetail', () => {
+    test('updatePostDetail', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
         .provide([[call(postAPI.updatePostDetail, updatePostDetailRequest), updatePostDetailResponse]])
@@ -156,6 +170,138 @@ describe('slices - posts', () => {
         })
         .silentRun();
     });
+    test('deletePost', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.deletePost, deletePostRequest), undefined]])
+        .put({ type: 'post/deletePostSuccess', payload: undefined })
+        .dispatch({ type: 'post/deletePost', payload: deletePostRequest })
+        .hasFinalState({
+          ...initialState,
+          postDelete: true,
+        })
+        .silentRun();
+    });
+    test('editPost', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.editPost, editPostRequest), undefined]])
+        .put({ type: 'post/editPostSuccess', payload: undefined })
+        .dispatch({ type: 'post/editPost', payload: editPostRequest })
+        .hasFinalState({
+          ...initialState,
+          postEdit: true,
+        })
+        .silentRun();
+    });
+    test('getPostComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.getPostComment, getPostCommentRequest), getPostCommentResponse]])
+        .put({ type: 'post/getPostCommentSuccess', payload: getPostCommentResponse })
+        .dispatch({ type: 'post/getPostComment', payload: getPostCommentRequest })
+        .hasFinalState({
+          ...initialState,
+          postComment: {
+            comments: getPostCommentResponse.comments,
+            error: null,
+            commentFunc: false,
+          },
+        })
+        .silentRun();
+    });
+  });
+
+  describe('saga failure', () => {
+    global.alert = jest.fn().mockImplementation(() => null);
+
+    test('getPosts', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.getPosts, getPostsRequest), throwError(simpleError)]])
+        .put({ type: 'post/getPostsFailure', payload: simpleError })
+        .dispatch({ type: 'post/getPosts', payload: getPostsRequest })
+        .hasFinalState({
+          ...initialState,
+          postList: {
+            posts: null,
+            pageNum: null,
+            pageSize: null,
+            pageTotal: null,
+            error: simpleError,
+          },
+        })
+        .silentRun();
+    });
+    test('createPost', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.createPost, createPostRequest), throwError(simpleError)]])
+        .put({ type: 'post/createPostFailure', payload: simpleError })
+        .dispatch({ type: 'post/createPost', payload: createPostRequest })
+        .hasFinalState({
+          ...initialState,
+          postCreate: {
+            post_id: null,
+            status: false,
+          },
+        })
+        .silentRun();
+    });
+    test('updatePostDetail', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.updatePostDetail, updatePostDetailRequest), throwError(simpleError)]])
+        .put({ type: 'post/updatePostDetailFailure', payload: simpleError })
+        .dispatch({ type: 'post/updatePostDetail', payload: updatePostDetailRequest })
+        .hasFinalState({
+          ...initialState,
+          postDetail: {
+            post: null,
+            error: simpleError,
+          },
+        })
+        .silentRun();
+    });
+    test('deletePost', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.deletePost, deletePostRequest), throwError(simpleError)]])
+        .put({ type: 'post/deletePostFailure', payload: simpleError })
+        .dispatch({ type: 'post/deletePost', payload: deletePostRequest })
+        .hasFinalState({
+          ...initialState,
+          postDelete: false,
+        })
+        .silentRun();
+    });
+    test('editPost', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.editPost, editPostRequest), throwError(simpleError)]])
+        .put({ type: 'post/editPostFailure', payload: simpleError })
+        .dispatch({ type: 'post/editPost', payload: editPostRequest })
+        .hasFinalState({
+          ...initialState,
+          postEdit: false,
+        })
+        .silentRun();
+    });
+    test('getPostComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.getPostComment, getPostCommentRequest), throwError(simpleError)]])
+        .put({ type: 'post/getPostCommentFailure', payload: simpleError })
+        .dispatch({ type: 'post/getPostComment', payload: getPostCommentRequest })
+        .hasFinalState({
+          ...initialState,
+          postComment: {
+            comments: null,
+            error: simpleError,
+            commentFunc: false,
+          },
+        })
+        .silentRun();
+    });
   });
 });
-// TODO: SAGA failure

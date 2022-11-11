@@ -115,32 +115,27 @@ export const postSlice = createSlice({
     },
     // deletePost ------------------------------------------------------------------------
     deletePost: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
-      // delete!
       state.postDelete = false;
     },
     deletePostSuccess: (state, { payload }) => {
-      // success!
       state.postDelete = true;
     },
     deletePostFailure: (state, { payload }) => {
-      // failure..
       state.postDelete = false;
       alert('Delete failed');
     },
     // editPost ------------------------------------------------------------------------
     editPost: (state, action: PayloadAction<postAPI.editPostRequestType>) => {
-      // edit!
       state.postEdit = false;
     },
     editPostSuccess: (state, { payload }) => {
-      // success!
       state.postEdit = true;
     },
     editPostFailure: (state, { payload }) => {
-      // failure..
       state.postEdit = false;
-      alert('edit failed');
+      alert('Edit failed');
     },
+    // getPostComment ------------------------------------------------------------------------
     getPostComment: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
       state.postComment.comments = null;
       state.postComment.error = null;
@@ -149,9 +144,10 @@ export const postSlice = createSlice({
       state.postComment.comments = payload.comments;
     },
     getPostCommentFailure: (state, { payload }) => {
-      state.postList.error = payload;
+      state.postComment.error = payload;
       alert(payload.response?.data.message);
     },
+    // createComment ------------------------------------------------------------------------
     createComment: (state, action: PayloadAction<commentAPI.createCommentRequestType>) => {
       //create!
     },
