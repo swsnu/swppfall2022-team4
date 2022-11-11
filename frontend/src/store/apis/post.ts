@@ -2,7 +2,7 @@ import client from './client';
 import { TagVisual } from './tag';
 
 // Used in createPostRequest, deletePostRequest, getPostComment
-export type postIdentifyingRequestType = {
+export type postIdentifyingType = {
   post_id: string;
 };
 
@@ -52,7 +52,7 @@ export type getPostsResponseType = {
 };
 
 export const createPost = async (payload: createPostRequestType) => {
-  const response = await client.post<postIdentifyingRequestType>(`/api/post/`, payload);
+  const response = await client.post<postIdentifyingType>(`/api/post/`, payload);
   return response.data;
 };
 
@@ -64,16 +64,16 @@ export type createPostRequestType = {
   prime_tag: TagVisual | null;
 };
 
-export const getPostDetail = async (payload: postIdentifyingRequestType) => {
+export const getPostDetail = async (payload: postIdentifyingType) => {
   const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
   return response.data;
 };
-export const updatePostDetail = async (payload: postIdentifyingRequestType) => {
+export const updatePostDetail = async (payload: postIdentifyingType) => {
   const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
   return response.data;
 };
 
-export const deletePost = async (payload: postIdentifyingRequestType) => {
+export const deletePost = async (payload: postIdentifyingType) => {
   const response = await client.delete(`/api/post/${payload.post_id}/`);
   return response.data;
 };

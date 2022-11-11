@@ -67,7 +67,7 @@ const postFuncRequest: postAPI.postFuncRequestType = {
   post_id: '1',
   func_type: 'like',
 };
-const postIdentifyingRequest: postAPI.postIdentifyingRequestType = {
+const postIdentifyingRequest: postAPI.postIdentifyingType = {
   post_id: '1',
 };
 
@@ -178,6 +178,10 @@ describe('User API TEST', () => {
       const result = await postAPI.getPostDetail(postIdentifyingRequest);
       expect(result).toBe(`/api/post/${postIdentifyingRequest.post_id}/`);
     });
+    test('updatePostDetail', async () => {
+      const result = await postAPI.updatePostDetail(postIdentifyingRequest);
+      expect(result).toBe(`/api/post/${postIdentifyingRequest.post_id}/`);
+    });
     test('deletePost', async () => {
       const result = await postAPI.deletePost(postIdentifyingRequest);
       expect(result).toBe(`/api/post/${postIdentifyingRequest.post_id}/`);
@@ -209,7 +213,7 @@ describe('User API TEST', () => {
       expect(result).toBe(`/api/comment/${commentFuncRequest.comment_id}/func/`);
     });
     test('getRecentCommentPosts', async () => {
-      const result = await commentAPI.getRecentCommentPosts();
+      const result = await commentAPI.getRecentComments();
       expect(result).toBe(`/api/comment/recent/`);
     });
   });

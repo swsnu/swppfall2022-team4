@@ -21,7 +21,7 @@ const PostEdit = () => {
   useEffect(() => {
     if (id) {
       dispatch(
-        postActions.getPostDetail({
+        postActions.updatePostDetail({
           post_id: id,
         }),
       );
@@ -46,7 +46,7 @@ const PostEdit = () => {
 
   const cancelOnClick = () => {
     // alert('are you sure?');
-    navigate('/post');
+    navigate(`/post/${id}`);
     //TODO;
   };
   const confirmOnClick = () => {

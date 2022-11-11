@@ -23,7 +23,7 @@ const PostMain = () => {
     postList: post.postList.posts,
     maxPage: post.postList.pageTotal,
     searchKeyword: post.postSearch,
-    recentCommentPost: post.recentCommentPosts.comments,
+    recentCommentPost: post.recentComments.comments,
     tagList: tag.tagList,
   }));
   useEffect(() => {
@@ -33,43 +33,12 @@ const PostMain = () => {
       searchKeyword: searchKeyword ? searchKeyword : undefined,
     };
     dispatch(postActions.getPosts(defaultPageConfig));
-    dispatch(postActions.getRecentCommentPosts());
+    dispatch(postActions.getRecentComments());
   }, [page, searchKeyword]);
   useEffect(() => {
     dispatch(tagActions.getTags());
   }, []);
-  const SideBarTitle = styled.span`
-    font-size: 18px;
-    width: 100%;
-    text-align: center;
-    border-bottom: 1px solid gray;
-    padding-bottom: 5px;
-    margin-bottom: 8px;
-  `;
-  const SideBarCommentItem = styled.div`
-    width: 100%;
-    padding: 3px 8px 3px 6px;
-    margin-bottom: 3px;
-    cursor: pointer;
-  `;
-  const SideBarContentWrapper = styled.div`
-    width: 100%;
-  `;
-  const SideBarCommentTitle = styled.span`
-    font-size: 14px;
-    margin-right: 5px;
-  `;
-  const SideBarCommentTime = styled.span`
-    font-size: 8px;
-  `;
-  const TagBubbleWrapper = styled.div`
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: flex-end;
-    padding: 8px 5px;
-  `;
+
   const SideBar = (
     <SideBarWrapper>
       <PostPanelWrapper>
@@ -95,7 +64,7 @@ const PostMain = () => {
         <SideBarContentWrapper>
           {recentCommentPost &&
             recentCommentPost.map(comment => (
-              <SideBarCommentItem onClick={() => navigate(`/post/${comment.post_id}`)}>
+              <SideBarCommentItem key={comment.id} onClick={() => navigate(`/post/${comment.post_id}`)}>
                 •
                 <SideBarCommentTitle>
                   {comment.content.length > 12 ? comment.content.slice(0, 12) + '...' : comment.content}
@@ -144,6 +113,39 @@ const PostMain = () => {
 
   return PostPageWithSearchBar(MainContent, SideBar);
 };
+
+const SideBarTitle = styled.span`
+  font-size: 18px;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid gray;
+  padding-bottom: 5px;
+  margin-bottom: 8px;
+`;
+const SideBarCommentItem = styled.div`
+  width: 100%;
+  padding: 3px 8px 3px 6px;
+  margin-bottom: 3px;
+  cursor: pointer;
+`;
+const SideBarContentWrapper = styled.div`
+  width: 100%;
+`;
+const SideBarCommentTitle = styled.span`
+  font-size: 14px;
+  margin-right: 5px;
+`;
+const SideBarCommentTime = styled.span`
+  font-size: 8px;
+`;
+const TagBubbleWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 8px 5px;
+`;
 
 const ArticleListWrapper = styled.div`
   border: 1px solid black;

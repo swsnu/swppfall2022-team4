@@ -55,6 +55,11 @@ const PostDetail = () => {
   const [editActivated, setEditActivated] = useState(false);
 
   useEffect(() => {
+    return () => {
+      dispatch(postActions.resetPost());
+    };
+  }, []);
+  useEffect(() => {
     if (id) {
       dispatch(
         postActions.updatePostDetail({

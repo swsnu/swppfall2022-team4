@@ -6,7 +6,7 @@ import * as postAPI from 'store/apis/post';
 import { postActions } from './post';
 
 // Comment-related saga generator function.
-export function* getPostCommentSaga(action: PayloadAction<postAPI.postIdentifyingRequestType>) {
+export function* getPostCommentSaga(action: PayloadAction<postAPI.postIdentifyingType>) {
   try {
     const response: AxiosResponse = yield call(commentAPI.getPostComment, action.payload);
     yield put(postActions.getPostCommentSuccess(response));
