@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./frontend
+
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+
+    stdin_open: true
+  backend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./backend
+    container_name: app_backend
+    volumes:
+      - /app/node_modules
+      - ./backend:/app
