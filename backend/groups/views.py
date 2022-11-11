@@ -103,9 +103,10 @@ def group_detail(request, group_id):
 
     else: ## delete
         try:
-            ## 그룹장 여부 확인 필요!!
             gr_id = int(group_id)
             gr_obj = Group.objects.get(id = gr_id)
+            if gr_obj.group_leader.username != request.user.username:
+                return HttpResponse(status = 403)
             gr_obj.delete()
             return JsonResponse({"message":"success"}, status = 200)
         except Group.DoesNotExist:
@@ -121,10 +122,11 @@ def group_members(request, group_id):
     DELETE : exit group
     """
     user = request.user
-    ## 요청자가 그룹 멤버가 아니면 에러 반환!!
     if request.method == "GET":
         try:
             gr_obj = Group.objects.get(id = int(group_id))
+            if not gr_obj.members.filter(username = request.user.username):
+                return HttpResponse(status = 403)
             response_dict = list(gr_obj.members.values('id', 'username', 'image', 'level'))
             return JsonResponse(response_dict, safe=False)
         except Group.DoesNotExist:
@@ -135,6 +137,8 @@ def group_members(request, group_id):
     elif request.method == "POST":
         try:
             gr_obj = Group.objects.get(id = int(group_id))
+            if gr_obj.members.filter(username = request.user.username):
+                return HttpResponseBadRequest()
             gr_obj.members.add(user)
             gr_obj.member_number += 1
             gr_obj.save()
@@ -147,6 +151,8 @@ def group_members(request, group_id):
     else: ## DELETE
         try:
             gr_obj = Group.objects.get(id = int(group_id))
+            if not gr_obj.members.filter(username = request.user.username):
+                return HttpResponseBadRequest()
             gr_obj.members.remove(user)
             gr_obj.member_number -= 1
             gr_obj.save()
