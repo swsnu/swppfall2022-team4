@@ -9,6 +9,7 @@ import PostMain from './PostMain';
 import * as postAPI from '../../store/apis/post';
 import * as commentAPI from '../../store/apis/comment';
 import * as tagAPI from '../../store/apis/tag';
+import userEvent from '@testing-library/user-event';
 
 const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
 const simplePosts: postAPI.Post[] = [
@@ -185,23 +186,19 @@ describe('[PostMain Page]', () => {
     const store = setup();
     act(() => {
       store.dispatch({
-        type: 'post/getPostsSuccess',
-        payload: getPostsResponse,
-      });
-      store.dispatch({
-        type: 'post/getRecentCommentsSuccess',
-        payload: getRecentCommentsResponse,
-      });
-      store.dispatch({
-        type: 'tag/getTagsSuccess',
-        payload: getTagsResponse,
-      });
-      store.dispatch({
         type: 'post/postSearch',
         payload: simpleSearch,
       });
     });
     expect(mockNavigate).toBeCalledTimes(0);
+
+    const searchInput = screen.getByPlaceholderText('Search keyword');
+    userEvent.type(searchInput, 'sssss');
+    const searchClearBtn = screen.getByText('Clear');
+    fireEvent.click(searchClearBtn);
+    expect(searchInput).toHaveValue('');
+    userEvent.type(searchInput, 'sssss');
+    fireEvent.submit(searchInput);
   });
   test('sidebar recent comment button', () => {
     const store = setup();
@@ -216,52 +213,4 @@ describe('[PostMain Page]', () => {
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith(`/post/${simpleComments[1].post_id}`);
   });
-  // test('error', () => {
-  //   const mockAlert = jest.spyOn(global, 'alert').mockImplementation(msg => msg);
-  //   const store = setup();
-  //   act(() => {
-  //     store.dispatch({
-  //       type: 'user/getProfileFailure',
-  //       payload: { response: { status: 404, data: { message: 'error' } } },
-  //     });
-  //   });
-  //   expect(mockAlert).toBeCalledTimes(1);
-  //   expect(mockNavigate).toBeCalledTimes(1);
-  // });
 });
-
-//   test('get', () => {
-//     const store = setup();
-//     act(() => {
-//       store.dispatch({
-//         type: 'user/getProfileSuccess',
-//         payload: simpleProfile,
-//       });
-//     });
-
-//     expect(screen.getByText('nickname')).toBeInTheDocument();
-//     expect(screen.getByText('username')).toBeInTheDocument();
-//     expect(screen.getByText('남성')).toBeInTheDocument();
-//     expect(screen.getByText('180cm')).toBeInTheDocument();
-//     expect(screen.getByText('75kg')).toBeInTheDocument();
-//   });
-
-//   test('button', () => {
-//     const store = setup();
-//     act(() => {
-//       store.dispatch({
-//         type: 'user/getProfileSuccess',
-//         payload: simpleProfile,
-//       });
-//     });
-
-//     const editButton = screen.getByText('프로필 수정');
-//     fireEvent.click(editButton);
-//     expect(mockNavigate).toBeCalledTimes(1);
-//     expect(mockNavigate).toBeCalledWith('/edit_profile');
-
-//     const editIcon = screen.getByTestId('editProfileIcon');
-//     fireEvent.click(editIcon);
-//     expect(mockNavigate).toBeCalledTimes(2);
-//     expect(mockNavigate).toBeCalledWith('/edit_profile');
-//   });
