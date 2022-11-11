@@ -6,7 +6,6 @@ import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import PostEdit from './PostEdit';
 import * as postAPI from '../../store/apis/post';
-import * as commentAPI from '../../store/apis/comment';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
 
@@ -47,54 +46,7 @@ const simplePosts: postAPI.Post[] = [
     scraped: false,
   },
 ];
-const simpleComments: commentAPI.Comment[] = [
-  {
-    id: '1',
-    author_name: 'KJY',
-    content: 'Comment Content longlong longlong',
-    created: '2022-11-11',
-    updated: '2022-11-12',
-    like_num: 1,
-    dislike_num: 2,
-    parent_comment: null,
-    replyActive: false,
-    editActive: false,
-    liked: false,
-    disliked: false,
-    post_id: '1',
-  },
-  {
-    id: '2',
-    author_name: 'KJY2',
-    content: 'GETBYCOM',
-    created: '2022-11-12',
-    updated: '2022-11-12',
-    like_num: 12,
-    dislike_num: 1,
-    parent_comment: null,
-    replyActive: false,
-    editActive: false,
-    liked: false,
-    disliked: false,
-    post_id: '1',
-  },
-];
-const simplePostID: postAPI.postIdentifyingType = {
-  post_id: '59',
-};
-const simpleSearch = {
-  search_keyword: 'searchKeyword',
-};
 
-const getPostsResponse: postAPI.getPostsResponseType = {
-  posts: simplePosts,
-  page: 2,
-  page_size: 15,
-  page_total: 7,
-};
-const getRecentCommentsResponse = {
-  comments: simpleComments,
-};
 const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
     {
@@ -105,10 +57,8 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
     },
   ],
 };
-const createPostResponse: postAPI.postIdentifyingType = simplePostID;
 
 const mockNavigate = jest.fn();
-import { useParams } from 'react-router-dom';
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
@@ -135,21 +85,6 @@ const setup = () => {
     </Provider>,
   );
   return store;
-};
-const setupWithoutUser = () => {
-  const store = configureStore({ reducer: rootReducer });
-  render(
-    <Provider store={store}>
-      <PostEdit />
-    </Provider>,
-  );
-  return store;
-};
-
-const defaultPageConfig: postAPI.getPostsRequestType = {
-  pageNum: 1,
-  pageSize: 15,
-  searchKeyword: undefined,
 };
 
 import Router from 'react-router-dom';
@@ -242,16 +177,6 @@ describe('[PostEdit Page]', () => {
     });
     expect(mockDispatch).not.toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
   });
-  //   test('edit confirm button after typing (undefined user)', () => {
-  //     setupWithoutUser();
-  //     const confirmBtn = screen.getByText('완료');
-  //     const titleInput = screen.getByPlaceholderText('제목');
-  //     const contentInput = screen.getByPlaceholderText('내용');
-  //     userEvent.type(titleInput, 'Rullu');
-  //     userEvent.type(contentInput, 'Ralla');
-  //     fireEvent.click(confirmBtn);
-  //     expect(mockDispatch).toBeCalledTimes(1);
-  //   });
   test('post edit success', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
     const store = setup();
