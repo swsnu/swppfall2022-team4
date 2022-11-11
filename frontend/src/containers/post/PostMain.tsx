@@ -5,7 +5,7 @@ import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { getPostsRequestType } from 'store/apis/post';
 import { timeAgoFormat } from 'utils/datetime';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { tagActions } from 'store/slices/tag';
 import { BlueBigBtn } from 'components/post/button';
@@ -29,7 +29,7 @@ const PostMain = () => {
   useEffect(() => {
     const defaultPageConfig: getPostsRequestType = {
       pageNum: page,
-      pageSize: 10,
+      pageSize: 15,
       searchKeyword: searchKeyword ? searchKeyword : undefined,
     };
     dispatch(postActions.getPosts(defaultPageConfig));
@@ -89,7 +89,7 @@ const PostMain = () => {
       {postList ? (
         postList.map((post, id) => {
           return (
-            <ArticleItem key={id} onClick={() => navigate(`/post/${post.id}`)}>
+            <ArticleItem data-testid="ArticleItem" key={id} onClick={() => navigate(`/post/${post.id}`)}>
               {post.prime_tag ? (
                 <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
               ) : (

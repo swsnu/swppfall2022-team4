@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { timeAgoFormat } from 'utils/datetime';
 import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { Comment } from 'store/apis/comment';
@@ -14,7 +14,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
-import { columnFlex, rowCenterFlex } from 'components/post/layout';
+import { columnCenterFlex, columnFlex, rowCenterFlex } from 'components/post/layout';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -679,11 +679,8 @@ const CommentInput = styled.input`
   padding: 10px 12px;
 `;
 
-const PostPanelWrapper = styled.div`
+const PostPanelWrapper = styled(columnCenterFlex)`
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `;
 
 export default PostDetail;
