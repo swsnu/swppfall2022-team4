@@ -215,7 +215,7 @@ describe('User API TEST', () => {
   });
   describe('Tag', () => {
     test('getTags', async () => {
-      const result = await tagAPI.getTag();
+      const result = await tagAPI.getTags();
       expect(result).toBe(`/api/tag/`);
     });
     test('createTagClass', async () => {
