@@ -16,7 +16,7 @@ export type getFitElementResponseType = {
 export type getDailyLogResponseType = {
   date: Date;
   memo: string;
-  fitelements: List;
+  fitelements: List<getFitElementResponseType>;
   fit_elements: Array<any>;
 };
 
@@ -132,18 +132,24 @@ export const getDailyLog = async (payload: getDailyLogRequestType) => {
   const response = await client.get<getDailyLogResponseType>(
     `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`,
   );
+  try {
+    const temp_list = await Promise.all(
+      response.data.fitelements &&
+        response.data.fitelements.map(id => {
+          return client.get<getFitElementResponseType>(`/api/fitelement/${id}/`);
+        }),
+    );
 
-  const temp_list = await Promise.all(
-    response.data.fitelements.map(id => {
-      return client.get<getFitElementResponseType>(`/api/fitelement/${id}/`);
-    }),
-  );
+    const return_list = temp_list.map(v => {
+      return v.data;
+    });
 
-  const return_list = temp_list.map(v => {
-    return v.data;
-  });
+    return [response.data, return_list];
+  } catch (e) {
+    // continue regardless of error
+  }
 
-  return [response.data, return_list];
+  return [response.data, []];
 };
 
 export const createWorkoutLog = async (payload: createWorkoutLogRequestType) => {

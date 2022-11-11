@@ -4,6 +4,7 @@ import * as chatAPI from './chat';
 import * as postAPI from './post';
 import * as commentAPI from './comment';
 import * as tagAPI from './tag';
+import * as workoutAPI from './workout';
 
 beforeEach(() => {
   client.get = jest.fn().mockImplementation(url => Promise.resolve({ data: url }));
@@ -102,6 +103,21 @@ const createTagRequest: tagAPI.createTagRequestType = {
 const searchTagRequest: tagAPI.searchTagRequestType = {
   class_name: 'class',
   tag_name: '1',
+};
+
+// Workout dummy.
+const getFitElementRequest: workoutAPI.getFitElementRequestType = {
+  fitelement_id: 0,
+};
+
+const getDailyLogRequest: workoutAPI.getDailyLogRequestType = {
+  year: 2022,
+  month: 10,
+  specific_date: 1,
+  user_id: 1,
+  data: {
+    user_id: 1,
+  },
 };
 
 describe('User API TEST', () => {
@@ -217,6 +233,18 @@ describe('User API TEST', () => {
     test('searchTag', async () => {
       const result = await tagAPI.searchTag(searchTagRequest);
       expect(result).toBe(`/api/tag/search/?tag=${searchTagRequest.tag_name}`);
+    });
+  });
+  describe('Workout', () => {
+    test('getFitElement', async () => {
+      const result = await workoutAPI.getFitElement(getFitElementRequest);
+      expect(result).toBe(`/api/fitelement/${getFitElementRequest.fitelement_id}/`);
+    });
+    test('getDailyLog', async () => {
+      const result = await workoutAPI.getDailyLog(getDailyLogRequest);
+      expect(result[0]).toBe(
+        `/api/fitelement/dailylog/${getDailyLogRequest.year}/${getDailyLogRequest.month}/${getDailyLogRequest.specific_date}/?&user_id=${getDailyLogRequest.user_id}`,
+      );
     });
   });
 });
