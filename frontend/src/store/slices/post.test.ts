@@ -25,6 +25,23 @@ const simplePosts: postAPI.Post[] = [
     disliked: true,
     scraped: false,
   },
+  {
+    id: '2',
+    title: 'Second Post',
+    author_name: 'KJY2',
+    content: 'Post Contents2',
+    created: '2022-11-11',
+    updated: '2022-11-11',
+    like_num: 11,
+    dislike_num: 21,
+    scrap_num: 31,
+    comments_num: 11,
+    tags: [],
+    prime_tag: undefined,
+    liked: false,
+    disliked: true,
+    scraped: false,
+  },
 ];
 const simplePostID: postAPI.postIdentifyingType = {
   post_id: '59',
@@ -60,7 +77,7 @@ const createPostRequest: postAPI.createPostRequestType = {
   tags: simpleTagVisuals,
   prime_tag: simpleTagVisuals[0],
 };
-const getPostDetailRequest: postAPI.postIdentifyingType = simplePostID;
+const updatePostDetailRequest: postAPI.postIdentifyingType = simplePostID;
 
 // Responses
 const getPostsResponse: postAPI.getPostsResponseType = {
@@ -73,6 +90,7 @@ const getRecentCommentsResponse = {
   comments: simpleComments,
 };
 const createPostResponse: postAPI.postIdentifyingType = simplePostID;
+const updatePostDetailResponse: postAPI.Post = simplePosts[0];
 
 describe('slices - posts', () => {
   describe('saga success', () => {
@@ -126,19 +144,18 @@ describe('slices - posts', () => {
     test('getPostDetail', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
-        .provide([[call(postAPI.getPostDetail, getPostDetailRequest), createPostResponse]])
-        .put({ type: 'post/getPostDetailSuccess', payload: createPostResponse })
-        .dispatch({ type: 'post/getPostDetail', payload: getPostDetailRequest })
+        .provide([[call(postAPI.updatePostDetail, updatePostDetailRequest), updatePostDetailResponse]])
+        .put({ type: 'post/updatePostDetailSuccess', payload: updatePostDetailResponse })
+        .dispatch({ type: 'post/updatePostDetail', payload: updatePostDetailRequest })
         .hasFinalState({
           ...initialState,
-          postCreate: {
-            post_id: createPostResponse.post_id,
-            status: true,
+          postDetail: {
+            post: updatePostDetailResponse,
+            error: null,
           },
         })
         .silentRun();
     });
   });
-
-  // TODO: SAGA failure
 });
+// TODO: SAGA failure

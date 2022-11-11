@@ -11,7 +11,7 @@ const PostEdit = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
-  const [primeTag, setPrimeTag] = useState<TagVisual | null>(null);
+  const [primeTag, setPrimeTag] = useState<TagVisual | undefined>();
 
   const { post, postEditStatus, user } = useSelector(({ post, user }: RootState) => ({
     post: post.postDetail.post,

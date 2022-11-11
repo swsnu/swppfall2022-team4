@@ -54,14 +54,14 @@ const createPostRequest: postAPI.createPostRequestType = {
   content: 'content',
   author_name: testUsername,
   tags: [testTag],
-  prime_tag: null,
+  prime_tag: undefined,
 };
 const editPostRequest: postAPI.editPostRequestType = {
   post_id: '1',
   title: 'title',
   content: 'content',
   tags: [testTag],
-  prime_tag: null,
+  prime_tag: undefined,
 };
 const postFuncRequest: postAPI.postFuncRequestType = {
   post_id: '1',
@@ -173,10 +173,6 @@ describe('User API TEST', () => {
     test('editPost', async () => {
       const result = await postAPI.editPost(editPostRequest);
       expect(result).toBe(`/api/post/${editPostRequest.post_id}/`);
-    });
-    test('getPostDetail', async () => {
-      const result = await postAPI.getPostDetail(postIdentifyingRequest);
-      expect(result).toBe(`/api/post/${postIdentifyingRequest.post_id}/`);
     });
     test('updatePostDetail', async () => {
       const result = await postAPI.updatePostDetail(postIdentifyingRequest);

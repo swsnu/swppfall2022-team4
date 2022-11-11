@@ -38,8 +38,8 @@ export const PostEditorLayout = (
   confirmOnClick: () => void,
   selectedTags: TagVisual[],
   setSelectedTags: (value: React.SetStateAction<TagVisual[]>) => void,
-  primeTag: TagVisual | null,
-  setPrimeTag: (value: React.SetStateAction<TagVisual | null>) => void,
+  primeTag: TagVisual | undefined,
+  setPrimeTag: (value: React.SetStateAction<TagVisual | undefined>) => void,
 ) => {
   const dispatch = useDispatch();
   const { tagList, tagSearch, tagCreate } = useSelector(({ tag }: RootState) => ({

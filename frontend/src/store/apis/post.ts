@@ -32,7 +32,7 @@ export type Post = {
   scrap_num: number;
   comments_num: number;
   tags: TagVisual[];
-  prime_tag: TagVisual;
+  prime_tag: TagVisual | undefined;
   liked?: boolean;
   disliked?: boolean;
   scraped?: boolean;
@@ -61,15 +61,11 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
   tags: TagVisual[];
-  prime_tag: TagVisual | null;
+  prime_tag: TagVisual | undefined;
 };
 
-export const getPostDetail = async (payload: postIdentifyingType) => {
-  const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
-  return response.data;
-};
 export const updatePostDetail = async (payload: postIdentifyingType) => {
-  const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
+  const response = await client.get<Post>(`/api/post/${payload.post_id}/`);
   return response.data;
 };
 
@@ -88,7 +84,7 @@ export type editPostRequestType = {
   title: string;
   content: string;
   tags: TagVisual[];
-  prime_tag: TagVisual | null;
+  prime_tag: TagVisual | undefined;
 };
 
 export const postFunc = async (payload: postFuncRequestType) => {
