@@ -4,7 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
-import PostMain from './PostMain';
+import PostCreate from './PostCreate';
 
 import * as postAPI from '../../store/apis/post';
 import * as commentAPI from '../../store/apis/comment';
@@ -80,6 +80,9 @@ const simpleComments: commentAPI.Comment[] = [
     post_id: '1',
   },
 ];
+const simplePostID: postAPI.postIdentifyingType = {
+  post_id: '59',
+};
 const simpleSearch = {
   search_keyword: 'searchKeyword',
 };
@@ -103,6 +106,7 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
     },
   ],
 };
+const createPostResponse: postAPI.postIdentifyingType = simplePostID;
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -125,7 +129,16 @@ const setup = () => {
   });
   render(
     <Provider store={store}>
-      <PostMain />
+      <PostCreate />
+    </Provider>,
+  );
+  return store;
+};
+const setupWithoutUser = () => {
+  const store = configureStore({ reducer: rootReducer });
+  render(
+    <Provider store={store}>
+      <PostCreate />
     </Provider>,
   );
   return store;
@@ -137,79 +150,69 @@ const defaultPageConfig: postAPI.getPostsRequestType = {
   searchKeyword: undefined,
 };
 
-describe('[PostMain Page]', () => {
+describe('[PostCreate Page]', () => {
   test('basic rendering', () => {
     const store = setup();
     act(() => {
-      store.dispatch({
-        type: 'post/getPostsSuccess',
-        payload: getPostsResponse,
-      });
-      store.dispatch({
-        type: 'post/getRecentCommentsSuccess',
-        payload: getRecentCommentsResponse,
-      });
       store.dispatch({
         type: 'tag/getTagsSuccess',
         payload: getTagsResponse,
       });
     });
-    expect(mockDispatch).toBeCalledTimes(3); // getTags, getPosts, getRecentComments
-    expect(mockDispatch).toBeCalledWith({ payload: defaultPageConfig, type: 'post/getPosts' });
-    expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'post/getRecentComments' });
+    expect(mockDispatch).toBeCalledTimes(1); // getTags
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });
     expect(mockNavigate).toBeCalledTimes(0);
   });
-  test('write post button', () => {
+  test('write cancle button', () => {
     setup();
-    const createPostBtn = screen.getByText('글 쓰기');
-    fireEvent.click(createPostBtn);
+    const cancelBtn = screen.getByText('취소');
+    fireEvent.click(cancelBtn);
     expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith('/post/create');
+    expect(mockNavigate).toBeCalledWith('/post');
   });
-  test('article item click', () => {
+  test('write confirm button', () => {
+    setup();
+    const confirmBtn = screen.getByText('완료');
+    fireEvent.click(confirmBtn); // cannot click.
+    expect(mockDispatch).toBeCalledTimes(1); // getTags
+  });
+  test('write confirm button after typing', () => {
+    setup();
+    const confirmBtn = screen.getByText('완료');
+    const titleInput = screen.getByPlaceholderText('제목');
+    const contentInput = screen.getByPlaceholderText('내용');
+    userEvent.type(titleInput, 'Rullu');
+    userEvent.type(contentInput, 'Ralla');
+    fireEvent.click(confirmBtn);
+    expect(mockDispatch).toBeCalledTimes(2);
+    expect(mockDispatch).toBeCalledWith({
+      payload: { title: 'Rullu', content: 'Ralla', author_name: 'username', tags: [], prime_tag: undefined },
+      type: 'post/createPost',
+    });
+  });
+  test('write confirm button after typing (undefined user)', () => {
+    setupWithoutUser();
+    const confirmBtn = screen.getByText('완료');
+    const titleInput = screen.getByPlaceholderText('제목');
+    const contentInput = screen.getByPlaceholderText('내용');
+    userEvent.type(titleInput, 'Rullu');
+    userEvent.type(contentInput, 'Ralla');
+    fireEvent.click(confirmBtn);
+    expect(mockDispatch).toBeCalledTimes(1);
+  });
+  test('post creation success', () => {
     const store = setup();
     act(() => {
       store.dispatch({
-        type: 'post/getPostsSuccess',
-        payload: getPostsResponse,
+        type: 'post/createPostSuccess',
+        payload: createPostResponse,
       });
     });
-    const articleItem = screen.getAllByTestId('ArticleItem');
-    expect(articleItem).toHaveLength(2);
-    fireEvent.click(articleItem[0]);
-    expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith(`/post/${getPostsResponse.posts[0].id}`);
-  });
-  test('search', () => {
-    const store = setup();
-    act(() => {
-      store.dispatch({
-        type: 'post/postSearch',
-        payload: simpleSearch,
-      });
-    });
-    expect(mockNavigate).toBeCalledTimes(0);
+    expect(mockDispatch).toBeCalledTimes(3);
+    expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'post/stateRefresh' });
+    expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/clearTagState' });
 
-    const searchInput = screen.getByPlaceholderText('Search keyword');
-    userEvent.type(searchInput, 'sssss');
-    const searchClearBtn = screen.getByText('Clear');
-    fireEvent.click(searchClearBtn);
-    expect(searchInput).toHaveValue('');
-    userEvent.type(searchInput, 'sssss');
-    fireEvent.submit(searchInput);
-  });
-  test('sidebar recent comment button', () => {
-    const store = setup();
-    act(() => {
-      store.dispatch({
-        type: 'post/getRecentCommentsSuccess',
-        payload: getRecentCommentsResponse,
-      });
-    });
-    const sidebarComment = screen.getByText('GETBYCOM');
-    fireEvent.click(sidebarComment);
     expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith(`/post/${simpleComments[1].post_id}`);
+    expect(mockNavigate).toBeCalledWith(`/post/${createPostResponse.post_id}`);
   });
 });

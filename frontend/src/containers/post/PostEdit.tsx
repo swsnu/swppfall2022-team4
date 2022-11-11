@@ -5,6 +5,7 @@ import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PostEditorLayout } from './PostEditorLayout';
 import { TagVisual } from 'store/apis/tag';
+import { tagActions } from 'store/slices/tag';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();
@@ -39,6 +40,7 @@ const PostEdit = () => {
     if (postEditStatus) {
       navigate(`/post/${id}`);
       dispatch(postActions.stateRefresh());
+      dispatch(tagActions.clearTagState());
     }
   }, [postEditStatus]);
   const dispatch = useDispatch();
