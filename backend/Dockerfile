@@ -4,12 +4,16 @@ FROM python:3.9.6
 RUN mkdir -p /app/backend
 WORKDIR /app/backend
 
-COPY requirements.txt /backend/requirements.txt
+COPY requirements.txt /app/backend/requirements.txt
 RUN pip install -r requirements.txt
-RUN pip install uwsgi
 
-COPY . .
+COPY . /app/backend
+
+ENV DJANGO_SETTINGS_MODULE=FITogether.settings
+
+RUN pip install uwsgi
+RUN python manage.py migrate
+RUN python manage.py makemigrations
 
 EXPOSE 8000
-
-CMD uwsgi --wsgi-file backend/wsgi.py --env DJANGO_SETTINGS_MODULE=backend.settings.production --http :8000
+ENTRYPOINT [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]

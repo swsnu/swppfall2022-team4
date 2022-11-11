@@ -3,19 +3,44 @@ version: "3"
 services:
   frontend:
     build:
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
       context: ./frontend
+    env_file:
+      - ./frontend/.env
+    container_name: frontend_container
+    ports:
+      - 3000:3000
+    networks:
+      - custom_newtork
 
+  nginx:
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx 
+    ports:
+      - 80:80
     volumes:
-      - /app/node_modules
-      - ./frontend:/app
-
-    stdin_open: true
+      - ./nginx/nginx-setup.config:/etc/nginx/conf.d/default
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - custom_newtork
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    
   backend:
     build:
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
       context: ./backend
-    container_name: app_backend
-    volumes:
-      - /app/node_modules
-      - ./backend:/app
+    container_name: backend_container
+    env_file:
+      - ./backend/.env
+    networks:
+      - custom_newtork
+    ports:
+      - 8000:8000
+
+networks:
+  custom_newtork:
+    driver: bridge
