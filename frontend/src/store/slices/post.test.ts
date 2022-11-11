@@ -3,8 +3,10 @@ import { expectSaga } from 'redux-saga-test-plan';
 import * as postAPI from '../apis/post';
 import * as commentAPI from '../apis/comment';
 import * as tagAPI from '../apis/tag';
-import postSaga, { initialState, postSlice } from './post';
+import postSaga, { initialState, postActions, postSlice } from './post';
 import { throwError } from 'redux-saga-test-plan/providers';
+import { configureStore } from '@reduxjs/toolkit';
+import { rootReducer } from 'store';
 
 // Mock objects
 const simpleError = new Error('error!');
@@ -64,6 +66,21 @@ const simpleComments: commentAPI.Comment[] = [
     disliked: false,
     post_id: '1',
   },
+  {
+    id: '2',
+    author_name: 'KJY2',
+    content: 'Comment Content2',
+    created: '2022-11-12',
+    updated: '2022-11-12',
+    like_num: 12,
+    dislike_num: 1,
+    parent_comment: null,
+    replyActive: false,
+    editActive: false,
+    liked: false,
+    disliked: false,
+    post_id: '1',
+  },
 ];
 
 // Requests
@@ -89,6 +106,33 @@ const editPostRequest: postAPI.editPostRequestType = {
   prime_tag: simpleTagVisuals[0],
 };
 const getPostCommentRequest: postAPI.postIdentifyingType = simplePostID;
+const postSearchRequest: postAPI.postSearchRequestType = {
+  search_keyword: 'searching',
+};
+const createCommentReplyRequest: commentAPI.createCommentReplyType = {
+  parent_comment: '1',
+};
+const editCommentRequest: commentAPI.editCommentRequestType = {
+  comment_id: '2',
+  content: 'modified comment',
+};
+const postFuncRequest: postAPI.postFuncRequestType = {
+  post_id: '1',
+  func_type: 'like',
+};
+const commentFuncRequest: commentAPI.commentFuncRequestType = {
+  comment_id: '1',
+  func_type: 'like',
+};
+const createCommentRequest: commentAPI.createCommentRequestType = {
+  content: 'new comment',
+  author_name: 'KJY',
+  post_id: '2',
+  parent_comment: '1',
+};
+const deleteCommentRequest: commentAPI.commentIdentifyingRequestType = {
+  comment_id: '1',
+};
 
 // Responses
 const getPostsResponse: postAPI.getPostsResponseType = {
@@ -108,6 +152,46 @@ const getPostCommentResponse: commentAPI.getPostCommentResponseType = {
 
 describe('slices - posts', () => {
   describe('saga success', () => {
+    test.each([
+      [
+        postActions.postSearch(postSearchRequest),
+        {
+          ...initialState,
+          postSearch: postSearchRequest.search_keyword,
+        },
+      ],
+      [postActions.stateRefresh(), initialState],
+      [postActions.toggleCommentReply(createCommentReplyRequest), initialState],
+      [postActions.toggleCommentEdit(editCommentRequest), initialState],
+      [postActions.resetPost(), initialState],
+      [postActions.createComment(createCommentRequest), initialState],
+      [postActions.editComment(editCommentRequest), initialState],
+      [postActions.deleteComment(deleteCommentRequest), initialState],
+    ])('reducer', (action, state) => {
+      const store = configureStore({
+        reducer: rootReducer,
+      });
+      store.dispatch(action);
+      expect(store.getState().post).toEqual(state);
+    });
+    test('comment Reply & Edit', () => {
+      const store = configureStore({
+        reducer: rootReducer,
+      });
+      store.dispatch(postActions.getPostCommentSuccess(getPostCommentResponse));
+      store.dispatch(postActions.toggleCommentReply(createCommentRequest));
+      store.dispatch(postActions.toggleCommentEdit(editCommentRequest));
+      expect(store.getState().post.postComment.comments).toEqual([
+        { ...simpleComments[0], replyActive: true },
+        { ...simpleComments[1], editActive: true },
+      ]);
+      store.dispatch(postActions.toggleCommentReply(createCommentRequest));
+      store.dispatch(postActions.toggleCommentEdit(editCommentRequest));
+      expect(store.getState().post.postComment.comments).toEqual([
+        { ...simpleComments[0], replyActive: false },
+        { ...simpleComments[1], editActive: false },
+      ]);
+    });
     test('getPosts', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
@@ -210,6 +294,33 @@ describe('slices - posts', () => {
         })
         .silentRun();
     });
+    test('postFunc', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.postFunc, postFuncRequest), undefined]])
+        .put({ type: 'post/postFuncSuccess', payload: undefined })
+        .dispatch({ type: 'post/postFunc', payload: postFuncRequest })
+        .hasFinalState({
+          ...initialState,
+          postFunc: true,
+        })
+        .silentRun();
+    });
+    test('commentFunc', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.commentFunc, commentFuncRequest), undefined]])
+        .put({ type: 'post/commentFuncSuccess', payload: undefined })
+        .dispatch({ type: 'post/commentFunc', payload: commentFuncRequest })
+        .hasFinalState({
+          ...initialState,
+          postComment: {
+            ...initialState.postComment,
+            commentFunc: true,
+          },
+        })
+        .silentRun();
+    });
   });
 
   describe('saga failure', () => {
@@ -230,6 +341,17 @@ describe('slices - posts', () => {
             pageTotal: null,
             error: simpleError,
           },
+        })
+        .silentRun();
+    });
+    test('getRecentComments', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.getRecentComments), throwError(simpleError)]])
+        .put({ type: 'post/getRecentCommentsFailure', payload: simpleError })
+        .dispatch({ type: 'post/getRecentComments' })
+        .hasFinalState({
+          ...initialState,
         })
         .silentRun();
     });
@@ -300,6 +422,18 @@ describe('slices - posts', () => {
             error: simpleError,
             commentFunc: false,
           },
+        })
+        .silentRun();
+    });
+    test('postFunc', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.postFunc, postFuncRequest), throwError(simpleError)]])
+        .put({ type: 'post/postFuncFailure', payload: simpleError })
+        .dispatch({ type: 'post/postFunc', payload: postFuncRequest })
+        .hasFinalState({
+          ...initialState,
+          postFunc: false,
         })
         .silentRun();
     });

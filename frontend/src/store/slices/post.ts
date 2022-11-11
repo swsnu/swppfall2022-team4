@@ -90,6 +90,10 @@ export const postSlice = createSlice({
     getRecentCommentsSuccess: (state, { payload }) => {
       state.recentComments.comments = payload.comments;
     },
+    getRecentCommentsFailure: (state, { payload }) => {
+      state.recentComments.comments = null;
+      alert(payload.response?.data.message);
+    },
     // createPost ------------------------------------------------------------------------
     createPost: (state, action: PayloadAction<postAPI.createPostRequestType>) => {
       state.postCreate.status = false;
@@ -200,6 +204,10 @@ export const postSlice = createSlice({
     postFuncSuccess: (state, { payload }) => {
       state.postFunc = true;
     },
+    postFuncFailure: (state, { payload }) => {
+      state.postFunc = false;
+      alert('PostFunc failed');
+    },
     commentFunc: (state, action: PayloadAction<commentAPI.commentFuncRequestType>) => {
       state.postComment.commentFunc = false;
     },
@@ -224,7 +232,7 @@ function* getRecentCommentsSaga() {
     const response: AxiosResponse = yield call(commentAPI.getRecentComments);
     yield put(postActions.getRecentCommentsSuccess(response));
   } catch (error) {
-    // yield put(postActions.getPostsFailure(error));
+    yield put(postActions.getRecentCommentsFailure(error));
   }
 }
 
@@ -269,7 +277,7 @@ function* postFuncSaga(action: PayloadAction<postAPI.postFuncRequestType>) {
     const response: AxiosResponse = yield call(postAPI.postFunc, action.payload);
     yield put(postActions.postFuncSuccess(response));
   } catch (error) {
-    // yield put(postActions.editPostFailure(error));
+    yield put(postActions.postFuncFailure(error));
   }
 }
 
