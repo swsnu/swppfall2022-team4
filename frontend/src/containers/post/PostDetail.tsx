@@ -100,17 +100,15 @@ const PostDetail = () => {
   };
   // type_str : { 'like', 'dislike' }
   const commentFuncOnClick = (comment: Comment, type_str: string) => {
-    if (comment.id) {
-      dispatch(
-        postActions.commentFunc({
-          comment_id: comment.id,
-          func_type: type_str,
-        }),
-      );
-    }
+    dispatch(
+      postActions.commentFunc({
+        comment_id: comment.id,
+        func_type: type_str,
+      }),
+    );
   };
 
-  const deleteOnClick = () => {
+  const postDeleteOnClick = () => {
     if (id) {
       dispatch(
         postActions.deletePost({
@@ -193,14 +191,14 @@ const PostDetail = () => {
   const CommentBtnComponent = (comment: Comment) => {
     if (comment.editActive) {
       return (
-        <CommentFuncBtnWrapper>
+        <FuncBtnWrapper>
           <CommentRedBtn onClick={() => commentEditCancelOnClick(comment)}>취소</CommentRedBtn>
           <CommentGreenBtn onClick={() => commentEditConfirmOnClick(comment)}>완료</CommentGreenBtn>
-        </CommentFuncBtnWrapper>
+        </FuncBtnWrapper>
       );
     } else {
       return (
-        <CommentFuncBtnWrapper>
+        <FuncBtnWrapper>
           {comment.parent_comment === null && (
             <CommentGreenBtn
               onClick={() => commentReplyOpenOnClick(comment)}
@@ -219,7 +217,7 @@ const PostDetail = () => {
               </CommentRedBtn>
             </>
           )}
-        </CommentFuncBtnWrapper>
+        </FuncBtnWrapper>
       );
     }
   };
@@ -239,6 +237,7 @@ const PostDetail = () => {
             <CommentContentWrapper>
               {comment.editActive ? (
                 <CommentEditInput
+                  data-testid="commentEditInput"
                   value={commentEditInput}
                   onChange={e => setCommentEditInput(e.target.value)}
                 ></CommentEditInput>
@@ -251,19 +250,21 @@ const PostDetail = () => {
             </CommentContentWrapper>
             <CommentFuncWrapper>
               {CommentBtnComponent(comment)}
-              <CommentFuncBtn
+              <FuncBtn
+                data-testid="commentFuncLike"
                 onClick={() => commentFuncOnClick(comment, FuncType.Like)}
                 color={comment.liked ? FuncType.Like : FuncType.None}
               >
                 <FontAwesomeIcon icon={faThumbsUp} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-              <CommentFuncBtn
+              <FuncBtn
+                data-testid="commentFuncDislike"
                 onClick={() => commentFuncOnClick(comment, FuncType.Dislike)}
                 color={comment.disliked ? FuncType.Dislike : FuncType.None}
               >
                 <FontAwesomeIcon icon={faThumbsDown} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
               <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
             </CommentFuncWrapper>
@@ -273,11 +274,12 @@ const PostDetail = () => {
           {comment.replyActive === true && (
             <CommentReplyForm>
               <CommentInput
-                placeholder="댓글 입력"
+                placeholder="답글 입력"
                 value={commentReplyInput}
                 onChange={e => setCommentReplyInput(e.target.value)}
               ></CommentInput>
               <GreenCommentSubmitBtn
+                data-testid="commentReplySubmitBtn"
                 disabled={commentReplyInput === ''}
                 onClick={commentCreateOnClick}
                 data-parent_comment={comment.id}
@@ -310,26 +312,29 @@ const PostDetail = () => {
             <ArticleBodyContent>{post.content}</ArticleBodyContent>
             <ArticleBodyFooter>
               <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
-              <CommentFuncBtn
+              <FuncBtn
+                data-testid="postFuncLike"
                 onClick={() => postFuncOnClick(FuncType.Like)}
                 color={post.liked ? FuncType.Like : FuncType.None}
               >
                 <FontAwesomeIcon icon={faThumbsUp} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
-              <CommentFuncBtn
+              <FuncBtn
+                data-testid="postFuncDislike"
                 onClick={() => postFuncOnClick(FuncType.Dislike)}
                 color={post.disliked ? FuncType.Dislike : FuncType.None}
               >
                 <FontAwesomeIcon icon={faThumbsDown} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
-              <CommentFuncBtn
+              <FuncBtn
+                data-testid="postFuncScrap"
                 onClick={() => postFuncOnClick(FuncType.Scrap)}
                 color={post.scraped ? FuncType.Scrap : FuncType.None}
               >
                 <FontAwesomeIcon icon={faStar} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
 
               <TagBubbleWrapper>
@@ -376,7 +381,7 @@ const PostDetail = () => {
       <PostPanelWrapper>
         {CreateBtn}
         <BlueBigBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</BlueBigBtn>
-        <BlueBigBtn onClick={deleteOnClick}>글 삭제</BlueBigBtn>
+        <BlueBigBtn onClick={postDeleteOnClick}>글 삭제</BlueBigBtn>
       </PostPanelWrapper>
     ) : (
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
@@ -603,13 +608,13 @@ const handleFuncBtnColor = (color: string) => {
       return '#dddddd';
   }
 };
-export const CommentFuncBtn = styled.div<IPropsFuncBtn>`
+export const FuncBtn = styled.div<IPropsFuncBtn>`
   color: ${({ color }) => handleFuncBtnColor(color)};
   cursor: pointer;
   margin-left: 8px;
 `;
 
-const CommentFuncBtnWrapper = styled.div`
+const FuncBtnWrapper = styled.div`
   margin-left: 12px;
 `;
 

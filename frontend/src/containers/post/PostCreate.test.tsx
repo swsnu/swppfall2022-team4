@@ -7,95 +7,13 @@ import { rootReducer } from 'store';
 import PostCreate from './PostCreate';
 
 import * as postAPI from '../../store/apis/post';
-import * as commentAPI from '../../store/apis/comment';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
 
 const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
 const simpleTagVisuals2: tagAPI.TagVisual[] = [{ id: '2', name: 'tagtagtag', color: '#101010' }];
-const simplePosts: postAPI.Post[] = [
-  {
-    id: '1',
-    title: 'First Post',
-    author_name: 'KJY',
-    content: 'Post Contents',
-    created: '2022-11-11',
-    updated: '2022-11-12',
-    like_num: 1,
-    dislike_num: 2,
-    scrap_num: 3,
-    comments_num: 1,
-    tags: simpleTagVisuals,
-    prime_tag: simpleTagVisuals[0],
-    liked: false,
-    disliked: true,
-    scraped: false,
-  },
-  {
-    id: '2',
-    title: 'Second Post',
-    author_name: 'KJY2',
-    content: 'Post Contents2',
-    created: '2022-11-11',
-    updated: '2022-11-11',
-    like_num: 11,
-    dislike_num: 21,
-    scrap_num: 31,
-    comments_num: 11,
-    tags: [],
-    prime_tag: undefined,
-    liked: false,
-    disliked: true,
-    scraped: false,
-  },
-];
-const simpleComments: commentAPI.Comment[] = [
-  {
-    id: '1',
-    author_name: 'KJY',
-    content: 'Comment Content longlong longlong',
-    created: '2022-11-11',
-    updated: '2022-11-12',
-    like_num: 1,
-    dislike_num: 2,
-    parent_comment: null,
-    replyActive: false,
-    editActive: false,
-    liked: false,
-    disliked: false,
-    post_id: '1',
-  },
-  {
-    id: '2',
-    author_name: 'KJY2',
-    content: 'GETBYCOM',
-    created: '2022-11-12',
-    updated: '2022-11-12',
-    like_num: 12,
-    dislike_num: 1,
-    parent_comment: null,
-    replyActive: false,
-    editActive: false,
-    liked: false,
-    disliked: false,
-    post_id: '1',
-  },
-];
 const simplePostID: postAPI.postIdentifyingType = {
   post_id: '59',
-};
-const simpleSearch = {
-  search_keyword: 'searchKeyword',
-};
-
-const getPostsResponse: postAPI.getPostsResponseType = {
-  posts: simplePosts,
-  page: 2,
-  page_size: 15,
-  page_total: 7,
-};
-const getRecentCommentsResponse = {
-  comments: simpleComments,
 };
 const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
@@ -220,10 +138,6 @@ describe('[PostCreate Page]', () => {
     expect(mockNavigate).toBeCalledWith(`/post/${createPostResponse.post_id}`);
   });
 });
-
-const DEFAULT_OPTION = '$NONE$';
-const NEW_OPTION = '$NEW$';
-const SEARCH_OPTION = '$SEARCH$';
 
 describe('[PostEditor Page - Tag]', () => {
   test('set tag', () => {

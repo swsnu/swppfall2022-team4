@@ -6,8 +6,10 @@ export function processTime(dateString: string) {
 export function timeAgoFormat(dateString: string) {
   const dateNow = new Date();
   const date = new Date(dateString);
+
   const timeDiff = dateNow.valueOf() - date.valueOf(); // (ms)
   const timeDiffInSec = Math.ceil(timeDiff / 1000);
+
   if (timeDiffInSec < 60) {
     return timeDiffInSec + '초 전';
   }
