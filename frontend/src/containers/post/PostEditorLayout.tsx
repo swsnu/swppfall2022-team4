@@ -88,13 +88,11 @@ export const PostEditorLayout = (
     const tagName = e.currentTarget.getAttribute('data-name');
     const tagColor = e.currentTarget.getAttribute('data-color');
 
-    if (tagId && tagName && tagColor) {
-      setSelectedTags(s => {
-        if (s.filter(item => item.id == tagId).length === 0)
-          return [...s, { id: tagId, name: tagName, color: tagColor }];
-        else return s;
-      });
-    }
+    setSelectedTags(s => {
+      if (s.filter(item => item.id == tagId).length === 0)
+        return [...s, { id: tagId as string, name: tagName as string, color: tagColor as string }];
+      else return s;
+    });
   };
   const tagOnRemove = (e: React.MouseEvent) => {
     const tagId = e.currentTarget.getAttribute('data-value');
@@ -113,7 +111,7 @@ export const PostEditorLayout = (
           <TagClassColorWrapper>
             <TagClassColorLabel>색상:</TagClassColorLabel>
             <ColorCircle color={tagRandColor}></ColorCircle>
-            <RandColorBtn onClick={() => setTagRandColor(getRandomColor())}>
+            <RandColorBtn data-testid="randColorDice" onClick={() => setTagRandColor(getRandomColor())}>
               <FontAwesomeIcon size="xl" icon={faDice} />
             </RandColorBtn>
           </TagClassColorWrapper>
@@ -139,13 +137,14 @@ export const PostEditorLayout = (
     if (tagClassSelect === SEARCH_OPTION) {
       return (
         <TagClassFuncWrapper>
-          <TagInput placeholder="카테고리" onChange={e => setTagSearchInput(e.target.value)} disabled></TagInput>
+          <TagInput placeholder="카테고리" disabled></TagInput>
           <TagInput
             placeholder="태그 이름"
             value={tagSearchInput}
             onChange={e => setTagSearchInput(e.target.value)}
           ></TagInput>
           <GreenBigBtn
+            data-testid="tagSearchBtn"
             disabled={tagSearchInput === ''}
             onClick={() => {
               dispatch(
@@ -163,6 +162,7 @@ export const PostEditorLayout = (
               {tagSearch.map(tag => {
                 return (
                   <TagBubble
+                    data-testid={`searchedTag-${tag.id}`}
                     key={tag.id}
                     color={tag.color}
                     onClick={searchedTagOnClick}
@@ -183,7 +183,7 @@ export const PostEditorLayout = (
     if (tagTarget && tagTarget.length > 0) {
       return (
         <TagSubWrapper>
-          <TagSelect value={tagSelect} onChange={tagOnChange}>
+          <TagSelect data-testid="tagSelect" value={tagSelect} onChange={tagOnChange}>
             <option disabled value={DEFAULT_OPTION}>
               - 태그 이름 -
             </option>
@@ -201,18 +201,21 @@ export const PostEditorLayout = (
           {tagSelect === NEW_OPTION && (
             <TagClassFuncWrapper>
               {/* 태그 만들기 */}
-              <TagInput value={tagInput} onChange={e => setTagInput(e.target.value)}></TagInput>
+              <TagInput
+                placeholder="생성할 태그 이름"
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+              ></TagInput>
               <GreenBigBtn
                 disabled={tagInput === ''}
                 onClick={() => {
-                  if (currentTagClass) {
-                    dispatch(
-                      tagActions.createTag({
-                        name: tagInput,
-                        classId: currentTagClass.id.toString(),
-                      }),
-                    );
-                  }
+                  dispatch(
+                    tagActions.createTag({
+                      name: tagInput,
+                      classId: (currentTagClass as TagClass).id.toString(),
+                    }),
+                  );
+
                   dispatch(tagActions.getTags());
                   setTagInput('');
                   setTagUpdate(Date.now());
@@ -228,11 +231,13 @@ export const PostEditorLayout = (
   };
   const selectedTagsComponent = (
     <TagBubbleWrapper>
-      {selectedTags.map(tags => {
+      {selectedTags.map(tag => {
         return (
-          <TagBubble key={tags.id} color={tags.color}>
-            <ClickableSpan onClick={() => setPrimeTag(tags)}>{tags.name}</ClickableSpan>
-            <TagBubbleFunc onClick={tagOnRemove} data-value={tags.id}>
+          <TagBubble key={tag.id} color={tag.color}>
+            <ClickableSpan data-testid={`selectedTag-${tag.id}`} onClick={() => setPrimeTag(tag)}>
+              {tag.name}
+            </ClickableSpan>
+            <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={tagOnRemove} data-value={tag.id}>
               <FontAwesomeIcon icon={faX} />
             </TagBubbleFunc>
           </TagBubble>
@@ -250,6 +255,7 @@ export const PostEditorLayout = (
       <TagWrapperIn>
         <TagTitle>태그 설정</TagTitle>
         <TagSelect
+          data-testid="tagClassSelect"
           key={tagUpdate}
           value={tagClassSelect}
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -266,13 +272,19 @@ export const PostEditorLayout = (
           </option>
           {tagList?.map(tagClass => {
             return (
-              <option value={tagClass.id} key={tagClass.id}>
+              <option data-testid={`tagClassSelect-${tagClass.id}`} value={tagClass.id} key={tagClass.id}>
                 {tagClass.class_name}
               </option>
             );
           })}
-          <option value={SEARCH_OPTION}> - 태그 검색 - </option>
-          <option value={NEW_OPTION}> - 태그 카테고리 생성 - </option>
+          <option data-testid="tagClassSelect-search" value={SEARCH_OPTION}>
+            {' '}
+            - 태그 검색 -{' '}
+          </option>
+          <option data-testid="tagClassSelect-create" value={NEW_OPTION}>
+            {' '}
+            - 태그 카테고리 생성 -{' '}
+          </option>
         </TagSelect>
         {tagNames()}
       </TagWrapperIn>

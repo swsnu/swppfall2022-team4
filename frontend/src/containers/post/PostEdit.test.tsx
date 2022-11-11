@@ -2,6 +2,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
+import Router from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import PostEdit from './PostEdit';
@@ -87,7 +88,6 @@ const setup = () => {
   return store;
 };
 
-import Router from 'react-router-dom';
 describe('[PostEdit Page]', () => {
   test('basic rendering', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
