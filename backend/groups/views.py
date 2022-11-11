@@ -28,6 +28,7 @@ def general_group(request):
     else: ## post
         try:
             req_data = json.loads(request.body.decode())
+            goal_list = req_data["goal"]
             group = Group(
                 group_name = req_data["group_name"],
                 number = req_data["number"],
@@ -44,7 +45,6 @@ def general_group(request):
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
 
-        goal_list = req_data["goal"]
         for goal in goal_list:
             try:
                 fit_element = FitElement(
