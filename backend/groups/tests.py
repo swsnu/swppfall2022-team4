@@ -105,7 +105,7 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
-            }, 
+            },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
             )
@@ -127,7 +127,7 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
-            }, 
+            },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
         )
@@ -149,7 +149,7 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
-            }, 
+            },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
         )
@@ -171,7 +171,7 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
-            }, 
+            },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
         )
@@ -192,7 +192,7 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
-            }, 
+            },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
         )
@@ -205,7 +205,7 @@ class GroupTestCase(TestCase):
             'start_date': None,
             'end_date': None,
             'number': None,
-            }, 
+            },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
         )
@@ -226,12 +226,12 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
-            }, 
+            },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 400)
-    
+
     def test_group_detail(self):
         client, _ = self.ready()
         token_response = client.get('/api/user/token/')
