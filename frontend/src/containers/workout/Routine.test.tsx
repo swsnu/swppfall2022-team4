@@ -54,7 +54,7 @@ describe('routine', () => {
     expect(mockNavigate).toBeCalledTimes(1);
   });
 
-  it('change the state of selected routine', () => {
+  it('change the state of selected routine2', () => {
     render(component);
     const button = screen.getAllByText('test_routine')[0];
     fireEvent.click(button!);

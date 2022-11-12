@@ -14,7 +14,7 @@ export type getFitElementResponseType = {
 };
 
 export type getDailyLogResponseType = {
-  date: Date;
+  date: Date | null;
   memo: string;
   fitelements: List<getFitElementResponseType>;
   fit_elements: Array<any>;
@@ -57,11 +57,11 @@ export type createWorkoutLogRequestType = {
 
 export type createWorkoutLogResponseType = {
   workout_id: string;
-}
+};
 
 export type createDailyLogRequestType = {
   user_id: number;
-  date: Date;
+  date: string;
   memo: string | null;
   fitelements: List;
   year: number;

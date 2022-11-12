@@ -143,7 +143,7 @@ const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
 
 const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
   user_id: 0,
-  date: new Date(2022, 10, 1),
+  date: '2022-10-01',
   memo: 'memo',
   fitelements: [],
   year: 2022,

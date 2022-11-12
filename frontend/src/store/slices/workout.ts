@@ -101,6 +101,9 @@ export const workoutLogSlice = createSlice({
       state.workout_log.time = payload.time;
       state.workout_log.date = payload.date;
     },
+    getFitElementFailure: (state, { payload }) => {
+      // Empty function
+    },
     createWorkoutLog: (state, action: PayloadAction<workoutLogAPI.createWorkoutLogRequestType>) => {
       // Empty function
     },
@@ -182,7 +185,9 @@ function* getFitElementSaga(action: PayloadAction<workoutLogAPI.getFitElementReq
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getFitElement, action.payload);
     yield put(workoutLogActions.getFitElementSuccess(response));
-  } catch (error) {}
+  } catch (error) {
+    yield put(workoutLogActions.getFitElementFailure(error));
+  }
 }
 
 function* getFitElementsSaga(action: PayloadAction<workoutLogAPI.getFitElementsRequestType>) {
