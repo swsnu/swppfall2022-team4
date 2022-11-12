@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { timeAgoFormat } from 'utils/datetime';
 import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { Comment } from 'store/apis/comment';
@@ -14,17 +14,19 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
+import { columnCenterFlex, columnFlex, rowCenterFlex } from 'components/post/layout';
 
 export interface IPropsComment {
   isChild?: boolean;
 }
 
-export const FuncBtnStatus = {
-  None: 'None',
-  Like: 'Like',
-  Dislike: 'Dislike',
-  Scrap: 'Scrap',
+export const FuncType = {
+  None: 'none',
+  Like: 'like',
+  Dislike: 'dislike',
+  Scrap: 'scrap',
 };
+
 interface IPropsFuncBtn {
   color: string;
 }
@@ -53,9 +55,14 @@ const PostDetail = () => {
   const [editActivated, setEditActivated] = useState(false);
 
   useEffect(() => {
+    return () => {
+      dispatch(postActions.resetPost());
+    };
+  }, []);
+  useEffect(() => {
     if (id) {
       dispatch(
-        postActions.getPostDetail({
+        postActions.updatePostDetail({
           post_id: id,
         }),
       );
@@ -80,57 +87,28 @@ const PostDetail = () => {
     }
   }, [postDeleteStatus]);
 
-  const postFuncLikeOnClick = () => {
+  // type_str : { 'like', 'dislike', 'scrap' }
+  const postFuncOnClick = (type_str: string) => {
     if (id) {
       dispatch(
         postActions.postFunc({
           post_id: id,
-          func_type: 'like',
+          func_type: type_str,
         }),
       );
     }
   };
-  const postFuncDislikeOnClick = () => {
-    if (id) {
-      dispatch(
-        postActions.postFunc({
-          post_id: id,
-          func_type: 'dislike',
-        }),
-      );
-    }
+  // type_str : { 'like', 'dislike' }
+  const commentFuncOnClick = (comment: Comment, type_str: string) => {
+    dispatch(
+      postActions.commentFunc({
+        comment_id: comment.id,
+        func_type: type_str,
+      }),
+    );
   };
-  const postFuncScrapOnClick = () => {
-    if (id) {
-      dispatch(
-        postActions.postFunc({
-          post_id: id,
-          func_type: 'scrap',
-        }),
-      );
-    }
-  };
-  const commentFuncLikeOnClick = (comment: Comment) => {
-    if (comment.id) {
-      dispatch(
-        postActions.commentFunc({
-          comment_id: comment.id,
-          func_type: 'like',
-        }),
-      );
-    }
-  };
-  const commentFuncDislikeOnClick = (comment: Comment) => {
-    if (comment.id) {
-      dispatch(
-        postActions.commentFunc({
-          comment_id: comment.id,
-          func_type: 'dislike',
-        }),
-      );
-    }
-  };
-  const deleteOnClick = () => {
+
+  const postDeleteOnClick = () => {
     if (id) {
       dispatch(
         postActions.deletePost({
@@ -213,14 +191,14 @@ const PostDetail = () => {
   const CommentBtnComponent = (comment: Comment) => {
     if (comment.editActive) {
       return (
-        <CommentFuncBtnWrapper>
+        <FuncBtnWrapper>
           <CommentRedBtn onClick={() => commentEditCancelOnClick(comment)}>취소</CommentRedBtn>
           <CommentGreenBtn onClick={() => commentEditConfirmOnClick(comment)}>완료</CommentGreenBtn>
-        </CommentFuncBtnWrapper>
+        </FuncBtnWrapper>
       );
     } else {
       return (
-        <CommentFuncBtnWrapper>
+        <FuncBtnWrapper>
           {comment.parent_comment === null && (
             <CommentGreenBtn
               onClick={() => commentReplyOpenOnClick(comment)}
@@ -239,7 +217,7 @@ const PostDetail = () => {
               </CommentRedBtn>
             </>
           )}
-        </CommentFuncBtnWrapper>
+        </FuncBtnWrapper>
       );
     }
   };
@@ -259,6 +237,7 @@ const PostDetail = () => {
             <CommentContentWrapper>
               {comment.editActive ? (
                 <CommentEditInput
+                  data-testid="commentEditInput"
                   value={commentEditInput}
                   onChange={e => setCommentEditInput(e.target.value)}
                 ></CommentEditInput>
@@ -271,19 +250,21 @@ const PostDetail = () => {
             </CommentContentWrapper>
             <CommentFuncWrapper>
               {CommentBtnComponent(comment)}
-              <CommentFuncBtn
-                onClick={() => commentFuncLikeOnClick(comment)}
-                color={comment.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}
+              <FuncBtn
+                data-testid="commentFuncLike"
+                onClick={() => commentFuncOnClick(comment, FuncType.Like)}
+                color={comment.liked ? FuncType.Like : FuncType.None}
               >
                 <FontAwesomeIcon icon={faThumbsUp} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-              <CommentFuncBtn
-                onClick={() => commentFuncDislikeOnClick(comment)}
-                color={comment.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}
+              <FuncBtn
+                data-testid="commentFuncDislike"
+                onClick={() => commentFuncOnClick(comment, FuncType.Dislike)}
+                color={comment.disliked ? FuncType.Dislike : FuncType.None}
               >
                 <FontAwesomeIcon icon={faThumbsDown} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
               <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
             </CommentFuncWrapper>
@@ -293,11 +274,12 @@ const PostDetail = () => {
           {comment.replyActive === true && (
             <CommentReplyForm>
               <CommentInput
-                placeholder="댓글 입력"
+                placeholder="답글 입력"
                 value={commentReplyInput}
                 onChange={e => setCommentReplyInput(e.target.value)}
               ></CommentInput>
               <GreenCommentSubmitBtn
+                data-testid="commentReplySubmitBtn"
                 disabled={commentReplyInput === ''}
                 onClick={commentCreateOnClick}
                 data-parent_comment={comment.id}
@@ -330,26 +312,29 @@ const PostDetail = () => {
             <ArticleBodyContent>{post.content}</ArticleBodyContent>
             <ArticleBodyFooter>
               <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
-              <CommentFuncBtn
-                onClick={postFuncLikeOnClick}
-                color={post.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}
+              <FuncBtn
+                data-testid="postFuncLike"
+                onClick={() => postFuncOnClick(FuncType.Like)}
+                color={post.liked ? FuncType.Like : FuncType.None}
               >
                 <FontAwesomeIcon icon={faThumbsUp} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
-              <CommentFuncBtn
-                onClick={postFuncDislikeOnClick}
-                color={post.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}
+              <FuncBtn
+                data-testid="postFuncDislike"
+                onClick={() => postFuncOnClick(FuncType.Dislike)}
+                color={post.disliked ? FuncType.Dislike : FuncType.None}
               >
                 <FontAwesomeIcon icon={faThumbsDown} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
-              <CommentFuncBtn
-                onClick={postFuncScrapOnClick}
-                color={post.scraped ? FuncBtnStatus.Scrap : FuncBtnStatus.None}
+              <FuncBtn
+                data-testid="postFuncScrap"
+                onClick={() => postFuncOnClick(FuncType.Scrap)}
+                color={post.scraped ? FuncType.Scrap : FuncType.None}
               >
                 <FontAwesomeIcon icon={faStar} />
-              </CommentFuncBtn>
+              </FuncBtn>
               <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
 
               <TagBubbleWrapper>
@@ -396,7 +381,7 @@ const PostDetail = () => {
       <PostPanelWrapper>
         {CreateBtn}
         <BlueBigBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</BlueBigBtn>
-        <BlueBigBtn onClick={deleteOnClick}>글 삭제</BlueBigBtn>
+        <BlueBigBtn onClick={postDeleteOnClick}>글 삭제</BlueBigBtn>
       </PostPanelWrapper>
     ) : (
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
@@ -404,7 +389,7 @@ const PostDetail = () => {
   const SideBar = (
     <SideBarWrapper>
       {PostAuthorPanel}
-      {/* <SideBarItem>사이드바 공간2</SideBarItem> */}
+      <SideBarItem>사이드바 공간2</SideBarItem>
     </SideBarWrapper>
   );
   return PostPageWithSearchBar(PostDetailContent, SideBar);
@@ -517,14 +502,11 @@ const PostWritterLeftWrapper = styled.div`
   margin-right: 8px;
 `;
 
-const PostWritterAvatar = styled.div`
+const PostWritterAvatar = styled(rowCenterFlex)`
   width: 40px;
   height: 40px;
   border: 1px solid black;
   border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin-bottom: 5px;
   font-size: 8px;
 `;
@@ -558,10 +540,7 @@ export const CommentWrapper = styled.div`
   padding: 0px 20px;
 `;
 
-const CommentReplyWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+const CommentReplyWrapper = styled(columnFlex)``;
 
 const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
@@ -585,21 +564,16 @@ const CommentWritterWrapperO1 = styled.div`
   margin-right: 20px;
 `;
 
-const CommentWritterWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+const CommentWritterWrapper = styled(columnFlex)`
   align-items: center;
   font-size: 8px;
 `;
 
-const CommentWritterAvatar = styled.div`
+const CommentWritterAvatar = styled(rowCenterFlex)`
   width: 40px;
   height: 40px;
   border: 1px solid black;
   border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin-bottom: 5px;
 `;
 
@@ -607,12 +581,10 @@ const CommentWritterText = styled.span`
   font-size: 12px;
 `;
 
-const CommentRightWrapper = styled.div`
-  display: flex;
+const CommentRightWrapper = styled(columnFlex)`
   width: 100%;
   height: 100%;
   min-height: 50px;
-  flex-direction: column;
   justify-content: space-between;
 `;
 
@@ -626,23 +598,23 @@ export const CommentFuncWrapper = styled.div`
 
 const handleFuncBtnColor = (color: string) => {
   switch (color) {
-    case FuncBtnStatus.Like:
+    case FuncType.Like:
       return '#ff0000';
-    case FuncBtnStatus.Dislike:
+    case FuncType.Dislike:
       return '#0000ff';
-    case FuncBtnStatus.Scrap:
+    case FuncType.Scrap:
       return '#dddd00';
     default:
       return '#dddddd';
   }
 };
-export const CommentFuncBtn = styled.div<IPropsFuncBtn>`
+export const FuncBtn = styled.div<IPropsFuncBtn>`
   color: ${({ color }) => handleFuncBtnColor(color)};
   cursor: pointer;
   margin-left: 8px;
 `;
 
-const CommentFuncBtnWrapper = styled.div`
+const FuncBtnWrapper = styled.div`
   margin-left: 12px;
 `;
 
@@ -712,11 +684,8 @@ const CommentInput = styled.input`
   padding: 10px 12px;
 `;
 
-const PostPanelWrapper = styled.div`
+const PostPanelWrapper = styled(columnCenterFlex)`
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `;
 
 export default PostDetail;

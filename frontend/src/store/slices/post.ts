@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as postAPI from 'store/apis/post';
 import * as commentAPI from 'store/apis/comment';
-import { commentFuncSaga, createCommentSaga, deleteCommentSaga, editCommentSaga, getPostCommentSaga } from './comment';
 
 interface PostState {
   postList: {
@@ -26,7 +25,7 @@ interface PostState {
     status: boolean;
     post_id: string | null;
   };
-  recentCommentPosts: {
+  recentComments: {
     comments: commentAPI.Comment[] | null;
   };
   postEdit: boolean;
@@ -34,7 +33,7 @@ interface PostState {
   postFunc: boolean;
   postSearch: string;
 }
-const initialState: PostState = {
+export const initialState: PostState = {
   postList: {
     posts: null,
     pageNum: null,
@@ -55,7 +54,7 @@ const initialState: PostState = {
     status: false,
     post_id: null,
   },
-  recentCommentPosts: {
+  recentComments: {
     comments: null,
   },
   postEdit: false,
@@ -84,64 +83,63 @@ export const postSlice = createSlice({
       state.postList.error = payload;
       alert(payload.response?.data.message);
     },
-    getRecentCommentPosts: state => {
-      state.recentCommentPosts.comments = null;
+    getRecentComments: state => {
+      state.recentComments.comments = null;
     },
-    getRecentCommentPostsSuccess: (state, { payload }) => {
-      state.recentCommentPosts.comments = payload.comments;
+    getRecentCommentsSuccess: (state, { payload }) => {
+      state.recentComments.comments = payload.comments;
+    },
+    getRecentCommentsFailure: (state, { payload }) => {
+      state.recentComments.comments = null;
+      alert(payload.response?.data.message);
     },
     // createPost ------------------------------------------------------------------------
     createPost: (state, action: PayloadAction<postAPI.createPostRequestType>) => {
-      //create!
+      state.postCreate.status = false;
     },
     createPostSuccess: (state, { payload }) => {
       state.postCreate.post_id = payload.post_id;
       state.postCreate.status = true;
     },
-    // createPostFailure: (state, { payload }) => {
-    //   // console.log(payload);
-    // },
-    // getPostDetail ------------------------------------------------------------------------
-    getPostDetail: (state, action: PayloadAction<postAPI.postIdentifyingRequestType>) => {
-      state.postDetail.post = null;
-      state.postDetail.error = null;
+    createPostFailure: (state, { payload }) => {
+      state.postCreate.status = false;
+      alert(payload.response?.data.message);
     },
-    getPostDetailSuccess: (state, { payload }) => {
+    // getPostDetail ------------------------------------------------------------------------
+    updatePostDetail: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
+      // Empty body : for update minimization.
+    },
+    updatePostDetailSuccess: (state, { payload }) => {
       state.postDetail.post = payload;
     },
-    getPostDetailFailure: (state, { payload }) => {
+    updatePostDetailFailure: (state, { payload }) => {
       state.postDetail.error = payload;
       alert(payload.response?.data.message);
     },
     // deletePost ------------------------------------------------------------------------
-    deletePost: (state, action: PayloadAction<postAPI.postIdentifyingRequestType>) => {
-      // delete!
+    deletePost: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
       state.postDelete = false;
     },
     deletePostSuccess: (state, { payload }) => {
-      // success!
       state.postDelete = true;
     },
     deletePostFailure: (state, { payload }) => {
-      // failure..
       state.postDelete = false;
       alert('Delete failed');
     },
     // editPost ------------------------------------------------------------------------
     editPost: (state, action: PayloadAction<postAPI.editPostRequestType>) => {
-      // edit!
       state.postEdit = false;
     },
     editPostSuccess: (state, { payload }) => {
-      // success!
       state.postEdit = true;
     },
     editPostFailure: (state, { payload }) => {
-      // failure..
       state.postEdit = false;
-      alert('edit failed');
+      alert('Edit failed');
     },
-    getPostComment: (state, action: PayloadAction<postAPI.postIdentifyingRequestType>) => {
+    // getPostComment ------------------------------------------------------------------------
+    getPostComment: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
       state.postComment.comments = null;
       state.postComment.error = null;
     },
@@ -149,9 +147,10 @@ export const postSlice = createSlice({
       state.postComment.comments = payload.comments;
     },
     getPostCommentFailure: (state, { payload }) => {
-      state.postList.error = payload;
+      state.postComment.error = payload;
       alert(payload.response?.data.message);
     },
+    // createComment ------------------------------------------------------------------------
     createComment: (state, action: PayloadAction<commentAPI.createCommentRequestType>) => {
       //create!
     },
@@ -195,11 +194,18 @@ export const postSlice = createSlice({
         });
       }
     },
+    resetPost: state => {
+      state.postDetail.post = null;
+    },
     postFunc: (state, action: PayloadAction<postAPI.postFuncRequestType>) => {
       state.postFunc = false;
     },
     postFuncSuccess: (state, { payload }) => {
       state.postFunc = true;
+    },
+    postFuncFailure: (state, { payload }) => {
+      state.postFunc = false;
+      alert('PostFunc failed');
     },
     commentFunc: (state, action: PayloadAction<commentAPI.commentFuncRequestType>) => {
       state.postComment.commentFunc = false;
@@ -220,12 +226,12 @@ function* getPostsSaga(action: PayloadAction<postAPI.getPostsRequestType>) {
     yield put(postActions.getPostsFailure(error));
   }
 }
-function* getRecentCommentPostsSaga() {
+function* getRecentCommentsSaga() {
   try {
-    const response: AxiosResponse = yield call(commentAPI.getRecentCommentPosts);
-    yield put(postActions.getRecentCommentPostsSuccess(response));
+    const response: AxiosResponse = yield call(commentAPI.getRecentComments);
+    yield put(postActions.getRecentCommentsSuccess(response));
   } catch (error) {
-    // yield put(postActions.getPostsFailure(error));
+    yield put(postActions.getRecentCommentsFailure(error));
   }
 }
 
@@ -234,20 +240,20 @@ function* createPostSaga(action: PayloadAction<postAPI.createPostRequestType>) {
     const response: AxiosResponse = yield call(postAPI.createPost, action.payload);
     yield put(postActions.createPostSuccess(response));
   } catch (error) {
-    // yield put(postActions.createPostFailure(error));
+    yield put(postActions.createPostFailure(error));
   }
 }
 
-function* getPostDetailSaga(action: PayloadAction<postAPI.postIdentifyingRequestType>) {
+function* updatePostDetailSaga(action: PayloadAction<postAPI.postIdentifyingType>) {
   try {
-    const response: AxiosResponse = yield call(postAPI.getPostDetail, action.payload);
-    yield put(postActions.getPostDetailSuccess(response));
+    const response: AxiosResponse = yield call(postAPI.updatePostDetail, action.payload);
+    yield put(postActions.updatePostDetailSuccess(response));
   } catch (error) {
-    yield put(postActions.getPostDetailFailure(error));
+    yield put(postActions.updatePostDetailFailure(error));
   }
 }
 
-function* deletePostSaga(action: PayloadAction<postAPI.postIdentifyingRequestType>) {
+function* deletePostSaga(action: PayloadAction<postAPI.postIdentifyingType>) {
   try {
     const response: AxiosResponse = yield call(postAPI.deletePost, action.payload);
     yield put(postActions.deletePostSuccess(response));
@@ -270,15 +276,64 @@ function* postFuncSaga(action: PayloadAction<postAPI.postFuncRequestType>) {
     const response: AxiosResponse = yield call(postAPI.postFunc, action.payload);
     yield put(postActions.postFuncSuccess(response));
   } catch (error) {
-    // yield put(postActions.editPostFailure(error));
+    yield put(postActions.postFuncFailure(error));
+  }
+}
+
+// Comment-related saga generator function.
+function* getPostCommentSaga(action: PayloadAction<postAPI.postIdentifyingType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.getPostComment, action.payload);
+    yield put(postActions.getPostCommentSuccess(response));
+  } catch (error) {
+    yield put(postActions.getPostCommentFailure(error));
+  }
+}
+
+function* createCommentSaga(action: PayloadAction<commentAPI.createCommentRequestType>) {
+  try {
+    yield call(commentAPI.createComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.createComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    // yield put(postActions.createCommentFailure(error));
+  }
+}
+
+function* editCommentSaga(action: PayloadAction<commentAPI.editCommentRequestType>) {
+  try {
+    yield call(commentAPI.editComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.editComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    // yield put(postActions.createCommentFailure(error));
+  }
+}
+
+function* deleteCommentSaga(action: PayloadAction<commentAPI.commentIdentifyingRequestType>) {
+  try {
+    yield call(commentAPI.deleteComment, action.payload);
+    // const response: AxiosResponse = yield call(commentAPI.deleteComment, action.payload);
+    // yield put(postActions.createCommentSuccess(response));
+  } catch (error) {
+    // yield put(postActions.createCommentFailure(error));
+  }
+}
+
+function* commentFuncSaga(action: PayloadAction<commentAPI.commentFuncRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(commentAPI.commentFunc, action.payload);
+    yield put(postActions.commentFuncSuccess(response));
+  } catch (error) {
+    // yield put(commentActions.editcommentFailure(error));
   }
 }
 
 export default function* postSaga() {
   yield takeLatest(postActions.getPosts, getPostsSaga);
-  yield takeLatest(postActions.getRecentCommentPosts, getRecentCommentPostsSaga);
+  yield takeLatest(postActions.getRecentComments, getRecentCommentsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
-  yield takeLatest(postActions.getPostDetail, getPostDetailSaga);
+  yield takeLatest(postActions.updatePostDetail, updatePostDetailSaga);
   yield takeLatest(postActions.deletePost, deletePostSaga);
   yield takeLatest(postActions.editPost, editPostSaga);
   yield takeLatest(postActions.getPostComment, getPostCommentSaga);
