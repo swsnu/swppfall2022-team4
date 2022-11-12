@@ -103,7 +103,7 @@ describe('setup test', () => {
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
   });
-  it('no write1', () => {
+  it('no write4', () => {
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const numberInput = screen.getByDisplayValue('0');
@@ -116,7 +116,7 @@ describe('setup test', () => {
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
   });
-  it('no write2', () => {
+  it('no write5', () => {
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const numberInput = screen.getByDisplayValue('0');
