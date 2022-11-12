@@ -119,11 +119,10 @@ export const workoutLogSlice = createSlice({
       state.dailyLogCreate.status = true;
     },
     getDailyLogSuccess: (state, { payload }) => {
-      state.daily_log.isDailyLog = payload[0].author === -1 ? false : true;
-      state.daily_log.memo = payload[0].memo;
-      state.daily_log.fit_element = payload[0].fitelements;
-      state.daily_log.date = payload[0].date;
-      state.daily_fit_elements = payload[1];
+      state.daily_log.isDailyLog = payload.author === -1 ? false : true;
+      state.daily_log.memo = payload.memo;
+      state.daily_log.fit_element = payload.fitelements;
+      state.daily_log.date = payload.date;
     },
     getDailyFitElements: (state, { payload }) => {
       // Empty function
@@ -147,8 +146,13 @@ export const workoutLogSlice = createSlice({
       // Empty function
     },
     getSpecificRoutineSuccess: (state, { payload }) => {
-      state.selected_routine.name = payload[0].name;
-      state.selected_routine.fitelements = payload[1];
+      state.selected_routine.name = payload.name;
+    },
+    getSpecificRoutineFitElements: (state, { payload }) => {
+      getSpecificRoutineFitElementsSaga(payload.routine_id);
+    },
+    getSpecificRoutineFitElementsSuccess: (state, { payload }) => {
+      state.selected_routine.fitelements = payload;
     },
     addFitElements: (state, action: PayloadAction<workoutLogAPI.addFitElementsRequestType>) => {
       // Empty function
@@ -163,6 +167,12 @@ export const workoutLogSlice = createSlice({
     ) => {
       // Empty function
     },
+    getFitElements: (state, { payload }) => {
+      getFitElementsSaga(payload.fitelements);
+    },
+    getFitElementsSuccess: (state, { payload }) => {
+      state.daily_fit_elements = payload;
+    },
   },
 });
 
@@ -175,10 +185,18 @@ function* getFitElementSaga(action: PayloadAction<workoutLogAPI.getFitElementReq
   } catch (error) {}
 }
 
+function* getFitElementsSaga(action: PayloadAction<workoutLogAPI.getFitElementsRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.getFitElements, action.payload);
+    yield put(workoutLogActions.getFitElementsSuccess(response));
+  } catch (error) {}
+}
+
 function* getDailyLogSaga(action: PayloadAction<workoutLogAPI.getDailyLogRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getDailyLog, action.payload);
     yield put(workoutLogActions.getDailyLogSuccess(response));
+    yield put(workoutLogActions.getFitElements(response));
   } catch (error) {}
 }
 
@@ -220,6 +238,7 @@ function* getSpecificRoutineSaga(action: PayloadAction<workoutLogAPI.getSpecific
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getSpecificRoutine, action.payload);
     yield put(workoutLogActions.getSpecificRoutineSuccess(response));
+    yield put(workoutLogActions.getSpecificRoutineFitElements(response));
   } catch (error) {}
 }
 
@@ -238,6 +257,15 @@ function* createRoutineWithFitElementsSaga(
   } catch (error) {}
 }
 
+function* getSpecificRoutineFitElementsSaga(
+  action: PayloadAction<workoutLogAPI.getSpecificRoutineFitElementsRequestType>,
+) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.getSpecificRoutineFitElements, action.payload);
+    yield put(workoutLogActions.getSpecificRoutineFitElementsSuccess(response));
+  } catch (error) {}
+}
+
 export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getFitElement, getFitElementSaga);
   yield takeLatest(workoutLogActions.getDailyLog, getDailyLogSaga);
@@ -249,4 +277,6 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getSpecificRoutine, getSpecificRoutineSaga);
   yield takeLatest(workoutLogActions.addFitElements, addFitElementsSaga);
   yield takeLatest(workoutLogActions.createRoutineWithFitElements, createRoutineWithFitElementsSaga);
+  yield takeLatest(workoutLogActions.getFitElements, getFitElementsSaga);
+  yield takeLatest(workoutLogActions.getSpecificRoutineFitElements, getSpecificRoutineFitElementsSaga);
 }

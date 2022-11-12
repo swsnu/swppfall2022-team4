@@ -28,7 +28,7 @@ const Routine = () => {
     selected_routine: workout_log.selected_routine,
     routines: workout_log.routine,
   }));
-  console.log('routines', routines);
+  console.log('routines', selected_routine);
 
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
@@ -87,13 +87,13 @@ const Routine = () => {
                   <FitElement
                     key={index}
                     id={index + 1}
-                    type={fitelement.type}
-                    workout_type={fitelement.workout_type}
-                    category={fitelement.category}
-                    weight={fitelement.weight}
-                    rep={fitelement.rep}
-                    set={fitelement.set}
-                    time={fitelement.time}
+                    type={fitelement.data.type}
+                    workout_type={fitelement.data.workout_type}
+                    category={fitelement.data.category}
+                    weight={fitelement.data.weight}
+                    rep={fitelement.data.rep}
+                    set={fitelement.data.set}
+                    time={fitelement.data.time}
                   />
                 ))}
           </LogWrapper>

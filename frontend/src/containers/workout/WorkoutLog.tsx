@@ -410,13 +410,13 @@ const WorkoutLog = () => {
                     <FitElement
                       key={index}
                       id={index + 1}
-                      type={fitelement.type}
-                      workout_type={fitelement.workout_type}
-                      category={fitelement.category}
-                      weight={fitelement.weight}
-                      rep={fitelement.rep}
-                      set={fitelement.set}
-                      time={fitelement.time}
+                      type={fitelement.data.type}
+                      workout_type={fitelement.data.workout_type}
+                      category={fitelement.data.category}
+                      weight={fitelement.data.weight}
+                      rep={fitelement.data.rep}
+                      set={fitelement.data.set}
+                      time={fitelement.data.time}
                     />
                   ))
                 )}
@@ -607,7 +607,7 @@ const DayContent = styled.div`
 
   &&.future_day {
     font-weight: bold;
-    color: #A9A9A9;
+    color: #a9a9a9;
   }
 `;
 

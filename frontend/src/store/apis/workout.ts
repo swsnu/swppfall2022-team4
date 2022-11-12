@@ -24,6 +24,10 @@ export type getFitElementRequestType = {
   fitelement_id: number;
 };
 
+export type getFitElementsRequestType = {
+  fitelements: number[];
+};
+
 export type getDailyLogRequestType = {
   year: number;
   month: number;
@@ -123,6 +127,10 @@ export type createRoutineWithFitElementsRequestType = {
   fitelements: number[];
 };
 
+export type getSpecificRoutineFitElementsRequestType = {
+  fitelements: number[];
+};
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
   const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
   return response.data;
@@ -132,24 +140,21 @@ export const getDailyLog = async (payload: getDailyLogRequestType) => {
   const response = await client.get<getDailyLogResponseType>(
     `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`,
   );
-  try {
-    const temp_list = await Promise.all(
-      response.data.fitelements &&
-        response.data.fitelements.map(id => {
-          return client.get<getFitElementResponseType>(`/api/fitelement/${id}/`);
-        }),
-    );
+  return response.data;
+};
 
-    const return_list = temp_list.map(v => {
-      return v.data;
-    });
+export const getFitElements = async (payload: getFitElementsRequestType) => {
+  let response = await Promise.all(
+    payload.fitelements.map(id => {
+      return client.get<getFitElementResponseType>(`/api/fitelement/${id}/`);
+    }),
+  );
 
-    return [response.data, return_list];
-  } catch (e) {
-    // continue regardless of error
-  }
+  response.map(v => {
+    return v.data;
+  });
 
-  return [response.data, []];
+  return response;
 };
 
 export const createWorkoutLog = async (payload: createWorkoutLogRequestType) => {
@@ -206,16 +211,19 @@ export const getSpecificRoutine = async (payload: getSpecificRoutineRequestType)
   const response = await client.get<getSpecificRoutineResponseType>(
     `/api/fitelement/routine/${payload.routine_id}/?&user_id=${payload.user_id}`,
   );
+  return response.data;
+};
 
-  const temp_list = await Promise.all(
-    response.data.fitelements.map(id => {
+export const getSpecificRoutineFitElements = async (payload: getSpecificRoutineFitElementsRequestType) => {
+  let response = await Promise.all(
+    payload.fitelements.map(id => {
       return client.get<getFitElementResponseType>(`/api/fitelement/${id}/`);
     }),
   );
 
-  const return_list = temp_list.map(v => {
+  response.map(v => {
     return v.data;
   });
 
-  return [response.data, return_list];
+  return response;
 };
