@@ -8,23 +8,23 @@ import GroupList from './GroupList';
 import * as groupApi from '../../store/apis/group';
 
 const groupListResponse: groupApi.Group[] = [
-    {
-      id: 1,
-      group_name: 'test',
-      number: 5,
-      member_number: 4,
-      start_date: '2019-01-01',
-      end_date: '2019-12-31',
-    },
-    {
-      id: 2,
-      group_name: 'test2',
-      number: 5,
-      member_number: 4,
-      start_date: '2019-01-01',
-      end_date: '2019-12-31',
-    }
-]
+  {
+    id: 1,
+    group_name: 'test',
+    number: 5,
+    member_number: 4,
+    start_date: '2019-01-01',
+    end_date: '2019-12-31',
+  },
+  {
+    id: 2,
+    group_name: 'test2',
+    number: 5,
+    member_number: 4,
+    start_date: '2019-01-01',
+    end_date: '2019-12-31',
+  },
+];
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -64,7 +64,7 @@ describe('setup test', () => {
         },
       });
     });
-    
+
     const createGroupBtn = screen.getByText('Create Group');
     fireEvent.click(createGroupBtn);
     expect(mockNavigate).toBeCalledTimes(1);

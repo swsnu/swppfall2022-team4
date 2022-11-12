@@ -114,8 +114,8 @@ const fitelement1: groupApi.Fitelement = {
   weight: 10,
   rep: 10,
   set: 10,
-  time: 10
-}
+  time: 10,
+};
 
 const postGroupRequest: groupApi.postGroupRequestType = {
   group_name: 'post_group',
@@ -125,11 +125,9 @@ const postGroupRequest: groupApi.postGroupRequestType = {
   description: 'test',
   free: true,
   group_leader: testUsername,
-  goal: [fitelement1]
-}
+  goal: [fitelement1],
+};
 
-
-=======
 // Workout dummy.
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {
   fitelement_id: 0,
@@ -174,10 +172,6 @@ const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
   year: 2022,
   month: 10,
   specific_date: 1,
-};
-
-const getDailyFitElementsRequest: workoutAPI.getDailyFitElementsRequestType = {
-  fitelements: [],
 };
 
 const editMemoRequest: workoutAPI.editMemoRequestType = {
@@ -424,8 +418,8 @@ describe('Group API TEST', () => {
     it('delete group', async () => {
       const res = await groupApi.deleteGroup('1');
       expect(res).toBe(`/api/group/1/`);
-    })
-  })
+    });
+  });
   describe('Group Member', () => {
     it('check member status', async () => {
       const res = await groupApi.checkGroupMember('1');
@@ -433,15 +427,15 @@ describe('Group API TEST', () => {
     });
     it('get members', async () => {
       const res = await groupApi.getGroupMembers('1');
-      expect(res).toBe(`/api/group/1/member/`)
-    })
+      expect(res).toBe(`/api/group/1/member/`);
+    });
     it('joinGroup', async () => {
       const res = await groupApi.joinGroup('1');
       expect(res).toBe(`/api/group/1/member/`);
     });
     it('exitGroup', async () => {
-      const res = await groupApi.exitGroup('1')
+      const res = await groupApi.exitGroup('1');
       expect(res).toBe(`/api/group/1/member/`);
-    })
-  })
-})
+    });
+  });
+});

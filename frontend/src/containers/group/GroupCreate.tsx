@@ -125,12 +125,23 @@ const GroupCreate = () => {
               disabled={!set_date}
               onChange={e => setStartDate(e.target.value)}
             />
-            <input data-testid="end_date" type="date" className="input-date" disabled={!set_date} onChange={e => setEndDate(e.target.value)} />
+            <input
+              data-testid="end_date"
+              type="date"
+              className="input-date"
+              disabled={!set_date}
+              onChange={e => setEndDate(e.target.value)}
+            />
           </DateWrapper>
         </div>
 
         <CreateText>그룹 설명</CreateText>
-        <CreateTextArea rows={10} value={description} onChange={e => setDescription(e.target.value)} placeholder="그룹의 설명"/>
+        <CreateTextArea
+          rows={10}
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          placeholder="그룹의 설명"
+        />
 
         <CreateText>그룹 공개 설정</CreateText>
         <CreateCheck type="checkbox" checked={free} onChange={() => setFree(!free)} />

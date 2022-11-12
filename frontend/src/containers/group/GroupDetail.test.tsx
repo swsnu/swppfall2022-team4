@@ -13,7 +13,7 @@ const user1: userType = {
   username: 'test',
   nickname: 'test',
   image: 'image',
-}
+};
 
 const fitelement1: groupApi.Fitelement = {
   type: 'goal',
@@ -23,7 +23,7 @@ const fitelement1: groupApi.Fitelement = {
   rep: 10,
   set: 10,
   time: 10,
-}
+};
 
 const groupDetailResponse: groupApi.GroupDetail = {
   group_id: 1,
@@ -36,7 +36,7 @@ const groupDetailResponse: groupApi.GroupDetail = {
   member_number: 3,
   description: 'test',
   goal: [fitelement1],
-}
+};
 
 const nullResponse1: groupApi.GroupDetail = {
   group_id: 1,
@@ -49,7 +49,7 @@ const nullResponse1: groupApi.GroupDetail = {
   member_number: 3,
   description: 'test',
   goal: [fitelement1],
-}
+};
 
 const nullResponse2: groupApi.GroupDetail = {
   group_id: 1,
@@ -62,19 +62,19 @@ const nullResponse2: groupApi.GroupDetail = {
   member_number: 3,
   description: 'test',
   goal: [fitelement1],
-}
+};
 
 const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'group_leader',
-}
+};
 
 const memberStatusResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'group_member',
-}
+};
 
 const notmemberStatusResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'not_member',
-}
+};
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -90,17 +90,17 @@ beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
 const setup = () => {
-    const store = configureStore({ reducer: rootReducer });
-    store.dispatch({
-      type: 'user/setUser',
-      payload: { username: 'username', nickname: 'nickname', image: 'image' },
-    });
-    render(
-      <Provider store={store}>
-        <GroupDetail />
-      </Provider>,
-    );
-    return store;
+  const store = configureStore({ reducer: rootReducer });
+  store.dispatch({
+    type: 'user/setUser',
+    payload: { username: 'username', nickname: 'nickname', image: 'image' },
+  });
+  render(
+    <Provider store={store}>
+      <GroupDetail />
+    </Provider>,
+  );
+  return store;
 };
 
 describe('setup test', () => {

@@ -46,6 +46,9 @@ export const initialState: PreloadedState<RootState> = {
       status: false,
       post_id: null,
     },
+    recentComments: {
+      comments: null,
+    },
     postEdit: false,
     postDelete: false,
     postFunc: false,
@@ -87,6 +90,11 @@ export const initialState: PreloadedState<RootState> = {
   chat: {
     socket: null,
     where: null,
+
+    create: {
+      id: null,
+      error: null,
+    },
 
     chatroomList: [],
     messageList: [],

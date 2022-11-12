@@ -9,24 +9,24 @@ import * as groupApi from '../../store/apis/group';
 import Router from 'react-router-dom';
 
 const mem1: groupApi.Member = {
-    id: 1,
-    username: 'test1',
-    cert_days: 7,
-    image: 'image',
-    level: 1,
-}
+  id: 1,
+  username: 'test1',
+  cert_days: 7,
+  image: 'image',
+  level: 1,
+};
 
 const mem2: groupApi.Member = {
-    id: 2,
-    username: 'test2',
-    cert_days: 7,
-    image: 'image',
-    level: 1,
-}
+  id: 2,
+  username: 'test2',
+  cert_days: 7,
+  image: 'image',
+  level: 1,
+};
 
 const membersResponse: groupApi.getGroupMembersResponseType = {
-    members: [mem1, mem2]
-}
+  members: [mem1, mem2],
+};
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -42,43 +42,43 @@ beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
 const setup = () => {
-    const store = configureStore({ reducer: rootReducer });
-    store.dispatch({
-      type: 'user/setUser',
-      payload: { username: 'username', nickname: 'nickname', image: 'image' },
-    });
-    render(
-      <Provider store={store}>
-        <GroupMembers />
-      </Provider>,
-    );
-    return store;
+  const store = configureStore({ reducer: rootReducer });
+  store.dispatch({
+    type: 'user/setUser',
+    payload: { username: 'username', nickname: 'nickname', image: 'image' },
+  });
+  render(
+    <Provider store={store}>
+      <GroupMembers />
+    </Provider>,
+  );
+  return store;
 };
 
 describe('setup test', () => {
-    it('init', () => {
-      jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
-      const store = setup();
-      act(() => {
-        store.dispatch({
-          type: 'group/getGroupMembersSuccess',
-          payload: membersResponse,
-        });
+  it('init', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupMembersSuccess',
+        payload: membersResponse,
       });
-      screen.getByText('그룹 멤버');
     });
-    it('btn', () => {
-        jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
-        const store = setup();
-        act(() => {
-          store.dispatch({
-            type: 'group/getGroupMembersSuccess',
-            payload: membersResponse,
-          });
-        });
-        const btn = screen.getByText('Back');
-        fireEvent.click(btn);
-        expect(mockNavigate).toBeCalledTimes(1);
-        expect(mockNavigate).toBeCalledWith('/group/detail/1/');
+    screen.getByText('그룹 멤버');
+  });
+  it('btn', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupMembersSuccess',
+        payload: membersResponse,
       });
+    });
+    const btn = screen.getByText('Back');
+    fireEvent.click(btn);
+    expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledWith('/group/detail/1/');
+  });
 });
