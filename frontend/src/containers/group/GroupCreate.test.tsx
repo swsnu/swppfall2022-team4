@@ -35,7 +35,7 @@ const setup = () => {
 };
 
 describe('setup test', () => {
-  it('init', () => {
+  it('init1', () => {
     const store = setup();
     act(() => {
       store.dispatch({
@@ -48,7 +48,7 @@ describe('setup test', () => {
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group');
   });
-  it('init', () => {
+  it('init2', () => {
     const store = setup();
     act(() => {
       store.dispatch({
@@ -61,14 +61,14 @@ describe('setup test', () => {
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group');
   });
-  it('no write', () => {
+  it('no write1', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('no write', () => {
+  it('no write2', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
@@ -77,7 +77,7 @@ describe('setup test', () => {
     fireEvent.click(saveBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('no write', () => {
+  it('no write3', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
@@ -103,7 +103,7 @@ describe('setup test', () => {
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
   });
-  it('no write', () => {
+  it('no write1', () => {
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const numberInput = screen.getByDisplayValue('0');
@@ -116,7 +116,7 @@ describe('setup test', () => {
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
   });
-  it('no write', () => {
+  it('no write2', () => {
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const numberInput = screen.getByDisplayValue('0');
