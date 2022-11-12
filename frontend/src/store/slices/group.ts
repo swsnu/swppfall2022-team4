@@ -64,8 +64,7 @@ export const groupSlice = createSlice({
   name: 'group',
   initialState,
   reducers: {
-    stateRefresh: () => initialState,
-    actionStatusRefresh: state => {
+    stateRefresh: state => {
       state.groupAction.status = false;
     },
 
@@ -74,7 +73,7 @@ export const groupSlice = createSlice({
       state.groupList.error = null;
     },
     getGroupsSuccess: (state, { payload }) => {
-      state.groupList.groups = payload;
+      state.groupList.groups = payload.groups;
       state.groupList.error = null;
     },
     getGroupsFailure: (state, { payload }) => {
