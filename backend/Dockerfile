@@ -11,10 +11,15 @@ COPY . /app/backend
 RUN mv example.env .env
 
 ENV DJANGO_SETTINGS_MODULE=FITogether.settings
+ENV DJANGO_SETTINGS_MODULE=FITogether.settings
 
 RUN pip install uwsgi
 RUN python manage.py makemigrations
 RUN python manage.py migrate
+
+RUN python manage.py seed_users -n 10
+RUN python manage.py seed_chatrooms
+RUN python manage.py seed_messages -n 20
 
 EXPOSE 8000
 ENTRYPOINT [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]

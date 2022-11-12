@@ -22,6 +22,7 @@ services:
     depends_on:
       - frontend
       - backend
+      - redis
     networks:
       - custom_newtork
     extra_hosts:
@@ -32,10 +33,27 @@ services:
       dockerfile: Dockerfile
       context: ./backend
     container_name: backend_container
+    links:
+      - redis
     networks:
       - custom_newtork
     ports:
       - 8000:8000
+    environment:
+      - REDIS_HOST=redis
+
+  redis:
+    image: redis:alpine
+    command: redis-server --port 6379
+    container_name: redis_boot
+    hostname: redis_boot
+    restart: unless-stopped
+    labels:
+      - "mode=standalone"
+    ports:
+      - 6379:6379
+    networks:
+      - custom_newtork
 
 networks:
   custom_newtork:
