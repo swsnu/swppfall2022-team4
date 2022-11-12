@@ -44,7 +44,7 @@ const Routine = () => {
     <Wrapper>
       <LeftWrapper>
         <LeftUpper>
-          <ReturnButtonWrapper onClick={() => calendarButtonClick()}>{'< '} 달력으로 돌아가기</ReturnButtonWrapper>
+          <ReturnButtonWrapper onClick={() => calendarButtonClick()}>{'< '}달력으로 돌아가기</ReturnButtonWrapper>
         </LeftUpper>
         <Frame>
           <RoutineListWrapper>

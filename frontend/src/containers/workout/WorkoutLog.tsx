@@ -297,6 +297,7 @@ const WorkoutLog = () => {
                     return (
                       <Day
                         className={day_type}
+                        data-testid="day_component"
                         key={index}
                         onClick={() => {
                           if (day_type !== 'future_day') {
@@ -317,6 +318,7 @@ const WorkoutLog = () => {
                 Notes
                 <MemoEditButton
                   onClick={() => memoOnClick()}
+                  data-testid="memo_edit"
                   src={require('assets/images/workout_log/memo/memo_edit.png')}
                 ></MemoEditButton>
               </MemoTitleWrapper>

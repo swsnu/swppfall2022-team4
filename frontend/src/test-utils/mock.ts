@@ -109,14 +109,46 @@ export const initialState: PreloadedState<RootState> = {
         name: 'test_routine',
         fitelements: [],
       },
+      {
+        name: 'test_routine2',
+        fitelements: [
+          {
+            data: {
+              type: 'log',
+              workout_type: 'type',
+              period: null,
+              category: null,
+              weight: null,
+              rep: null,
+              set: null,
+              time: null,
+              date: null,
+            },
+          },
+        ],
+      },
     ],
     daily_log: {
-      isDailyLog: false,
+      isDailyLog: true,
       date: null,
       memo: null,
       fit_element: null,
     },
-    daily_fit_elements: [],
+    daily_fit_elements: [
+      {
+        data: {
+          type: 'log',
+          workout_type: 'type',
+          period: null,
+          category: null,
+          weight: null,
+          rep: null,
+          set: null,
+          time: null,
+          date: null,
+        },
+      },
+    ],
     workoutCreate: {
       status: false,
       workout_id: null,
@@ -127,7 +159,7 @@ export const initialState: PreloadedState<RootState> = {
     },
     calendar_info: [],
     selected_routine: {
-      name: '',
+      name: 'test_routine2',
       fitelements: [],
     },
     add_fit_elements: {
