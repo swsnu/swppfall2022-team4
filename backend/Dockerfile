@@ -1,5 +1,5 @@
 # frontend/Dockerfile
-FROM python:3.9.6
+FROM python:3.9.5
 
 RUN mkdir -p /app/backend
 WORKDIR /app/backend
@@ -12,8 +12,8 @@ COPY . /app/backend
 ENV DJANGO_SETTINGS_MODULE=FITogether.settings
 
 RUN pip install uwsgi
-RUN python manage.py migrate
 RUN python manage.py makemigrations
+RUN python manage.py migrate
 
 EXPOSE 8000
 ENTRYPOINT [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
