@@ -7,6 +7,7 @@ COPY package.json .
 RUN yarn install
 
 COPY . .
+RUN mv example.env .env
 RUN yarn run build
 
 FROM nginx
