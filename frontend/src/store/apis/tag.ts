@@ -1,6 +1,6 @@
 import client from './client';
 
-export const getTag = async () => {
+export const getTags = async () => {
   const response = await client.get<getTagListResponseType>(`/api/tag/`);
   return response.data;
 };
@@ -14,7 +14,7 @@ export type TagClass = {
   id: number;
   class_name: string;
   color: string;
-  tags: Tag[];
+  tags: TagVisual[];
 };
 
 export type TagVisual = {
@@ -38,7 +38,7 @@ export type createTagClassRequestType = {
 };
 
 export const createTag = async (payload: createTagRequestType) => {
-  const response = await client.post(`/api/tag/`, payload);
+  const response = await client.post<tagVisualsResponseType>(`/api/tag/`, payload);
   return response.data;
 };
 
@@ -48,11 +48,15 @@ export type createTagRequestType = {
 };
 
 export const searchTag = async (payload: searchTagRequestType) => {
-  const response = await client.get(`/api/tag/search/?tag=${payload.tag_name}`);
+  const response = await client.get<tagVisualsResponseType>(`/api/tag/search/?tag=${payload.tag_name}`);
   return response.data;
 };
 
 export type searchTagRequestType = {
   class_name: string;
   tag_name: string;
+};
+
+export type tagVisualsResponseType = {
+  tags: TagVisual[];
 };

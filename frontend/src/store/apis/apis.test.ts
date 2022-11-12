@@ -55,20 +55,20 @@ const createPostRequest: postAPI.createPostRequestType = {
   content: 'content',
   author_name: testUsername,
   tags: [testTag],
-  prime_tag: null,
+  prime_tag: undefined,
 };
 const editPostRequest: postAPI.editPostRequestType = {
   post_id: '1',
   title: 'title',
   content: 'content',
   tags: [testTag],
-  prime_tag: null,
+  prime_tag: undefined,
 };
 const postFuncRequest: postAPI.postFuncRequestType = {
   post_id: '1',
   func_type: 'like',
 };
-const postIdentifyingRequest: postAPI.postIdentifyingRequestType = {
+const postIdentifyingRequest: postAPI.postIdentifyingType = {
   post_id: '1',
 };
 
@@ -217,6 +217,10 @@ describe('User API TEST', () => {
       const result = await userAPI.getProfile(testUsername);
       expect(result).toBe(`/api/user/profile/11111111/`);
     });
+    test('getProfileContent', async () => {
+      const result = await userAPI.getProfileContent(testUsername);
+      expect(result).toBe(`/api/user/profile/11111111/content/`);
+    });
     test('editProfile', async () => {
       const result = await userAPI.editProfile(editProfileRequest);
       expect(result).toBe(`/api/user/profile/11111111/`);
@@ -228,12 +232,16 @@ describe('User API TEST', () => {
   });
   describe('Chat', () => {
     test('getChatroomList', async () => {
-      const result = await chatAPI.getChatroomList(testUsername);
-      expect(result).toBe(`/api/chat/11111111/`);
+      const result = await chatAPI.getChatroomList();
+      expect(result).toBe(`/api/chat/`);
+    });
+    test('createChatroom', async () => {
+      const result = await chatAPI.createChatroom({ username: 'target' });
+      expect(result).toBe(`/api/chat/`);
     });
     test('getMessageList', async () => {
-      const result = await chatAPI.getMessageList(testUsername);
-      expect(result).toBe(`/api/chat/message/11111111/`);
+      const result = await chatAPI.getMessageList('1234');
+      expect(result).toBe(`/api/chat/1234/`);
     });
   });
   describe('Post', () => {
@@ -253,8 +261,8 @@ describe('User API TEST', () => {
       const result = await postAPI.editPost(editPostRequest);
       expect(result).toBe(`/api/post/${editPostRequest.post_id}/`);
     });
-    test('getPostDetail', async () => {
-      const result = await postAPI.getPostDetail(postIdentifyingRequest);
+    test('updatePostDetail', async () => {
+      const result = await postAPI.updatePostDetail(postIdentifyingRequest);
       expect(result).toBe(`/api/post/${postIdentifyingRequest.post_id}/`);
     });
     test('deletePost', async () => {
@@ -287,10 +295,14 @@ describe('User API TEST', () => {
       const result = await commentAPI.commentFunc(commentFuncRequest);
       expect(result).toBe(`/api/comment/${commentFuncRequest.comment_id}/func/`);
     });
+    test('getRecentCommentPosts', async () => {
+      const result = await commentAPI.getRecentComments();
+      expect(result).toBe(`/api/comment/recent/`);
+    });
   });
   describe('Tag', () => {
     test('getTags', async () => {
-      const result = await tagAPI.getTag();
+      const result = await tagAPI.getTags();
       expect(result).toBe(`/api/tag/`);
     });
     test('createTagClass', async () => {

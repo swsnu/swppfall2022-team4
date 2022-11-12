@@ -24,11 +24,15 @@ const Chat = () => {
   }));
 
   useEffect(() => {
-    dispatch(chatActions.setWhere(id));
-    dispatch(chatActions.getChatroomList(user?.username || ''));
+    dispatch(chatActions.setWhere(id || 'lobby'));
+    dispatch(chatActions.getChatroomList());
+    return () => {
+      dispatch(chatActions.setWhere(null));
+    };
   }, []);
   useEffect(() => {
-    dispatch(chatActions.setWhere(id));
+    setInput('');
+    dispatch(chatActions.setWhere(id || 'lobby'));
     if (id) {
       dispatch(chatActions.getMessageList(id || ''));
     }
@@ -43,7 +47,7 @@ const Chat = () => {
     }
   };
   const onSendMessage = () => {
-    if (input === '' || !user) return;
+    if (!user || input === '') return;
     socket.send(
       JSON.stringify({
         type: '1:1',

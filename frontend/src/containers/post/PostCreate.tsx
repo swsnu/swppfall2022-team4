@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { PostEditorLayout } from './PostEditorLayout';
 import { TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
@@ -11,7 +11,7 @@ const PostCreate = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
-  const [primeTag, setPrimeTag] = useState<TagVisual | null>(null);
+  const [primeTag, setPrimeTag] = useState<TagVisual | undefined>();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();

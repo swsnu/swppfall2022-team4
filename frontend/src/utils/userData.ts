@@ -99,7 +99,7 @@ export const userReducer = (state: userStateType, action: { name: string; value:
         newWarning.content = '* 한글을 입력할 수 없습니다.';
         newValue = newValue.replace(regex, '');
       } else {
-        newWarning.content = '* 8 ~ 16자 영문 + 숫자 + 기호';
+        newWarning.content = '* 8 ~ 16자 영문, 숫자, 기호';
       }
 
       newValue = newValue.substring(0, 16);
@@ -197,6 +197,7 @@ export const userReducer = (state: userStateType, action: { name: string; value:
         newWarning.color = '#ff3939';
       } else {
         newWarning.content = '';
+        newWarning.color = '#009112';
       }
 
       return {
@@ -217,6 +218,7 @@ export const userReducer = (state: userStateType, action: { name: string; value:
         newWarning.color = '#ff3939';
       } else {
         newWarning.content = '';
+        newWarning.color = '#009112';
       }
 
       return {
@@ -231,18 +233,9 @@ export const userReducer = (state: userStateType, action: { name: string; value:
       const exceptNum = /[^\d]/g;
       newValue = newValue.replace(exceptNum, '');
 
-      const regex = /^\d{1,3}$/;
-      if (!regex.test(newValue)) {
-        newWarning.content = '* 나이는 정수여야 합니다.';
-        newWarning.color = '#ff3939';
-      } else {
-        newWarning.content = '';
-      }
-
       return {
         ...state,
         [actionName]: newValue,
-        bodyWarning: newWarning,
       };
     }
     default:

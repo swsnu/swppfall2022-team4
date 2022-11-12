@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from utils.get_random import get_random_string
 
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def upload(request):

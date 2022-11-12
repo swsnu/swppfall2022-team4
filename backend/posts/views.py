@@ -21,7 +21,7 @@ def post_home(request):
     if request.method == "GET":
         query_args = {}
         query_args["page_num"] = max(int(request.GET.get("page", 1)), 1)
-        query_args["page_size"] = max(int(request.GET.get("pageSize", 10)), 10)
+        query_args["page_size"] = max(int(request.GET.get("pageSize", 15)), 15)
         query_args["keyword"] = request.GET.get("search", None)
 
         offset = (query_args["page_num"] - 1) * query_args["page_size"]
@@ -33,7 +33,8 @@ def post_home(request):
             filter_args["title__icontains"] = query_args["keyword"]
             posts = posts.filter(**filter_args)
 
-        posts_serializable = list(posts[offset:limit].values())
+        posts = posts[offset:limit]
+        posts_serializable = list(posts.values())
         for index, _ in enumerate(posts_serializable):
             posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
             posts_serializable[index]["author_name"] = posts[index].author.username
@@ -66,7 +67,6 @@ def post_home(request):
     else:  # request.method == "POST":
         try:
             data = json.loads(request.body.decode())
-
             author = User.objects.get(username=data["author_name"])
             prime_tag = Tag.objects.get(pk=data["prime_tag"]["id"]) if data["prime_tag"] else None
 
@@ -114,7 +114,7 @@ def post_detail(request, query_id):
                 }
 
             post_response = {
-                "group_id": post_obj.pk,
+                "post_id": post_obj.pk,
                 "title": post_obj.title,
                 "author_name": post_obj.author.username,
                 "content": post_obj.content,
@@ -133,9 +133,6 @@ def post_detail(request, query_id):
             return JsonResponse(post_response, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
-        except Exception as error:
-            print(error)
-            return HttpResponseBadRequest()
     elif request.method == "PUT":
         try:
             data = json.loads(request.body.decode())
@@ -156,8 +153,7 @@ def post_detail(request, query_id):
             return JsonResponse({"message": "success"}, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
-        except Exception as error:
-            print(error)
+        except Exception:
             return HttpResponseBadRequest()
     else:  # request.method == "DELETE":
         try:
@@ -168,9 +164,6 @@ def post_detail(request, query_id):
             return JsonResponse({"message": "success"}, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
-        except Exception as error:
-            print(error)
-            return HttpResponseBadRequest()
 
 
 @require_http_methods(["GET"])
@@ -179,8 +172,7 @@ def post_comment(request, query_id):
     GET : get post comment list.
     """
     try:
-        post_id = int(query_id)
-        post_obj = Post.objects.get(pk=post_id)
+        post_obj = Post.objects.get(pk=int(query_id))
 
         comments = post_obj.comments.all()
         proc_comm = list(comments.values())
@@ -217,9 +209,6 @@ def post_comment(request, query_id):
         return JsonResponse({"comments": comment_response}, status=200)
     except Post.DoesNotExist:
         return HttpResponseNotFound()
-    except Exception as error:
-        print(error)
-        return HttpResponseBadRequest()
 
 
 @require_http_methods(["PUT"])
@@ -251,10 +240,7 @@ def post_func(request, query_id):
             else:
                 post_obj.scraper.add(user)
         else:
-            HttpResponseBadRequest()
+            return HttpResponseBadRequest()
         return JsonResponse({"message": "success"}, status=200)
     except (Post.DoesNotExist, User.DoesNotExist):
         return HttpResponseNotFound()
-    except Exception as error:
-        print(error)
-        return HttpResponseBadRequest()

@@ -2,23 +2,27 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PostEditorLayout } from './PostEditorLayout';
 import { TagVisual } from 'store/apis/tag';
+import { tagActions } from 'store/slices/tag';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
-  const [primeTag, setPrimeTag] = useState<TagVisual | null>(null);
+  const [primeTag, setPrimeTag] = useState<TagVisual | undefined>();
 
-  const post = useSelector(({ post }: RootState) => post.postDetail.post);
-  const postEditStatus = useSelector(({ post }: RootState) => post.postEdit);
+  const { post, postEditStatus, user } = useSelector(({ post, user }: RootState) => ({
+    post: post.postDetail.post,
+    postEditStatus: post.postEdit,
+    user: user.user,
+  }));
   useEffect(() => {
     if (id) {
       dispatch(
-        postActions.getPostDetail({
+        postActions.updatePostDetail({
           post_id: id,
         }),
       );
@@ -36,15 +40,15 @@ const PostEdit = () => {
     if (postEditStatus) {
       navigate(`/post/${id}`);
       dispatch(postActions.stateRefresh());
+      dispatch(tagActions.clearTagState());
     }
   }, [postEditStatus]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(({ user }: RootState) => user.user);
 
   const cancelOnClick = () => {
     // alert('are you sure?');
-    navigate('/post');
+    navigate(`/post/${id}`);
     //TODO;
   };
   const confirmOnClick = () => {

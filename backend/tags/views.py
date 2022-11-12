@@ -10,7 +10,7 @@ from tags.models import Tag, TagClass
 @require_http_methods(["GET", "POST"])
 def tag_home(request):
     """
-    GET : Get tag lists.
+    GET : Get tag list.
     POST : Create tag.
     """
     if request.method == "GET":
@@ -18,7 +18,12 @@ def tag_home(request):
         tag_classes_serializable = list(tag_classes.values())
 
         for index, _ in enumerate(tag_classes_serializable):
-            tag_classes_serializable[index]["tags"] = list(tag_classes[index].tags.values())
+            tag_visual_list = []
+            for tag in tag_classes[index].tags.all():
+                tag_visual_list.append(
+                    {"id": tag.pk, "name": tag.tag_name, "color": tag_classes[index].color}
+                )
+            tag_classes_serializable[index]["tags"] = tag_visual_list
         response = JsonResponse(
             {
                 "tags": tag_classes_serializable,
@@ -34,13 +39,12 @@ def tag_home(request):
             class_id = data["classId"]
             parent_class = TagClass.objects.get(pk=class_id)
             created_tag = Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
-            return JsonResponse({
-                "tags": {
-                    "id" : created_tag.pk,
-                    "name" : tag_name,
-                    "color" : parent_class.color
+            return JsonResponse(
+                {
+                    "tags": {"id": created_tag.pk, "name": tag_name, "color": parent_class.color},
                 },
-            }, status=201)
+                status=201,
+            )
         except (KeyError, json.JSONDecodeError, TagClass.DoesNotExist):
             return HttpResponseBadRequest()
 
@@ -64,7 +68,7 @@ def tag_class(request):
 @require_http_methods(["GET"])
 def tag_search(request):
     """
-    GET : Get searched tag lists.
+    GET : Get searched tag list.
     """
     query_args = {}
     query_args["class_name"] = request.GET.get("class", None)

@@ -23,3 +23,6 @@ class User(AbstractTimeStampedModel):
     # Related_name : scraped_posts <- posts.Post
     # Related_name : liked_comments <- comments.Comment
     # Related_name : disliked_comments <- comments.Comment
+
+    def __str__(self):
+        return self.username

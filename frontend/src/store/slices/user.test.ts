@@ -25,8 +25,11 @@ const editProfileRequest = {
   username: '11111111',
   data: { oldPassword: '11111111', newPassword: '22222222' },
 };
-
-jest.spyOn(global, 'alert').mockImplementation(msg => msg);
+const getProfileContentResponse = {
+  posts: 1,
+  comments: 2,
+  scraps: 3,
+};
 
 describe('slices - user', () => {
   test.each([
@@ -194,6 +197,22 @@ describe('slices - user', () => {
         })
         .silentRun();
     });
+    test('getProfileContent', () => {
+      return expectSaga(userSaga)
+        .withReducer(userSlice.reducer)
+        .provide([[call(userAPI.getProfileContent, '11111111'), getProfileContentResponse]])
+        .put({ type: 'user/getProfileContentSuccess', payload: getProfileContentResponse })
+        .dispatch({ type: 'user/getProfileContent', payload: '11111111' })
+        .hasFinalState({
+          ...initialState,
+          profileContent: {
+            post: getProfileContentResponse.posts,
+            comment: getProfileContentResponse.comments,
+            scrap: getProfileContentResponse.scraps,
+          },
+        })
+        .silentRun();
+    });
     test('editProfile', () => {
       return expectSaga(userSaga)
         .withReducer(userSlice.reducer)
@@ -222,6 +241,8 @@ describe('slices - user', () => {
   });
 
   describe('saga failure', () => {
+    global.alert = jest.fn().mockImplementation(() => null);
+
     test('signup', () => {
       return expectSaga(userSaga)
         .withReducer(userSlice.reducer)
