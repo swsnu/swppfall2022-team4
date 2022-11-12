@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
@@ -119,17 +119,18 @@ const GroupCreate = () => {
           <CreateCheck type="checkbox" checked={set_date} onChange={() => setSetDate(!set_date)} />
           <DateWrapper>
             <input
+              data-testid="start_date"
               type="date"
               className="input-date"
               disabled={!set_date}
               onChange={e => setStartDate(e.target.value)}
             />
-            <input type="date" className="input-date" disabled={!set_date} onChange={e => setEndDate(e.target.value)} />
+            <input data-testid="end_date" type="date" className="input-date" disabled={!set_date} onChange={e => setEndDate(e.target.value)} />
           </DateWrapper>
         </div>
 
         <CreateText>그룹 설명</CreateText>
-        <CreateTextArea rows={10} value={description} onChange={e => setDescription(e.target.value)} />
+        <CreateTextArea rows={10} value={description} onChange={e => setDescription(e.target.value)} placeholder="그룹의 설명"/>
 
         <CreateText>그룹 공개 설정</CreateText>
         <CreateCheck type="checkbox" checked={free} onChange={() => setFree(!free)} />

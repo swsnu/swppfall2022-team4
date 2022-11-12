@@ -5,7 +5,26 @@ import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import GroupList from './GroupList';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import * as groupApi from '../../store/apis/group';
+
+const groupListResponse: groupApi.Group[] = [
+    {
+      id: 1,
+      group_name: 'test',
+      number: 5,
+      member_number: 4,
+      start_date: '2019-01-01',
+      end_date: '2019-12-31',
+    },
+    {
+      id: 2,
+      group_name: 'test2',
+      number: 5,
+      member_number: 4,
+      start_date: '2019-01-01',
+      end_date: '2019-12-31',
+    }
+]
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -36,26 +55,19 @@ const setup = () => {
 
 describe('setup test', () => {
   it('test', () => {
-    setup();
-    // expect(mockDispatch).toBeCalledTimes(2);
-  });
-  it('button', () => {
     const store = setup();
-
     act(() => {
       store.dispatch({
         type: 'group/getGroupsSuccess',
         payload: {
-          groups: [{ id: 1, group_name: 'temp', number: 1, start_date: 'sd', end_date: 'ed', member_number: 1 }],
+          groups: groupListResponse,
         },
       });
     });
-
-    // screen.debug();
-
+    
     const createGroupBtn = screen.getByText('Create Group');
     fireEvent.click(createGroupBtn);
-    expect(mockNavigate).toBeCalledTimes(0);
+    expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group/create');
   });
 });
