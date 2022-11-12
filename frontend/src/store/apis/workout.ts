@@ -186,7 +186,6 @@ export const getCalendarInfo = async (payload: getCalendarInfoRequestType) => {
   const response = await client.get<getCalendarInfoResponseType>(
     `/api/fitelement/${payload.year}/${payload.month}/?&user_id=${payload.user_id}`,
   );
-  console.log(response.data);
   return response.data;
 };
 

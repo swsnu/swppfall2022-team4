@@ -28,7 +28,6 @@ const Routine = () => {
     selected_routine: workout_log.selected_routine,
     routines: workout_log.routine,
   }));
-  console.log('routines', selected_routine);
 
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));

@@ -70,7 +70,6 @@ const WorkoutLog = () => {
 
   const clickDate = (year: number, month: number, d: number) => {
     setDate(new Date(year, month, d));
-    console.log(year, month, d);
     setSelectedYear(year);
     setSelectedDay(d);
     setSelectedMonth(month);
@@ -92,7 +91,6 @@ const WorkoutLog = () => {
   };
 
   const createWorkoutLog = () => {
-    console.log('create', year, month, day);
     const newLogConfig: createWorkoutLogRequestType = {
       user_id: 1,
       type: 'log',
@@ -154,7 +152,6 @@ const WorkoutLog = () => {
   };
 
   const memoOnClick = () => {
-    console.log(memo_write_mode);
     if (memo_write_mode === false) {
       setMemoWriteMode(true);
     } else {
