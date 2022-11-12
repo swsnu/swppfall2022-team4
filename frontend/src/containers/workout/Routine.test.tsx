@@ -24,7 +24,7 @@ describe('routine', () => {
   });
 
   it('render without errors', () => {
-    const rendered_container = render(component);
-    expect(rendered_container).toBeTruthy();
+    const view = render(component);
+    expect(view).toBeTruthy();
   });
 });
