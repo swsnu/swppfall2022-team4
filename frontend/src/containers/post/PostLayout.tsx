@@ -6,67 +6,11 @@ import { postActions } from 'store/slices/post';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { columnCenterFlex, rowCenterFlex } from 'components/post/layout';
 
 interface IPropsSearchClear {
   isActive?: boolean;
 }
-
-export const PostPageWrapper = styled.div`
-  background-color: var(--fit-green-back);
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-x: hidden;
-`;
-
-export const PostContentWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  @media all and (max-width: 650px) {
-    width: 100%;
-  }
-`;
-
-export const TopElementWrapperWithoutPadding = styled.div`
-  margin: 40px 0px 15px 0px;
-  width: 100%;
-  background-color: var(--fit-white);
-`;
-
-export const Main_SideWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 8fr 2fr;
-  row-gap: 10px;
-  column-gap: 10px;
-  width: 100%;
-  min-height: 600px;
-  height: 80vh;
-`;
-
-export const PostPageLayout = (topElement: JSX.Element, mainElement: JSX.Element, sideElement: JSX.Element) => (
-  <PostPageWrapper>
-    <PostContentWrapper>
-      <TopElementWrapperWithoutPadding>{topElement}</TopElementWrapperWithoutPadding>
-      <Main_SideWrapper>
-        {mainElement}
-        {sideElement}
-      </Main_SideWrapper>
-    </PostContentWrapper>
-  </PostPageWrapper>
-);
-
-export const SideBarWrapper = styled.div`
-  width: 100%;
-`;
 
 export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX.Element) => {
   const postSearch = useSelector(({ post }: RootState) => post.postSearch);
@@ -144,9 +88,46 @@ const ClearSearchInput = styled.span<IPropsSearchClear>`
     display: none;
   `}
 `;
-const SearchIcon = styled.div`
+const SearchIcon = styled(rowCenterFlex)`
   margin-left: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+`;
+
+export const PostPageWrapper = styled(columnCenterFlex)`
+  background-color: var(--fit-green-back);
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+`;
+
+export const PostContentWrapper = styled(columnCenterFlex)`
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  max-width: 1200px;
+
+  @media all and (max-width: 650px) {
+    width: 100%;
+  }
+`;
+
+export const TopElementWrapperWithoutPadding = styled.div`
+  margin: 40px 0px 15px 0px;
+  width: 100%;
+  background-color: var(--fit-white);
+`;
+
+export const Main_SideWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  row-gap: 10px;
+  column-gap: 10px;
+  width: 100%;
+  height: 80vh;
+  min-height: 640px;
+  margin-bottom: 50px;
+`;
+
+export const SideBarWrapper = styled.div`
+  width: 100%;
 `;

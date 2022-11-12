@@ -10,7 +10,7 @@ from tags.models import Tag, TagClass
 @require_http_methods(["GET", "POST"])
 def tag_home(request):
     """
-    GET : Get tag lists.
+    GET : Get tag list.
     POST : Create tag.
     """
     if request.method == "GET":
@@ -68,7 +68,7 @@ def tag_class(request):
 @require_http_methods(["GET"])
 def tag_search(request):
     """
-    GET : Get searched tag lists.
+    GET : Get searched tag list.
     """
     query_args = {}
     query_args["class_name"] = request.GET.get("class", None)

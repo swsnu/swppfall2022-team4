@@ -2,7 +2,7 @@ import client from './client';
 import { TagVisual } from './tag';
 
 // Used in createPostRequest, deletePostRequest, getPostComment
-export type postIdentifyingRequestType = {
+export type postIdentifyingType = {
   post_id: string;
 };
 
@@ -32,7 +32,7 @@ export type Post = {
   scrap_num: number;
   comments_num: number;
   tags: TagVisual[];
-  prime_tag: TagVisual;
+  prime_tag: TagVisual | undefined;
   liked?: boolean;
   disliked?: boolean;
   scraped?: boolean;
@@ -52,7 +52,7 @@ export type getPostsResponseType = {
 };
 
 export const createPost = async (payload: createPostRequestType) => {
-  const response = await client.post<postIdentifyingRequestType>(`/api/post/`, payload);
+  const response = await client.post<postIdentifyingType>(`/api/post/`, payload);
   return response.data;
 };
 
@@ -61,15 +61,15 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
   tags: TagVisual[];
-  prime_tag: TagVisual | null;
+  prime_tag: TagVisual | undefined;
 };
 
-export const getPostDetail = async (payload: postIdentifyingRequestType) => {
-  const response = await client.get<getPostsResponseType>(`/api/post/${payload.post_id}/`);
+export const updatePostDetail = async (payload: postIdentifyingType) => {
+  const response = await client.get<Post>(`/api/post/${payload.post_id}/`);
   return response.data;
 };
 
-export const deletePost = async (payload: postIdentifyingRequestType) => {
+export const deletePost = async (payload: postIdentifyingType) => {
   const response = await client.delete(`/api/post/${payload.post_id}/`);
   return response.data;
 };
@@ -84,7 +84,7 @@ export type editPostRequestType = {
   title: string;
   content: string;
   tags: TagVisual[];
-  prime_tag: TagVisual | null;
+  prime_tag: TagVisual | undefined;
 };
 
 export const postFunc = async (payload: postFuncRequestType) => {

@@ -24,8 +24,10 @@ const Routine = () => {
     user_id: 1,
   };
 
-  const routines = useSelector((rootState: RootState) => rootState.workout_log.routine);
-  const selected_routine = useSelector((rootState: RootState) => rootState.workout_log.selected_routine);
+  const { selected_routine, routines } = useSelector(({ workout_log }: RootState) => ({
+    selected_routine: workout_log.selected_routine,
+    routines: workout_log.routine,
+  }));
 
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
@@ -37,14 +39,11 @@ const Routine = () => {
     }
   }, [routine_id, routines]);
 
-  console.log(routines);
-  console.log(selected_routine);
-
   return (
     <Wrapper>
       <LeftWrapper>
         <LeftUpper>
-          <ReturnButtonWrapper onClick={() => calendarButtonClick()}>{'< '} 달력으로 돌아가기</ReturnButtonWrapper>
+          <ReturnButtonWrapper onClick={() => calendarButtonClick()}>{'< '}달력으로 돌아가기</ReturnButtonWrapper>
         </LeftUpper>
         <Frame>
           <RoutineListWrapper>
@@ -87,13 +86,13 @@ const Routine = () => {
                   <FitElement
                     key={index}
                     id={index + 1}
-                    type={fitelement.type}
-                    workout_type={fitelement.workout_type}
-                    category={fitelement.category}
-                    weight={fitelement.weight}
-                    rep={fitelement.rep}
-                    set={fitelement.set}
-                    time={fitelement.time}
+                    type={fitelement.data.type}
+                    workout_type={fitelement.data.workout_type}
+                    category={fitelement.data.category}
+                    weight={fitelement.data.weight}
+                    rep={fitelement.data.rep}
+                    set={fitelement.data.set}
+                    time={fitelement.data.time}
                   />
                 ))}
           </LogWrapper>

@@ -152,7 +152,6 @@ export const userSlice = createSlice({
     },
 
     getProfileContent: (state, action: PayloadAction<string>) => {
-      // Hey
       state.profileContent.post = null;
       state.profileContent.comment = null;
       state.profileContent.scrap = null;

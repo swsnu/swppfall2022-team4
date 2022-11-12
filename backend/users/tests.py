@@ -5,12 +5,14 @@ import datetime
 from django.test import TestCase, Client
 from users.models import User
 
-class ImageTestCase(TestCase):
 
+class ImageTestCase(TestCase):
     def setUp(self):
-        User.objects.create(
+        user1 = User.objects.create(
             username='username',
-            hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
+            hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode(
+                'utf-8'
+            ),
             nickname='nickname',
             gender='male',
             age=23,
@@ -18,11 +20,13 @@ class ImageTestCase(TestCase):
             weight=75,
             image="profile_default.png",
             exp=0,
-            level=1
+            level=1,
         )
         User.objects.create(
             username='username2',
-            hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
+            hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode(
+                'utf-8'
+            ),
             nickname='nickname2',
             gender='male',
             age=23,
@@ -30,8 +34,9 @@ class ImageTestCase(TestCase):
             weight=75,
             image="profile_default.png",
             exp=0,
-            level=1
+            level=1,
         )
+        self.assertEqual(str(user1), 'username')
 
     def ready(self):
         client = Client()
@@ -39,12 +44,9 @@ class ImageTestCase(TestCase):
         csrftoken = token_response.cookies['csrftoken'].value
         client.post(
             '/api/user/login/',
-            {
-                'username': 'username',
-                'password': 'password'
-            },
+            {'username': 'username', 'password': 'password'},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         return client, csrftoken
 
@@ -60,15 +62,11 @@ class ImageTestCase(TestCase):
                 'newPassword': 'newpassword',
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 401)
 
-        token = jwt.encode(
-            {},
-            os.environ.get("JWT_SECRET"),
-            os.environ.get("ALGORITHM")
-        )
+        token = jwt.encode({}, os.environ.get("JWT_SECRET"), os.environ.get("ALGORITHM"))
         client.cookies['access_token'] = token
         res = client.put(
             '/api/user/profile/username/',
@@ -77,7 +75,7 @@ class ImageTestCase(TestCase):
                 'newPassword': 'newpassword',
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 401)
 
@@ -87,10 +85,7 @@ class ImageTestCase(TestCase):
         csrftoken = token_response.cookies['csrftoken'].value
 
         res = client.post(
-            '/api/user/signup/',
-            {},
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            '/api/user/signup/', {}, content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 400)
 
@@ -103,10 +98,10 @@ class ImageTestCase(TestCase):
                 'gender': 'male',
                 'age': 23,
                 'height': 108.7,
-                'weight': 75
+                'weight': 75,
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 409)
 
@@ -119,10 +114,10 @@ class ImageTestCase(TestCase):
                 'gender': 'male',
                 'age': 23,
                 'height': 108.7,
-                'weight': 75
+                'weight': 75,
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 409)
 
@@ -135,10 +130,10 @@ class ImageTestCase(TestCase):
                 'gender': 'male',
                 'age': 23,
                 'height': 108.7,
-                'weight': 75
+                'weight': 75,
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 200)
 
@@ -148,65 +143,47 @@ class ImageTestCase(TestCase):
         csrftoken = token_response.cookies['csrftoken'].value
 
         res = client.post(
-            '/api/user/login/',
-            {},
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            '/api/user/login/', {}, content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 400)
 
         res = client.post(
             '/api/user/login/',
-            {
-                'username': '',
-                'password': ''
-            },
+            {'username': '', 'password': ''},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 400)
 
         res = client.post(
             '/api/user/login/',
-            {
-                'username': 'username',
-                'password': ''
-            },
+            {'username': 'username', 'password': ''},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 400)
 
         res = client.post(
             '/api/user/login/',
-            {
-                'username': 'username?',
-                'password': 'password'
-            },
+            {'username': 'username?', 'password': 'password'},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 401)
 
         res = client.post(
             '/api/user/login/',
-            {
-                'username': 'username',
-                'password': 'password?'
-            },
+            {'username': 'username', 'password': 'password?'},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 401)
 
         res = client.post(
             '/api/user/login/',
-            {
-                'username': 'username',
-                'password': 'password'
-            },
+            {'username': 'username', 'password': 'password'},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 200)
 
@@ -238,7 +215,7 @@ class ImageTestCase(TestCase):
                 'newPassword': 'newpassword',
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 403)
 
@@ -249,7 +226,7 @@ class ImageTestCase(TestCase):
                 'newPassword': 'newpassword',
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 401)
 
@@ -260,7 +237,7 @@ class ImageTestCase(TestCase):
                 'newPassword': 'newpassword',
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 200)
 
@@ -272,10 +249,10 @@ class ImageTestCase(TestCase):
                 'gender': 'female',
                 'height': 140.6,
                 'weight': 55,
-                'age': 26
+                'age': 26,
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 409)
 
@@ -283,7 +260,7 @@ class ImageTestCase(TestCase):
             '/api/user/profile/username/',
             {},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 400)
 
@@ -295,23 +272,23 @@ class ImageTestCase(TestCase):
                 'gender': 'female',
                 'height': 140.6,
                 'weight': 55,
-                'age': 26
+                'age': 26,
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 200)
 
         res = client.delete(
             '/api/user/profile/username2/',
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 403)
 
         res = client.delete(
             '/api/user/profile/username/',
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 204)

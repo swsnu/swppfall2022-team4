@@ -67,7 +67,6 @@ def post_home(request):
     else:  # request.method == "POST":
         try:
             data = json.loads(request.body.decode())
-
             author = User.objects.get(username=data["author_name"])
             prime_tag = Tag.objects.get(pk=data["prime_tag"]["id"]) if data["prime_tag"] else None
 
@@ -134,9 +133,6 @@ def post_detail(request, query_id):
             return JsonResponse(post_response, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
-        except Exception as error:
-            print(error)
-            return HttpResponseBadRequest()
     elif request.method == "PUT":
         try:
             data = json.loads(request.body.decode())
@@ -157,8 +153,7 @@ def post_detail(request, query_id):
             return JsonResponse({"message": "success"}, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
-        except Exception as error:
-            print(error)
+        except Exception:
             return HttpResponseBadRequest()
     else:  # request.method == "DELETE":
         try:
@@ -169,9 +164,6 @@ def post_detail(request, query_id):
             return JsonResponse({"message": "success"}, status=200)
         except Post.DoesNotExist:
             return HttpResponseNotFound()
-        except Exception as error:
-            print(error)
-            return HttpResponseBadRequest()
 
 
 @require_http_methods(["GET"])
@@ -180,8 +172,7 @@ def post_comment(request, query_id):
     GET : get post comment list.
     """
     try:
-        post_id = int(query_id)
-        post_obj = Post.objects.get(pk=post_id)
+        post_obj = Post.objects.get(pk=int(query_id))
 
         comments = post_obj.comments.all()
         proc_comm = list(comments.values())
@@ -218,9 +209,6 @@ def post_comment(request, query_id):
         return JsonResponse({"comments": comment_response}, status=200)
     except Post.DoesNotExist:
         return HttpResponseNotFound()
-    except Exception as error:
-        print(error)
-        return HttpResponseBadRequest()
 
 
 @require_http_methods(["PUT"])
@@ -252,10 +240,7 @@ def post_func(request, query_id):
             else:
                 post_obj.scraper.add(user)
         else:
-            HttpResponseBadRequest()
+            return HttpResponseBadRequest()
         return JsonResponse({"message": "success"}, status=200)
     except (Post.DoesNotExist, User.DoesNotExist):
         return HttpResponseNotFound()
-    except Exception as error:
-        print(error)
-        return HttpResponseBadRequest()

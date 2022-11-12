@@ -14,7 +14,6 @@ def create_fit_element(request):
     if request.method == 'POST':
         try:
             req_data = json.loads(request.body.decode())
-            print(req_data)
             new_fit_element = FitElement(
                 author_id=req_data["user_id"],
                 type=req_data["type"],
@@ -27,34 +26,27 @@ def create_fit_element(request):
                 time=req_data["time"],
                 date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
             )
-            print(datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'))
-
             new_fit_element.save()
 
-            daily_logs = DailyLog.objects.filter(author_id=int(req_data["user_id"]))
+            daily_logs = DailyLog.objects.filter(
+                author_id=int(req_data["user_id"]))
 
             if not daily_logs.filter(
                 date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
             ).exists():
-                try:
-                    new_daily_log = DailyLog(
-                        author_id=req_data["user_id"],
-                        memo="",
-                        date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
-                    )
-                    new_daily_log.save()
-                    new_daily_log.fit_element.add(new_fit_element)
-                    # return JsonResponse({"dailylog_date": datetime(new_daily_log.date)}, status=201)
-                except (KeyError, json.JSONDecodeError):
-                    return HttpResponseBadRequest()
+                new_daily_log = DailyLog(
+                    author_id=req_data["user_id"],
+                    memo="",
+                    date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
+                )
+                new_daily_log.save()
+                new_daily_log.fit_element.add(new_fit_element)
+
             else:
-                try:
-                    daily_log_single = daily_logs.filter(
-                        date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
-                    )[0]
-                    daily_log_single.fit_element.add(new_fit_element)
-                except (KeyError, json.JSONDecodeError):
-                    return HttpResponseBadRequest()
+                daily_log_single = daily_logs.filter(
+                    date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
+                )[0]
+                daily_log_single.fit_element.add(new_fit_element)
 
             return JsonResponse({"workout_id": str(new_fit_element.pk)}, status=201)
         except (KeyError, json.JSONDecodeError):
@@ -69,7 +61,7 @@ def fit_element(request, fitelement_id):
     DELETE: delete a fit element
     """
     if request.method == 'GET':
-        try:
+        if FitElement.objects.filter(id=fitelement_id).exists():
             workout = FitElement.objects.get(id=fitelement_id)
             return_json = {
                 'id': workout.id,
@@ -85,15 +77,8 @@ def fit_element(request, fitelement_id):
                 'date': workout.date,
             }
             return JsonResponse(return_json, safe=False, status=201)
-        except (KeyError, json.JSONDecodeError, FitElement.DoesNotExist):
-            return HttpResponse(404)
-    elif request.method == 'PUT':
-        try:
-            pass
-        except (KeyError, json.JSONDecodeError, FitElement.DoesNotExist):
-            return HttpResponse(404)
-    elif request.method == 'DELETE':
-        pass
+        else:
+            return HttpResponseBadRequest(status=404)
 
 
 @require_http_methods(["GET"])
@@ -113,9 +98,11 @@ def get_calendar_info(request, year, month):
         else:
             next_month = datetime(year, month + 1, 1).date()
         for i in range(1, 32):
-            cal_dict = {"year": year, "month": month, "date": i, "workouts": []}
+            cal_dict = {"year": year, "month": month,
+                        "date": i, "workouts": []}
             return_json.append(cal_dict)
-        workouts_all = FitElement.objects.filter(date__gte=this_month, date__lt=next_month)
+        workouts_all = FitElement.objects.filter(
+            date__gte=this_month, date__lt=next_month)
 
         workouts = workouts_all.filter(author_id=user_id)
 
@@ -133,7 +120,8 @@ def get_calendar_info(request, year, month):
                 'time': workout.time,
                 'date': workout.date,
             }
-            return_json[int(workout_dict['date'].day) - 1]['workouts'].append(workout_dict)
+            return_json[int(workout_dict['date'].day) -
+                        1]['workouts'].append(workout_dict)
         return JsonResponse(return_json, safe=False, status=200)
 
 
@@ -185,7 +173,7 @@ def routine(request, routine_id):
     DELETE: delete a routine
     """
     if request.method == 'GET':
-        try:
+        if Routine.objects.filter(id=routine_id).exists():
             routine_single = Routine.objects.get(id=routine_id)
             return_json = {
                 'id': routine_single.id,
@@ -194,12 +182,8 @@ def routine(request, routine_id):
                 'fitelements': list(routine_single.fit_element.values_list('id', flat=True)),
             }
             return JsonResponse(return_json, safe=False, status=201)
-        except (KeyError, json.JSONDecodeError, Routine.DoesNotExist):
-            return HttpResponse(404)
-    elif request.method == 'PUT':
-        pass
-    elif request.method == 'DELETE':
-        pass
+        else:
+            return HttpResponseBadRequest()
 
 
 @require_http_methods(["GET", "POST", "PUT"])
@@ -211,10 +195,10 @@ def daily_log(request, year, month, specific_date):
     """
     if request.method == 'GET':
         user_id = request.GET.get('user_id')
-        print(DailyLog.objects.all())
 
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
-        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
+        daily_log_single = daily_logs.filter(
+            date=datetime(year, month, specific_date).date())
 
         if len(daily_log_single) == 0:
             daily_log_dict_return = {
@@ -237,7 +221,8 @@ def daily_log(request, year, month, specific_date):
     elif request.method == 'POST':
         user_id = request.GET.get('user_id')
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
-        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
+        daily_log_single = daily_logs.filter(
+            date=datetime(year, month, specific_date).date())
 
         if len(daily_log_single) == 0:
             req_data = json.loads(request.body.decode())
@@ -252,7 +237,8 @@ def daily_log(request, year, month, specific_date):
     elif request.method == 'PUT':
         user_id = request.GET.get('user_id')
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
-        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
+        daily_log_single = daily_logs.filter(
+            date=datetime(year, month, specific_date).date())
 
         req_data = json.loads(request.body.decode())
         return_json = []
@@ -261,7 +247,8 @@ def daily_log(request, year, month, specific_date):
                 new_daily_log = DailyLog(
                     author_id=req_data["user_id"],
                     memo=req_data["memo"],
-                    date=str(year) + '-' + str(month) + '-' + str(specific_date),
+                    date=str(year) + '-' + str(month) +
+                    '-' + str(specific_date),
                 )
                 new_daily_log.save()
                 return HttpResponse(status=201)
@@ -281,7 +268,8 @@ def daily_log(request, year, month, specific_date):
                 if FitElement.objects.filter(id=fitelement_id).exists():
                     fitelement = FitElement.objects.get(id=fitelement_id)
                     fitelement.pk = None
-                    fitelement.date = str(year) + '-' + str(month) + '-' + str(specific_date)
+                    fitelement.date = str(year) + '-' + \
+                        str(month) + '-' + str(specific_date)
                     fitelement.save()
                     return_json.append(fitelement.pk)
                     new_daily_log.fit_element.add(fitelement)
@@ -292,7 +280,8 @@ def daily_log(request, year, month, specific_date):
             if FitElement.objects.filter(id=fitelement_id).exists():
                 fitelement = FitElement.objects.get(id=fitelement_id)
                 fitelement.pk = None
-                fitelement.date = str(year) + '-' + str(month) + '-' + str(specific_date)
+                fitelement.date = str(year) + '-' + \
+                    str(month) + '-' + str(specific_date)
                 fitelement.save()
                 return_json.append(fitelement.pk)
                 daily_log_single[0].fit_element.add(fitelement)

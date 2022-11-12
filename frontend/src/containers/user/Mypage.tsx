@@ -19,11 +19,11 @@ import { ArticleItem } from 'containers/post/PostMain';
 import {
   CommentContent,
   CommentContentWrapper,
-  CommentFuncBtn,
+  FuncBtn,
   CommentFuncNumIndicator,
   CommentFuncTimeIndicator,
   CommentFuncWrapper,
-  FuncBtnStatus,
+  FuncType,
   IPropsComment,
 } from 'containers/post/PostDetail';
 
@@ -175,13 +175,13 @@ const Mypage = () => {
                           <CommentContent>{comment.content}</CommentContent>
                         </CommentContentWrapper>
                         <CommentFuncWrapper>
-                          <CommentFuncBtn color={comment.liked ? FuncBtnStatus.Like : FuncBtnStatus.None}>
+                          <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
                             <FontAwesomeIcon icon={faThumbsUp} />
-                          </CommentFuncBtn>
+                          </FuncBtn>
                           <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-                          <CommentFuncBtn color={comment.disliked ? FuncBtnStatus.Dislike : FuncBtnStatus.None}>
+                          <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
                             <FontAwesomeIcon icon={faThumbsDown} />
-                          </CommentFuncBtn>
+                          </FuncBtn>
                           <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
                           <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
                         </CommentFuncWrapper>

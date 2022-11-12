@@ -70,7 +70,6 @@ const WorkoutLog = () => {
 
   const clickDate = (year: number, month: number, d: number) => {
     setDate(new Date(year, month, d));
-    console.log(year, month, d);
     setSelectedYear(year);
     setSelectedDay(d);
     setSelectedMonth(month);
@@ -92,7 +91,6 @@ const WorkoutLog = () => {
   };
 
   const createWorkoutLog = () => {
-    console.log('create', year, month, day);
     const newLogConfig: createWorkoutLogRequestType = {
       user_id: 1,
       type: 'log',
@@ -154,7 +152,6 @@ const WorkoutLog = () => {
   };
 
   const memoOnClick = () => {
-    console.log(memo_write_mode);
     if (memo_write_mode === false) {
       setMemoWriteMode(true);
     } else {
@@ -297,6 +294,7 @@ const WorkoutLog = () => {
                     return (
                       <Day
                         className={day_type}
+                        data-testid="day_component"
                         key={index}
                         onClick={() => {
                           clickDate(year, month, d);
@@ -315,6 +313,7 @@ const WorkoutLog = () => {
                 Notes
                 <MemoEditButton
                   onClick={() => memoOnClick()}
+                  data-testid="memo_edit"
                   src={require('assets/images/workout_log/memo/memo_edit.png')}
                 ></MemoEditButton>
               </MemoTitleWrapper>
@@ -408,13 +407,13 @@ const WorkoutLog = () => {
                     <FitElement
                       key={index}
                       id={index + 1}
-                      type={fitelement.type}
-                      workout_type={fitelement.workout_type}
-                      category={fitelement.category}
-                      weight={fitelement.weight}
-                      rep={fitelement.rep}
-                      set={fitelement.set}
-                      time={fitelement.time}
+                      type={fitelement.data.type}
+                      workout_type={fitelement.data.workout_type}
+                      category={fitelement.data.category}
+                      weight={fitelement.data.weight}
+                      rep={fitelement.data.rep}
+                      set={fitelement.data.set}
+                      time={fitelement.data.time}
                     />
                   ))
                 )}

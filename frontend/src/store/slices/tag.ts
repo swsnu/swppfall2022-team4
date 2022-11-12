@@ -9,7 +9,7 @@ interface TagState {
   tagCreate: tagAPI.TagVisual | null;
   error: string | null;
 }
-const initialState: TagState = {
+export const initialState: TagState = {
   tagList: null,
   tagSearch: null,
   tagCreate: null,
@@ -62,6 +62,7 @@ export const tagSlice = createSlice({
     searchTagFailure: (state, { payload }) => {
       //search failure
     },
+    // utils -------------------------------------------------------------------------------
     searchTagClear: state => {
       state.tagSearch = null;
     },
@@ -77,7 +78,7 @@ export const tagActions = tagSlice.actions;
 
 function* getTagsSaga() {
   try {
-    const response: AxiosResponse = yield call(tagAPI.getTag);
+    const response: AxiosResponse = yield call(tagAPI.getTags);
     yield put(tagActions.getTagsSuccess(response));
   } catch (error) {
     yield put(tagActions.getTagsFailure(error));

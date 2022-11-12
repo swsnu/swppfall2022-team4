@@ -1,11 +1,11 @@
 import client from './client';
-import { postIdentifyingRequestType } from './post';
+import { postIdentifyingType } from './post';
 
 export type commentIdentifyingRequestType = {
   comment_id: string;
 };
 
-export const getPostComment = async (payload: postIdentifyingRequestType) => {
+export const getPostComment = async (payload: postIdentifyingType) => {
   const response = await client.get<getPostCommentResponseType>(`/api/post/${payload.post_id}/comment/`);
   return response.data;
 };
@@ -71,7 +71,7 @@ export type commentFuncRequestType = {
   func_type: string;
 };
 
-export const getRecentCommentPosts = async () => {
+export const getRecentComments = async () => {
   const response = await client.get(`/api/comment/recent/`);
   return response.data;
 };
