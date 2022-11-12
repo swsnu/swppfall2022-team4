@@ -24,7 +24,7 @@ describe('workout_log', () => {
   });
 
   it('render without errors', () => {
-    const container = render(component);
-    expect(container).toBeTruthy();
+    const rendered_container = render(component);
+    expect(rendered_container).toBeTruthy();
   });
 });
