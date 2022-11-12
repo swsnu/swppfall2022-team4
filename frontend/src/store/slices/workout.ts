@@ -43,16 +43,16 @@ export interface WorkoutLogState {
   };
 }
 
-const initialState: WorkoutLogState = {
+export const initialState: WorkoutLogState = {
   workout_log: {
-    type: null,
-    workout_type: null,
-    period: null,
-    category: null,
-    weight: null,
-    rep: null,
-    set: null,
-    time: null,
+    type: 'test',
+    workout_type: 'test',
+    period: 0,
+    category: 'category',
+    weight: 0,
+    rep: 0,
+    set: 0,
+    time: 0,
     date: null,
   },
   routine: [],
@@ -64,8 +64,8 @@ const initialState: WorkoutLogState = {
   },
   daily_fit_elements: [],
   workoutCreate: {
-    status: false,
-    workout_id: null,
+    status: true,
+    workout_id: '0',
   },
   dailyLogCreate: {
     status: false,

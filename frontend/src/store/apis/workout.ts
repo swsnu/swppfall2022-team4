@@ -10,7 +10,7 @@ export type getFitElementResponseType = {
   rep: number;
   set: number;
   time: number;
-  date: Date;
+  date: Date | null;
 };
 
 export type getDailyLogResponseType = {
@@ -54,6 +54,10 @@ export type createWorkoutLogRequestType = {
   time: number | null;
   date: Date | null;
 };
+
+export type createWorkoutLogResponseType = {
+  workout_id: string;
+}
 
 export type createDailyLogRequestType = {
   user_id: number;
@@ -158,7 +162,7 @@ export const getFitElements = async (payload: getFitElementsRequestType) => {
 };
 
 export const createWorkoutLog = async (payload: createWorkoutLogRequestType) => {
-  const response = await client.post<createWorkoutLogRequestType>(`/api/fitelement/`, payload);
+  const response = await client.post<createWorkoutLogResponseType>(`/api/fitelement/`, payload);
   return response.data;
 };
 
