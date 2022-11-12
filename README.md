@@ -14,8 +14,8 @@
 ### docker(frontend)
     cd frontend
     docker build -t frontend .
-    docker -d -p 3000:3000 --rm --name frontend_container frontend:latest
+    docker run -d -p 3000:3000 --rm --name frontend_container frontend:latest
 ### docker(backend)
     cd backend
     docker build -t backend .
-    docker -d -p 8000:8000 --rm --name backend_container backend:latest
+    docker run -d -p 8000:8000 --rm --name backend_container backend:latest
