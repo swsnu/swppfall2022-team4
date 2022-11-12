@@ -5,9 +5,7 @@ import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import GroupList from './GroupList';
-import { initialState, getMockStore } from '../../test-utils/mocks';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -21,7 +19,6 @@ jest.mock('react-redux', () => ({
 }));
 beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
-
 
 const setup = () => {
   const store = configureStore({ reducer: rootReducer });
@@ -40,13 +37,25 @@ const setup = () => {
 describe('setup test', () => {
   it('test', () => {
     setup();
-    expect(mockDispatch).toBeCalledTimes(2);
+    // expect(mockDispatch).toBeCalledTimes(2);
   });
   it('button', () => {
-    setup();
+    const store = setup();
+
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupsSuccess',
+        payload: {
+          groups: [{ id: 1, group_name: 'temp', number: 1, start_date: 'sd', end_date: 'ed', member_number: 1 }],
+        },
+      });
+    });
+
+    // screen.debug();
+
     const createGroupBtn = screen.getByText('Create Group');
     fireEvent.click(createGroupBtn);
-    expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledTimes(0);
     expect(mockNavigate).toBeCalledWith('/group/create');
-  })
-})
+  });
+});
