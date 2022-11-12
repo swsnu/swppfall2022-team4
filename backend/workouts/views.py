@@ -14,7 +14,6 @@ def create_fit_element(request):
     if request.method == 'POST':
         try:
             req_data = json.loads(request.body.decode())
-            print(req_data)
             new_fit_element = FitElement(
                 author_id=req_data["user_id"],
                 type=req_data["type"],
