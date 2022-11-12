@@ -5,12 +5,7 @@ import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import GroupCreate from './GroupCreate';
-import * as groupApi from '../../store/apis/group';
-import { userType } from '../../store/apis/user';
-import Router from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-
-
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -68,14 +63,14 @@ describe('setup test', () => {
   });
   it('no write', () => {
     const alertMock = jest.spyOn(window,'alert').mockImplementation(); 
-    const store = setup();
+    setup();
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
     expect(alertMock).toHaveBeenCalledTimes(1)
   })
   it('no write', () => {
     const alertMock = jest.spyOn(window,'alert').mockImplementation(); 
-    const store = setup();
+    setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     userEvent.type(nameInput, 'group test');
     const saveBtn = screen.getByText('Create');
@@ -84,7 +79,7 @@ describe('setup test', () => {
   })
   it('no write', () => {
     const alertMock = jest.spyOn(window,'alert').mockImplementation(); 
-    const store = setup();
+    setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const numberInput = screen.getByDisplayValue('0');
     userEvent.type(nameInput, 'group test');
@@ -94,7 +89,7 @@ describe('setup test', () => {
     expect(alertMock).toHaveBeenCalledTimes(1)
   })
   it('wrong date', () => {
-    const store = setup();
+    setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const descriptionInput = screen.getByPlaceholderText('그룹의 설명');
     const numberInput = screen.getByDisplayValue('0');
@@ -109,7 +104,7 @@ describe('setup test', () => {
     fireEvent.click(saveBtn);
   })
   it('no write', () => {
-    const store = setup();
+    setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const numberInput = screen.getByDisplayValue('0');
     const startInput = screen.getByTestId('start_date');
@@ -122,7 +117,7 @@ describe('setup test', () => {
     fireEvent.click(saveBtn);
   })
   it('no write', () => {
-    const store = setup();
+    setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const numberInput = screen.getByDisplayValue('0');
     userEvent.type(nameInput, 'group test');
@@ -131,7 +126,7 @@ describe('setup test', () => {
     fireEvent.click(saveBtn);
   })
   it('save', () => {
-    const store = setup();
+    setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
     const descriptionInput = screen.getByPlaceholderText('그룹의 설명');
     const numberInput = screen.getByDisplayValue('0');

@@ -6,7 +6,6 @@ import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import GroupMembers from './GroupMembers';
 import * as groupApi from '../../store/apis/group';
-import { userType } from '../../store/apis/user';
 import Router from 'react-router-dom';
 
 const mem1: groupApi.Member = {

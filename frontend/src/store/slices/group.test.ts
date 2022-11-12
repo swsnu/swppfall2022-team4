@@ -1,10 +1,8 @@
-import { configureStore, isAsyncThunkAction } from '@reduxjs/toolkit';
 import { call } from 'redux-saga/effects';
 import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { rootReducer } from '../index';
 import * as groupApi from '../apis/group';
-import groupSaga, { initialState, groupSlice, groupActions } from './group';
+import groupSaga, { initialState, groupSlice } from './group';
 
 const simpleError = new Error('error!');
 
