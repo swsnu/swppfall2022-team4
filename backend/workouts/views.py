@@ -36,25 +36,19 @@ def create_fit_element(request):
             if not daily_logs.filter(
                 date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
             ).exists():
-                try:
-                    new_daily_log = DailyLog(
-                        author_id=req_data["user_id"],
-                        memo="",
-                        date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
-                    )
-                    new_daily_log.save()
-                    new_daily_log.fit_element.add(new_fit_element)
-                    # return JsonResponse({"dailylog_date": datetime(new_daily_log.date)}, status=201)
-                except (KeyError, json.JSONDecodeError):
-                    return HttpResponseBadRequest()
+                new_daily_log = DailyLog(
+                    author_id=req_data["user_id"],
+                    memo="",
+                    date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d'),
+                )
+                new_daily_log.save()
+                new_daily_log.fit_element.add(new_fit_element)
+
             else:
-                try:
-                    daily_log_single = daily_logs.filter(
-                        date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
-                    )[0]
-                    daily_log_single.fit_element.add(new_fit_element)
-                except (KeyError, json.JSONDecodeError):
-                    return HttpResponseBadRequest()
+                daily_log_single = daily_logs.filter(
+                    date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
+                )[0]
+                daily_log_single.fit_element.add(new_fit_element)
 
             return JsonResponse({"workout_id": str(new_fit_element.pk)}, status=201)
         except (KeyError, json.JSONDecodeError):
@@ -87,13 +81,6 @@ def fit_element(request, fitelement_id):
             return JsonResponse(return_json, safe=False, status=201)
         except (KeyError, json.JSONDecodeError, FitElement.DoesNotExist):
             return HttpResponse(404)
-    elif request.method == 'PUT':
-        try:
-            pass
-        except (KeyError, json.JSONDecodeError, FitElement.DoesNotExist):
-            return HttpResponse(404)
-    elif request.method == 'DELETE':
-        pass
 
 
 @require_http_methods(["GET"])
@@ -196,11 +183,6 @@ def routine(request, routine_id):
             return JsonResponse(return_json, safe=False, status=201)
         except (KeyError, json.JSONDecodeError, Routine.DoesNotExist):
             return HttpResponse(404)
-    elif request.method == 'PUT':
-        pass
-    elif request.method == 'DELETE':
-        pass
-
 
 @require_http_methods(["GET", "POST", "PUT"])
 def daily_log(request, year, month, specific_date):
