@@ -154,7 +154,7 @@ export const getFitElements = async (payload: getFitElementsRequestType) => {
     }),
   );
 
-  response.map(v => {
+  response.forEach(v => {
     return v.data;
   });
 
@@ -225,7 +225,7 @@ export const getSpecificRoutineFitElements = async (payload: getSpecificRoutineF
     }),
   );
 
-  response.map(v => {
+  response.forEach(v => {
     return v.data;
   });
 
