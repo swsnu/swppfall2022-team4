@@ -2,7 +2,7 @@
 
 [![Build Status](https://app.travis-ci.com/swsnu/swppfall2022-team4.svg?branch=develop)](https://app.travis-ci.com/swsnu/swppfall2022-team4)  
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=swsnu_swppfall2022-team4&metric=alert_status&branch=develop)](https://sonarcloud.io/summary/new_code?id=swsnu_swppfall2022-team4&branch=develop)  
-[![Coverage Status](https://coveralls.io/repos/github/swsnu/swppfall2022-team4/badge.svg?branch=develop)](https://coveralls.io/github/swsnu/swppfall2022-team4?branch=develop&kill_cache=1)
+[![Coverage Status](https://coveralls.io/repos/github/swsnu/swppfall2022-team4/badge.svg?branch=develop&kill_cache=1)](https://coveralls.io/github/swsnu/swppfall2022-team4?branch=develop)
 
 ## Quick Start
 ### docker with nginx(frontend+backend)
