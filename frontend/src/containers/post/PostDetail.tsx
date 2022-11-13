@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
@@ -15,6 +15,8 @@ import 'styles/color.css';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
 import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import { useOnClickOutside } from 'usehooks-ts';
+import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -36,6 +38,44 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [postTagModalOpen, setPostTagModalOpen] = useState(false);
+  const [commentTagModalOpen, setCommentTagModalOpen] = useState(false);
+  const [commentModalDisable, setCommentModalDisable] = useState(false);
+  const [commentModalNum, setCommentModalNum] = useState('');
+  const [commentList, setCommentList] = useState<Comment[]>([]);
+  const [commentInput, setCommentInput] = useState('');
+  const [commentReplyInput, setCommentReplyInput] = useState('');
+  const [commentEditInput, setCommentEditInput] = useState('');
+  const [commentNum, changeCommentNum] = useState(0);
+  const [replyActivated, setReplyActivated] = useState(false);
+  const [editActivated, setEditActivated] = useState(false);
+
+  // const commentModalReference = useRef<HTMLImageElement>(null);
+  const commentModalReference = useRef<HTMLImageElement[]>([]);
+  const postModalRef = useRef(null);
+  useOnClickOutside(postModalRef, () => setPostTagModalOpen(false), 'mousedown');
+
+  const commentModalRef = useRef(null);
+  useOnClickOutside(
+    commentModalRef,
+    () => {
+      setCommentTagModalOpen(false);
+      setTimeout(() => setCommentModalDisable(false), 300);
+    },
+    'mousedown',
+  );
+  // const commentModalRef = useRef<HTMLImageElement[]>([]);
+  // for (const i in commentModalRef) {
+  //   useOnClickOutside(
+  //     commentModalRef.current[i],
+  //     () => {
+  //       setCommentTagModalOpen(false);
+  //       setCommentModalNum('');
+  //     },
+  //     'mousedown',
+  //   );
+  // }
+
   const user = useSelector(({ user }: RootState) => user.user);
   const { post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
     ({ post }: RootState) => ({
@@ -46,13 +86,6 @@ const PostDetail = () => {
       commentFuncStatus: post.postComment.commentFunc,
     }),
   );
-  const [commentList, setCommentList] = useState<Comment[]>([]);
-  const [commentInput, setCommentInput] = useState('');
-  const [commentReplyInput, setCommentReplyInput] = useState('');
-  const [commentEditInput, setCommentEditInput] = useState('');
-  const [commentNum, changeCommentNum] = useState(0);
-  const [replyActivated, setReplyActivated] = useState(false);
-  const [editActivated, setEditActivated] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -231,7 +264,30 @@ const PostDetail = () => {
           {/* {comment.parent_comment !== null && <FontAwesomeIcon icon={faArrowRightLong} />} */}
           <CommentWritterWrapperO1>
             <CommentWritterWrapper>
-              <CommentWritterAvatar>Avatar</CommentWritterAvatar>
+              <CommentWritterAvatar>
+                <UserAvatar
+                  ref={el =>
+                    (commentModalReference.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)
+                  }
+                  src={process.env.REACT_APP_API_IMAGE + comment.author.avatar}
+                  onClick={() => {
+                    if (commentTagModalOpen === false && commentModalDisable == false) {
+                      setCommentModalNum(comment.comment_id);
+                      setCommentTagModalOpen(true);
+                      setCommentModalDisable(true);
+                    }
+                  }}
+                  alt="profile"
+                />
+                {UserDetailHorizontalModal({
+                  isActive: commentTagModalOpen && commentModalNum === comment.comment_id,
+                  modalRef: commentModalRef,
+                  pivotRef: commentModalReference.current[Number.parseInt(comment.comment_id)],
+                  userInfo: comment.author,
+                  // commentId: comment.comment_id,
+                  navigate,
+                })}
+              </CommentWritterAvatar>
               <CommentWritterText> {comment.author.username} </CommentWritterText>
             </CommentWritterWrapper>
           </CommentWritterWrapperO1>
@@ -308,7 +364,19 @@ const PostDetail = () => {
                   <PostWritterText> {post.author.username} </PostWritterText>
                   <PostTimeText>{timeAgoFormat(post.created)}</PostTimeText>
                 </PostWritterLeftWrapper>
-                <PostWritterAvatar>Avatar</PostWritterAvatar>
+                <PostWritterAvatar>
+                  <UserAvatar
+                    src={process.env.REACT_APP_API_IMAGE + post.author.avatar}
+                    onClick={() => setPostTagModalOpen(true)}
+                    alt="profile"
+                  />
+                  {UserDetailModal({
+                    isActive: postTagModalOpen,
+                    modalRef: postModalRef,
+                    userInfo: post.author,
+                    navigate,
+                  })}
+                </PostWritterAvatar>
               </PostWritterWrapper>
             </ArticleTitleWrapper>
             <ArticleBodyContent>{post.content}</ArticleBodyContent>
@@ -469,7 +537,7 @@ const ArticleItem = styled.div`
 // Article Title
 const ArticleTitleWrapper = styled.div`
   width: 100%;
-  padding: 5px 40px 0px 40px;
+  padding: 5px 15px 0px 40px;
   background-color: var(--fit-white);
   height: fit-content;
   display: flex;
@@ -507,10 +575,11 @@ const PostWritterLeftWrapper = styled.div`
 const PostWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
-  border: 1px solid black;
   border-radius: 50%;
   margin-bottom: 5px;
   font-size: 8px;
+
+  position: relative;
 `;
 
 const PostWritterText = styled.span`
@@ -574,9 +643,18 @@ const CommentWritterWrapper = styled(ColumnFlex)`
 const CommentWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
-  border: 1px solid black;
   border-radius: 50%;
   margin-bottom: 5px;
+  /* 
+  position: relative; */
+`;
+
+const UserAvatar = styled.img`
+  border: 1px solid black;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
 `;
 
 const CommentWritterText = styled.span`
