@@ -10,12 +10,28 @@ import { rootReducer } from 'store';
 
 // Mock objects
 const simpleError = new Error('error!');
-const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
-const simplePosts: postAPI.Post[] = [
+export const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
+export const simpleUserInfo: postAPI.UserInfo[] = [
   {
-    id: '1',
+    username: 'KJY',
+    nickname: 'KimV',
+    avatar: 'kimv.jpeg',
+    level: 3,
+    exp: 99,
+  },
+  {
+    username: 'KJY2',
+    nickname: 'KimV2',
+    avatar: 'kimv2.jpeg',
+    level: 33,
+    exp: 99,
+  },
+];
+export const simplePosts: postAPI.Post[] = [
+  {
+    post_id: '1',
     title: 'First Post',
-    author_name: 'KJY',
+    author: simpleUserInfo[0],
     content: 'Post Contents',
     created: '2022-11-11',
     updated: '2022-11-12',
@@ -25,14 +41,14 @@ const simplePosts: postAPI.Post[] = [
     comments_num: 1,
     tags: simpleTagVisuals,
     prime_tag: simpleTagVisuals[0],
-    liked: false,
+    liked: true,
     disliked: true,
-    scraped: false,
+    scraped: true,
   },
   {
-    id: '2',
+    post_id: '2',
     title: 'Second Post',
-    author_name: 'KJY2',
+    author: simpleUserInfo[1],
     content: 'Post Contents2',
     created: '2022-11-11',
     updated: '2022-11-11',
@@ -43,18 +59,18 @@ const simplePosts: postAPI.Post[] = [
     tags: [],
     prime_tag: undefined,
     liked: false,
-    disliked: true,
+    disliked: false,
     scraped: false,
   },
 ];
 const simplePostID: postAPI.postIdentifyingType = {
   post_id: '59',
 };
-const simpleComments: commentAPI.Comment[] = [
+export const simpleComments: commentAPI.Comment[] = [
   {
     id: '1',
     author_name: 'KJY',
-    content: 'Comment Content',
+    content: 'GETBYCOMComment Content',
     created: '2022-11-11',
     updated: '2022-11-12',
     like_num: 1,

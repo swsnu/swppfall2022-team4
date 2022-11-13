@@ -20,19 +20,32 @@ export const getPosts = async (payload: getPostsRequestType) => {
   return response.data;
 };
 
+export type UserInfo = {
+  username: string;
+  nickname: string;
+  avatar: string;
+  level: number;
+  exp: number;
+};
+
 export type Post = {
-  id: string;
+  post_id: string;
+  author: UserInfo;
+
   title: string;
-  author_name: string;
   content: string;
+
   created: string;
   updated: string;
+
   like_num: number;
   dislike_num: number;
   scrap_num: number;
   comments_num: number;
+
   tags: TagVisual[];
   prime_tag: TagVisual | undefined;
+
   liked?: boolean;
   disliked?: boolean;
   scraped?: boolean;

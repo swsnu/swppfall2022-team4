@@ -103,7 +103,7 @@ const PostMain = () => {
       {postList ? (
         postList.map((post, id) => {
           return (
-            <ArticleItem data-testid="ArticleItem" key={id} onClick={() => navigate(`/post/${post.id}`)}>
+            <ArticleItem data-testid="ArticleItem" key={id} onClick={() => navigate(`/post/${post.post_id}`)}>
               {post.prime_tag ? (
                 <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
               ) : (
@@ -112,7 +112,7 @@ const PostMain = () => {
               <span>
                 {post.title} <span>[{post.comments_num}]</span>
               </span>
-              <span>{post.author_name}</span>
+              <span>{post.author.username}</span>
               <span>{post.like_num - post.dislike_num}</span>
               <span>{timeAgoFormat(post.created)}</span>
             </ArticleItem>

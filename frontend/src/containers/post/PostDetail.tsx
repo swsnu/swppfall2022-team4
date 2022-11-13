@@ -305,7 +305,7 @@ const PostDetail = () => {
               <ArticleTitle>{post.title}</ArticleTitle>
               <PostWritterWrapper>
                 <PostWritterLeftWrapper>
-                  <PostWritterText> {post.author_name} </PostWritterText>
+                  <PostWritterText> {post.author.username} </PostWritterText>
                   <PostTimeText>{timeAgoFormat(post.created)}</PostTimeText>
                 </PostWritterLeftWrapper>
                 <PostWritterAvatar>Avatar</PostWritterAvatar>
@@ -379,7 +379,7 @@ const PostDetail = () => {
   );
   const CreateBtn = <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
-    user?.username == post?.author_name ? (
+    user?.username == post?.author.username ? (
       <PostPanelWrapper>
         {CreateBtn}
         <BlueBigBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</BlueBigBtn>

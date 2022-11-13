@@ -6,48 +6,10 @@ import Router from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import PostDetail from './PostDetail';
-import * as postAPI from '../../store/apis/post';
 import * as commentAPI from '../../store/apis/comment';
-import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
+import { simplePosts } from 'store/slices/post.test';
 
-const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
-const simplePosts: postAPI.Post[] = [
-  {
-    id: '1',
-    title: 'First Post',
-    author_name: 'KJY',
-    content: 'Post Contents',
-    created: '2022-11-11',
-    updated: '2022-11-12',
-    like_num: 1,
-    dislike_num: 2,
-    scrap_num: 3,
-    comments_num: 1,
-    tags: simpleTagVisuals,
-    prime_tag: simpleTagVisuals[0],
-    liked: true,
-    disliked: true,
-    scraped: true,
-  },
-  {
-    id: '2',
-    title: 'Second Post',
-    author_name: 'KJY2',
-    content: 'Post Contents2',
-    created: '2022-11-11',
-    updated: '2022-11-11',
-    like_num: 11,
-    dislike_num: 21,
-    scrap_num: 31,
-    comments_num: 11,
-    tags: [],
-    prime_tag: undefined,
-    liked: false,
-    disliked: false,
-    scraped: false,
-  },
-];
 const simpleComments: commentAPI.Comment[] = [
   {
     id: '1',
@@ -296,7 +258,7 @@ describe('[PostDetail Page]', () => {
 
     const postEditBtn = screen.getByText('글 편집');
     fireEvent.click(postEditBtn);
-    expect(mockNavigate).toBeCalledWith(`/post/${simplePosts[0].id}/edit`);
+    expect(mockNavigate).toBeCalledWith(`/post/${simplePosts[0].post_id}/edit`);
 
     const postDeleteBtn = screen.getByText('글 삭제');
     fireEvent.click(postDeleteBtn);
@@ -331,21 +293,21 @@ describe('[PostDetail Page]', () => {
     const postFuncLike = screen.getByTestId('postFuncLike');
     fireEvent.click(postFuncLike);
     expect(mockDispatch).toBeCalledWith({
-      payload: { post_id: simplePosts[1].id, func_type: 'like' },
+      payload: { post_id: simplePosts[1].post_id, func_type: 'like' },
       type: 'post/postFunc',
     });
 
     const postFuncDislike = screen.getByTestId('postFuncDislike');
     fireEvent.click(postFuncDislike);
     expect(mockDispatch).toBeCalledWith({
-      payload: { post_id: simplePosts[1].id, func_type: 'dislike' },
+      payload: { post_id: simplePosts[1].post_id, func_type: 'dislike' },
       type: 'post/postFunc',
     });
 
     const postFuncScrap = screen.getByTestId('postFuncScrap');
     fireEvent.click(postFuncScrap);
     expect(mockDispatch).toBeCalledWith({
-      payload: { post_id: simplePosts[1].id, func_type: 'scrap' },
+      payload: { post_id: simplePosts[1].post_id, func_type: 'scrap' },
       type: 'post/postFunc',
     });
 

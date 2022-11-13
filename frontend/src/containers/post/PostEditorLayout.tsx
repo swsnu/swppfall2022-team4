@@ -256,7 +256,7 @@ export const PostEditorLayout = (
       {primeTag ? (
         <TagBubble color={primeTag.color}>
           {primeTag.name}
-          <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={primeTagOnRemove} data-value={primeTag.id}>
+          <TagBubbleFunc data-testid={`selectedPrimeTagRemove`} onClick={primeTagOnRemove} data-value={primeTag.id}>
             <FontAwesomeIcon icon={faX} />
           </TagBubbleFunc>
         </TagBubble>

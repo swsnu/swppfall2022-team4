@@ -12,6 +12,60 @@ from users.models import User
 from tags.models import Tag, TagClass
 
 
+def prepare_post_response(post, is_detail, username):
+    response = {
+        "post_id": post.pk,
+        "title": post.title,
+        "author": {
+            "username": post.author.username,
+            "nickname": post.author.nickname,
+            "avatar": post.author.image,
+            "level": post.author.level,
+            "exp": post.author.exp,
+        },
+        "content": post.content,
+        "created": post.created,
+        "updated": post.updated,
+        "like_num": post.get_like_num(),
+        "dislike_num": post.get_dislike_num(),
+        "scrap_num": post.get_scrap_num(),
+        "comments_num": post.comments.count(),
+        "prime_tag": None,
+    }
+
+    if post.prime_tag:
+        response["prime_tag"] = {
+            "id": post.prime_tag.pk,
+            "name": post.prime_tag.tag_name,
+            "color": post.prime_tag.tag_class.color,
+        }
+
+    if is_detail:
+        response["liked"] = post.liker.all().filter(username=username).exists()
+        response["disliked"] = post.disliker.all().filter(username=username).exists()
+        response["scraped"] = post.scraper.all().filter(username=username).exists()
+
+        tag_response = []
+        for tag in list(post.tags.all().values()):
+            tag_class = TagClass.objects.get(pk=tag['tag_class_id'])
+            tag_response.append(
+                {
+                    "id": tag['id'],
+                    "name": tag['tag_name'],
+                    "color": tag_class.color,
+                }
+            )
+        response["tags"] = tag_response
+    return response
+
+
+def prepare_posts_response(posts, is_detail=False, username=""):
+    posts_serial = []
+    for post in posts:
+        posts_serial.append(prepare_post_response(post, is_detail, username))
+    return posts_serial
+
+
 @require_http_methods(["GET", "POST"])
 def post_home(request):
     """
@@ -33,25 +87,7 @@ def post_home(request):
             filter_args["title__icontains"] = query_args["keyword"]
             posts = posts.filter(**filter_args)
 
-        posts = posts[offset:limit]
-        posts_serial = list(posts.values())
-        for index, _ in enumerate(posts_serial):
-            posts_serial[index]["comments_num"] = posts[index].get_comments_num()
-            posts_serial[index]["author_name"] = posts[index].author.username
-            posts_serial[index]["like_num"] = posts[index].get_like_num()
-            posts_serial[index]["dislike_num"] = posts[index].get_dislike_num()
-            posts_serial[index]["scrap_num"] = posts[index].get_scrap_num()
-            posts_serial[index]["prime_tag"] = None
-
-            if posts[index].prime_tag:
-                posts_serial[index]["prime_tag"] = {
-                    "id": posts[index].prime_tag.pk,
-                    "name": posts[index].prime_tag.tag_name,
-                    "color": posts[index].prime_tag.tag_class.color,
-                }
-
-            del posts_serial[index]["author_id"]
-            del posts_serial[index]["prime_tag_id"]
+        posts_serial = prepare_posts_response(posts[offset:limit])
 
         # Total page number calculation.
         response = JsonResponse(
@@ -97,44 +133,9 @@ def post_detail(request, query_id):
         try:
             post_id = int(query_id)
             post_obj = Post.objects.get(pk=post_id)
-
-            tag_response = []
-            for tag in list(post_obj.tags.all().values()):
-                tag_class = TagClass.objects.get(pk=tag['tag_class_id'])
-                tag_response.append(
-                    {
-                        "id": tag['id'],
-                        "name": tag['tag_name'],
-                        "color": tag_class.color,
-                    }
-                )
-
-            prime_tag_response = None
-            if post_obj.prime_tag:
-                prime_tag_response = {
-                    "id": post_obj.prime_tag.pk,
-                    "name": post_obj.prime_tag.tag_name,
-                    "color": post_obj.prime_tag.tag_class.color,
-                }
-
-            post_response = {
-                "post_id": post_obj.pk,
-                "title": post_obj.title,
-                "author_name": post_obj.author.username,
-                "content": post_obj.content,
-                "created": post_obj.created,
-                "updated": post_obj.updated,
-                "like_num": post_obj.get_like_num(),
-                "dislike_num": post_obj.get_dislike_num(),
-                "scrap_num": post_obj.get_scrap_num(),
-                "comments_num": post_obj.comments.count(),
-                "liked": post_obj.liker.all().filter(username=request.user.username).exists(),
-                "disliked": post_obj.disliker.all().filter(username=request.user.username).exists(),
-                "scraped": post_obj.scraper.all().filter(username=request.user.username).exists(),
-                "tags": tag_response,
-                "prime_tag": prime_tag_response,
-            }
-            return JsonResponse(post_response, status=200)
+            return JsonResponse(
+                prepare_post_response(post_obj, True, request.user.username), status=200
+            )
         except Post.DoesNotExist:
             return HttpResponseNotFound()
     elif request.method == "PUT":
