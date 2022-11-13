@@ -139,7 +139,7 @@ const PostDetail = () => {
       changeCommentNum(Date.now());
       setReplyActivated(false);
     } else {
-      console.log('user or id is not valid');
+      // console.log('user or id is not valid');
     }
   };
 

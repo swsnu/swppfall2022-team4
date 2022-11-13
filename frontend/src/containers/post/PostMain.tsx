@@ -107,7 +107,7 @@ const PostMain = () => {
       ) : (
         <LoadingWithoutMinHeight />
       )}
-      {postPaginator({ page, setPage, maxPage })}
+      {maxPage ? postPaginator({ page, setPage, maxPage }) : postPaginator({ page, setPage, maxPage: 1 })}
     </ArticleListWrapper>
   );
 
