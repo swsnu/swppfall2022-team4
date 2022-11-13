@@ -97,6 +97,12 @@ export const PostEditorLayout = (
   const tagOnRemove = (e: React.MouseEvent) => {
     const tagId = e.currentTarget.getAttribute('data-value');
     setSelectedTags(s => s.filter(item => item.id != tagId));
+    if (primeTag && primeTag.id == tagId) {
+      setPrimeTag(undefined);
+    }
+  };
+  const primeTagOnRemove = () => {
+    setPrimeTag(undefined);
   };
 
   const tagNames = () => {
@@ -246,9 +252,18 @@ export const PostEditorLayout = (
     </TagBubbleWrapper>
   );
   const primeTagComponent = (
-    <TagBubbleWrapper>
-      {primeTag ? <TagBubble color={primeTag.color}>{primeTag.name}</TagBubble> : <span>Not specified</span>}
-    </TagBubbleWrapper>
+    <PrimeTagDivWrapper>
+      {primeTag ? (
+        <TagBubble color={primeTag.color}>
+          {primeTag.name}
+          <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={primeTagOnRemove} data-value={primeTag.id}>
+            <FontAwesomeIcon icon={faX} />
+          </TagBubbleFunc>
+        </TagBubble>
+      ) : (
+        <PrimeTagNotSpecified>Not specified</PrimeTagNotSpecified>
+      )}
+    </PrimeTagDivWrapper>
   );
   const TagPanel = (
     <TagWrapper>
@@ -395,6 +410,18 @@ const TagWrapper = styled(columnFlex)`
   height: 60%;
 `;
 
+const PrimeTagDivWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 8px 5px;
+`;
+
+const PrimeTagNotSpecified = styled.span`
+  text-align: center;
+  font-size: 12px;
+`;
 const PrimeTagWrapper = styled(columnFlex)`
   justify-content: space-between;
   background-color: var(--fit-white);
