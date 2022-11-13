@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { RootState } from "index";
-import { workoutLogActions } from "store/slices/workout";
-import { FitElement } from "components/fitelement/FitElement";
-import { getRoutineRequestType } from "store/apis/workout";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { RootState } from 'index';
+import { workoutLogActions } from 'store/slices/workout';
+import { FitElement } from 'components/fitelement/FitElement';
+import { getRoutineRequestType } from 'store/apis/workout';
 
 const Routine = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const calendarButtonClick = () => {
-    navigate("/workout");
+    navigate('/workout');
   };
 
   const routineClick = (id: number) => {
@@ -24,12 +24,10 @@ const Routine = () => {
     user_id: 1,
   };
 
-  const { selected_routine, routines } = useSelector(
-    ({ workout_log }: RootState) => ({
-      selected_routine: workout_log.selected_routine,
-      routines: workout_log.routine,
-    })
-  );
+  const { selected_routine, routines } = useSelector(({ workout_log }: RootState) => ({
+    selected_routine: workout_log.selected_routine,
+    routines: workout_log.routine,
+  }));
 
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
@@ -42,7 +40,7 @@ const Routine = () => {
         workoutLogActions.getSpecificRoutine({
           user_id: 1,
           routine_id: routine_id,
-        })
+        }),
       );
     }
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
@@ -52,22 +50,14 @@ const Routine = () => {
     <Wrapper>
       <LeftWrapper>
         <LeftUpper>
-          <ReturnButtonWrapper onClick={() => calendarButtonClick()}>
-            {"< "}달력으로 돌아가기
-          </ReturnButtonWrapper>
+          <ReturnButtonWrapper onClick={() => calendarButtonClick()}>{'< '}달력으로 돌아가기</ReturnButtonWrapper>
         </LeftUpper>
         <Frame>
           <RoutineListWrapper>
             {routines.map((routine, index) => (
               <RoutineName
                 key={index}
-                className={
-                  routine.id === routine_id
-                    ? index === 0
-                      ? "type2"
-                      : "type1"
-                    : ""
-                }
+                className={routine.id === routine_id ? (index === 0 ? 'type2' : 'type1') : ''}
                 onClick={() => routineClick(Number(routine.id))}
               >
                 {routine.name}
@@ -98,7 +88,7 @@ const Routine = () => {
 
           <LogWrapper>
             {routine_id === -1
-              ? "루틴을 눌러주세요."
+              ? '루틴을 눌러주세요.'
               : selected_routine.fitelements.map((fitelement, index) => (
                   <FitElement
                     key={index}

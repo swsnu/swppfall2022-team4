@@ -20,8 +20,9 @@ RUN python manage.py seed_users -n 10
 RUN python manage.py seed_chatrooms
 RUN python manage.py seed_messages -n 20
 RUN python manage.py prepare_tags
-RUN python manage.py seed_posts -n 183
-RUN python manage.py seed_comments -n 360
+RUN python manage.py seed_posts -n 92
+RUN python manage.py seed_comments -n 100
+RUN python manage.py seed_comments -n 150
 
 EXPOSE 8000
 ENTRYPOINT [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
