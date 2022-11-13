@@ -13,7 +13,7 @@ import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
 import { ArticleItemGrid, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
-import { ModalOverlay, TagDetailModal } from 'components/post/TagDetailModal';
+import { TagDetailModal } from 'components/post/TagDetailModal';
 import { useOnClickOutside } from 'usehooks-ts';
 
 const PostMain = () => {
@@ -128,8 +128,6 @@ const PostMain = () => {
   return (
     <PostPageWrapper>
       {PostPageWithSearchBar(MainContent, SideBar)}
-      {/* {tagModalOpen && TagDetailModal({ isActive: tagModalOpen, onClose: () => setTagModalOpen(false), modalRef })} */}
-      {tagModalOpen && <ModalOverlay />}
       {TagDetailModal({ isActive: tagModalOpen, onClose: () => setTagModalOpen(false), modalRef, modalAnimRef })}
     </PostPageWrapper>
   );

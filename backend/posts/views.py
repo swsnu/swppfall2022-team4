@@ -34,24 +34,24 @@ def post_home(request):
             posts = posts.filter(**filter_args)
 
         posts = posts[offset:limit]
-        posts_serializable = list(posts.values())
-        for index, _ in enumerate(posts_serializable):
-            posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
-            posts_serializable[index]["author_name"] = posts[index].author.username
-            posts_serializable[index]["like_num"] = posts[index].get_like_num()
-            posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
-            posts_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
-            posts_serializable[index]["prime_tag"] = None
+        posts_serial = list(posts.values())
+        for index, _ in enumerate(posts_serial):
+            posts_serial[index]["comments_num"] = posts[index].get_comments_num()
+            posts_serial[index]["author_name"] = posts[index].author.username
+            posts_serial[index]["like_num"] = posts[index].get_like_num()
+            posts_serial[index]["dislike_num"] = posts[index].get_dislike_num()
+            posts_serial[index]["scrap_num"] = posts[index].get_scrap_num()
+            posts_serial[index]["prime_tag"] = None
 
             if posts[index].prime_tag:
-                posts_serializable[index]["prime_tag"] = {
+                posts_serial[index]["prime_tag"] = {
                     "id": posts[index].prime_tag.pk,
                     "name": posts[index].prime_tag.tag_name,
                     "color": posts[index].prime_tag.tag_class.color,
                 }
 
-            del posts_serializable[index]["author_id"]
-            del posts_serializable[index]["prime_tag_id"]
+            del posts_serial[index]["author_id"]
+            del posts_serial[index]["prime_tag_id"]
 
         # Total page number calculation.
         response = JsonResponse(
@@ -59,7 +59,7 @@ def post_home(request):
                 "page": query_args["page_num"],
                 "page_size": query_args["page_size"],
                 "page_total": ceil(Post.objects.count() / query_args["page_size"]),
-                "posts": posts_serializable,
+                "posts": posts_serial,
             },
             status=200,
         )

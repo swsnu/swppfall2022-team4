@@ -275,23 +275,6 @@ def profile_post(request, user_id):
         del proc_comm[index]["author_id"]
         del proc_comm[index]["parent_comment_id"]
 
-    # Re-ordering.
-    # comment_reservoir = copy.deepcopy(proc_comm)
-    # comment_response = []
-    # parent_id = None
-    # while len(comment_reservoir) != 0:
-    #     proc_comm = copy.deepcopy(comment_reservoir)
-    #     for comment in proc_comm:
-    #         if parent_id:
-    #             if comment["parent_comment"] == parent_id:
-    #                 comment_response.append(comment)
-    #                 comment_reservoir.remove(comment)
-    #         else:
-    #             comment_response.append(comment)
-    #             parent_id = comment["id"]
-    #             comment_reservoir.remove(comment)
-    #     parent_id = None
-
     scraps = user.scraped_posts.all()
 
     scraps_serializable = list(scraps.values())

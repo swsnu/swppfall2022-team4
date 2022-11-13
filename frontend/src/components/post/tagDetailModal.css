@@ -3,8 +3,7 @@
   }
 .modal-enter-active {
     opacity: 1.0;
-    transform: translateX(0);
-    transition: opacity 260ms, transform 140ms;
+    transition: opacity 250ms;
 }
 .modal-exit {
     opacity: 1.0;
@@ -12,5 +11,5 @@
 .modal-exit-active {
     opacity: 0.2;
     /* transform: scale(0.9); */
-    transition: opacity 220ms;
+    transition: opacity 200ms;
 }
