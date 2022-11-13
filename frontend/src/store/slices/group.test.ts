@@ -119,9 +119,15 @@ describe('Group', () => {
     it('postGroup', () => {
       return expectSaga(groupSaga)
         .withReducer(groupSlice.reducer)
-        .provide([[call(groupApi.postGroup, postGroupRequest), GroupDetailResponse]])
-        .put({ type: 'group/createGroupSuccess', payload: GroupDetailResponse })
-        .dispatch({ type: 'group/createGroup', payload: postGroupRequest })
+        .provide([[call(groupApi.postGroup, postGroupRequest), { id: 1 }]])
+        .put({
+          type: 'group/createGroupSuccess',
+          payload: { id: 1 },
+        })
+        .dispatch({
+          type: 'group/createGroup',
+          payload: postGroupRequest,
+        })
         .hasFinalState({
           ...initialState,
           groupCreate: {
