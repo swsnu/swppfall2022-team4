@@ -249,9 +249,5 @@ describe('[PostMain Page]', () => {
 
     const page4 = screen.getByText('4');
     fireEvent.click(page4);
-
-    // fireEvent.click(sidebarComment);
-    // expect(mockNavigate).toBeCalledTimes(1);
-    // expect(mockNavigate).toBeCalledWith(`/post/${simpleComments[1].post_id}`);
   });
 });
