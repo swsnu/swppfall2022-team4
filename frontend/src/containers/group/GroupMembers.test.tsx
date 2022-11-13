@@ -59,7 +59,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupMembersSuccess',
-        payload: membersResponse.members,
+        payload: membersResponse,
       });
     });
     screen.getByText('그룹 멤버');
@@ -70,7 +70,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupMembersSuccess',
-        payload: membersResponse.members,
+        payload: membersResponse,
       });
     });
     const btn = screen.getByText('Back');
