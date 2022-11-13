@@ -220,7 +220,6 @@ describe('[PostMain Page]', () => {
         payload: getPostsResponse,
       });
     });
-    screen.debug();
 
     const lastPage = screen.getByText('▶︎▶︎');
     const nextPage = screen.getByText('▶︎');
