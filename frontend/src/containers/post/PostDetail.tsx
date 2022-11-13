@@ -193,7 +193,9 @@ const PostDetail = () => {
       return (
         <FuncBtnWrapper>
           <CommentRedBtn onClick={() => commentEditCancelOnClick(comment)}>취소</CommentRedBtn>
-          <CommentGreenBtn onClick={() => commentEditConfirmOnClick(comment)}>완료</CommentGreenBtn>
+          <CommentGreenBtn disabled={commentEditInput == ''} onClick={() => commentEditConfirmOnClick(comment)}>
+            완료
+          </CommentGreenBtn>
         </FuncBtnWrapper>
       );
     } else {
