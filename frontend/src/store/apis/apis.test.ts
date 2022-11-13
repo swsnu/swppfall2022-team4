@@ -4,6 +4,7 @@ import * as chatAPI from './chat';
 import * as postAPI from './post';
 import * as commentAPI from './comment';
 import * as tagAPI from './tag';
+import * as groupApi from './group';
 import * as workoutAPI from './workout';
 
 beforeEach(() => {
@@ -105,6 +106,28 @@ const searchTagRequest: tagAPI.searchTagRequestType = {
   tag_name: '1',
 };
 
+//Group dummy.
+const fitelement1: groupApi.Fitelement = {
+  type: 'goal',
+  workout_type: 'test',
+  category: ' test',
+  weight: 10,
+  rep: 10,
+  set: 10,
+  time: 10,
+};
+
+const postGroupRequest: groupApi.postGroupRequestType = {
+  group_name: 'post_group',
+  number: 7,
+  start_date: '2019-01-01',
+  end_date: '2019-12-31',
+  description: 'test',
+  free: true,
+  group_leader: testUsername,
+  goal: [fitelement1],
+};
+
 // Workout dummy.
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {
   fitelement_id: 0,
@@ -149,10 +172,6 @@ const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
   year: 2022,
   month: 10,
   specific_date: 1,
-};
-
-const getDailyFitElementsRequest: workoutAPI.getDailyFitElementsRequestType = {
-  fitelements: [],
 };
 
 const editMemoRequest: workoutAPI.editMemoRequestType = {
@@ -378,6 +397,45 @@ describe('User API TEST', () => {
     test('getSpecificRoutineFitElements', async () => {
       const result = await workoutAPI.getSpecificRoutineFitElements(getSpecificRoutineFitElementsRequest);
       expect(result).toStrictEqual([{ data: '/api/fitelement/0/' }]);
+    });
+  });
+});
+
+describe('Group API TEST', () => {
+  describe('Group', () => {
+    it('group list', async () => {
+      const res = await groupApi.getGroups();
+      expect(res).toBe(`/api/group/`);
+    });
+    it('post group', async () => {
+      const res = await groupApi.postGroup(postGroupRequest);
+      expect(res).toBe(`/api/group/`);
+    });
+    it('get group detail', async () => {
+      const res = await groupApi.getGroupDetail('1');
+      expect(res).toBe(`/api/group/1/`);
+    });
+    it('delete group', async () => {
+      const res = await groupApi.deleteGroup('1');
+      expect(res).toBe(`/api/group/1/`);
+    });
+  });
+  describe('Group Member', () => {
+    it('check member status', async () => {
+      const res = await groupApi.checkGroupMember('1');
+      expect(res).toBe(`/api/group/1/mem_check/`);
+    });
+    it('get members', async () => {
+      const res = await groupApi.getGroupMembers('1');
+      expect(res).toBe(`/api/group/1/member/`);
+    });
+    it('joinGroup', async () => {
+      const res = await groupApi.joinGroup('1');
+      expect(res).toBe(`/api/group/1/member/`);
+    });
+    it('exitGroup', async () => {
+      const res = await groupApi.exitGroup('1');
+      expect(res).toBe(`/api/group/1/member/`);
     });
   });
 });

@@ -84,7 +84,7 @@ export type checkGroupMemberResponseType = {
 };
 
 export type Member = {
-  id: 1;
+  id: number;
   username: string;
   cert_days: number;
   image: string;

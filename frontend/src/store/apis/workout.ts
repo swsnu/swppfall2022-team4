@@ -148,7 +148,7 @@ export const getDailyLog = async (payload: getDailyLogRequestType) => {
 };
 
 export const getFitElements = async (payload: getFitElementsRequestType) => {
-  let response = await Promise.all(
+  const response = await Promise.all(
     payload.fitelements.map(id => {
       return client.get<getFitElementResponseType>(`/api/fitelement/${id}/`);
     }),
@@ -218,7 +218,7 @@ export const getSpecificRoutine = async (payload: getSpecificRoutineRequestType)
 };
 
 export const getSpecificRoutineFitElements = async (payload: getSpecificRoutineFitElementsRequestType) => {
-  let response = await Promise.all(
+  const response = await Promise.all(
     payload.fitelements.map(id => {
       return client.get<getFitElementResponseType>(`/api/fitelement/${id}/`);
     }),
