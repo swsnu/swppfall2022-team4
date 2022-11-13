@@ -73,7 +73,7 @@ export const groupSlice = createSlice({
       state.groupList.error = null;
     },
     getGroupsSuccess: (state, { payload }) => {
-      state.groupList.groups = payload;
+      state.groupList.groups = payload.groups;
       state.groupList.error = null;
     },
     getGroupsFailure: (state, { payload }) => {
