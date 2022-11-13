@@ -8,12 +8,12 @@ import { rootReducer } from 'store';
 import PostDetail from './PostDetail';
 import * as commentAPI from '../../store/apis/comment';
 import userEvent from '@testing-library/user-event';
-import { simplePosts } from 'store/slices/post.test';
+import { simplePosts, simpleUserInfo } from 'store/slices/post.test';
 
 const simpleComments: commentAPI.Comment[] = [
   {
-    id: '1',
-    author_name: 'KJY',
+    comment_id: '1',
+    author: simpleUserInfo[0],
     content: 'Comment Content',
     created: '2022-11-11',
     updated: '2022-11-12',
@@ -27,8 +27,8 @@ const simpleComments: commentAPI.Comment[] = [
     post_id: '1',
   },
   {
-    id: '2',
-    author_name: 'username',
+    comment_id: '2',
+    author: simpleUserInfo[1],
     content: 'Comment Content2',
     created: '2022-11-12',
     updated: '2022-11-12',
@@ -42,8 +42,8 @@ const simpleComments: commentAPI.Comment[] = [
     post_id: '1',
   },
   {
-    id: '3',
-    author_name: 'username',
+    comment_id: '3',
+    author: simpleUserInfo[1],
     content: 'Comment Content2',
     created: '2022-11-12',
     updated: '2022-11-12',
@@ -57,8 +57,8 @@ const simpleComments: commentAPI.Comment[] = [
     post_id: '2',
   },
   {
-    id: '4',
-    author_name: 'username',
+    comment_id: '4',
+    author: simpleUserInfo[1],
     content: 'Commeent332',
     created: '2022-11-12',
     updated: '2022-11-12',
@@ -203,14 +203,14 @@ describe('[PostDetail Page]', () => {
     const commentFuncLike = screen.getByTestId('commentFuncLike');
     fireEvent.click(commentFuncLike);
     expect(mockDispatch).toBeCalledWith({
-      payload: { comment_id: simpleComments[1].id, func_type: 'like' },
+      payload: { comment_id: simpleComments[1].comment_id, func_type: 'like' },
       type: 'post/commentFunc',
     });
 
     const commentFuncDislike = screen.getByTestId('commentFuncDislike');
     fireEvent.click(commentFuncDislike);
     expect(mockDispatch).toBeCalledWith({
-      payload: { comment_id: simpleComments[1].id, func_type: 'dislike' },
+      payload: { comment_id: simpleComments[1].comment_id, func_type: 'dislike' },
       type: 'post/commentFunc',
     });
 
@@ -219,7 +219,7 @@ describe('[PostDetail Page]', () => {
     fireEvent.click(commentReplyOpenBtn);
 
     expect(mockDispatch).toBeCalledWith({
-      payload: { parent_comment: simpleComments[1].id },
+      payload: { parent_comment: simpleComments[1].comment_id },
       type: 'post/toggleCommentReply',
     });
     act(() => {

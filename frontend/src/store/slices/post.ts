@@ -176,7 +176,7 @@ export const postSlice = createSlice({
     toggleCommentReply: (state, action: PayloadAction<commentAPI.createCommentReplyType>) => {
       if (state.postComment.comments)
         state.postComment.comments = state.postComment.comments.map(comment => {
-          if (comment.id === action.payload.parent_comment) {
+          if (comment.comment_id === action.payload.parent_comment) {
             return { ...comment, replyActive: comment.replyActive ? false : true };
           } else {
             return comment;
@@ -186,7 +186,7 @@ export const postSlice = createSlice({
     toggleCommentEdit: (state, action: PayloadAction<commentAPI.commentIdentifyingRequestType>) => {
       if (state.postComment.comments) {
         state.postComment.comments = state.postComment.comments.map(comment => {
-          if (comment.id === action.payload.comment_id) {
+          if (comment.comment_id === action.payload.comment_id) {
             return { ...comment, editActive: comment.editActive ? false : true };
           } else {
             return comment;

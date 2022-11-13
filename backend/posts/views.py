@@ -11,6 +11,8 @@ from posts.models import Post
 from users.models import User
 from tags.models import Tag, TagClass
 
+from comments.views import prepare_comment_response
+
 
 def prepare_post_response(post, is_detail, username):
     response = {
@@ -184,18 +186,9 @@ def post_comment(request, query_id):
         comments = post_obj.comments.all()
         proc_comm = list(comments.values())
         for index, _ in enumerate(proc_comm):
-            proc_comm[index]["like_num"] = comments[index].get_like_num()
-            proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
-            proc_comm[index]["liked"] = (
-                comments[index].liker.all().filter(username=request.user.username).exists()
+            proc_comm[index] = prepare_comment_response(
+                comments[index], True, request.user.username
             )
-            proc_comm[index]["disliked"] = (
-                comments[index].disliker.all().filter(username=request.user.username).exists()
-            )
-            proc_comm[index]["author_name"] = comments[index].author.username
-            proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]
-            del proc_comm[index]["author_id"]
-            del proc_comm[index]["parent_comment_id"]
 
         # Re-ordering.
         comment_reservoir = copy.deepcopy(proc_comm)
@@ -210,7 +203,7 @@ def post_comment(request, query_id):
                         comment_reservoir.remove(comment)
                 else:
                     comment_response.append(comment)
-                    parent_id = comment["id"]
+                    parent_id = comment["comment_id"]
                     comment_reservoir.remove(comment)
             parent_id = None
         return JsonResponse({"comments": comment_response}, status=200)

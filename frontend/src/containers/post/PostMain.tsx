@@ -78,7 +78,7 @@ const PostMain = () => {
         <SideBarContentWrapper>
           {recentCommentPost &&
             recentCommentPost.map(comment => (
-              <SideBarCommentItem key={comment.id} onClick={() => navigate(`/post/${comment.post_id}`)}>
+              <SideBarCommentItem key={comment.comment_id} onClick={() => navigate(`/post/${comment.post_id}`)}>
                 •
                 <SideBarCommentTitle>
                   {comment.content.length > 12 ? comment.content.slice(0, 12) + '...' : comment.content}

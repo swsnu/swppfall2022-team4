@@ -162,7 +162,7 @@ const Mypage = () => {
                   {profileContent.comment ? (
                     profileContent.comment.map(comment => (
                       <CommentItem
-                        key={comment.id}
+                        key={comment.comment_id}
                         isChild={comment.parent_comment !== null}
                         onClick={() => navigate(`/post/${comment.post_id}`)}
                       >

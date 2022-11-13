@@ -102,7 +102,7 @@ const PostDetail = () => {
   const commentFuncOnClick = (comment: Comment, type_str: string) => {
     dispatch(
       postActions.commentFunc({
-        comment_id: comment.id,
+        comment_id: comment.comment_id,
         func_type: type_str,
       }),
     );
@@ -144,12 +144,12 @@ const PostDetail = () => {
   };
 
   const commentReplyOpenOnClick = (comment: Comment) => {
-    dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
+    dispatch(postActions.toggleCommentReply({ parent_comment: comment.comment_id }));
     setReplyActivated(!replyActivated);
   };
 
   const commentEditOpenOnClick = (comment: Comment) => {
-    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.comment_id }));
     setCommentEditInput(comment.content);
     setEditActivated(true);
   };
@@ -157,17 +157,17 @@ const PostDetail = () => {
   const commentEditConfirmOnClick = (comment: Comment) => {
     dispatch(
       postActions.editComment({
-        comment_id: comment.id,
+        comment_id: comment.comment_id,
         content: commentEditInput,
       }),
     );
-    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.comment_id }));
     changeCommentNum(Date.now());
     setEditActivated(false);
   };
 
   const commentEditCancelOnClick = (comment: Comment) => {
-    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.comment_id }));
     setEditActivated(false);
   };
 
@@ -209,12 +209,12 @@ const PostDetail = () => {
               답글
             </CommentGreenBtn>
           )}
-          {user?.username == comment?.author_name && (
+          {user?.username == comment?.author.username && (
             <>
               <CommentGreenBtn disabled={editActivated} onClick={() => commentEditOpenOnClick(comment)}>
                 수정
               </CommentGreenBtn>
-              <CommentRedBtn onClick={commentDeleteOnClick} data-comment_id={comment.id}>
+              <CommentRedBtn onClick={commentDeleteOnClick} data-comment_id={comment.comment_id}>
                 삭제
               </CommentRedBtn>
             </>
@@ -226,13 +226,13 @@ const PostDetail = () => {
 
   const CommentItemComponent = (comment: Comment) => {
     return (
-      <CommentReplyWrapper key={comment.id}>
+      <CommentReplyWrapper key={comment.comment_id}>
         <CommentItem isChild={comment.parent_comment !== null}>
           {/* {comment.parent_comment !== null && <FontAwesomeIcon icon={faArrowRightLong} />} */}
           <CommentWritterWrapperO1>
             <CommentWritterWrapper>
               <CommentWritterAvatar>Avatar</CommentWritterAvatar>
-              <CommentWritterText> {comment.author_name} </CommentWritterText>
+              <CommentWritterText> {comment.author.username} </CommentWritterText>
             </CommentWritterWrapper>
           </CommentWritterWrapperO1>
           <CommentRightWrapper>
@@ -284,7 +284,7 @@ const PostDetail = () => {
                 data-testid="commentReplySubmitBtn"
                 disabled={commentReplyInput === ''}
                 onClick={commentCreateOnClick}
-                data-parent_comment={comment.id}
+                data-parent_comment={comment.comment_id}
               >
                 작성
               </GreenCommentSubmitBtn>

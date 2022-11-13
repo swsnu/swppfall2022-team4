@@ -68,8 +68,8 @@ const simplePostID: postAPI.postIdentifyingType = {
 };
 export const simpleComments: commentAPI.Comment[] = [
   {
-    id: '1',
-    author_name: 'KJY',
+    comment_id: '1',
+    author: simpleUserInfo[0],
     content: 'GETBYCOMComment Content',
     created: '2022-11-11',
     updated: '2022-11-12',
@@ -83,8 +83,8 @@ export const simpleComments: commentAPI.Comment[] = [
     post_id: '1',
   },
   {
-    id: '2',
-    author_name: 'KJY2',
+    comment_id: '2',
+    author: simpleUserInfo[1],
     content: 'Comment Content2',
     created: '2022-11-12',
     updated: '2022-11-12',
