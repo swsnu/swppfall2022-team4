@@ -19,6 +19,21 @@ class Command(BaseCommand):
         number = options.get("number")
         seeder = Seed.seeder()
 
+        User.objects.create(
+            username='testuser',
+            hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode(
+                'utf-8'
+            ),
+            nickname='테스트_유저',
+            gender='male',
+            age=20,
+            height=170,
+            weight=70.5,
+            image="profile_default.png",
+            exp=0,
+            level=1,
+        )
+
         seeder.add_entity(
             User,
             number,
