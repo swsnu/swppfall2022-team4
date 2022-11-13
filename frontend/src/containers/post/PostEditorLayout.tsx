@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn } from 'components/post/button';
-import { columnFlex, rowCenterFlex } from 'components/post/layout';
+import { ColumnFlex, RowCenterFlex } from 'components/post/layout';
 
 interface IPropsColorButton {
   color?: string;
@@ -345,14 +345,14 @@ const ClickableSpan = styled.div`
   cursor: pointer;
 `;
 
-const TagClassColorWrapper = styled(rowCenterFlex)``;
+const TagClassColorWrapper = styled(RowCenterFlex)``;
 
 const TagClassColorLabel = styled.span`
   font-size: 14px;
   text-align: center;
 `;
 
-const TagClassFuncWrapper = styled(columnFlex)`
+const TagClassFuncWrapper = styled(ColumnFlex)`
   width: 100%;
 `;
 
@@ -399,12 +399,12 @@ const TagTitle = styled.span`
   width: 100%;
 `;
 
-const TagWrapperIn = styled(columnFlex)`
+const TagWrapperIn = styled(ColumnFlex)`
   justify-content: flex-start;
   background-color: var(--fit-white);
 `;
 
-const TagWrapper = styled(columnFlex)`
+const TagWrapper = styled(ColumnFlex)`
   justify-content: space-between;
   background-color: var(--fit-white);
   height: 60%;
@@ -422,7 +422,7 @@ const PrimeTagNotSpecified = styled.span`
   text-align: center;
   font-size: 12px;
 `;
-const PrimeTagWrapper = styled(columnFlex)`
+const PrimeTagWrapper = styled(ColumnFlex)`
   justify-content: space-between;
   background-color: var(--fit-white);
   margin-top: 15px;
@@ -460,7 +460,7 @@ const RandColorBtn = styled.button`
   }
 `;
 
-const TagSubWrapper = styled(columnFlex)``;
+const TagSubWrapper = styled(ColumnFlex)``;
 
 const TitleInput = styled.input`
   width: 100%;

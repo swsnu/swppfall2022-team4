@@ -14,7 +14,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import 'styles/color.css';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
-import { columnCenterFlex, columnFlex, rowCenterFlex } from 'components/post/layout';
+import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -504,7 +504,7 @@ const PostWritterLeftWrapper = styled.div`
   margin-right: 8px;
 `;
 
-const PostWritterAvatar = styled(rowCenterFlex)`
+const PostWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
   border: 1px solid black;
@@ -542,7 +542,7 @@ export const CommentWrapper = styled.div`
   padding: 0px 20px;
 `;
 
-const CommentReplyWrapper = styled(columnFlex)``;
+const CommentReplyWrapper = styled(ColumnFlex)``;
 
 const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
@@ -566,12 +566,12 @@ const CommentWritterWrapperO1 = styled.div`
   margin-right: 20px;
 `;
 
-const CommentWritterWrapper = styled(columnFlex)`
+const CommentWritterWrapper = styled(ColumnFlex)`
   align-items: center;
   font-size: 8px;
 `;
 
-const CommentWritterAvatar = styled(rowCenterFlex)`
+const CommentWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
   border: 1px solid black;
@@ -583,7 +583,7 @@ const CommentWritterText = styled.span`
   font-size: 12px;
 `;
 
-const CommentRightWrapper = styled(columnFlex)`
+const CommentRightWrapper = styled(ColumnFlex)`
   width: 100%;
   height: 100%;
   min-height: 50px;
@@ -684,7 +684,7 @@ const CommentInput = styled.input`
   padding: 10px 12px;
 `;
 
-const PostPanelWrapper = styled(columnCenterFlex)`
+const PostPanelWrapper = styled(ColumnCenterFlex)`
   width: 100%;
 `;
 

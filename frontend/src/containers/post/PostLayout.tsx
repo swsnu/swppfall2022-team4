@@ -6,7 +6,7 @@ import { postActions } from 'store/slices/post';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { columnCenterFlex, rowCenterFlex } from 'components/post/layout';
+import { ColumnCenterFlex, RowCenterFlex } from 'components/post/layout';
 
 interface IPropsSearchClear {
   isActive?: boolean;
@@ -88,11 +88,11 @@ const ClearSearchInput = styled.span<IPropsSearchClear>`
     display: none;
   `}
 `;
-const SearchIcon = styled(rowCenterFlex)`
+const SearchIcon = styled(RowCenterFlex)`
   margin-left: 20px;
 `;
 
-export const PostPageWrapper = styled(columnCenterFlex)`
+export const PostPageWrapper = styled(ColumnCenterFlex)`
   background-color: var(--fit-green-back);
   width: 100%;
   height: 100%;
@@ -100,7 +100,7 @@ export const PostPageWrapper = styled(columnCenterFlex)`
   overflow-x: hidden;
 `;
 
-export const PostContentWrapper = styled(columnCenterFlex)`
+export const PostContentWrapper = styled(ColumnCenterFlex)`
   width: 100%;
   height: 100%;
   min-height: 100vh;

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 // import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { rowCenterFlex } from 'components/post/layout';
+import { RowCenterFlex } from 'components/post/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 // import { timeAgoFormat } from 'utils/datetime';
@@ -136,7 +136,7 @@ const ClearSearchInput = styled.span<IPropsSearchClear>`
     display: none;
   `}
 `;
-const SearchIcon = styled(rowCenterFlex)`
+const SearchIcon = styled(RowCenterFlex)`
   margin-left: 20px;
 `;
 
