@@ -86,9 +86,9 @@ const simpleSearch = {
 
 const getPostsResponse: postAPI.getPostsResponseType = {
   posts: simplePosts,
-  page: 2,
+  page: 5,
   page_size: 15,
-  page_total: 7,
+  page_total: 5,
 };
 const getRecentCommentsResponse = {
   comments: simpleComments,
@@ -211,5 +211,47 @@ describe('[PostMain Page]', () => {
     fireEvent.click(sidebarComment);
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith(`/post/${simpleComments[1].post_id}`);
+  });
+  test('paginator', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/getPostsSuccess',
+        payload: getPostsResponse,
+      });
+    });
+    screen.debug();
+
+    const lastPage = screen.getByText('▶︎▶︎');
+    const nextPage = screen.getByText('▶︎');
+    const prevPage = screen.getByText('◀');
+    const firstPage = screen.getByText('◀◀');
+
+    expect(firstPage).toBeDisabled();
+    expect(prevPage).toBeDisabled();
+    expect(lastPage).not.toBeDisabled();
+    fireEvent.click(lastPage);
+
+    expect(lastPage).toBeDisabled();
+    expect(nextPage).toBeDisabled();
+
+    lastPage.removeAttribute('disabled');
+    fireEvent.click(lastPage);
+
+    nextPage.removeAttribute('disabled');
+    fireEvent.click(nextPage);
+
+    fireEvent.click(prevPage);
+    expect(nextPage).not.toBeDisabled();
+
+    fireEvent.click(nextPage);
+    fireEvent.click(firstPage);
+
+    const page4 = screen.getByText('4');
+    fireEvent.click(page4);
+
+    // fireEvent.click(sidebarComment);
+    // expect(mockNavigate).toBeCalledTimes(1);
+    // expect(mockNavigate).toBeCalledWith(`/post/${simpleComments[1].post_id}`);
   });
 });
