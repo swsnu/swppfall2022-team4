@@ -661,7 +661,6 @@ export const CommentContent = styled.span`
 // Comment Writing Form
 const CommentForm = styled.div`
   width: 100%;
-  background-color: var(--fit-white);
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
@@ -670,7 +669,6 @@ const CommentForm = styled.div`
 
 const CommentReplyForm = styled.div`
   width: 100%;
-  background-color: var(--fit-white);
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
