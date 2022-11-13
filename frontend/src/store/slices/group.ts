@@ -64,9 +64,7 @@ export const groupSlice = createSlice({
   name: 'group',
   initialState,
   reducers: {
-    stateRefresh: state => {
-      state.groupAction.status = false;
-    },
+    stateRefresh: () => initialState,
 
     getGroups: state => {
       state.groupList.groups = null;
@@ -86,7 +84,7 @@ export const groupSlice = createSlice({
       state.groupCreate.error = null;
     },
     createGroupSuccess: (state, { payload }) => {
-      state.groupCreate.group_id = payload.group_id;
+      state.groupCreate.group_id = payload.id;
       state.groupCreate.error = null;
     },
     createGroupFailure: (state, { payload }) => {
@@ -135,7 +133,7 @@ export const groupSlice = createSlice({
       state.groupMembers.error = null;
     },
     getGroupMembersSuccess: (state, { payload }) => {
-      state.groupMembers.members = payload.members;
+      state.groupMembers.members = payload;
       state.groupMembers.error = null;
     },
     getGroupMembersFailure: (state, { payload }) => {
