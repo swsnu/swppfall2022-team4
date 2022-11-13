@@ -24,3 +24,5 @@ yarn-error.log*
 
 .eslintrc
 .prettierrc
+.env
+env.tar

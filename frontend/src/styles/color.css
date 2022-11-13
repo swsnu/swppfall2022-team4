@@ -1,0 +1,29 @@
+:root {
+    /* White */
+    --fit-white: #ffffff;
+
+    /* Gray */
+    --fit-disabled-gray: #9b9b9b;
+
+    /* Red */
+    --fit-red-neg: #f790a8;
+    --fit-red-neg-hover: #ff5454;
+    --fit-red-neg-active: #bf3434;
+
+    /* Green */
+    --fit-green-back: #d7efe3;
+    --fit-green-pos-big-btn1: #00be5f;
+    --fit-green-small-btn1: #54dd6d;
+    --fit-green-mid-btn1: #8ee5b9;
+
+    --fit-green-btn: #8ee5b9;
+    --fit-green-btn-hover: #54dd6d;
+    --fit-green-btn-active: #00be5f;
+
+    
+    --fit-green-deep: #60bf43; /* Used in Paginator */
+    /* Blue */
+    --fit-blue-pos: #35c9ea;
+    --fit-blue-pos-hover: #45d9fa;
+    --fit-blue-pos-active: #25a9da;
+}
