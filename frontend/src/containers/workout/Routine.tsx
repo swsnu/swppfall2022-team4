@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { workoutLogActions } from 'store/slices/workout';
 import { FitElement } from 'components/fitelement/FitElement';
-import { getRoutineRequestType, getRoutineResponseType } from 'store/apis/workout';
+import { getRoutineRequestType } from 'store/apis/workout';
 
 const Routine = () => {
   const dispatch = useDispatch();
@@ -31,12 +31,19 @@ const Routine = () => {
 
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
   useEffect(() => {
     if (routine_id !== -1) {
-      dispatch(workoutLogActions.getSpecificRoutine({ user_id: 1, routine_id: routine_id }));
+      dispatch(
+        workoutLogActions.getSpecificRoutine({
+          user_id: 1,
+          routine_id: routine_id,
+        }),
+      );
     }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [routine_id, routines]);
 
   return (
@@ -50,7 +57,7 @@ const Routine = () => {
             {routines.map((routine, index) => (
               <RoutineName
                 key={index}
-                className={routine.id === routine_id ? (index == 0 ? 'type2' : 'type1') : ''}
+                className={routine.id === routine_id ? (index === 0 ? 'type2' : 'type1') : ''}
                 onClick={() => routineClick(Number(routine.id))}
               >
                 {routine.name}

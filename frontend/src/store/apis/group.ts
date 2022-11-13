@@ -90,6 +90,4 @@ export type Member = {
   image: string;
   level: number;
 };
-export type getGroupMembersResponseType = {
-  members: Member[];
-};
+export type getGroupMembersResponseType = Member[];

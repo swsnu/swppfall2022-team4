@@ -8,7 +8,6 @@ import { workoutLogActions } from 'store/slices/workout';
 import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
-  createDailyLogRequestType,
   editMemoRequestType,
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
@@ -35,11 +34,11 @@ const WorkoutLog = () => {
   const [workout_type, setWorkoutType] = useState('');
   //TODO: workout_type이 비어있을 경우, alert
   //TODO: fitelement 추가 후, 값 비우기
-  const [workout_category, setWorkoutCategory] = useState('leg');
   const [rep, setRep] = useState<number | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
   const [workout_time, setWorkoutTime] = useState<number | null>(null);
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
   const [memo, setMemo] = useState('');
@@ -117,7 +116,7 @@ const WorkoutLog = () => {
       setCopyDate(new Date(year, month, day));
       setCopiedFitElements(
         dailyFitElements.map(v => {
-          return Number(v.id);
+          return Number(v.data.id);
         }),
       );
     }
@@ -126,7 +125,7 @@ const WorkoutLog = () => {
   const addRoutineClick = () => {
     if (dailyLog.isDailyLog === true && dailyFitElements.length > 0) {
       const fitelements_id_list = dailyFitElements.map(v => {
-        return Number(v.id);
+        return Number(v.data.id);
       });
       const createRoutineConfig: createRoutineWithFitElementsRequestType = {
         user_id: 1,
@@ -175,14 +174,23 @@ const WorkoutLog = () => {
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [createDailyLogStatus, pasteStatus]);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '연필 클릭 후 메모를 추가해 보세요.');
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
 
   useEffect(() => {
-    dispatch(workoutLogActions.getCalendarInfo({ user_id: 1, year: year, month: month + 1 }));
+    dispatch(
+      workoutLogActions.getCalendarInfo({
+        user_id: 1,
+        year: year,
+        month: month + 1,
+      }),
+    );
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [isCopy, createDailyLogStatus]);
 
   useEffect(() => {
@@ -223,8 +231,8 @@ const WorkoutLog = () => {
                     dispatch(
                       workoutLogActions.getCalendarInfo({
                         user_id: 1,
-                        year: month == 0 ? year - 1 : year,
-                        month: month == 0 ? 12 : month,
+                        year: month === 0 ? year - 1 : year,
+                        month: month === 0 ? 12 : month,
                       }),
                     );
                     setDate(new Date(year, month - 1, day));
@@ -242,7 +250,7 @@ const WorkoutLog = () => {
                     dispatch(
                       workoutLogActions.getCalendarInfo({
                         user_id: 1,
-                        year: month == 11 ? year + 1 : year,
+                        year: month === 11 ? year + 1 : year,
                         month: ((month + 1) % 12) + 1,
                       }),
                     );
@@ -357,7 +365,7 @@ const WorkoutLog = () => {
                 <LogCategory className="type2">시간</LogCategory>
               </LogHeader>
               <LogInputBody>
-                <LogInputBody_input>
+                <LogInputBodyInput>
                   <WorkoutTypeInput
                     type="text"
                     value={workout_type || ''}
@@ -391,13 +399,13 @@ const WorkoutLog = () => {
                     value={workout_time || 0}
                     onChange={e => setWorkoutTime(Number(e.target.value))}
                   />
-                </LogInputBody_input>
-                <LogInputBody_button>
+                </LogInputBodyInput>
+                <LogInputBodyButton>
                   <AnyButton className="type1">취소</AnyButton>
                   <AnyButton className="type1" onClick={() => createWorkoutLog()}>
                     완료
                   </AnyButton>
-                </LogInputBody_button>
+                </LogInputBodyButton>
               </LogInputBody>
               <LogBody>
                 {dailyFitElements.length === 0 ? (
@@ -773,7 +781,7 @@ const LogCategory = styled.div`
   }
 `;
 
-const LogInputBody_input = styled.div`
+const LogInputBodyInput = styled.div`
   width: 100%;
   height: 80%;
   display: flex;
@@ -796,7 +804,7 @@ const WorkoutTypeInput = styled.input`
   }
 `;
 
-const LogInputBody_button = styled.div`
+const LogInputBodyButton = styled.div`
   width: 100%;
   height: 20%;
   min-height: 40px;

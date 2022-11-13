@@ -24,10 +24,7 @@ const mem2: groupApi.Member = {
   level: 1,
 };
 
-const membersResponse: groupApi.getGroupMembersResponseType = {
-  members: [mem1, mem2],
-};
-
+const membersResponse: groupApi.getGroupMembersResponseType = [mem1, mem2];
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

@@ -66,24 +66,22 @@ const checkMemberResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'group_leader',
 };
 
-const getGroupMembersResponse: groupApi.getGroupMembersResponseType = {
-  members: [
-    {
-      id: 1,
-      username: 'user1',
-      cert_days: 7,
-      image: 'image',
-      level: 1,
-    },
-    {
-      id: 1,
-      username: 'user12',
-      cert_days: 7,
-      image: 'image',
-      level: 1,
-    },
-  ],
-};
+const getGroupMembersResponse: groupApi.getGroupMembersResponseType = [
+  {
+    id: 1,
+    username: 'user1',
+    cert_days: 7,
+    image: 'image',
+    level: 1,
+  },
+  {
+    id: 1,
+    username: 'user12',
+    cert_days: 7,
+    image: 'image',
+    level: 1,
+  },
+];
 
 const GroupDetailResponse: groupApi.GroupDetail = {
   group_id: 1,
@@ -119,13 +117,19 @@ describe('Group', () => {
     it('postGroup', () => {
       return expectSaga(groupSaga)
         .withReducer(groupSlice.reducer)
-        .provide([[call(groupApi.postGroup, postGroupRequest), GroupDetailResponse]])
-        .put({ type: 'group/createGroupSuccess', payload: GroupDetailResponse })
-        .dispatch({ type: 'group/createGroup', payload: postGroupRequest })
+        .provide([[call(groupApi.postGroup, postGroupRequest), { id: 1 }]])
+        .put({
+          type: 'group/createGroupSuccess',
+          payload: { id: 1 },
+        })
+        .dispatch({
+          type: 'group/createGroup',
+          payload: postGroupRequest,
+        })
         .hasFinalState({
           ...initialState,
           groupCreate: {
-            group_id: GroupDetailResponse.group_id,
+            group_id: 1,
             error: null,
           },
         })
@@ -135,13 +139,16 @@ describe('Group', () => {
   it('getGroupDetail', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.getGroupDetail, '1'), GroupDetailResponse]])
-      .put({ type: 'group/getGroupDetailSuccess', payload: GroupDetailResponse })
+      .provide([[call(groupApi.getGroupDetail, '1'), 'data']])
+      .put({
+        type: 'group/getGroupDetailSuccess',
+        payload: 'data',
+      })
       .dispatch({ type: 'group/getGroupDetail', payload: '1' })
       .hasFinalState({
         ...initialState,
         groupDetail: {
-          group: GroupDetailResponse,
+          group: 'data',
           error: null,
         },
       })
@@ -163,7 +170,10 @@ describe('Group', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
       .provide([[call(groupApi.checkGroupMember, '1'), checkMemberResponse]])
-      .put({ type: 'group/checkMemberStatusSuccess', payload: checkMemberResponse })
+      .put({
+        type: 'group/checkMemberStatusSuccess',
+        payload: checkMemberResponse,
+      })
       .dispatch({ type: 'group/checkMemberStatus', payload: '1' })
       .hasFinalState({
         ...initialState,
@@ -177,13 +187,16 @@ describe('Group', () => {
   it('getGroupMembers', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.getGroupMembers, '1'), getGroupMembersResponse]])
-      .put({ type: 'group/getGroupMembersSuccess', payload: getGroupMembersResponse })
+      .provide([[call(groupApi.getGroupMembers, '1'), 'data']])
+      .put({
+        type: 'group/getGroupMembersSuccess',
+        payload: 'data',
+      })
       .dispatch({ type: 'group/getGroupMembers', payload: '1' })
       .hasFinalState({
         ...initialState,
         groupMembers: {
-          members: getGroupMembersResponse.members,
+          members: 'data',
           error: null,
         },
       })
