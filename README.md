@@ -16,7 +16,7 @@
 ### Run backend server
     # python : v3.9.5
     # Rename backend/example.env to backend/.env
-    # redis server should be running in the background to chat.
+    # redis-server should be running in the background to chat.
     
     cd backend
     pip install -r requirements.txt
