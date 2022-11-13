@@ -66,24 +66,22 @@ const checkMemberResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'group_leader',
 };
 
-const getGroupMembersResponse: groupApi.getGroupMembersResponseType = {
-  members: [
-    {
-      id: 1,
-      username: 'user1',
-      cert_days: 7,
-      image: 'image',
-      level: 1,
-    },
-    {
-      id: 1,
-      username: 'user12',
-      cert_days: 7,
-      image: 'image',
-      level: 1,
-    },
-  ],
-};
+const getGroupMembersResponse: groupApi.getGroupMembersResponseType = [
+  {
+    id: 1,
+    username: 'user1',
+    cert_days: 7,
+    image: 'image',
+    level: 1,
+  },
+  {
+    id: 1,
+    username: 'user12',
+    cert_days: 7,
+    image: 'image',
+    level: 1,
+  },
+];
 
 const GroupDetailResponse: groupApi.GroupDetail = {
   group_id: 1,
