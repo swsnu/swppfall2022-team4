@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { RootState } from 'index';
 import { groupActions } from 'store/slices/group';
 import { BsSearch } from 'react-icons/bs';

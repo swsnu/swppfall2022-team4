@@ -32,7 +32,7 @@ interface GroupState {
   };
 }
 
-const initialState: GroupState = {
+export const initialState: GroupState = {
   groupList: {
     groups: null,
     error: null,
@@ -64,8 +64,7 @@ export const groupSlice = createSlice({
   name: 'group',
   initialState,
   reducers: {
-    stateRefresh: () => initialState,
-    actionStatusRefresh: state => {
+    stateRefresh: state => {
       state.groupAction.status = false;
     },
 
@@ -74,7 +73,7 @@ export const groupSlice = createSlice({
       state.groupList.error = null;
     },
     getGroupsSuccess: (state, { payload }) => {
-      state.groupList.groups = payload;
+      state.groupList.groups = payload.groups;
       state.groupList.error = null;
     },
     getGroupsFailure: (state, { payload }) => {
@@ -87,7 +86,7 @@ export const groupSlice = createSlice({
       state.groupCreate.error = null;
     },
     createGroupSuccess: (state, { payload }) => {
-      state.groupCreate.group_id = payload.id;
+      state.groupCreate.group_id = payload.group_id;
       state.groupCreate.error = null;
     },
     createGroupFailure: (state, { payload }) => {
@@ -136,7 +135,7 @@ export const groupSlice = createSlice({
       state.groupMembers.error = null;
     },
     getGroupMembersSuccess: (state, { payload }) => {
-      state.groupMembers.members = payload;
+      state.groupMembers.members = payload.members;
       state.groupMembers.error = null;
     },
     getGroupMembersFailure: (state, { payload }) => {
