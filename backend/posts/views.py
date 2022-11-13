@@ -68,7 +68,11 @@ def post_home(request):
         try:
             data = json.loads(request.body.decode())
             author = User.objects.get(username=data["author_name"])
-            prime_tag = Tag.objects.get(pk=data["prime_tag"]["id"]) if data["prime_tag"] else None
+            prime_tag = (
+                Tag.objects.get(pk=data["prime_tag"]["id"])
+                if ("prime_tag" in data.keys() and data["prime_tag"])
+                else None
+            )
 
             created_post = Post.objects.create(
                 author=author, title=data["title"], content=data["content"], prime_tag=prime_tag
@@ -143,7 +147,9 @@ def post_detail(request, query_id):
             post_obj.content = data["content"]
             tags = data["tags"]
             post_obj.prime_tag = (
-                Tag.objects.get(pk=data["prime_tag"]["id"]) if data["prime_tag"] else None
+                Tag.objects.get(pk=data["prime_tag"]["id"])
+                if ("prime_tag" in data.keys() and data["prime_tag"])
+                else None
             )
             post_obj.tags.clear()
             for tag in tags:
