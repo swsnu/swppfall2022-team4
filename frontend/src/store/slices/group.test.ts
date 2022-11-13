@@ -131,7 +131,7 @@ describe('Group', () => {
         .hasFinalState({
           ...initialState,
           groupCreate: {
-            group_id: GroupDetailResponse.group_id,
+            group_id: 1,
             error: null,
           },
         })
@@ -141,13 +141,16 @@ describe('Group', () => {
   it('getGroupDetail', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.getGroupDetail, '1'), GroupDetailResponse]])
-      .put({ type: 'group/getGroupDetailSuccess', payload: GroupDetailResponse })
+      .provide([[call(groupApi.getGroupDetail, '1'), 'data']])
+      .put({
+        type: 'group/getGroupDetailSuccess',
+        payload: 'data',
+      })
       .dispatch({ type: 'group/getGroupDetail', payload: '1' })
       .hasFinalState({
         ...initialState,
         groupDetail: {
-          group: GroupDetailResponse,
+          group: 'data',
           error: null,
         },
       })
@@ -169,7 +172,10 @@ describe('Group', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
       .provide([[call(groupApi.checkGroupMember, '1'), checkMemberResponse]])
-      .put({ type: 'group/checkMemberStatusSuccess', payload: checkMemberResponse })
+      .put({
+        type: 'group/checkMemberStatusSuccess',
+        payload: checkMemberResponse,
+      })
       .dispatch({ type: 'group/checkMemberStatus', payload: '1' })
       .hasFinalState({
         ...initialState,
@@ -183,13 +189,16 @@ describe('Group', () => {
   it('getGroupMembers', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.getGroupMembers, '1'), getGroupMembersResponse]])
-      .put({ type: 'group/getGroupMembersSuccess', payload: getGroupMembersResponse })
+      .provide([[call(groupApi.getGroupMembers, '1'), 'data']])
+      .put({
+        type: 'group/getGroupMembersSuccess',
+        payload: 'data',
+      })
       .dispatch({ type: 'group/getGroupMembers', payload: '1' })
       .hasFinalState({
         ...initialState,
         groupMembers: {
-          members: getGroupMembersResponse.members,
+          members: 'data',
           error: null,
         },
       })
