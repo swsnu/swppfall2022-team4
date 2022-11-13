@@ -121,6 +121,7 @@ const Header = () => {
       dispatch(userActions.logout());
     }
   };
+  const nav = ({ isActive }: { isActive: boolean }) => (isActive ? 'active' : '');
 
   if (!user) return <div>no user</div>;
   return (
@@ -132,34 +133,34 @@ const Header = () => {
         </Title>
 
         <CategoryWrapper>
-          <Category to="/workout" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <Category to="/workout" className={nav}>
             기록
           </Category>
-          <Category to="/group" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <Category to="/group" className={nav}>
             그룹
           </Category>
-          <Category to="/post" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <Category to="/post" className={nav}>
             커뮤니티
           </Category>
-          <Category to="/place" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <Category to="/place" className={nav}>
             장소
           </Category>
-          <Category to="/information" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <Category to="/information" className={nav}>
             운동정보
           </Category>
-          <CategoryIcon to="/workout" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <CategoryIcon to="/workout" className={nav}>
             <HiOutlineDocumentReport />
           </CategoryIcon>
-          <CategoryIcon to="/group" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <CategoryIcon to="/group" className={nav}>
             <HiUserGroup />
           </CategoryIcon>
-          <CategoryIcon to="/post" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <CategoryIcon to="/post" className={nav}>
             <HiOutlineAnnotation />
           </CategoryIcon>
-          <CategoryIcon to="/place" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <CategoryIcon to="/place" className={nav}>
             <HiPhotograph />
           </CategoryIcon>
-          <CategoryIcon to="/information" className={({ isActive }) => (isActive ? 'active' : '')}>
+          <CategoryIcon to="/information" className={nav}>
             <HiInformationCircle />
           </CategoryIcon>
         </CategoryWrapper>
