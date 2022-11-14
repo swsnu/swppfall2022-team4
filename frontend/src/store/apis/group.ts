@@ -6,7 +6,7 @@ export const getGroups = async () => {
   return response.data;
 };
 export const postGroup = async (payload: postGroupRequestType) => {
-  const response = await client.post<GroupDetail>(`/api/group/`, payload);
+  const response = await client.post<postGroupResponseType>(`/api/group/`, payload);
   return response.data;
 };
 export const getGroupDetail = async (payload: string) => {
@@ -64,6 +64,10 @@ export type postGroupRequestType = {
   free: boolean;
   group_leader: string | null;
   goal: Fitelement[];
+};
+
+export type postGroupResponseType = {
+  id: number;
 };
 
 export type GroupDetail = {

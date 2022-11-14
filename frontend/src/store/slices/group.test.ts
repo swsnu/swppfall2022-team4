@@ -62,6 +62,10 @@ const getGroupsResponse: groupApi.getGroupsResponseType = {
   ],
 };
 
+const postGroupResponse: groupApi.postGroupResponseType = {
+  id: 1,
+}
+
 const checkMemberResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'group_leader',
 };
@@ -117,10 +121,10 @@ describe('Group', () => {
     it('postGroup', () => {
       return expectSaga(groupSaga)
         .withReducer(groupSlice.reducer)
-        .provide([[call(groupApi.postGroup, postGroupRequest), { id: 1 }]])
+        .provide([[call(groupApi.postGroup, postGroupRequest), postGroupResponse]])
         .put({
           type: 'group/createGroupSuccess',
-          payload: { id: 1 },
+          payload: postGroupResponse,
         })
         .dispatch({
           type: 'group/createGroup',
@@ -129,7 +133,7 @@ describe('Group', () => {
         .hasFinalState({
           ...initialState,
           groupCreate: {
-            group_id: 1,
+            group_id: postGroupResponse.id,
             error: null,
           },
         })
@@ -235,7 +239,7 @@ describe('Group', () => {
 });
 //----------------------------------------------------------------
 describe('saga failure', () => {
-  it('getGroups1', () => {
+  it('getGroups', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
       .provide([[call(groupApi.getGroups), throwError(simpleError)]])
@@ -250,7 +254,7 @@ describe('saga failure', () => {
       })
       .silentRun();
   });
-  it('getGroups2', () => {
+  it('postGroup', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
       .provide([[call(groupApi.postGroup, postGroupRequest), throwError(simpleError)]])
