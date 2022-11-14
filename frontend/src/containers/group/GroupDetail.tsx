@@ -50,7 +50,9 @@ const GroupDetail = () => {
   }, [groupDeleteStatus]);
 
   const joinOnClick = () => {
-    if (group_id) {
+    if (group_detail?.number == group_detail?.member_number) {
+      alert('정원이 모두 찬 그룹입니다.');
+    } else if (group_id) {
       dispatch(groupActions.joinGroup(group_id));
     }
   };

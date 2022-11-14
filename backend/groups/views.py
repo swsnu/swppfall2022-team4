@@ -138,6 +138,8 @@ def group_members(request, group_id):
             gr_obj = Group.objects.get(id=int(group_id))
             if gr_obj.members.filter(username=request.user.username):
                 return HttpResponseBadRequest()
+            if gr_obj.member_number == gr_obj.number:
+                return HttpResponseBadRequest()
             gr_obj.members.add(user)
             gr_obj.member_number += 1
             gr_obj.save()
