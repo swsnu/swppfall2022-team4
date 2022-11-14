@@ -43,6 +43,24 @@ const member2: groupApi.Member = {
   level: 1,
 }
 
+const group1: groupApi.Group = {
+  id: 1,
+  group_name: 'test',
+  number: 5,
+  start_date: '2019-01-01',
+  end_date: '2019-12-31',
+  member_number: 3,
+}
+
+const group2: groupApi.Group = {
+  id: 2,
+  group_name: 'test',
+  number: 5,
+  start_date: '2019-01-01',
+  end_date: '2019-12-31',
+  member_number: 3,
+}
+
 //request
 const postGroupRequest: groupApi.postGroupRequestType = {
   group_name: 'test',
@@ -57,24 +75,7 @@ const postGroupRequest: groupApi.postGroupRequestType = {
 
 //response
 const getGroupsResponse: groupApi.getGroupsResponseType = {
-  groups: [
-    {
-      id: 1,
-      group_name: 'test',
-      number: 5,
-      start_date: '2019-01-01',
-      end_date: '2019-12-31',
-      member_number: 3,
-    },
-    {
-      id: 2,
-      group_name: 'test',
-      number: 5,
-      start_date: '2019-01-01',
-      end_date: '2019-12-31',
-      member_number: 3,
-    },
-  ],
+  groups: [group1, group2],
 };
 
 const postGroupResponse: groupApi.postGroupResponseType = {
@@ -89,7 +90,7 @@ const getGroupMembersResponse: groupApi.getGroupMembersResponseType = {
   members: [member1, member2],
 };
 
-const GroupDetailResponse: groupApi.getGroupDetailResponseType = {
+const getGroupDetailResponse: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'test',
   number: 7,
@@ -145,16 +146,16 @@ describe('Group', () => {
   it('getGroupDetail', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.getGroupDetail, '1'), 'data']])
+      .provide([[call(groupApi.getGroupDetail, '1'), getGroupDetailResponse]])
       .put({
         type: 'group/getGroupDetailSuccess',
-        payload: 'data',
+        payload: getGroupDetailResponse,
       })
       .dispatch({ type: 'group/getGroupDetail', payload: '1' })
       .hasFinalState({
         ...initialState,
         groupDetail: {
-          group: 'data',
+          group: getGroupDetailResponse,
           error: null,
         },
       })
@@ -184,7 +185,7 @@ describe('Group', () => {
       .hasFinalState({
         ...initialState,
         groupMemberStatus: {
-          member_status: 'group_leader',
+          member_status: checkMemberResponse.member_status,
           error: null,
         },
       })
