@@ -24,8 +24,9 @@ def general_group(request):
     else:  ## post
         try:
             req_data = json.loads(request.body.decode())
-            if(req_data['start_date'] > req_data['end_date']):
-                return HttpResponseBadRequest()
+            if((req_data['start_date'] != None) & (req_data['end_date'] != None)):
+                if(req_data['start_date'] > req_data['end_date']):
+                    return HttpResponseBadRequest()
             group = Group(
                 group_name=req_data["group_name"],
                 number=req_data["number"],
