@@ -51,7 +51,7 @@ const Mypage = () => {
       dispatch(userActions.resetProfile());
       dispatch(chatActions.resetCreate());
     };
-  }, []);
+  }, [username]);
   useEffect(() => {
     if (profileError && profileError.response?.status === 404) {
       navigate('/not_found');
