@@ -2,7 +2,7 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 import 'styles/color.css';
-import './tagDetailModal.css';
+import './modalTransition.css';
 import { RowCenterFlex } from './layout';
 import { CSSTransition } from 'react-transition-group';
 

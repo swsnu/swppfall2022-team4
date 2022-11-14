@@ -38,8 +38,8 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [postTagModalOpen, setPostTagModalOpen] = useState(false);
-  const [commentTagModalOpen, setCommentTagModalOpen] = useState(false);
+  const [postModalOpen, setPostModalOpen] = useState(false);
+  const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [commentModalDisable, setCommentModalDisable] = useState(false);
   const [commentModalNum, setCommentModalNum] = useState('');
   const [commentList, setCommentList] = useState<Comment[]>([]);
@@ -50,31 +50,20 @@ const PostDetail = () => {
   const [replyActivated, setReplyActivated] = useState(false);
   const [editActivated, setEditActivated] = useState(false);
 
-  // const commentModalReference = useRef<HTMLImageElement>(null);
-  const commentModalReference = useRef<HTMLImageElement[]>([]);
+  const commentModalPivot = useRef<HTMLImageElement[]>([]);
+  const postModalPivot = useRef<HTMLImageElement>(null);
   const postModalRef = useRef(null);
-  useOnClickOutside(postModalRef, () => setPostTagModalOpen(false), 'mousedown');
+  useOnClickOutside(postModalRef, () => setPostModalOpen(false), 'mousedown');
 
   const commentModalRef = useRef(null);
   useOnClickOutside(
     commentModalRef,
     () => {
-      setCommentTagModalOpen(false);
+      setCommentModalOpen(false);
       setTimeout(() => setCommentModalDisable(false), 300);
     },
     'mousedown',
   );
-  // const commentModalRef = useRef<HTMLImageElement[]>([]);
-  // for (const i in commentModalRef) {
-  //   useOnClickOutside(
-  //     commentModalRef.current[i],
-  //     () => {
-  //       setCommentTagModalOpen(false);
-  //       setCommentModalNum('');
-  //     },
-  //     'mousedown',
-  //   );
-  // }
 
   const user = useSelector(({ user }: RootState) => user.user);
   const { post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
@@ -266,23 +255,21 @@ const PostDetail = () => {
             <CommentWritterWrapper>
               <CommentWritterAvatar>
                 <UserAvatar
-                  ref={el =>
-                    (commentModalReference.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)
-                  }
+                  ref={el => (commentModalPivot.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)}
                   src={process.env.REACT_APP_API_IMAGE + comment.author.avatar}
                   onClick={() => {
-                    if (commentTagModalOpen === false && commentModalDisable == false) {
+                    if (commentModalOpen === false && commentModalDisable == false) {
                       setCommentModalNum(comment.comment_id);
-                      setCommentTagModalOpen(true);
+                      setCommentModalOpen(true);
                       setCommentModalDisable(true);
                     }
                   }}
                   alt="profile"
                 />
                 {UserDetailHorizontalModal({
-                  isActive: commentTagModalOpen && commentModalNum === comment.comment_id,
+                  isActive: commentModalOpen && commentModalNum === comment.comment_id,
                   modalRef: commentModalRef,
-                  pivotRef: commentModalReference.current[Number.parseInt(comment.comment_id)],
+                  pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
                   userInfo: comment.author,
                   // commentId: comment.comment_id,
                   navigate,
@@ -366,13 +353,15 @@ const PostDetail = () => {
                 </PostWritterLeftWrapper>
                 <PostWritterAvatar>
                   <UserAvatar
+                    ref={postModalPivot}
                     src={process.env.REACT_APP_API_IMAGE + post.author.avatar}
-                    onClick={() => setPostTagModalOpen(true)}
+                    onClick={() => setPostModalOpen(true)}
                     alt="profile"
                   />
                   {UserDetailModal({
-                    isActive: postTagModalOpen,
+                    isActive: postModalOpen,
                     modalRef: postModalRef,
+                    pivotRef: postModalPivot,
                     userInfo: post.author,
                     navigate,
                   })}
@@ -485,7 +474,6 @@ const ArticleDetailWrapper = styled.div`
   width: 100%;
   height: 100%;
   background-color: var(--fit-white);
-  /* position: relative; */
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
@@ -509,7 +497,6 @@ const SideBarItem = styled.div`
 `;
 
 const ArticleBody = styled.div`
-  /* padding: 10px 20px; */
   font-size: 14px;
   width: 100%;
   height: 80%;
@@ -521,7 +508,6 @@ const ArticleBody = styled.div`
 `;
 
 const ArticleItem = styled.div`
-  /* padding: 10px 20px; */
   font-size: 14px;
   width: 100%;
   height: fit-content;
@@ -706,13 +692,11 @@ const CommentNumIndicator = styled.span`
   width: 50px;
   margin-right: 5px;
   white-space: nowrap;
-  /* margin: 0px 5px; */
 `;
 export const CommentFuncNumIndicator = styled.span`
   font-size: 12px;
   margin-left: 8px;
   min-width: 15px;
-  /* margin: 0px 5px; */
 `;
 
 export const CommentContentWrapper = styled.div`
