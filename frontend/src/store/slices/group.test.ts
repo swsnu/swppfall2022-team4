@@ -3,6 +3,7 @@ import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as groupApi from '../apis/group';
 import groupSaga, { initialState, groupSlice } from './group';
+import { userType } from 'store/apis/user';
 
 const simpleError = new Error('error!');
 
@@ -27,6 +28,20 @@ const fitelement2: groupApi.Fitelement = {
   set: 20,
   time: 20,
 };
+
+const member1: groupApi.Member = {
+  id: 1,
+  username: 'user12',
+  image: 'image',
+  level: 1,
+}
+
+const member2: groupApi.Member = {
+  id: 2,
+  username: 'user34',
+  image: 'image',
+  level: 1,
+}
 
 //request
 const postGroupRequest: groupApi.postGroupRequestType = {
@@ -70,22 +85,9 @@ const checkMemberResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'group_leader',
 };
 
-const getGroupMembersResponse: groupApi.getGroupMembersResponseType = [
-  {
-    id: 1,
-    username: 'user1',
-    cert_days: 7,
-    image: 'image',
-    level: 1,
-  },
-  {
-    id: 1,
-    username: 'user12',
-    cert_days: 7,
-    image: 'image',
-    level: 1,
-  },
-];
+const getGroupMembersResponse: groupApi.getGroupMembersResponseType = {
+  members: [member1, member2],
+};
 
 const GroupDetailResponse: groupApi.getGroupDetailResponseType = {
   group_id: 1,
@@ -191,16 +193,16 @@ describe('Group', () => {
   it('getGroupMembers', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.getGroupMembers, '1'), 'data']])
+      .provide([[call(groupApi.getGroupMembers, '1'), getGroupMembersResponse]])
       .put({
         type: 'group/getGroupMembersSuccess',
-        payload: 'data',
+        payload: getGroupMembersResponse,
       })
       .dispatch({ type: 'group/getGroupMembers', payload: '1' })
       .hasFinalState({
         ...initialState,
         groupMembers: {
-          members: 'data',
+          members: getGroupMembersResponse.members,
           error: null,
         },
       })
@@ -320,7 +322,7 @@ describe('saga failure', () => {
       .hasFinalState({
         ...initialState,
         groupMembers: {
-          members: [],
+          members: null,
           error: simpleError,
         },
       })

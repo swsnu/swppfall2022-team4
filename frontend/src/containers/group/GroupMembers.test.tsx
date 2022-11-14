@@ -11,7 +11,6 @@ import Router from 'react-router-dom';
 const mem1: groupApi.Member = {
   id: 1,
   username: 'test1',
-  cert_days: 7,
   image: 'image',
   level: 1,
 };
@@ -19,12 +18,14 @@ const mem1: groupApi.Member = {
 const mem2: groupApi.Member = {
   id: 2,
   username: 'test2',
-  cert_days: 7,
   image: 'image',
   level: 1,
 };
 
-const membersResponse: groupApi.getGroupMembersResponseType = [mem1, mem2];
+const membersResponse: groupApi.getGroupMembersResponseType = {
+  members: [mem1, mem2],
+};
+
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

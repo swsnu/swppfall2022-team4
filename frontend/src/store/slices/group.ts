@@ -27,7 +27,7 @@ interface GroupState {
     error: AxiosError | null;
   };
   groupMembers: {
-    members: groupAPI.Member[];
+    members: groupAPI.Member[] | null;
     error: AxiosError | null;
   };
 }
@@ -129,15 +129,14 @@ export const groupSlice = createSlice({
       alert(payload.response?.data.message);
     },
     getGroupMembers: (state, action: PayloadAction<string>) => {
-      state.groupMembers.members = [];
+      state.groupMembers.members = null;
       state.groupMembers.error = null;
     },
     getGroupMembersSuccess: (state, { payload }) => {
-      state.groupMembers.members = payload;
+      state.groupMembers.members = payload.members;
       state.groupMembers.error = null;
     },
     getGroupMembersFailure: (state, { payload }) => {
-      state.groupMembers.members = [];
       state.groupMembers.error = payload;
       alert(payload.response?.data.message);
     },

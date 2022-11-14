@@ -26,11 +26,11 @@ export const getGroupMembers = async (payload: string) => {
   return response.data;
 };
 export const joinGroup = async (payload: string) => {
-  const response = await client.post<undefined>(`/api/group/${payload}/member/`);
+  const response = await client.post(`/api/group/${payload}/member/`);
   return response.data;
 };
 export const exitGroup = async (payload: string) => {
-  const response = await client.delete<undefined>(`/api/group/${payload}/member/`);
+  const response = await client.delete(`/api/group/${payload}/member/`);
   return response.data;
 };
 
@@ -51,6 +51,13 @@ export type Fitelement = {
   rep: number;
   set: number;
   time: number;
+};
+
+export type Member = {
+  id: number;
+  username: string;
+  image: string;
+  level: number;
 };
 
 export type getGroupsResponseType = {
@@ -89,11 +96,6 @@ export type checkGroupMemberResponseType = {
   member_status: string;
 };
 
-export type Member = {
-  id: number;
-  username: string;
-  cert_days: number;
-  image: string;
-  level: number;
+export type getGroupMembersResponseType = {
+  members: Member[];
 };
-export type getGroupMembersResponseType = Member[];

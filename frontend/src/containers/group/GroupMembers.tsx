@@ -25,7 +25,7 @@ const GroupMembers = () => {
     };
   }, []);
 
-  if (memberList.length === 0) return <Loading />;
+  if (!memberList) return <Loading />;
   return (
     <Wrapper>
       <TitleWrapper>

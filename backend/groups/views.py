@@ -126,8 +126,8 @@ def group_members(request, group_id):
             gr_obj = Group.objects.get(id=int(group_id))
             if not gr_obj.members.filter(username=request.user.username):
                 return HttpResponse(status=403)
-            response_dict = list(gr_obj.members.values('id', 'username', 'image', 'level'))
-            return JsonResponse(response_dict, safe=False)
+            member_list = list(gr_obj.members.values('id', 'username', 'image', 'level'))
+            return JsonResponse({"members": member_list}, safe=False)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
         except Exception:
