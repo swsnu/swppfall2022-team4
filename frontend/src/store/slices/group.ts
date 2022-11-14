@@ -166,6 +166,19 @@ export const groupSlice = createSlice({
       state.groupAction.error = payload;
       alert(payload.response?.data.message);
     },
+    leaderChange: (state, action: PayloadAction<groupAPI.leaderChangeRequestType>) => {
+      state.groupAction.status = false;
+      state.groupMemberStatus.error = null;
+    },
+    leaderChangeSuccess: state => {
+      state.groupAction.status = true;
+      state.groupAction.error = null;
+    },
+    leaderChangeFailure: (state, { payload }) => {
+      state.groupAction.status = false;
+      state.groupAction.error = payload;
+      alert(payload.response?.data.message);
+    },
   },
 });
 export const groupActions = groupSlice.actions;
@@ -236,6 +249,15 @@ function* exitGroupSaga(action: PayloadAction<string>) {
   }
 }
 
+function* leaderChangeSaga(action: PayloadAction<groupAPI.leaderChangeRequestType>) {
+  try {
+    yield call(groupAPI.leaderChange, action.payload);
+    yield put(groupActions.exitGroupSuccess());
+  } catch (error) {
+    yield put(groupActions.exitGroupFailure(error));
+  }
+}
+
 export default function* groupSaga() {
   yield takeLatest(groupActions.getGroups, getGroupsSaga);
   yield takeLatest(groupActions.createGroup, createGroupSaga);
@@ -245,4 +267,5 @@ export default function* groupSaga() {
   yield takeLatest(groupActions.checkMemberStatus, checkMemberStatusSaga);
   yield takeLatest(groupActions.joinGroup, joinGroupSaga);
   yield takeLatest(groupActions.exitGroup, exitGroupSaga);
+  yield takeLatest(groupActions.leaderChange, leaderChangeSaga);
 }

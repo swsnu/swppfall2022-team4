@@ -34,6 +34,11 @@ export const exitGroup = async (payload: string) => {
   return response.data;
 };
 
+export const leaderChange = async (payload: leaderChangeRequestType) => {
+  const response = await client.post(`/api/group/${payload.group_id}/leader_change/`, payload);
+  return response.data;
+};
+
 export type Group = {
   id: number;
   group_name: string;
@@ -98,4 +103,9 @@ export type checkGroupMemberResponseType = {
 
 export type getGroupMembersResponseType = {
   members: Member[];
+};
+
+export type leaderChangeRequestType = {
+  group_id: string;
+  username: string;
 };

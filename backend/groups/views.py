@@ -184,3 +184,31 @@ def group_member_check(request, group_id):
         return HttpResponseNotFound()
     except Exception:
         return HttpResponseBadRequest()
+
+@require_http_methods(["POST"])
+def group_leader_change(request, group_id):
+    """
+    POST : change group leader
+    """
+    try:
+        gr_obj = Group.objects.get(id=int(group_id))
+        if gr_obj.group_leader.username != request.user.username:
+            HttpResponseBadRequest()
+    except Group.DoesNotExist:
+        return HttpResponseNotFound()
+    except Exception:
+        return HttpResponseBadRequest()
+    try:
+        req_data = json.loads(request.body.decode())
+        member_name = req_data["username"]
+        if not gr_obj.members.filter(username=member_name):
+            return HttpResponseBadRequest()
+        new_leader = User.objects.get(username=member_name)
+        gr_obj.group_leader = new_leader
+        gr_obj.save()
+        return HttpResponse(status=204)
+    except (KeyError, JSONDecodeError):
+        return HttpResponseBadRequest()
+    except Exception:
+        return HttpResponseBadRequest()
+

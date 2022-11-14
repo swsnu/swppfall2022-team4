@@ -8,6 +8,7 @@ import { groupActions } from 'store/slices/group';
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { MemberElement } from 'components/group/MemberElement';
+import { userActions } from 'store/slices/user';
 
 const GroupMembers = () => {
   const dispatch = useDispatch();
@@ -15,16 +16,19 @@ const GroupMembers = () => {
 
   const { group_id } = useParams<{ group_id: string }>();
   const memberList = useSelector((rootState: RootState) => rootState.group.groupMembers.members);
+  const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
+  const user = useSelector(({ user }: RootState) => user.user);
 
   useEffect(() => {
     if (group_id) {
       dispatch(groupActions.getGroupMembers(group_id));
+      dispatch(groupActions.checkMemberStatus(group_id));
     }
     return () => {
       dispatch(groupActions.stateRefresh());
     };
   }, []);
-
+  console.log(user);
   if (!memberList) return <Loading />;
   return (
     <Wrapper>
@@ -35,7 +39,16 @@ const GroupMembers = () => {
       </TitleWrapper>
 
       {memberList.map((me, index) => (
-        <MemberElement key={index} id={me.id} image={me.image} username={me.username} cert_days={7} level={me.level} />
+        <MemberElement
+          key={index}
+          id={me.id}
+          image={me.image}
+          username={me.username}
+          cert_days={7}
+          level={me.level}
+          leader={member_status === 'group_leader' ? true : false}
+          myself={user?.username === me.username ? true : false}
+        />
       ))}
     </Wrapper>
   );
