@@ -31,7 +31,6 @@ const Routine = () => {
 
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
   useEffect(() => {
@@ -43,7 +42,6 @@ const Routine = () => {
         }),
       );
     }
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [routine_id, routines]);
 
   return (

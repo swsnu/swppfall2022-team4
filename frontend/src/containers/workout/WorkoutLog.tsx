@@ -174,12 +174,10 @@ const WorkoutLog = () => {
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [createDailyLogStatus, pasteStatus]);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '연필 클릭 후 메모를 추가해 보세요.');
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
 
   useEffect(() => {
@@ -190,7 +188,6 @@ const WorkoutLog = () => {
         month: month + 1,
       }),
     );
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [isCopy, createDailyLogStatus]);
 
   useEffect(() => {
