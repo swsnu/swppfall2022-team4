@@ -3,13 +3,7 @@ import { RootState } from 'index';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import {
-  Main_SideWrapper,
-  PostContentWrapper,
-  PostPageWrapper,
-  SideBarWrapper,
-  TopElementWrapperWithoutPadding,
-} from './PostLayout';
+import { Main_SideWrapper, PostContentWrapper, PostPageWrapper, SideBarWrapper } from './PostLayout';
 import { TagClass, TagVisual } from 'store/apis/tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
@@ -21,9 +15,16 @@ interface IPropsColorButton {
   color?: string;
 }
 
+interface IPropsCharNum {
+  isFull: boolean;
+}
+
 const DEFAULT_OPTION = '$NONE$';
 const NEW_OPTION = '$NEW$';
 const SEARCH_OPTION = '$SEARCH$';
+
+const TITLE_CHAR_LIMIT = 60;
+const CONTENT_CHAR_LIMIT = 800;
 
 const getRandomColor = () => {
   return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
@@ -319,11 +320,37 @@ export const PostEditorLayout = (
     <PostPageWrapper>
       <PostContentWrapper>
         <TopElementWrapperWithoutPadding>
-          <TitleInput type="text" placeholder="제목" value={title} onChange={e => setTitle(e.target.value)} />
+          <TitleInput
+            type="text"
+            placeholder="제목"
+            value={title}
+            onChange={e => {
+              const charInput = e.target.value;
+              if (charInput.length <= TITLE_CHAR_LIMIT) setTitle(e.target.value);
+            }}
+          />
+          <TitleCharNum isFull={title.length >= TITLE_CHAR_LIMIT}>
+            {title.length} / {TITLE_CHAR_LIMIT}
+          </TitleCharNum>
         </TopElementWrapperWithoutPadding>
         <Main_SideWrapper>
           <ContentWrapper>
-            <ContentTextArea placeholder="내용" value={content} onChange={e => setContent(e.target.value)} />
+            <ContentTextWrapper>
+              <ContentTextArea
+                placeholder="내용"
+                value={content}
+                onChange={e => {
+                  const charInput = e.target.value;
+                  if (charInput.length <= CONTENT_CHAR_LIMIT) setContent(e.target.value);
+                }}
+              />
+              <ContentCharNum isFull={content.length >= CONTENT_CHAR_LIMIT}>
+                {content.length} / {CONTENT_CHAR_LIMIT}
+              </ContentCharNum>
+            </ContentTextWrapper>
+            <ContentOtherWrapper>
+              <div>Image</div>
+            </ContentOtherWrapper>
             <CreateBtnWrapper>
               <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
               <BlueBigActiveBtn onClick={confirmOnClick} disabled={title === '' || content === ''}>
@@ -340,6 +367,13 @@ export const PostEditorLayout = (
     </PostPageWrapper>
   );
 };
+
+const TopElementWrapperWithoutPadding = styled.div`
+  margin: 40px 0px 15px 0px;
+  width: 100%;
+  background-color: var(--fit-white);
+  position: relative;
+`;
 
 const ClickableSpan = styled.div`
   cursor: pointer;
@@ -470,9 +504,21 @@ const TitleInput = styled.input`
   border: none;
 `;
 
+const TitleCharNum = styled.span<IPropsCharNum>`
+  position: absolute;
+  right: 5px;
+  bottom: 3px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
+`;
+
 const ContentTextArea = styled.textarea`
   width: 100%;
-  height: 90%;
+  height: 100%;
   padding: 16px 30px;
   font-size: 20px;
   resize: none;
@@ -482,8 +528,7 @@ const ContentTextArea = styled.textarea`
 const CreateBtnWrapper = styled.div`
   width: 100%;
   height: 10%;
-  position: absolute;
-  bottom: -5px;
+  margin-top: 15px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -493,4 +538,26 @@ const ContentWrapper = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
+`;
+const ContentTextWrapper = styled.div`
+  width: 100%;
+  height: 60%;
+  position: relative;
+`;
+const ContentCharNum = styled.span<IPropsCharNum>`
+  position: absolute;
+  right: 10px;
+  bottom: 3px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
+`;
+const ContentOtherWrapper = styled.div`
+  width: 100%;
+  height: 30%;
+  position: relative;
+  background-color: aquamarine;
 `;
