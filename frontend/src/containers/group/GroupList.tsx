@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from 'index';
@@ -16,6 +16,8 @@ const GroupList = () => {
 
   const groupList = useSelector((rootState: RootState) => rootState.group.groupList.groups);
 
+  const [searchTerm, setSearchTerm] = useState('');
+
   useEffect(() => {
     dispatch(groupActions.getGroups());
     return () => {
@@ -28,7 +30,12 @@ const GroupList = () => {
     <Wrapper>
       <SearchWrapper>
         <BsSearch />
-        <SearchInput placeholder="그룹 검색..." />
+        <SearchInput
+          placeholder="그룹 검색..."
+          onChange={e => {
+            setSearchTerm(e.target.value);
+          }}
+        />
       </SearchWrapper>
       <Button1
         content="Create Group"
@@ -36,18 +43,26 @@ const GroupList = () => {
         style={{ width: '180px', alignSelf: 'end', marginRight: '10px' }}
       />
       <GroupListWrapper>
-        {groupList.map((groupelement, index) => (
-          <GroupElement
-            key={index}
-            id={groupelement.id}
-            group_name={groupelement.group_name}
-            number={groupelement.number}
-            start_date={groupelement.start_date}
-            end_date={groupelement.end_date}
-            member_number={groupelement.member_number}
-            clicked={() => navigate(`/group/detail/${groupelement.id}/`)}
-          />
-        ))}
+        {groupList
+          .filter(groupelement => {
+            if (searchTerm == '') {
+              return groupelement;
+            } else if (groupelement.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())) {
+              return groupelement;
+            }
+          })
+          .map((groupelement, index) => (
+            <GroupElement
+              key={index}
+              id={groupelement.id}
+              group_name={groupelement.group_name}
+              number={groupelement.number}
+              start_date={groupelement.start_date}
+              end_date={groupelement.end_date}
+              member_number={groupelement.member_number}
+              clicked={() => navigate(`/group/detail/${groupelement.id}/`)}
+            />
+          ))}
       </GroupListWrapper>
     </Wrapper>
   );
