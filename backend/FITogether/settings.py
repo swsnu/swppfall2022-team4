@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'daphne',
     'chats',
     'chatrooms',
+    'notifications',
     'informations',
     'tags',
     'comments',
