@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 import 'styles/color.css';
 import './modalTransition.css';
-import { ColumnCenterFlex } from './layout';
+import { ColumnCenterFlex, RowCenterFlex } from './layout';
 import { CSSTransition } from 'react-transition-group';
 import { UserInfo } from 'store/apis/post';
 import { GreenBigBtn } from './button';
 import { NavigateFunction } from 'react-router';
-import { useEffect } from 'react';
 
 interface IProps {
   left: number;
@@ -58,8 +57,10 @@ export const UserDetailModal = ({
             <Level>{userInfo.level} 레벨</Level>
             <Exp>{userInfo.exp} / 100</Exp>
           </UserLevelWrapper>
-
-          <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)}>프로필</GreenBigBtn>
+          <RowCenterFlex>
+            <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)}>프로필</GreenBigBtn>
+            <GreenBigBtn>채팅</GreenBigBtn>
+          </RowCenterFlex>
         </Divdiv>
       </ModalContent>
     </CSSTransition>
@@ -135,6 +136,23 @@ const UserLevelWrapper = styled(ColumnCenterFlex)`
   padding: 15px 20px;
 `;
 
+const UserName = styled.span`
+  font-size: 26px;
+  margin-bottom: 5px;
+`;
+const NickName = styled.span`
+  font-size: 18px;
+  color: var(--fit-disabled-gray);
+`;
+
+const Level = styled.span`
+  font-size: 18px;
+  margin-bottom: 8px;
+`;
+const Exp = styled.span`
+  font-size: 16px;
+`;
+
 export const UserDetailHorizontalModal = ({
   isActive,
   modalRef,
@@ -170,14 +188,17 @@ export const UserDetailHorizontalModal = ({
           </UserAvatarHorizontalWrapper>
           <HorizontalRightWrapper>
             <UserNameHorizontalWrapper>
-              <UserName>{userInfo.username}</UserName>
-              <NickName>{userInfo.username}</NickName>
+              <UserNameHorizontal>{userInfo.username}</UserNameHorizontal>
+              <NickNameHorizontal>{userInfo.username}</NickNameHorizontal>
             </UserNameHorizontalWrapper>
             <UserLevelHorizontalWrapper>
-              <Level>{userInfo.level} 레벨</Level>
-              <Exp>{userInfo.exp} / 100</Exp>
+              <LevelHorizontal>{userInfo.level} 레벨</LevelHorizontal>
+              <ExpHorizontal>{userInfo.exp} / 100</ExpHorizontal>
             </UserLevelHorizontalWrapper>
-            <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)}>프로필</GreenBigBtn>
+            <RowCenterFlex>
+              <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)}>프로필</GreenBigBtn>
+              <GreenBigBtn>채팅</GreenBigBtn>
+            </RowCenterFlex>
           </HorizontalRightWrapper>
         </DivdivHorizontal>
       </ModalHorizontalContent>
@@ -191,7 +212,19 @@ const UserHorizontalAvatar = styled.img`
   height: 120px;
   border-radius: 50%;
   cursor: pointer;
+
+  background-position: center;
+  background-size: cover;
 `;
+
+//   ${({ src, alt }) =>
+//     `
+//     title: ${alt}
+//     background-size: contain;
+//     background-position: center;
+//     background-image: url(${src});
+//   `}
+// `;
 
 const UserAvatarHorizontalWrapper = styled(ColumnCenterFlex)`
   width: 40%;
@@ -207,9 +240,9 @@ const ModalHorizontalContent = styled.div<IProps>`
   justify-content: center;
   align-items: center;
 
-  border-top-left-radius: 60px;
+  border-top-left-radius: 80px;
   border-top-right-radius: 15px;
-  border-bottom-left-radius: 60px;
+  border-bottom-left-radius: 80px;
   border-bottom-right-radius: 15px;
 
   ${({ left, top, width, height }) =>
@@ -253,12 +286,11 @@ const DivdivHorizontal = styled.div`
 
     // looks
     border-right-color: #fff;
-    filter: drop-shadow(0 -0.0625rem 0.0625rem rgba(0, 0, 0, 0.1));
   }
   /* Modal Shadow */
-  -webkit-box-shadow: 0 16px 60px rgba(0, 0, 0, 0.55);
-  -moz-box-shadow: 0 16px 60px rgba(0, 0, 0, 0.55);
-  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.55);
+  -webkit-box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
   -webkit-background-clip: padding-box;
   -moz-background-clip: padding-box;
   background-clip: padding-box;
@@ -268,6 +300,22 @@ const HorizontalRightWrapper = styled(ColumnCenterFlex)`
   width: 60%;
 `;
 
+const UserNameHorizontal = styled.span`
+  font-size: 25px;
+  margin-bottom: 5px;
+`;
+const NickNameHorizontal = styled.span`
+  font-size: 15px;
+  color: var(--fit-disabled-gray);
+`;
+
+const LevelHorizontal = styled.span`
+  font-size: 15px;
+  margin-bottom: 8px;
+`;
+const ExpHorizontal = styled.span`
+  font-size: 13px;
+`;
 // Shared -------------------------------------------------------------
 const UserAvatar = styled.img`
   border: 4px solid black;
@@ -275,21 +323,7 @@ const UserAvatar = styled.img`
   height: 120px;
   border-radius: 50%;
   cursor: pointer;
-`;
 
-const UserName = styled.span`
-  font-size: 26px;
-  margin-bottom: 5px;
-`;
-const NickName = styled.span`
-  font-size: 18px;
-  color: var(--fit-disabled-gray);
-`;
-
-const Level = styled.span`
-  font-size: 18px;
-  margin-bottom: 8px;
-`;
-const Exp = styled.span`
-  font-size: 16px;
+  background-position: center;
+  background-size: cover;
 `;
