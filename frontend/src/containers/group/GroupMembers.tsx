@@ -8,7 +8,6 @@ import { groupActions } from 'store/slices/group';
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { MemberElement } from 'components/group/MemberElement';
-import { userActions } from 'store/slices/user';
 
 const GroupMembers = () => {
   const dispatch = useDispatch();
