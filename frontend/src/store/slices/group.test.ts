@@ -87,7 +87,7 @@ const getGroupMembersResponse: groupApi.getGroupMembersResponseType = [
   },
 ];
 
-const GroupDetailResponse: groupApi.GroupDetail = {
+const GroupDetailResponse: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'test',
   number: 7,

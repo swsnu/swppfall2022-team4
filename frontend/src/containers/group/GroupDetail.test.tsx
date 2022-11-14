@@ -25,7 +25,7 @@ const fitelement1: groupApi.Fitelement = {
   time: 10,
 };
 
-const groupDetailResponse: groupApi.GroupDetail = {
+const groupDetailResponse: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'group_name',
   number: 10,
@@ -38,7 +38,7 @@ const groupDetailResponse: groupApi.GroupDetail = {
   goal: [fitelement1],
 };
 
-const nullResponse1: groupApi.GroupDetail = {
+const nullResponse1: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'group_name',
   number: 10,
@@ -51,7 +51,7 @@ const nullResponse1: groupApi.GroupDetail = {
   goal: [fitelement1],
 };
 
-const nullResponse2: groupApi.GroupDetail = {
+const nullResponse2: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'group_name',
   number: null,

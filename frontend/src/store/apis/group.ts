@@ -10,7 +10,7 @@ export const postGroup = async (payload: postGroupRequestType) => {
   return response.data;
 };
 export const getGroupDetail = async (payload: string) => {
-  const response = await client.get<GroupDetail>(`/api/group/${payload}/`);
+  const response = await client.get<getGroupDetailResponseType>(`/api/group/${payload}/`);
   return response.data;
 };
 export const deleteGroup = async (payload: string) => {
@@ -42,9 +42,6 @@ export type Group = {
   end_date: string | null;
   member_number: number;
 };
-export type getGroupsResponseType = {
-  groups: Group[];
-};
 
 export type Fitelement = {
   type: string;
@@ -55,6 +52,11 @@ export type Fitelement = {
   set: number;
   time: number;
 };
+
+export type getGroupsResponseType = {
+  groups: Group[];
+};
+
 export type postGroupRequestType = {
   group_name: string;
   number: number | null;
@@ -70,7 +72,7 @@ export type postGroupResponseType = {
   id: number;
 };
 
-export type GroupDetail = {
+export type getGroupDetailResponseType = {
   group_id: number;
   group_name: string;
   number: number | null;

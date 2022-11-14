@@ -14,7 +14,7 @@ interface GroupState {
     error: AxiosError | null;
   };
   groupDetail: {
-    group: groupAPI.GroupDetail | null;
+    group: groupAPI.getGroupDetailResponseType | null;
     error: AxiosError | null;
   };
   groupDelete: boolean;

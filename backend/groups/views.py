@@ -74,19 +74,20 @@ def group_detail(request, group_id):
             gr_obj = Group.objects.get(id=int(group_id))
             group_leader = User.objects.get(username=gr_obj.group_leader.username)
             response_dict = {
+                "group_id": gr_obj.id,
                 "group_name": gr_obj.group_name,
                 "number": gr_obj.number,
                 "start_date": gr_obj.start_date,
                 "end_date": gr_obj.end_date,
                 "description": gr_obj.description,
                 "free": gr_obj.free,
-                "member_number": gr_obj.member_number,
                 "group_leader": {
                     "username": group_leader.username,
                     "nickname": group_leader.nickname,
                     "image": group_leader.image,
                 },
                 "goal": list(gr_obj.goal.values()),
+                "member_number": gr_obj.member_number,
             }
             return JsonResponse(response_dict, status=200)
         except Group.DoesNotExist:
