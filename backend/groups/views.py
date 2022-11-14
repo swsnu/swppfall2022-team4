@@ -24,7 +24,8 @@ def general_group(request):
     else:  ## post
         try:
             req_data = json.loads(request.body.decode())
-            goal_list = req_data["goal"]
+            if(req_data['start_date'] > req_data['end_date']):
+                return HttpResponseBadRequest()
             group = Group(
                 group_name=req_data["group_name"],
                 number=req_data["number"],
@@ -34,6 +35,7 @@ def general_group(request):
                 free=req_data["free"],
                 group_leader=request.user,
             )
+            goal_list = req_data["goal"]
             group.save()
             group.members.add(request.user)
             group.member_number += 1
