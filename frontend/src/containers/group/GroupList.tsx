@@ -47,8 +47,8 @@ const GroupList = () => {
           .filter(groupelement => {
             if (searchTerm == '') {
               return groupelement;
-            } else if (groupelement.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())) {
-              return groupelement;
+            } else {
+              return groupelement.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
             }
           })
           .map((groupelement, index) => (
