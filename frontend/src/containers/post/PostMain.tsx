@@ -118,9 +118,9 @@ const PostMain = () => {
               ) : (
                 <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
               )}
-              <span>
+              <PostTitle>
                 {post.title} <span>[{post.comments_num}]</span>
-              </span>
+              </PostTitle>
               <span>{post.author.username}</span>
               <span>{post.like_num - post.dislike_num}</span>
               <span>{timeAgoFormat(post.created)}</span>
@@ -141,6 +141,11 @@ const PostMain = () => {
     </PostPageWrapper>
   );
 };
+
+const PostTitle = styled.span`
+  word-wrap: break-word;
+  word-break: break-all;
+`;
 
 const SideBarTitleWrapper = styled(RowCenterFlex)`
   width: 100%;

@@ -562,6 +562,8 @@ const ArticleBackBtn = styled.button`
 
 const ArticleTitle = styled.h1`
   font-size: 24px;
+  word-wrap: break-word;
+  word-break: break-all;
 `;
 
 const PostWritterWrapper = styled.div`
@@ -602,6 +604,8 @@ const ArticleBodyContent = styled.div`
   padding: 10px 20px;
   min-height: 360px;
   font-size: 16px;
+  word-wrap: break-word;
+  word-break: break-all;
 `;
 
 // Article Comment List
