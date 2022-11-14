@@ -106,7 +106,7 @@ def group_detail(request, group_id):
             if gr_obj.group_leader.username != request.user.username:
                 return HttpResponse(status=403)
             gr_obj.delete()
-            return JsonResponse({"message": "success"}, status=200)
+            return JsonResponse(status=204)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
         except Exception:
