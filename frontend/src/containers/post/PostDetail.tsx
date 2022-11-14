@@ -485,7 +485,7 @@ const ArticleDetailWrapper = styled.div`
   width: 100%;
   height: 100%;
   background-color: var(--fit-white);
-  position: relative;
+  /* position: relative; */
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
@@ -578,8 +578,6 @@ const PostWritterAvatar = styled(RowCenterFlex)`
   border-radius: 50%;
   margin-bottom: 5px;
   font-size: 8px;
-
-  position: relative;
 `;
 
 const PostWritterText = styled.span`
@@ -645,8 +643,6 @@ const CommentWritterAvatar = styled(RowCenterFlex)`
   height: 40px;
   border-radius: 50%;
   margin-bottom: 5px;
-  /* 
-  position: relative; */
 `;
 
 const UserAvatar = styled.img`

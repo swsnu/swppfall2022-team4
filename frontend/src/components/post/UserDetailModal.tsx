@@ -229,8 +229,8 @@ const ModalHorizontalContent = styled.div<HorizontalIProps>`
 
   ${({ left, top, width, height }) =>
     `
-    top: ${top - height - 110}px;
-    left: ${left + width - 130}px;
+    top: ${top - height}px;
+    left: ${left + width + 200 + 20}px;
   `}
 `;
 
@@ -264,8 +264,7 @@ const DivdivHorizontal = styled.div`
     height: 0;
     right: 99%;
     top: 40%;
-    /* transform: translate(-25%); */
-    border: 1.5rem solid transparent;
+    border: 20px solid transparent;
 
     // looks
     border-right-color: #fff;
