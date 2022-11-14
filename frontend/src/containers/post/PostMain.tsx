@@ -25,7 +25,16 @@ const PostMain = () => {
   const modalRef = useRef(null);
   const modalAnimRef = useRef(null);
 
+  // Disable modal when OnClickOutside
   useOnClickOutside(modalRef, () => setTagModalOpen(false), 'mousedown');
+  // Disable scroll when modal is active
+  useEffect(() => {
+    if (tagModalOpen) {
+      document.body.style.overflowY = 'hidden';
+    } else {
+      document.body.style.overflowY = 'unset';
+    }
+  }, [tagModalOpen]);
 
   const { postList, maxPage, searchKeyword, recentCommentPost, tagList } = useSelector(({ post, tag }: RootState) => ({
     postList: post.postList.posts,
