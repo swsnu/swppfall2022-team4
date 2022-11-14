@@ -6,6 +6,7 @@ import { CSSTransition } from 'react-transition-group';
 import { UserInfo } from 'store/apis/post';
 import { GreenBigBtn } from './button';
 import { NavigateFunction } from 'react-router';
+import { useEffect } from 'react';
 
 interface IProps {
   left: number;

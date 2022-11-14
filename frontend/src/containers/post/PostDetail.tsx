@@ -38,10 +38,6 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [postModalOpen, setPostModalOpen] = useState(false);
-  const [commentModalOpen, setCommentModalOpen] = useState(false);
-  const [commentModalDisable, setCommentModalDisable] = useState(false);
-  const [commentModalNum, setCommentModalNum] = useState('');
   const [commentList, setCommentList] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState('');
   const [commentReplyInput, setCommentReplyInput] = useState('');
@@ -50,12 +46,19 @@ const PostDetail = () => {
   const [replyActivated, setReplyActivated] = useState(false);
   const [editActivated, setEditActivated] = useState(false);
 
+  // --- Modal Configurations --------------------------------------------------------
+  const [postModalOpen, setPostModalOpen] = useState(false);
+  const [commentModalOpen, setCommentModalOpen] = useState(false);
+  const [commentModalDisable, setCommentModalDisable] = useState(false);
+  const [commentModalNum, setCommentModalNum] = useState('');
+
   const commentModalPivot = useRef<HTMLImageElement[]>([]);
   const postModalPivot = useRef<HTMLImageElement>(null);
   const postModalRef = useRef(null);
-  useOnClickOutside(postModalRef, () => setPostModalOpen(false), 'mousedown');
-
   const commentModalRef = useRef(null);
+
+  // Disable modal when OnClickOutside
+  useOnClickOutside(postModalRef, () => setPostModalOpen(false), 'mousedown');
   useOnClickOutside(
     commentModalRef,
     () => {
@@ -64,6 +67,22 @@ const PostDetail = () => {
     },
     'mousedown',
   );
+
+  // Disable scroll when modal is active
+  useEffect(() => {
+    const body = document.getElementById('articleDetailWrapper');
+    if (body) {
+      if (postModalOpen || commentModalOpen) {
+        document.body.style.overflowY = 'hidden';
+        body.style.overflowY = 'hidden';
+      } else {
+        document.body.style.overflowY = 'unset';
+        body.style.overflowY = 'auto';
+      }
+    }
+  }, [postModalOpen, commentModalOpen]);
+
+  // --- Modal Configurations End --------------------------------------------------------
 
   const user = useSelector(({ user }: RootState) => user.user);
   const { post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
@@ -339,7 +358,7 @@ const PostDetail = () => {
   };
 
   const PostDetailContent = (
-    <ArticleDetailWrapper>
+    <ArticleDetailWrapper id="articleDetailWrapper">
       {post ? (
         <ArticleItem>
           <ArticleBody>
