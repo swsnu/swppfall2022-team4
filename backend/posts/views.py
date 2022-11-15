@@ -96,7 +96,7 @@ def post_home(request):
             {
                 "page": query_args["page_num"],
                 "page_size": query_args["page_size"],
-                "page_total": ceil(Post.objects.count() / query_args["page_size"]),
+                "page_total": ceil(posts.count() / query_args["page_size"]),
                 "posts": posts_serial,
             },
             status=200,
