@@ -159,22 +159,26 @@ const Header = () => {
             )}
 
             <Notification open={notificationOpen}>
-              <NotificationText>알림</NotificationText>
-              {notificationList.slice(0, 4).map(x => (
-                <NotificationItem
-                  key={x.id}
-                  category={x.category}
-                  content={x.content}
-                  image={x.image}
-                  created={x.created}
-                  clicked={() => navigate(x.link)}
-                  clickedDelete={() => onDelete(x.id)}
-                />
-              ))}
-              {notificationList.length === 0 ? (
-                <div>새로운 알림이 없습니다.</div>
-              ) : (
-                <MoreNotification onClick={() => navigate('/notification')}>더 보기</MoreNotification>
+              {notificationOpen && (
+                <>
+                  <NotificationText>알림</NotificationText>
+                  {notificationList.slice(0, 4).map(x => (
+                    <NotificationItem
+                      key={x.id}
+                      category={x.category}
+                      content={x.content}
+                      image={x.image}
+                      created={x.created}
+                      clicked={() => navigate(x.link)}
+                      clickedDelete={() => onDelete(x.id)}
+                    />
+                  ))}
+                  {notificationList.length === 0 ? (
+                    <div>새로운 알림이 없습니다.</div>
+                  ) : (
+                    <MoreNotification onClick={() => navigate('/notification')}>더 보기</MoreNotification>
+                  )}
+                </>
               )}
             </Notification>
           </NotificationWrapper>
@@ -187,23 +191,25 @@ const Header = () => {
               data-testid="infoIcon"
             />
             <InfoPopUpWrapper open={infoOpen}>
-              <InfoImage src={process.env.REACT_APP_API_IMAGE + user.image} alt="profile" />
-              <InfoPopUpSmallWrapper>
-                <InfoPopUpNickname>{user.nickname}</InfoPopUpNickname>
-                {infoOpen && (
-                  <div style={{ display: 'flex' }}>
-                    <MypageButton onClick={() => navigate(`/profile/${user.username}`)} data-testid="mypageButton">
-                      <AiFillHome />
-                    </MypageButton>
-                    <ChatButton onClick={() => navigate(`/chat`)} data-testid="chatButton">
-                      <BsFillChatDotsFill />
-                    </ChatButton>
-                    <LogoutButton onClick={onLogout} data-testid="logoutButton">
-                      Logout
-                    </LogoutButton>
-                  </div>
-                )}
-              </InfoPopUpSmallWrapper>
+              {infoOpen && (
+                <>
+                  <InfoImage src={process.env.REACT_APP_API_IMAGE + user.image} alt="profile" />
+                  <InfoPopUpSmallWrapper>
+                    <InfoPopUpNickname>{user.nickname}</InfoPopUpNickname>
+                    <div style={{ display: 'flex' }}>
+                      <MypageButton onClick={() => navigate(`/profile/${user.username}`)} data-testid="mypageButton">
+                        <AiFillHome />
+                      </MypageButton>
+                      <ChatButton onClick={() => navigate(`/chat`)} data-testid="chatButton">
+                        <BsFillChatDotsFill />
+                      </ChatButton>
+                      <LogoutButton onClick={onLogout} data-testid="logoutButton">
+                        Logout
+                      </LogoutButton>
+                    </div>
+                  </InfoPopUpSmallWrapper>
+                </>
+              )}
             </InfoPopUpWrapper>
           </InfoWrapper>
         </IconWrapper>

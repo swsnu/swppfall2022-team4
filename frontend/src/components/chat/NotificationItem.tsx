@@ -19,9 +19,9 @@ const NotificationItem = ({ category, content, image, created, clicked, clickedD
         <Content>{content}</Content>
         <Created>{timeAgoFormat(created)}</Created>
       </ContentWrapper>
-      <div onClick={clickedDelete}>
+      <CloseButtonWrapper onClick={clickedDelete}>
         <CloseButton />
-      </div>
+      </CloseButtonWrapper>
     </Wrapper>
   );
 };
@@ -34,10 +34,6 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  svg {
-    width: 20px;
-    height: 20px;
-  }
 `;
 const ContentWrapper = styled.div`
   width: calc(100% - 24px);
@@ -68,6 +64,12 @@ const Created = styled.div`
   margin-top: 5px;
   font-size: 14px;
   color: #464646;
+`;
+const CloseButtonWrapper = styled.div`
+  svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
 `;
 const CloseButton = styled(AiOutlineClose)`
   color: #9d9d9d;
