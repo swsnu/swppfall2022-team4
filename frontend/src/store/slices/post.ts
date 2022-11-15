@@ -101,6 +101,7 @@ export const postSlice = createSlice({
     createPostSuccess: (state, { payload }) => {
       state.postCreate.post_id = payload.post_id;
       state.postCreate.status = true;
+      notificationSuccess('글', '글 쓰기에 성공하였습니다!');
     },
     createPostFailure: (state, { payload }) => {
       state.postCreate.status = false;
@@ -123,6 +124,7 @@ export const postSlice = createSlice({
     },
     deletePostSuccess: (state, { payload }) => {
       state.postDelete = true;
+      notificationSuccess('글', '글 삭제에 성공하였습니다!');
     },
     deletePostFailure: (state, { payload }) => {
       state.postDelete = false;

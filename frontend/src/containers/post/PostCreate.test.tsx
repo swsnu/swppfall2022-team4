@@ -10,6 +10,12 @@ import * as postAPI from '../../store/apis/post';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
 
+import { Store } from 'react-notifications-component';
+beforeEach(() => {
+  Store.addNotification = jest.fn();
+});
+afterAll(() => jest.restoreAllMocks());
+
 const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
 const simpleTagVisuals2: tagAPI.TagVisual[] = [{ id: '2', name: 'tagtagtag', color: '#101010' }];
 const simplePostID: postAPI.postIdentifyingType = {

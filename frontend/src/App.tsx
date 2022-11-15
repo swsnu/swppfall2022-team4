@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ReactNotifications } from 'react-notifications-component';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
@@ -125,7 +126,7 @@ const InsideComponent = () => {
         element={
           <Wrapper>
             <Header />
-
+            <ReactNotifications />
             <Routes>
               <Route path="" element={<Main />} />
 

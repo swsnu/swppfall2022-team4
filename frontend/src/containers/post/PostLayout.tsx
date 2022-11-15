@@ -1,4 +1,3 @@
-import { ReactNotifications } from 'react-notifications-component';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -21,7 +20,6 @@ export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX
   }, []);
   return (
     <PostPageWrapper>
-      <ReactNotifications />
       <PostContentWrapper>
         <TopElementWrapperWithoutPadding>
           <SearchForm

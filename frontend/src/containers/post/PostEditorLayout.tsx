@@ -1,4 +1,3 @@
-import { ReactNotifications } from 'react-notifications-component';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -318,7 +317,6 @@ export const PostEditorLayout = (
 
   return (
     <PostPageWrapper>
-      <ReactNotifications />
       <PostContentWrapper>
         <TopElementWrapperWithoutPadding>
           <TitleInput
