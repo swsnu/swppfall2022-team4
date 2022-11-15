@@ -5,7 +5,7 @@ import {
   iNotificationDismiss,
 } from 'react-notifications-component';
 
-const notification: {
+export const notification: {
   insert: NOTIFICATION_INSERTION;
   container: NOTIFICATION_CONTAINER;
   dismiss: iNotificationDismiss;
@@ -37,20 +37,20 @@ export const notificationFailure = (title: string, message: string) => {
   });
 };
 
-export const notificationInfo = (title: string, message: string) => {
-  Store.addNotification({
-    ...notification,
-    title: title,
-    message: message,
-    type: 'info',
-  });
-};
+// export const notificationInfo = (title: string, message: string) => {
+//   Store.addNotification({
+//     ...notification,
+//     title: title,
+//     message: message,
+//     type: 'info',
+//   });
+// };
 
-export const notificationWarning = (title: string, message: string) => {
-  Store.addNotification({
-    ...notification,
-    title: title,
-    message: message,
-    type: 'warning',
-  });
-};
+// export const notificationWarning = (title: string, message: string) => {
+//   Store.addNotification({
+//     ...notification,
+//     title: title,
+//     message: message,
+//     type: 'warning',
+//   });
+// };

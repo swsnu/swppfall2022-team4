@@ -186,9 +186,6 @@ describe('slices - posts', () => {
       [postActions.toggleCommentReply(createCommentReplyRequest), initialState],
       [postActions.toggleCommentEdit(editCommentRequest), initialState],
       [postActions.resetPost(), initialState],
-      // [postActions.createComment(createCommentRequest), initialState],
-      // [postActions.editComment(editCommentRequest), initialState],
-      // [postActions.deleteComment(deleteCommentRequest), initialState],
     ])('reducer', (action, state) => {
       const store = configureStore({
         reducer: rootReducer,
@@ -319,8 +316,8 @@ describe('slices - posts', () => {
     test('postFunc', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
-        .provide([[call(postAPI.postFunc, postFuncRequest), undefined]])
-        .put({ type: 'post/postFuncSuccess', payload: undefined })
+        .provide([[call(postAPI.postFunc, postFuncRequest), { type: 'like' }]])
+        .put({ type: 'post/postFuncSuccess', payload: { type: 'like' } })
         .dispatch({ type: 'post/postFunc', payload: postFuncRequest })
         .hasFinalState({
           ...initialState,
@@ -331,8 +328,8 @@ describe('slices - posts', () => {
     test('commentFunc', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
-        .provide([[call(commentAPI.commentFunc, commentFuncRequest), undefined]])
-        .put({ type: 'post/commentFuncSuccess', payload: undefined })
+        .provide([[call(commentAPI.commentFunc, commentFuncRequest), { type: 'like' }]])
+        .put({ type: 'post/commentFuncSuccess', payload: { type: 'like' } })
         .dispatch({ type: 'post/commentFunc', payload: commentFuncRequest })
         .hasFinalState({
           ...initialState,
@@ -347,6 +344,7 @@ describe('slices - posts', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
         .provide([[call(commentAPI.createComment, createCommentRequest), undefined]])
+        .put({ type: 'post/createCommentSuccess', payload: undefined })
         .dispatch({ type: 'post/createComment', payload: createCommentRequest })
         .hasFinalState(initialState)
         .silentRun();
@@ -355,6 +353,7 @@ describe('slices - posts', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
         .provide([[call(commentAPI.editComment, editCommentRequest), undefined]])
+        .put({ type: 'post/editCommentSuccess', payload: undefined })
         .dispatch({ type: 'post/editComment', payload: editCommentRequest })
         .hasFinalState(initialState)
         .silentRun();
@@ -363,6 +362,7 @@ describe('slices - posts', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
         .provide([[call(commentAPI.deleteComment, deleteCommentRequest), undefined]])
+        .put({ type: 'post/deleteCommentSuccess', payload: undefined })
         .dispatch({ type: 'post/deleteComment', payload: deleteCommentRequest })
         .hasFinalState(initialState)
         .silentRun();
@@ -480,6 +480,48 @@ describe('slices - posts', () => {
         .hasFinalState({
           ...initialState,
           postFunc: false,
+        })
+        .silentRun();
+    });
+    test('createComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.createComment, createCommentRequest), throwError(simpleError)]])
+        .put({ type: 'post/createCommentFailure', payload: simpleError })
+        .dispatch({ type: 'post/createComment', payload: createCommentRequest })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('editComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.editComment, editCommentRequest), throwError(simpleError)]])
+        .put({ type: 'post/editCommentFailure', payload: simpleError })
+        .dispatch({ type: 'post/editComment', payload: editCommentRequest })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('deleteComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.deleteComment, deleteCommentRequest), throwError(simpleError)]])
+        .put({ type: 'post/deleteCommentFailure', payload: simpleError })
+        .dispatch({ type: 'post/deleteComment', payload: deleteCommentRequest })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('commentFunc', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.commentFunc, commentFuncRequest), throwError(simpleError)]])
+        .put({ type: 'post/commentFuncFailure', payload: simpleError })
+        .dispatch({ type: 'post/commentFunc', payload: commentFuncRequest })
+        .hasFinalState({
+          ...initialState,
+          postComment: {
+            ...initialState.postComment,
+            commentFunc: true,
+          },
         })
         .silentRun();
     });

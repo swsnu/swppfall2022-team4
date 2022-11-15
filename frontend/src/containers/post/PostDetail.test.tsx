@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
+import { ReactNotifications, Store } from 'react-notifications-component';
 import { Provider } from 'react-redux';
 import Router from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
@@ -9,6 +10,7 @@ import PostDetail from './PostDetail';
 import * as commentAPI from '../../store/apis/comment';
 import userEvent from '@testing-library/user-event';
 import { simplePosts, simpleUserInfo } from 'store/slices/post.test';
+import { notification } from 'utils/sendNotification';
 
 const simpleSearch = {
   search_keyword: 'searchKeyword',
@@ -82,6 +84,12 @@ const simpleComments: commentAPI.Comment[] = [
 //   useOnClickOutside: () => mockOnClickOutside,
 // }));
 
+const addNotification = jest.fn();
+beforeEach(() => {
+  Store.addNotification = addNotification;
+});
+afterAll(() => jest.restoreAllMocks());
+
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -105,6 +113,7 @@ const setup = () => {
   });
   render(
     <Provider store={store}>
+      <ReactNotifications />
       <PostDetail />
     </Provider>,
   );
@@ -306,6 +315,20 @@ describe('[PostDetail Page]', () => {
       type: 'post/postFunc',
     });
 
+    act(() => {
+      store.dispatch({
+        type: 'post/postFuncSuccess',
+        payload: { type: 'like' },
+      });
+    });
+
+    expect(addNotification).toBeCalledWith({
+      ...notification,
+      title: 'Post',
+      message: '글 좋아요에 성공했어요!',
+      type: 'success',
+    });
+
     const postFuncDislike = screen.getByTestId('postFuncDislike');
     fireEvent.click(postFuncDislike);
     expect(mockDispatch).toBeCalledWith({
@@ -313,11 +336,53 @@ describe('[PostDetail Page]', () => {
       type: 'post/postFunc',
     });
 
+    act(() => {
+      store.dispatch({
+        type: 'post/postFuncSuccess',
+        payload: { type: 'dislike' },
+      });
+    });
+
+    expect(addNotification).toBeCalledWith({
+      ...notification,
+      title: 'Post',
+      message: '글 싫어요에 성공했어요!',
+      type: 'success',
+    });
+
     const postFuncScrap = screen.getByTestId('postFuncScrap');
     fireEvent.click(postFuncScrap);
     expect(mockDispatch).toBeCalledWith({
       payload: { post_id: simplePosts[1].post_id, func_type: 'scrap' },
       type: 'post/postFunc',
+    });
+
+    act(() => {
+      store.dispatch({
+        type: 'post/postFuncSuccess',
+        payload: { type: 'scrap' },
+      });
+    });
+
+    expect(addNotification).toBeCalledWith({
+      ...notification,
+      title: 'Post',
+      message: '글 스크랩에 성공했어요!',
+      type: 'success',
+    });
+
+    act(() => {
+      store.dispatch({
+        type: 'post/postFuncSuccess',
+        payload: { type: 'ddd' },
+      });
+    });
+
+    expect(addNotification).toBeCalledWith({
+      ...notification,
+      title: 'Post',
+      message: '글 [알 수 없음]에 성공했어요!',
+      type: 'success',
     });
 
     // Create

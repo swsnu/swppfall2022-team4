@@ -64,6 +64,19 @@ export const initialState: PostState = {
   postSearch: '',
 };
 
+const funcTypeToStr = (type: string) => {
+  switch (type) {
+    case 'like':
+      return '좋아요';
+    case 'dislike':
+      return '싫어요';
+    case 'scrap':
+      return '스크랩';
+    default:
+      return '[알 수 없음]';
+  }
+};
+
 export const postSlice = createSlice({
   name: 'post',
   initialState,
@@ -101,7 +114,7 @@ export const postSlice = createSlice({
     createPostSuccess: (state, { payload }) => {
       state.postCreate.post_id = payload.post_id;
       state.postCreate.status = true;
-      notificationSuccess('글', '글 쓰기에 성공하였습니다!');
+      notificationSuccess('Post', '글 쓰기에 성공했어요!');
     },
     createPostFailure: (state, { payload }) => {
       state.postCreate.status = false;
@@ -124,11 +137,11 @@ export const postSlice = createSlice({
     },
     deletePostSuccess: (state, { payload }) => {
       state.postDelete = true;
-      notificationSuccess('글', '글 삭제에 성공하였습니다!');
+      notificationSuccess('Post', '글 삭제에 성공했어요!');
     },
     deletePostFailure: (state, { payload }) => {
       state.postDelete = false;
-      alert('Delete failed');
+      notificationFailure('Post', '글 삭제에 실패했어요.');
     },
     // editPost ------------------------------------------------------------------------
     editPost: (state, action: PayloadAction<postAPI.editPostRequestType>) => {
@@ -136,10 +149,11 @@ export const postSlice = createSlice({
     },
     editPostSuccess: (state, { payload }) => {
       state.postEdit = true;
+      notificationSuccess('Post', '글 수정에 성공했어요!');
     },
     editPostFailure: (state, { payload }) => {
       state.postEdit = false;
-      alert('Edit failed');
+      notificationFailure('Post', '글 수정에 실패했어요.');
     },
     // getPostComment ------------------------------------------------------------------------
     getPostComment: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
@@ -158,16 +172,28 @@ export const postSlice = createSlice({
       //create!
     },
     createCommentSuccess: (state, { payload }) => {
-      notificationSuccess('댓글', '댓글 작성이 성공하였습니다!');
+      notificationSuccess('Comment', '댓글 작성에 성공했어요!');
     },
     createCommentFailure: (state, { payload }) => {
-      notificationFailure('댓글', '댓글 작성이 실패했어요.');
+      notificationFailure('Comment', '댓글 작성에 실패했어요.');
     },
     editComment: (state, action: PayloadAction<commentAPI.editCommentRequestType>) => {
       //edit!
     },
+    editCommentSuccess: (state, { payload }) => {
+      notificationSuccess('Comment', '댓글 수정에 성공했어요!');
+    },
+    editCommentFailure: (state, { payload }) => {
+      notificationFailure('Comment', '댓글 수정에 실패했어요.');
+    },
     deleteComment: (state, action: PayloadAction<commentAPI.commentIdentifyingRequestType>) => {
       //edit!
+    },
+    deleteCommentSuccess: (state, { payload }) => {
+      notificationSuccess('Comment', '댓글 삭제에 성공했어요!');
+    },
+    deleteCommentFailure: (state, { payload }) => {
+      notificationFailure('Comment', '댓글 삭제에 실패했어요.');
     },
     // postSearch ------------------------------------------------------------------------
     postSearch: (state, action: PayloadAction<postAPI.postSearchRequestType>) => {
@@ -209,16 +235,22 @@ export const postSlice = createSlice({
     },
     postFuncSuccess: (state, { payload }) => {
       state.postFunc = true;
+      notificationSuccess('Post', `글 ${funcTypeToStr(payload.type)}에 성공했어요!`);
     },
     postFuncFailure: (state, { payload }) => {
       state.postFunc = false;
-      alert('PostFunc failed');
+      notificationSuccess('Post', `요청하신 작업에 실패했어요.`);
     },
     commentFunc: (state, action: PayloadAction<commentAPI.commentFuncRequestType>) => {
       state.postComment.commentFunc = false;
     },
     commentFuncSuccess: (state, { payload }) => {
       state.postComment.commentFunc = true;
+      notificationSuccess('Comment', `댓글 ${funcTypeToStr(payload.type)}에 성공했어요!`);
+    },
+    commentFuncFailure: (state, { payload }) => {
+      state.postComment.commentFunc = true;
+      notificationFailure('Comment', `요청하신 작업에 실패했어요.`);
     },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
@@ -308,21 +340,19 @@ function* createCommentSaga(action: PayloadAction<commentAPI.createCommentReques
 
 function* editCommentSaga(action: PayloadAction<commentAPI.editCommentRequestType>) {
   try {
-    yield call(commentAPI.editComment, action.payload);
-    // const response: AxiosResponse = yield call(commentAPI.editComment, action.payload);
-    // yield put(postActions.createCommentSuccess(response));
+    const response: AxiosResponse = yield call(commentAPI.editComment, action.payload);
+    yield put(postActions.editCommentSuccess(response));
   } catch (error) {
-    // yield put(postActions.createCommentFailure(error));
+    yield put(postActions.editCommentFailure(error));
   }
 }
 
 function* deleteCommentSaga(action: PayloadAction<commentAPI.commentIdentifyingRequestType>) {
   try {
-    yield call(commentAPI.deleteComment, action.payload);
-    // const response: AxiosResponse = yield call(commentAPI.deleteComment, action.payload);
-    // yield put(postActions.createCommentSuccess(response));
+    const response: AxiosResponse = yield call(commentAPI.deleteComment, action.payload);
+    yield put(postActions.deleteCommentSuccess(response));
   } catch (error) {
-    // yield put(postActions.createCommentFailure(error));
+    yield put(postActions.deleteCommentFailure(error));
   }
 }
 
@@ -331,7 +361,7 @@ function* commentFuncSaga(action: PayloadAction<commentAPI.commentFuncRequestTyp
     const response: AxiosResponse = yield call(commentAPI.commentFunc, action.payload);
     yield put(postActions.commentFuncSuccess(response));
   } catch (error) {
-    // yield put(commentActions.editcommentFailure(error));
+    yield put(postActions.commentFuncFailure(error));
   }
 }
 
