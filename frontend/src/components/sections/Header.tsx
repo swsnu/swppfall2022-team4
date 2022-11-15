@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +16,16 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
 import { chatActions } from 'store/slices/chat';
+import { notificationActions } from 'store/slices/notification';
+import NotificationItem from 'components/chat/NotificationItem';
+
+const CATEGORY = [
+  { to: '/workout', text: '기록', icon: <HiOutlineDocumentReport /> },
+  { to: '/group', text: '그룹', icon: <HiUserGroup /> },
+  { to: '/post', text: '커뮤니티', icon: <HiOutlineAnnotation /> },
+  { to: '/place', text: '장소', icon: <HiPhotograph /> },
+  { to: '/information', text: '운동정보', icon: <HiInformationCircle /> },
+];
 
 const Header = () => {
   const navigate = useNavigate();
@@ -25,13 +36,14 @@ const Header = () => {
   const infoRef = useRef<HTMLDivElement>(null);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
-  const { user, notice, where } = useSelector((state: RootState) => ({
+  const { user, notificationList, where } = useSelector((state: RootState) => ({
     user: state.user.user,
-    notice: state.user.notice,
+    notificationList: state.notification.notificationList,
     where: state.chat.where,
   }));
 
   useEffect(() => {
+    if (user) dispatch(notificationActions.getNotificationList());
     if (!user) navigate('/login');
   }, [navigate, user]);
   useEffect(() => {
@@ -57,11 +69,11 @@ const Header = () => {
     };
   }, [infoRef]);
   useEffect(() => {
+    dispatch(chatActions.setWhere(location.pathname));
     window.scrollTo(0, 0);
     setNotificationOpen(false);
     setInfoOpen(false);
   }, [location]);
-
   const ws: React.MutableRefObject<WebSocket | null> = useRef(null);
   useEffect(() => {
     ws.current = new WebSocket(`ws://${process.env.REACT_APP_API_SOCKET_URL}/ws/chat/${user && user.username}/`);
@@ -76,46 +88,30 @@ const Header = () => {
       console.log(`CONNECTION ERROR`);
       console.log(error);
     };
-    ws.current.onmessage = e => {
-      const data = JSON.parse(e.data);
-      console.log(data, where, data.where.toString());
-      if (data.type === 'CHAT') {
-        if (where === null) {
-          console.log('ignore...');
-        } else if (where !== data.where.toString()) {
-          console.log('update list...');
-          dispatch(chatActions.getChatroomList());
-        } else {
-          console.log('update list and message...');
-          dispatch(chatActions.getChatroomList());
-          dispatch(chatActions.addMessage(data.data));
-        }
-      }
-    };
-
+    ws.current.onmessage = onMessage;
     return () => {
       if (ws && ws.current) ws.current.close();
     };
   }, []);
   useEffect(() => {
-    if (!ws.current) return;
-    ws.current.onmessage = e => {
-      const data = JSON.parse(e.data);
-      if (data.type === 'CHAT') {
-        if (where === null) {
-          console.log('ignore...');
-        } else if (where !== data.where.toString()) {
-          console.log('update list...');
-          dispatch(chatActions.getChatroomList());
-        } else {
-          console.log('update list and message...');
-          dispatch(chatActions.getChatroomList());
-          dispatch(chatActions.addMessage(data.data));
-        }
-      }
-    };
+    if (ws.current) ws.current.onmessage = onMessage;
   }, [where]);
 
+  const onMessage = (e: any) => {
+    const data = JSON.parse(e.data);
+    if (data.type === 'CHAT') {
+      if (where.substring(0, 5) !== '/chat') {
+        console.log('[CHAT] ignore...');
+      } else if (where === `/chat/${data.where.toString()}`) {
+        console.log('[CHAT] update list and message...');
+        dispatch(chatActions.getChatroomList());
+        dispatch(chatActions.addMessage(data.data));
+      } else {
+        console.log('[CHAT] update list...');
+        dispatch(chatActions.getChatroomList());
+      }
+    }
+  };
   const onLogout = () => {
     if (window.confirm('정말 로그아웃하시겠습니까?')) {
       dispatch(userActions.logout());
@@ -133,41 +129,21 @@ const Header = () => {
         </Title>
 
         <CategoryWrapper>
-          <Category to="/workout" className={nav}>
-            기록
-          </Category>
-          <Category to="/group" className={nav}>
-            그룹
-          </Category>
-          <Category to="/post" className={nav}>
-            커뮤니티
-          </Category>
-          <Category to="/place" className={nav}>
-            장소
-          </Category>
-          <Category to="/information" className={nav}>
-            운동정보
-          </Category>
-          <CategoryIcon to="/workout" className={nav}>
-            <HiOutlineDocumentReport />
-          </CategoryIcon>
-          <CategoryIcon to="/group" className={nav}>
-            <HiUserGroup />
-          </CategoryIcon>
-          <CategoryIcon to="/post" className={nav}>
-            <HiOutlineAnnotation />
-          </CategoryIcon>
-          <CategoryIcon to="/place" className={nav}>
-            <HiPhotograph />
-          </CategoryIcon>
-          <CategoryIcon to="/information" className={nav}>
-            <HiInformationCircle />
-          </CategoryIcon>
+          {CATEGORY.map(x => (
+            <Category key={x.text} to={x.to} className={nav}>
+              {x.text}
+            </Category>
+          ))}
+          {CATEGORY.map(x => (
+            <CategoryIcon key={x.text} to={x.to} className={nav}>
+              {x.icon}
+            </CategoryIcon>
+          ))}
         </CategoryWrapper>
 
         <IconWrapper>
           <NotificationWrapper ref={notificationRef}>
-            {notice.length > 0 ? (
+            {notificationList.length > 0 ? (
               <IoIosNotifications
                 onClick={() => setNotificationOpen(!notificationOpen)}
                 data-testid="notificationIcon"
@@ -178,8 +154,26 @@ const Header = () => {
                 data-testid="notificationIcon"
               />
             )}
-            <Notification open={notificationOpen}>{<div>알림</div>}</Notification>
+
+            <Notification open={notificationOpen}>
+              <NotificationText>알림</NotificationText>
+              {notificationList.slice(0, 4).map(x => (
+                <NotificationItem
+                  key={x.id}
+                  category={x.category}
+                  content={x.content}
+                  image={x.image}
+                  clicked={() => navigate(x.link)}
+                />
+              ))}
+              {notificationList.length === 0 ? (
+                <div>새로운 알림이 없습니다.</div>
+              ) : (
+                <MoreNotification onClick={() => navigate('/notification')}>더 보기</MoreNotification>
+              )}
+            </Notification>
           </NotificationWrapper>
+
           <InfoWrapper ref={infoRef}>
             <HeaderImage
               src={process.env.REACT_APP_API_IMAGE + user.image}
@@ -340,6 +334,7 @@ const IconWrapper = styled.div`
   align-items: center;
   gap: 15px;
 `;
+
 const NotificationWrapper = styled.div`
   position: relative;
   svg {
@@ -350,7 +345,7 @@ const NotificationWrapper = styled.div`
 `;
 const Notification = styled.div<{ open: boolean }>`
   position: absolute;
-  background-color: #eaffe9;
+  background-color: #f3fdf3;
   width: 270px;
   border-radius: 5px;
   top: 40px;
@@ -371,6 +366,29 @@ const Notification = styled.div<{ open: boolean }>`
   -khtml-user-select: none;
   user-select: none;
 `;
+const NotificationText = styled.div`
+  font-size: 20px;
+  font-weight: 600;
+  font-family: NanumSquareR;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #a7a7a7;
+  margin-bottom: 10px;
+`;
+const MoreNotification = styled.div`
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-family: NanumSquareR;
+  cursor: pointer;
+  margin-top: 15px;
+  color: #363636;
+  transition: color 0.15s linear;
+  &:hover {
+    color: #000000;
+    font-weight: 600;
+  }
+`;
+
 const InfoWrapper = styled.div`
   position: relative;
 `;
@@ -379,11 +397,12 @@ const HeaderImage = styled.img`
   height: 36px;
   border-radius: 5px;
   border: 1px solid black;
+  background-color: white;
   cursor: pointer;
 `;
 const InfoPopUpWrapper = styled.div<{ open: boolean }>`
   position: absolute;
-  background-color: #eaffe9;
+  background-color: #f2fff2;
   width: 250px;
   border-radius: 5px;
   top: 43px;
@@ -414,6 +433,7 @@ const InfoImage = styled.img`
   height: 72px;
   border-radius: 5px;
   border: 1px solid #b1b1b1;
+  background-color: white;
 `;
 const InfoPopUpSmallWrapper = styled.div`
   display: flex;

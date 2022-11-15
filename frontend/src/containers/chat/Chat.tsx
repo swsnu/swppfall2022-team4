@@ -24,18 +24,11 @@ const Chat = () => {
   }));
 
   useEffect(() => {
-    dispatch(chatActions.setWhere(id || 'lobby'));
     dispatch(chatActions.getChatroomList());
-    return () => {
-      dispatch(chatActions.setWhere(null));
-    };
   }, []);
   useEffect(() => {
     setInput('');
-    dispatch(chatActions.setWhere(id || 'lobby'));
-    if (id) {
-      dispatch(chatActions.getMessageList(id || ''));
-    }
+    if (id) dispatch(chatActions.getMessageList(id || ''));
   }, [id]);
   useEffect(() => {
     scrollEnd();

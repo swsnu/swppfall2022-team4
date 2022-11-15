@@ -24,8 +24,6 @@ interface UserState {
   editProfile: boolean;
   deleteProfile: boolean;
   profileError: AxiosError | null;
-
-  notice: string[];
 }
 export const initialState: UserState = {
   user: null,
@@ -41,8 +39,6 @@ export const initialState: UserState = {
   editProfile: false,
   deleteProfile: false,
   profileError: null,
-
-  notice: [],
 };
 
 export const userSlice = createSlice({

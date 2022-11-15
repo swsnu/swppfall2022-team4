@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -6,7 +7,7 @@ import * as chatAPI from 'store/apis/chat';
 
 interface ChatState {
   socket: any;
-  where: string | null;
+  where: string;
 
   create: {
     id: string | null;
@@ -19,7 +20,7 @@ interface ChatState {
 }
 export const initialState: ChatState = {
   socket: null,
-  where: null,
+  where: '/',
 
   create: {
     id: null,

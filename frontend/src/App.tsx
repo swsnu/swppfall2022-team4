@@ -17,6 +17,7 @@ import Signup from 'containers/user/Signup';
 import Mypage from 'containers/user/Mypage';
 import EditProfile from 'containers/user/EditProfile';
 import EditPassword from 'containers/user/EditPassword';
+import Notification from 'containers/user/Notification';
 
 import Chat from 'containers/chat/Chat';
 
@@ -130,6 +131,7 @@ const InsideComponent = () => {
               <Route path="profile/:username" element={<Mypage />} />
               <Route path="edit_profile" element={<EditProfile />} />
               <Route path="edit_password" element={<EditPassword />} />
+              <Route path="notification" element={<Notification />} />
 
               <Route path="chat" element={<Chat />} />
               <Route path="chat/:id" element={<Chat />} />

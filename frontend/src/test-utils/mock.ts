@@ -22,8 +22,9 @@ export const initialState: PreloadedState<RootState> = {
     editProfile: false,
     deleteProfile: false,
     profileError: null,
-
-    notice: [],
+  },
+  notification: {
+    notificationList: [],
   },
   post: {
     postList: {
@@ -89,7 +90,7 @@ export const initialState: PreloadedState<RootState> = {
   },
   chat: {
     socket: null,
-    where: null,
+    where: '/',
 
     create: {
       id: null,
