@@ -12,4 +12,5 @@ export type notificationType = {
   content: string;
   image: string;
   link: string;
+  created: string;
 };
