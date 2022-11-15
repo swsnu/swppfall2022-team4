@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
-import { postActions } from 'store/slices/post';
-import { useNavigate, useParams } from 'react-router-dom';
-import { PostEditorLayout } from './PostEditorLayout';
 import { TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
+import { postActions } from 'store/slices/post';
+import { PostEditorLayout } from './PostEditorLayout';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();

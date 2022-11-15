@@ -1,22 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { RootState } from 'index';
-import { postActions } from 'store/slices/post';
 import { useNavigate, useParams } from 'react-router-dom';
-import { timeAgoFormat } from 'utils/datetime';
-import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
-import { Comment } from 'store/apis/comment';
+import { useSelector, useDispatch } from 'react-redux';
+import { useOnClickOutside } from 'usehooks-ts';
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
-import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
-import 'styles/color.css';
+import { RootState } from 'index';
+import { timeAgoFormat } from 'utils/datetime';
+import { postActions } from 'store/slices/post';
+import { Comment } from 'store/apis/comment';
+import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
 import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
-import { useOnClickOutside } from 'usehooks-ts';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
+import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -277,7 +276,7 @@ const PostDetail = () => {
                   ref={el => (commentModalPivot.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)}
                   src={process.env.REACT_APP_API_IMAGE + comment.author.avatar}
                   onClick={() => {
-                    if (commentModalOpen === false && commentModalDisable == false) {
+                    if (!commentModalOpen && !commentModalDisable) {
                       setCommentModalNum(comment.comment_id);
                       setCommentModalOpen(true);
                       setCommentModalDisable(true);

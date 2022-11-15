@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useOnClickOutside } from 'usehooks-ts';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { getPostsRequestType } from 'store/apis/post';
 import { tagActions } from 'store/slices/tag';
 import { timeAgoFormat } from 'utils/datetime';
-import { PostPageWithSearchBar, PostPageWrapper, SideBarWrapper } from './PostLayout';
 import { BlueBigBtn } from 'components/post/button';
 import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
 import { ArticleItemGrid, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 import { TagDetailModal } from 'components/post/TagDetailModal';
-import { useOnClickOutside } from 'usehooks-ts';
+import { PostPageWithSearchBar, PostPageWrapper, SideBarWrapper } from './PostLayout';
 
 const PostMain = () => {
   const dispatch = useDispatch();

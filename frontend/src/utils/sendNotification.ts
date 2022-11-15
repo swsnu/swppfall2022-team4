@@ -17,7 +17,7 @@ const notification: {
   },
 };
 
-// success, danger,info, default, warning
+// success, danger, info, default, warning
 
 export const notificationSuccess = (title: string, message: string) => {
   Store.addNotification({
@@ -34,5 +34,23 @@ export const notificationFailure = (title: string, message: string) => {
     title: title,
     message: message,
     type: 'danger',
+  });
+};
+
+export const notificationInfo = (title: string, message: string) => {
+  Store.addNotification({
+    ...notification,
+    title: title,
+    message: message,
+    type: 'info',
+  });
+};
+
+export const notificationWarning = (title: string, message: string) => {
+  Store.addNotification({
+    ...notification,
+    title: title,
+    message: message,
+    type: 'warning',
   });
 };

@@ -1,15 +1,15 @@
-import { tagActions } from 'store/slices/tag';
-import { RootState } from 'index';
+import { ReactNotifications } from 'react-notifications-component';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Main_SideWrapper, PostContentWrapper, PostPageWrapper, SideBarWrapper } from './PostLayout';
-import { TagClass, TagVisual } from 'store/apis/tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
-import 'styles/color.css';
+import { RootState } from 'index';
+import { TagClass, TagVisual } from 'store/apis/tag';
+import { tagActions } from 'store/slices/tag';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn } from 'components/post/button';
 import { ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import { Main_SideWrapper, PostContentWrapper, PostPageWrapper, SideBarWrapper } from './PostLayout';
 
 interface IPropsColorButton {
   color?: string;
@@ -318,6 +318,7 @@ export const PostEditorLayout = (
 
   return (
     <PostPageWrapper>
+      <ReactNotifications />
       <PostContentWrapper>
         <TopElementWrapperWithoutPadding>
           <TitleInput

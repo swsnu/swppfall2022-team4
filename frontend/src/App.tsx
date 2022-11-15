@@ -6,6 +6,8 @@ import FugazOne from 'assets/fonts/FugazOne.ttf';
 import IBMPlexSansThaiLooped from 'assets/fonts/IBMPlexSansThaiLooped.ttf';
 import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 import Acme from 'assets/fonts/Acme.ttf';
+import 'react-notifications-component/dist/theme.css';
+import 'styles/color.css';
 
 import Header from 'components/sections/Header';
 import Footer from 'components/sections/Footer';

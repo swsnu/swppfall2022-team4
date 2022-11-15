@@ -1,13 +1,11 @@
 import { ReactNotifications } from 'react-notifications-component';
-import 'react-notifications-component/dist/theme.css';
-import 'styles/color.css';
-import { RootState } from 'index';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postActions } from 'store/slices/post';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { RootState } from 'index';
+import { postActions } from 'store/slices/post';
 import { ColumnCenterFlex, RowCenterFlex } from 'components/post/layout';
 
 interface IPropsSearchClear {
