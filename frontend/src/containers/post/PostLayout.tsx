@@ -1,3 +1,5 @@
+import { ReactNotifications } from 'react-notifications-component';
+import 'react-notifications-component/dist/theme.css';
 import 'styles/color.css';
 import { RootState } from 'index';
 import { useEffect, useState } from 'react';
@@ -21,6 +23,7 @@ export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX
   }, []);
   return (
     <PostPageWrapper>
+      <ReactNotifications />
       <PostContentWrapper>
         <TopElementWrapperWithoutPadding>
           <SearchForm

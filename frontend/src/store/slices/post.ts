@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as postAPI from 'store/apis/post';
 import * as commentAPI from 'store/apis/comment';
+import { notificationFailure, notificationSuccess } from 'utils/sendNotification';
 
 interface PostState {
   postList: {
@@ -154,8 +155,12 @@ export const postSlice = createSlice({
     createComment: (state, action: PayloadAction<commentAPI.createCommentRequestType>) => {
       //create!
     },
-    // createCommentSuccess: (state, { payload }) => {},
-    // createCommentFailure: (state, { payload }) => {},
+    createCommentSuccess: (state, { payload }) => {
+      notificationSuccess('댓글', '댓글 작성이 성공하였습니다!');
+    },
+    createCommentFailure: (state, { payload }) => {
+      notificationFailure('댓글', '댓글 작성이 실패했어요.');
+    },
     editComment: (state, action: PayloadAction<commentAPI.editCommentRequestType>) => {
       //edit!
     },
@@ -292,11 +297,10 @@ function* getPostCommentSaga(action: PayloadAction<postAPI.postIdentifyingType>)
 
 function* createCommentSaga(action: PayloadAction<commentAPI.createCommentRequestType>) {
   try {
-    yield call(commentAPI.createComment, action.payload);
-    // const response: AxiosResponse = yield call(commentAPI.createComment, action.payload);
-    // yield put(postActions.createCommentSuccess(response));
+    const response: AxiosResponse = yield call(commentAPI.createComment, action.payload);
+    yield put(postActions.createCommentSuccess(response));
   } catch (error) {
-    // yield put(postActions.createCommentFailure(error));
+    yield put(postActions.createCommentFailure(error));
   }
 }
 
