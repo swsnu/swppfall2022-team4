@@ -125,7 +125,7 @@ def comment_func(request, query_id):
                 comm_obj.disliker.add(user)
         else:
             return HttpResponseBadRequest()
-        return JsonResponse({"message": "success"}, status=200)
+        return JsonResponse({"type": type_of_work}, status=200)
     except (Comment.DoesNotExist, User.DoesNotExist):
         return HttpResponseNotFound()
 

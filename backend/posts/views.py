@@ -241,6 +241,6 @@ def post_func(request, query_id):
                 post_obj.scraper.add(user)
         else:
             return HttpResponseBadRequest()
-        return JsonResponse({"message": "success"}, status=200)
+        return JsonResponse({"type": type_of_work}, status=200)
     except (Post.DoesNotExist, User.DoesNotExist):
         return HttpResponseNotFound()
