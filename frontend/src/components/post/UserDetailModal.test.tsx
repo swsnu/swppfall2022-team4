@@ -6,6 +6,7 @@ import React from 'react';
 jest.mock('react-transition-group', () => ({
   ...jest.requireActual('react-transition-group'),
   CSSTransition: (elem: any) => {
+    // eslint-disable-next-line testing-library/no-node-access
     return <div>{elem.children.props.children}</div>;
   },
 }));
