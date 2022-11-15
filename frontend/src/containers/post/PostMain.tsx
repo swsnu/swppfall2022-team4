@@ -13,7 +13,7 @@ import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
 import { ArticleItemGrid, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
-import { TagDetailModal } from 'components/post/TagDetailModal';
+import TagDetailModal from 'components/post/TagDetailModal';
 import { PostMainLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
 
 const PostMain = () => {

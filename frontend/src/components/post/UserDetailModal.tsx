@@ -58,7 +58,9 @@ export const UserDetailModal = ({
             <Exp>{userInfo.exp} / 100</Exp>
           </UserLevelWrapper>
           <RowCenterFlex>
-            <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)}>프로필</GreenBigBtn>
+            <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)} data-testid="profileBtn">
+              프로필
+            </GreenBigBtn>
             <GreenBigBtn>채팅</GreenBigBtn>
           </RowCenterFlex>
         </Divdiv>
@@ -196,7 +198,9 @@ export const UserDetailHorizontalModal = ({
               <ExpHorizontal>{userInfo.exp} / 100</ExpHorizontal>
             </UserLevelHorizontalWrapper>
             <RowCenterFlex>
-              <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)}>프로필</GreenBigBtn>
+              <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)} data-testid="profileBtn">
+                프로필
+              </GreenBigBtn>
               <GreenBigBtn>채팅</GreenBigBtn>
             </RowCenterFlex>
           </HorizontalRightWrapper>

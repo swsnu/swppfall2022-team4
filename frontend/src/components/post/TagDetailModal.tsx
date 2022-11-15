@@ -6,17 +6,14 @@ import './modalTransition.css';
 import { RowCenterFlex } from './layout';
 import { CSSTransition } from 'react-transition-group';
 
-export const TagDetailModal = ({
-  isActive,
-  onClose,
-  modalRef,
-  modalAnimRef,
-}: {
+export interface TagDetailModalIprops {
   isActive: boolean;
   onClose: () => void;
   modalRef: React.MutableRefObject<null>;
   modalAnimRef: React.MutableRefObject<null>;
-}) => {
+}
+
+const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef }: TagDetailModalIprops) => {
   const closeHandler = () => {
     onClose?.();
   };
@@ -29,7 +26,7 @@ export const TagDetailModal = ({
             <ModalTitleWrapper>
               <ModalTitle>태그 자세히보기</ModalTitle>
               <ModalExitWrapper>
-                <ModalCloseBtn onClick={closeHandler}>
+                <ModalCloseBtn onClick={closeHandler} data-testid="tagModalCloseBtn">
                   <FontAwesomeIcon icon={faX} />
                 </ModalCloseBtn>
               </ModalExitWrapper>
@@ -107,3 +104,5 @@ const ModalCloseBtn = styled.div`
   width: fit-content;
   cursor: pointer;
 `;
+
+export default TagDetailModal;

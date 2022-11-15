@@ -10,6 +10,9 @@ import * as commentAPI from '../../store/apis/comment';
 import userEvent from '@testing-library/user-event';
 import { simplePosts, simpleUserInfo } from 'store/slices/post.test';
 
+const simpleSearch = {
+  search_keyword: 'searchKeyword',
+};
 const simpleComments: commentAPI.Comment[] = [
   {
     comment_id: '1',
@@ -72,6 +75,12 @@ const simpleComments: commentAPI.Comment[] = [
     post_id: '1',
   },
 ];
+
+// const mockOnClickOutside = jest.fn();
+// jest.mock('usehooks-ts', () => ({
+//   ...jest.requireActual('usehooks-ts'),
+//   useOnClickOutside: () => mockOnClickOutside,
+// }));
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -382,5 +391,48 @@ describe('[PostDetail Page]', () => {
         payload: { comments: [simpleComments[1], simpleComments[3]] },
       });
     });
+  });
+
+  test('search', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/postSearch',
+        payload: simpleSearch,
+      });
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search keyword');
+    userEvent.type(searchInput, 'sssss');
+    const searchClearBtn = screen.getByText('Clear');
+    fireEvent.click(searchClearBtn);
+    expect(searchInput).toHaveValue('');
+    userEvent.type(searchInput, 'sssss');
+    fireEvent.submit(searchInput);
+  });
+
+  test('modal test', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: simplePosts[0],
+      });
+      store.dispatch({
+        type: 'post/getPostCommentSuccess',
+        payload: { comments: [simpleComments[1], simpleComments[3]] },
+      });
+    });
+
+    const postAvatar = screen.getByAltText('postAvatar');
+    fireEvent.click(postAvatar);
+
+    const postCreateBtn = screen.getByText('글 쓰기');
+    fireEvent.click(postCreateBtn);
+
+    const commentAvatar = screen.getByAltText(`commentAvatar${simpleComments[1].comment_id}`);
+    fireEvent.click(commentAvatar);
   });
 });

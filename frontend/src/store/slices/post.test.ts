@@ -91,7 +91,7 @@ export const simpleComments: commentAPI.Comment[] = [
   {
     comment_id: '2',
     author: simpleUserInfo[1],
-    content: 'Comment Content2',
+    content: 'short',
     created: '2022-11-12',
     updated: '2022-11-12',
     like_num: 12,

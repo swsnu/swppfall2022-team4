@@ -57,7 +57,13 @@ const PostDetail = () => {
   const commentModalRef = useRef(null);
 
   // Disable modal when OnClickOutside
-  useOnClickOutside(postModalRef, () => setPostModalOpen(false), 'mousedown');
+  useOnClickOutside(
+    postModalRef,
+    () => {
+      setPostModalOpen(false);
+    },
+    'mousedown',
+  );
   useOnClickOutside(
     commentModalRef,
     () => {
@@ -282,7 +288,7 @@ const PostDetail = () => {
                       setCommentModalDisable(true);
                     }
                   }}
-                  alt="profile"
+                  alt={`commentAvatar${comment.comment_id}`}
                 />
                 {UserDetailHorizontalModal({
                   isActive: commentModalOpen && commentModalNum === comment.comment_id,
@@ -374,7 +380,7 @@ const PostDetail = () => {
                     ref={postModalPivot}
                     src={process.env.REACT_APP_API_IMAGE + post.author.avatar}
                     onClick={() => setPostModalOpen(true)}
-                    alt="profile"
+                    alt="postAvatar"
                   />
                   {UserDetailModal({
                     isActive: postModalOpen,

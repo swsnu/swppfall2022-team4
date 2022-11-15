@@ -10,6 +10,15 @@ import * as postAPI from '../../store/apis/post';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
 import { simpleComments, simplePosts, simpleTagVisuals } from 'store/slices/post.test';
+import { TagDetailModalIprops } from 'components/post/TagDetailModal';
+
+jest.mock('../../components/post/TagDetailModal.tsx', () => (props: TagDetailModalIprops) => (
+  <div data-testid="spyTagModal">
+    <button data-testid="spyTagModalDelete" onClick={props.onClose}>
+      delete
+    </button>
+  </div>
+));
 
 const simpleSearch = {
   search_keyword: 'searchKeyword',
@@ -21,9 +30,11 @@ const getPostsResponse: postAPI.getPostsResponseType = {
   page_size: 15,
   page_total: 5,
 };
+
 const getRecentCommentsResponse = {
   comments: simpleComments,
 };
+
 const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
     {
@@ -179,5 +190,21 @@ describe('[PostMain Page]', () => {
 
     const page4 = screen.getByText('4');
     fireEvent.click(page4);
+  });
+
+  test('modal test', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/getPostsSuccess',
+        payload: getPostsResponse,
+      });
+    });
+
+    const tagModal = screen.getByText('자세히보기');
+    fireEvent.click(tagModal);
+
+    const tagModalClose = screen.getByTestId('spyTagModalDelete');
+    fireEvent.click(tagModalClose);
   });
 });
