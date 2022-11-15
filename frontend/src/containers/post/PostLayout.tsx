@@ -6,12 +6,13 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { ColumnCenterFlex, RowCenterFlex } from 'components/post/layout';
+import { useNavigate } from 'react-router-dom';
 
 interface IPropsSearchClear {
   isActive?: boolean;
 }
 
-export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX.Element) => {
+export const PostMainLayout = (mainElement: JSX.Element, sideElement: JSX.Element) => {
   const postSearch = useSelector(({ post }: RootState) => post.postSearch);
   const [search, setSearch] = useState(postSearch);
   const dispatch = useDispatch();
@@ -64,6 +65,61 @@ export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX
   );
 };
 
+export const PostDetailLayout = (mainElement: JSX.Element, sideElement: JSX.Element) => {
+  const postSearch = useSelector(({ post }: RootState) => post.postSearch);
+  const [search, setSearch] = useState(postSearch);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  useEffect(() => {
+    setSearch(postSearch);
+  }, []);
+  return (
+    <PostPageWrapper>
+      <PostContentWrapper>
+        <TopElementWrapperWithoutPadding>
+          <SearchForm
+            onSubmit={e => {
+              e.preventDefault();
+              navigate(`/post`);
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: search,
+                }),
+              );
+            }}
+          >
+            <SearchIcon>
+              <FontAwesomeIcon icon={faSearch} />
+            </SearchIcon>
+            <SearchInput
+              placeholder="Search keyword"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            ></SearchInput>
+            <ClearSearchInput
+              isActive={search !== ''}
+              onClick={() => {
+                setSearch('');
+                dispatch(
+                  postActions.postSearch({
+                    search_keyword: '',
+                  }),
+                );
+              }}
+            >
+              Clear
+            </ClearSearchInput>
+          </SearchForm>
+        </TopElementWrapperWithoutPadding>
+        <Main_SideWrapper>
+          {mainElement}
+          {sideElement}
+        </Main_SideWrapper>
+      </PostContentWrapper>
+    </PostPageWrapper>
+  );
+};
+
 const SearchForm = styled.form`
   width: 100%;
   display: flex;
@@ -77,6 +133,7 @@ const SearchInput = styled.input`
   font-size: 15px;
   border: none;
 `;
+
 const ClearSearchInput = styled.span<IPropsSearchClear>`
   width: 5%;
   text-align: center;
@@ -87,6 +144,7 @@ const ClearSearchInput = styled.span<IPropsSearchClear>`
     display: none;
   `}
 `;
+
 const SearchIcon = styled(RowCenterFlex)`
   margin-left: 20px;
 `;

@@ -15,7 +15,7 @@ import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } fro
 import { TagBubble } from 'components/tag/tagbubble';
 import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
-import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
+import { PostDetailLayout, SideBarWrapper } from './PostLayout';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -469,7 +469,7 @@ const PostDetail = () => {
       <SideBarItem>사이드바 공간2</SideBarItem>
     </SideBarWrapper>
   );
-  return PostPageWithSearchBar(PostDetailContent, SideBar);
+  return PostDetailLayout(PostDetailContent, SideBar);
 };
 
 const TagBubbleWrapper = styled.div`

@@ -14,7 +14,7 @@ import { ArticleItemGrid, ColumnFlex, RowCenterFlex } from 'components/post/layo
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 import { TagDetailModal } from 'components/post/TagDetailModal';
-import { PostPageWithSearchBar, PostPageWrapper, SideBarWrapper } from './PostLayout';
+import { PostMainLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
 
 const PostMain = () => {
   const dispatch = useDispatch();
@@ -136,7 +136,7 @@ const PostMain = () => {
 
   return (
     <PostPageWrapper>
-      {PostPageWithSearchBar(MainContent, SideBar)}
+      {PostMainLayout(MainContent, SideBar)}
       {TagDetailModal({ isActive: tagModalOpen, onClose: () => setTagModalOpen(false), modalRef, modalAnimRef })}
     </PostPageWrapper>
   );
