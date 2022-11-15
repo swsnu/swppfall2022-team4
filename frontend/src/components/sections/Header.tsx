@@ -110,6 +110,9 @@ const Header = () => {
         console.log('[CHAT] update list...');
         dispatch(chatActions.getChatroomList());
       }
+    } else if (data.type === 'NOTIFICATION') {
+      console.log('[NOTIFICATION] get noticifation');
+      dispatch(notificationActions.getNotificationList());
     }
   };
   const onLogout = () => {

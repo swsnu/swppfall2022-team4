@@ -37,8 +37,9 @@ const PostDetail = () => {
   const navigate = useNavigate();
 
   const user = useSelector(({ user }: RootState) => user.user);
-  const { post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
-    ({ post }: RootState) => ({
+  const { socket, post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
+    ({ chat, post }: RootState) => ({
+      socket: chat.socket,
       post: post.postDetail.post,
       postComment: post.postComment.comments,
       postDeleteStatus: post.postDelete,
@@ -129,6 +130,22 @@ const PostDetail = () => {
           parent_comment: parent_comment ? parent_comment : 'none',
         }),
       );
+
+      if (post?.author_name !== user.username) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'comment',
+              target: [post?.author_name],
+              content: `${user.nickname}님이 댓글을 남겼습니다. "${parent_comment ? commentReplyInput : commentInput}"`,
+              image: user.image,
+              link: `post/${id}`,
+            },
+          }),
+        );
+      }
+
       dispatch(
         postActions.getPostComment({
           post_id: id,

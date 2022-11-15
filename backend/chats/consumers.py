@@ -3,6 +3,7 @@ import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from users.models import User
 from chatrooms.models import Chatroom, Message
+from notifications.models import Notification
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -59,11 +60,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-        elif data_type == "???":
+        elif data_type == "group":
             pass
 
-        elif data_type == "????":
-            pass
+        elif data_type == "notification":
+            for target_username in data["target"]:
+                if User.objects.filter(username=target_username).exists():
+                    Notification.objects.create(
+                        user=User.objects.get(username=target_username),
+                        category=data["category"],
+                        content=data["content"],
+                        image=data["image"],
+                        link=data["link"]
+                    )
+            await self.channel_layer.group_send(
+                "main",
+                {
+                    "type": "send_notification",
+                    "target": data["target"]
+                }
+            )
 
     async def send_chat(self, event):
         if self.username in event["target"]:
@@ -72,4 +88,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "type": "CHAT",
                 "where": event["room"],
                 "data": event["data"]
+            }))
+
+    async def send_notification(self, event):
+        if self.username in event["target"]:
+            print(self.username + "에게 알림 전달")
+            await self.send(text_data=json.dumps({
+                "type": "NOTIFICATION",
             }))
