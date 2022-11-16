@@ -1,9 +1,9 @@
 from django.contrib import admin
 from comments import admin as comment_admin
-from . import models
+from posts.models import Post, PostImage
 
 
-@admin.register(models.Post)
+@admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     """Post admin definition"""
 
@@ -22,7 +22,7 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = admin.ModelAdmin.list_filter + ("author", "created")
 
 
-@admin.register(models.PostImage)
+@admin.register(PostImage)
 class PostImageAdmin(admin.ModelAdmin):
     """Post Image admin definition"""
 

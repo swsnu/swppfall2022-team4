@@ -64,7 +64,7 @@ def prepare_post_response(post, is_detail, username):
         for image in list(post.images.all().values()):
             image_response.append(image["image"])
         response["images"] = image_response
-    
+
     return response
 
 
