@@ -30,31 +30,30 @@ const getRandomColor = () => {
   return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
 };
 
-interface IPropsPostEditor {
+export interface PostContent {
   title: string;
-  setTitle: (value: React.SetStateAction<string>) => void;
   content: string;
-  setContent: (value: React.SetStateAction<string>) => void;
-  cancelOnClick: () => void;
-  confirmOnClick: () => void;
-  selectedTags: TagVisual[];
-  setSelectedTags: (value: React.SetStateAction<TagVisual[]>) => void;
-  primeTag: TagVisual | undefined;
-  setPrimeTag: (value: React.SetStateAction<TagVisual | undefined>) => void;
+  tags: TagVisual[];
+  prime_tag: TagVisual | undefined;
+  images: string[];
 }
 
-export const PostEditorLayout = ({
-  title,
-  setTitle,
-  content,
-  setContent,
-  cancelOnClick,
-  confirmOnClick,
-  selectedTags,
-  setSelectedTags,
-  primeTag,
-  setPrimeTag,
-}: IPropsPostEditor) => {
+export const initialContent: PostContent = {
+  title: '',
+  content: '',
+  tags: [],
+  prime_tag: undefined,
+  images: [],
+};
+
+interface IPropsPostEditor {
+  postContent: PostContent;
+  setPostContent: (value: React.SetStateAction<PostContent>) => void;
+  cancelOnClick: () => void;
+  confirmOnClick: () => void;
+}
+
+export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, confirmOnClick }: IPropsPostEditor) => {
   const dispatch = useDispatch();
   const { tagList, tagSearch, tagCreate } = useSelector(({ tag }: RootState) => ({
     tagList: tag.tagList,
@@ -83,8 +82,36 @@ export const PostEditorLayout = ({
     setTagRandColor(getRandomColor());
   }, []);
   useEffect(() => {
-    if (tagCreate) setSelectedTags(s => [...s, { id: tagCreate?.id, name: tagCreate?.name, color: tagCreate?.color }]);
+    if (tagCreate) {
+      setPostContent(state => ({
+        ...state,
+        tags: [...state.tags, { id: tagCreate?.id, name: tagCreate?.name, color: tagCreate?.color }],
+      }));
+    }
   }, [tagCreate]);
+
+  const setContent = (content: string) =>
+    setPostContent(state => ({
+      ...state,
+      content,
+    }));
+  const setTitle = (title: string) =>
+    setPostContent(state => ({
+      ...state,
+      title,
+    }));
+  const setSelectedTags = (callback: (sim: TagVisual[]) => TagVisual[]) => {
+    const newSelectedTags = callback(postContent.tags);
+    setPostContent(state => ({
+      ...state,
+      tags: newSelectedTags,
+    }));
+  };
+  const setPrimeTag = (prime_tag: TagVisual | undefined) =>
+    setPostContent(state => ({
+      ...state,
+      prime_tag,
+    }));
 
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tagId = e.target.options[e.target.selectedIndex].value;
@@ -113,7 +140,7 @@ export const PostEditorLayout = ({
   const tagOnRemove = (e: React.MouseEvent) => {
     const tagId = e.currentTarget.getAttribute('data-value');
     setSelectedTags(s => s.filter(item => item.id != tagId));
-    if (primeTag && primeTag.id == tagId) {
+    if (postContent.prime_tag && postContent.prime_tag.id == tagId) {
       setPrimeTag(undefined);
     }
   };
@@ -253,7 +280,7 @@ export const PostEditorLayout = ({
   };
   const selectedTagsComponent = (
     <TagBubbleWrapper>
-      {selectedTags.map(tag => {
+      {postContent.tags.map(tag => {
         return (
           <TagBubble key={tag.id} color={tag.color}>
             <ClickableSpan data-testid={`selectedTag-${tag.id}`} onClick={() => setPrimeTag(tag)}>
@@ -269,10 +296,14 @@ export const PostEditorLayout = ({
   );
   const primeTagComponent = (
     <PrimeTagDivWrapper>
-      {primeTag ? (
-        <TagBubble color={primeTag.color}>
-          {primeTag.name}
-          <TagBubbleFunc data-testid={`selectedPrimeTagRemove`} onClick={primeTagOnRemove} data-value={primeTag.id}>
+      {postContent.prime_tag ? (
+        <TagBubble color={postContent.prime_tag.color}>
+          {postContent.prime_tag.name}
+          <TagBubbleFunc
+            data-testid={`selectedPrimeTagRemove`}
+            onClick={primeTagOnRemove}
+            data-value={postContent.prime_tag.id}
+          >
             <FontAwesomeIcon icon={faX} />
           </TagBubbleFunc>
         </TagBubble>
@@ -362,14 +393,14 @@ export const PostEditorLayout = ({
           <TitleInput
             type="text"
             placeholder="제목"
-            value={title}
+            value={postContent.title}
             onChange={e => {
               const charInput = e.target.value;
               if (charInput.length <= TITLE_CHAR_LIMIT) setTitle(e.target.value);
             }}
           />
-          <TitleCharNum isFull={title.length >= TITLE_CHAR_LIMIT}>
-            {title.length} / {TITLE_CHAR_LIMIT}
+          <TitleCharNum isFull={postContent.title.length >= TITLE_CHAR_LIMIT}>
+            {postContent.title.length} / {TITLE_CHAR_LIMIT}
           </TitleCharNum>
         </TopElementWrapperWithoutPadding>
         <Main_SideWrapper>
@@ -377,14 +408,14 @@ export const PostEditorLayout = ({
             <ContentTextWrapper>
               <ContentTextArea
                 placeholder="내용"
-                value={content}
+                value={postContent.content}
                 onChange={e => {
                   const charInput = e.target.value;
                   if (charInput.length <= CONTENT_CHAR_LIMIT) setContent(e.target.value);
                 }}
               />
-              <ContentCharNum isFull={content.length >= CONTENT_CHAR_LIMIT}>
-                {content.length} / {CONTENT_CHAR_LIMIT}
+              <ContentCharNum isFull={postContent.content.length >= CONTENT_CHAR_LIMIT}>
+                {postContent.content.length} / {CONTENT_CHAR_LIMIT}
               </ContentCharNum>
             </ContentTextWrapper>
             <ContentImageWrapper>
@@ -400,7 +431,10 @@ export const PostEditorLayout = ({
             <ContentOtherWrapper></ContentOtherWrapper>
             <CreateBtnWrapper>
               <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
-              <BlueBigActiveBtn onClick={confirmOnClick} disabled={title === '' || content === ''}>
+              <BlueBigActiveBtn
+                onClick={confirmOnClick}
+                disabled={postContent.title === '' || postContent.content === ''}
+              >
                 완료
               </BlueBigActiveBtn>
             </CreateBtnWrapper>

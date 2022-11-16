@@ -22,7 +22,7 @@ export const PostMainLayout = (mainElement: JSX.Element, sideElement: JSX.Elemen
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <TopElementWrapperWithoutPadding>
+        <TopWrapper>
           <SearchForm
             onSubmit={e => {
               e.preventDefault();
@@ -55,7 +55,7 @@ export const PostMainLayout = (mainElement: JSX.Element, sideElement: JSX.Elemen
               Clear
             </ClearSearchInput>
           </SearchForm>
-        </TopElementWrapperWithoutPadding>
+        </TopWrapper>
         <Main_SideWrapper>
           {mainElement}
           {sideElement}
@@ -76,7 +76,7 @@ export const PostDetailLayout = (mainElement: JSX.Element, sideElement: JSX.Elem
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <TopElementWrapperWithoutPadding>
+        <TopWrapper>
           <SearchForm
             onSubmit={e => {
               e.preventDefault();
@@ -110,7 +110,7 @@ export const PostDetailLayout = (mainElement: JSX.Element, sideElement: JSX.Elem
               Clear
             </ClearSearchInput>
           </SearchForm>
-        </TopElementWrapperWithoutPadding>
+        </TopWrapper>
         <Main_SideWrapper>
           {mainElement}
           {sideElement}
@@ -169,7 +169,7 @@ export const PostContentWrapper = styled(ColumnCenterFlex)`
   }
 `;
 
-export const TopElementWrapperWithoutPadding = styled.div`
+export const TopWrapper = styled.div`
   margin: 40px 0px 15px 0px;
   width: 100%;
   background-color: var(--fit-white);

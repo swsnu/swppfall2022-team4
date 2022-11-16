@@ -2,17 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
-import { TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
 import { postActions } from 'store/slices/post';
-import { PostEditorLayout } from './PostEditorLayout';
+import { initialContent, PostContent, PostEditorLayout } from './PostEditorLayout';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
-  const [primeTag, setPrimeTag] = useState<TagVisual | undefined>();
+
+  const [postContent, setPostContent] = useState<PostContent>(initialContent);
 
   const { post, postEditStatus, user } = useSelector(({ post, user }: RootState) => ({
     post: post.postDetail.post,
@@ -30,10 +27,13 @@ const PostEdit = () => {
   }, []);
   useEffect(() => {
     if (post) {
-      setTitle(post.title);
-      setContent(post.content);
-      setSelectedTags(post.tags);
-      setPrimeTag(post.prime_tag);
+      setPostContent(state => ({
+        ...state,
+        title: post.title,
+        content: post.content,
+        tags: post.tags,
+        prime_tag: post.prime_tag,
+      }));
     }
   }, [post]);
   useEffect(() => {
@@ -55,26 +55,17 @@ const PostEdit = () => {
     if (user && id) {
       dispatch(
         postActions.editPost({
+          ...postContent,
           post_id: id,
-          title: title,
-          content: content,
-          tags: selectedTags,
-          prime_tag: primeTag,
         }),
       );
     }
   };
   return PostEditorLayout({
-    title,
-    setTitle,
-    content,
-    setContent,
+    postContent,
+    setPostContent,
     cancelOnClick,
     confirmOnClick,
-    selectedTags,
-    setSelectedTags,
-    primeTag,
-    setPrimeTag,
   });
 };
 

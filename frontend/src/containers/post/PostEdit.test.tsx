@@ -110,6 +110,7 @@ describe('[PostEdit Page]', () => {
         title: 'Rullu',
         content: 'Ralla',
         tags: [],
+        images: [],
         prime_tag: undefined,
       },
       type: 'post/editPost',

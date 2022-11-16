@@ -114,7 +114,14 @@ describe('[PostCreate Page]', () => {
     fireEvent.click(confirmBtn);
     expect(mockDispatch).toBeCalledTimes(2);
     expect(mockDispatch).toBeCalledWith({
-      payload: { title: 'Rullu', content: 'Ralla', author_name: 'username', tags: [], prime_tag: undefined },
+      payload: {
+        title: 'Rullu',
+        content: 'Ralla',
+        author_name: 'username',
+        tags: [],
+        images: [],
+        prime_tag: undefined,
+      },
       type: 'post/createPost',
     });
   });
