@@ -20,3 +20,10 @@ class PostAdmin(admin.ModelAdmin):
 
     inlines = (comment_admin.CommentInlineAdmin,)
     list_filter = admin.ModelAdmin.list_filter + ("author", "created")
+
+
+@admin.register(models.PostImage)
+class PostImageAdmin(admin.ModelAdmin):
+    """Post Image admin definition"""
+
+    list_display = ("pk", "image", "post")

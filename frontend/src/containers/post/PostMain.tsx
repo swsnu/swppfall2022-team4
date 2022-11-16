@@ -15,6 +15,8 @@ import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 import TagDetailModal from 'components/post/TagDetailModal';
 import { PostMainLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImage } from '@fortawesome/free-regular-svg-icons';
 
 const PostMain = () => {
   const dispatch = useDispatch();
@@ -119,7 +121,7 @@ const PostMain = () => {
                 <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
               )}
               <PostTitle>
-                {post.title} <span>[{post.comments_num}]</span>
+                {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
               </PostTitle>
               <span>{post.author.username}</span>
               <span>{post.like_num - post.dislike_num}</span>

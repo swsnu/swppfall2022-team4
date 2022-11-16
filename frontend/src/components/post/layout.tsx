@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import '../../styles/color.css';
 
 // Used in PostMain.tsx
 export const ArticleItemGrid = styled.div`

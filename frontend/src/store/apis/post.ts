@@ -43,12 +43,15 @@ export type Post = {
   scrap_num: number;
   comments_num: number;
 
-  tags: TagVisual[];
   prime_tag: TagVisual | undefined;
+  has_image: boolean;
 
+  // For detailed
+  tags: TagVisual[];
   liked?: boolean;
   disliked?: boolean;
   scraped?: boolean;
+  images?: string[];
 };
 
 export type getPostsRequestType = {

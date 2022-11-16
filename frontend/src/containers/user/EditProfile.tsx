@@ -92,6 +92,7 @@ const EditProfile = () => {
       dispatch(userActions.signout(user.username));
     }
   };
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const onChangeProfileImage = async (e: any) => {
     const file = e.target.files[0];
     const formData = new FormData();

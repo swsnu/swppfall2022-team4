@@ -42,7 +42,7 @@ const PostCreate = () => {
       );
     }
   };
-  return PostEditorLayout(
+  return PostEditorLayout({
     title,
     setTitle,
     content,
@@ -53,7 +53,7 @@ const PostCreate = () => {
     setSelectedTags,
     primeTag,
     setPrimeTag,
-  );
+  });
 };
 
 export default PostCreate;

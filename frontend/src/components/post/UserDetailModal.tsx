@@ -1,6 +1,4 @@
 import styled from 'styled-components';
-import 'styles/color.css';
-import './modalTransition.css';
 import { ColumnCenterFlex, RowCenterFlex } from './layout';
 import { CSSTransition } from 'react-transition-group';
 import { UserInfo } from 'store/apis/post';

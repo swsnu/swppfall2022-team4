@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import '../../styles/color.css';
 
 export const BtnBlueprint = styled.button`
   padding: 0px;

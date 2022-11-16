@@ -9,6 +9,7 @@ import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 import Acme from 'assets/fonts/Acme.ttf';
 import 'styles/react-notification-custom.css';
 import 'styles/color.css';
+import 'styles/modalTransition.css';
 
 import Header from 'components/sections/Header';
 import Footer from 'components/sections/Footer';

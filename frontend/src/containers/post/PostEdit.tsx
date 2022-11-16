@@ -64,7 +64,7 @@ const PostEdit = () => {
       );
     }
   };
-  return PostEditorLayout(
+  return PostEditorLayout({
     title,
     setTitle,
     content,
@@ -75,7 +75,7 @@ const PostEdit = () => {
     setSelectedTags,
     primeTag,
     setPrimeTag,
-  );
+  });
 };
 
 export default PostEdit;

@@ -33,6 +33,7 @@ def prepare_post_response(post, is_detail, username):
         "scrap_num": post.get_scrap_num(),
         "comments_num": post.comments.count(),
         "prime_tag": None,
+        "has_image": post.images.count() > 0,
     }
 
     if post.prime_tag:
@@ -58,6 +59,12 @@ def prepare_post_response(post, is_detail, username):
                 }
             )
         response["tags"] = tag_response
+
+        image_response = []
+        for image in list(post.images.all().values()):
+            image_response.append(image["image"])
+        response["images"] = image_response
+    
     return response
 
 

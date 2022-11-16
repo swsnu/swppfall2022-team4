@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
+import { faDice, faImage, faX } from '@fortawesome/free-solid-svg-icons';
 import { RootState } from 'index';
 import { TagClass, TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
+import client from 'store/apis/client';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn } from 'components/post/button';
-import { ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { Main_SideWrapper, PostContentWrapper, PostPageWrapper, SideBarWrapper } from './PostLayout';
 
 interface IPropsColorButton {
@@ -29,18 +30,31 @@ const getRandomColor = () => {
   return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
 };
 
-export const PostEditorLayout = (
-  title: string,
-  setTitle: (value: React.SetStateAction<string>) => void,
-  content: string,
-  setContent: (value: React.SetStateAction<string>) => void,
-  cancelOnClick: () => void,
-  confirmOnClick: () => void,
-  selectedTags: TagVisual[],
-  setSelectedTags: (value: React.SetStateAction<TagVisual[]>) => void,
-  primeTag: TagVisual | undefined,
-  setPrimeTag: (value: React.SetStateAction<TagVisual | undefined>) => void,
-) => {
+interface IPropsPostEditor {
+  title: string;
+  setTitle: (value: React.SetStateAction<string>) => void;
+  content: string;
+  setContent: (value: React.SetStateAction<string>) => void;
+  cancelOnClick: () => void;
+  confirmOnClick: () => void;
+  selectedTags: TagVisual[];
+  setSelectedTags: (value: React.SetStateAction<TagVisual[]>) => void;
+  primeTag: TagVisual | undefined;
+  setPrimeTag: (value: React.SetStateAction<TagVisual | undefined>) => void;
+}
+
+export const PostEditorLayout = ({
+  title,
+  setTitle,
+  content,
+  setContent,
+  cancelOnClick,
+  confirmOnClick,
+  selectedTags,
+  setSelectedTags,
+  primeTag,
+  setPrimeTag,
+}: IPropsPostEditor) => {
   const dispatch = useDispatch();
   const { tagList, tagSearch, tagCreate } = useSelector(({ tag }: RootState) => ({
     tagList: tag.tagList,
@@ -57,6 +71,8 @@ export const PostEditorLayout = (
 
   const [tagRandColor, setTagRandColor] = useState(''); // Random Color for Tag Class creation
   const [tagUpdate, setTagUpdate] = useState(0);
+
+  const [images, setImages] = useState<string[]>([]);
 
   const [currentTagClass, setCurrentTagClass] = useState<TagClass | null>(null);
 
@@ -315,6 +331,30 @@ export const PostEditorLayout = (
     </PrimeTagWrapper>
   );
 
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const uploadPostImage = async (e: any) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+      const result = await client.post(process.env.REACT_APP_API_IMAGE_UPLOAD || '', formData);
+      setImages(images => [...images, result.data.title]);
+    } catch (error) {
+      alert('이미지 업로드 오류');
+    }
+  };
+
+  const PostImagePlaceholder = () => (
+    <PostImageBtn
+      onClick={() => {
+        document.getElementById('FileInput_PostContent')?.click();
+      }}
+    >
+      <FontAwesomeIcon icon={faImage} />
+      <span>이미지 추가</span>
+    </PostImageBtn>
+  );
+
   return (
     <PostPageWrapper>
       <PostContentWrapper>
@@ -347,9 +387,17 @@ export const PostEditorLayout = (
                 {content.length} / {CONTENT_CHAR_LIMIT}
               </ContentCharNum>
             </ContentTextWrapper>
-            <ContentOtherWrapper>
-              <div>Image</div>
-            </ContentOtherWrapper>
+            <ContentImageWrapper>
+              <SectionTitle>Image</SectionTitle>
+              <ImageSection>
+                {images.map(img => (
+                  <PostUploadedImage src={process.env.REACT_APP_API_IMAGE + img} />
+                ))}
+                <PostImagePlaceholder />
+              </ImageSection>
+              <FileInput type="file" id="FileInput_PostContent" onChange={uploadPostImage} />
+            </ContentImageWrapper>
+            <ContentOtherWrapper></ContentOtherWrapper>
             <CreateBtnWrapper>
               <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
               <BlueBigActiveBtn onClick={confirmOnClick} disabled={title === '' || content === ''}>
@@ -366,6 +414,45 @@ export const PostEditorLayout = (
     </PostPageWrapper>
   );
 };
+
+const PostImageBtn = styled(ColumnCenterFlex)`
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  background-color: var(--fit-disabled-gray);
+  padding: 10px 10px;
+  border-radius: 15px;
+  margin: 5px 5px;
+  cursor: pointer;
+  svg {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+`;
+
+const SectionTitle = styled.span`
+  width: 100%;
+  font-size: 20px;
+`;
+const ImageSection = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+`;
+
+const PostUploadedImage = styled.img`
+  width: 120px;
+  height: 120px;
+  background-color: var(--fit-disabled-gray);
+  border-radius: 15px;
+  margin: 5px 5px;
+
+  background-size: contain;
+`;
+
+const FileInput = styled.input`
+  display: none;
+`;
 
 const TopElementWrapperWithoutPadding = styled.div`
   margin: 40px 0px 15px 0px;
@@ -542,6 +629,7 @@ const ContentTextWrapper = styled.div`
   width: 100%;
   height: 60%;
   position: relative;
+  border-bottom: 1px solid gray;
 `;
 const ContentCharNum = styled.span<IPropsCharNum>`
   position: absolute;
@@ -554,9 +642,17 @@ const ContentCharNum = styled.span<IPropsCharNum>`
       color: var(--fit-red-neg-hover);
     `}
 `;
+const ContentImageWrapper = styled(ColumnCenterFlex)`
+  justify-content: flex-start;
+  width: 100%;
+  height: 20%;
+  position: relative;
+  background-color: var(--fit-white);
+  border-bottom: 1px solid gray;
+`;
 const ContentOtherWrapper = styled.div`
   width: 100%;
-  height: 30%;
+  height: 10%;
   position: relative;
   background-color: aquamarine;
 `;
