@@ -13,14 +13,15 @@ export const getMessageList = async (roomId: string) => {
   const response = await client.get<messageType[]>(`/api/chat/${roomId}/`);
   return response.data;
 };
+export const getGroupMessageList = async (groupId: string) => {
+  const response = await client.get<messageType[]>(`/api/chat/group/${groupId}/`);
+  return response.data;
+};
 
 export type chatroomType = {
   id: number;
-  user: {
-    username: string;
-    nickname: string;
-    image: string;
-  } | null;
+  user: userType | null;
+  new: boolean;
 };
 export type messageType = {
   id: number;

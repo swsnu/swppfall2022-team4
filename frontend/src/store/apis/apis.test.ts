@@ -1,10 +1,11 @@
 import client from './client';
 import * as userAPI from './user';
 import * as chatAPI from './chat';
+import * as notificationAPI from './notification';
 import * as postAPI from './post';
 import * as commentAPI from './comment';
 import * as tagAPI from './tag';
-import * as groupApi from './group';
+import * as groupAPI from './group';
 import * as workoutAPI from './workout';
 
 beforeEach(() => {
@@ -107,7 +108,7 @@ const searchTagRequest: tagAPI.searchTagRequestType = {
 };
 
 //Group dummy.
-const fitelement1: groupApi.Fitelement = {
+const fitelement1: groupAPI.Fitelement = {
   type: 'goal',
   workout_type: 'test',
   category: ' test',
@@ -117,7 +118,7 @@ const fitelement1: groupApi.Fitelement = {
   time: 10,
 };
 
-const postGroupRequest: groupApi.postGroupRequestType = {
+const postGroupRequest: groupAPI.postGroupRequestType = {
   group_name: 'post_group',
   number: 7,
   start_date: '2019-01-01',
@@ -210,7 +211,7 @@ const createRoutineWithFitElementsRequest: workoutAPI.createRoutineWithFitElemen
   fitelements: [],
 };
 
-describe('User API TEST', () => {
+describe('API TEST', () => {
   describe('User', () => {
     test('token', async () => {
       const result = await userAPI.token();
@@ -261,6 +262,24 @@ describe('User API TEST', () => {
     test('getMessageList', async () => {
       const result = await chatAPI.getMessageList('1234');
       expect(result).toBe(`/api/chat/1234/`);
+    });
+    test('getGroupMessageList', async () => {
+      const result = await chatAPI.getGroupMessageList('1234');
+      expect(result).toBe(`/api/chat/group/1234/`);
+    });
+  });
+  describe('Notification', () => {
+    test('getNotificationList', async () => {
+      const result = await notificationAPI.getNotificationList();
+      expect(result).toBe(`/api/notification/`);
+    });
+    test('deleteAllNotification', async () => {
+      const result = await notificationAPI.deleteAllNotification();
+      expect(result).toBe(`/api/notification/`);
+    });
+    test('deleteNotification', async () => {
+      const result = await notificationAPI.deleteNotification('1234');
+      expect(result).toBe(`/api/notification/1234/`);
     });
   });
   describe('Post', () => {
@@ -404,37 +423,37 @@ describe('User API TEST', () => {
 describe('Group API TEST', () => {
   describe('Group', () => {
     it('group list', async () => {
-      const res = await groupApi.getGroups();
+      const res = await groupAPI.getGroups();
       expect(res).toBe(`/api/group/`);
     });
     it('post group', async () => {
-      const res = await groupApi.postGroup(postGroupRequest);
+      const res = await groupAPI.postGroup(postGroupRequest);
       expect(res).toBe(`/api/group/`);
     });
     it('get group detail', async () => {
-      const res = await groupApi.getGroupDetail('1');
+      const res = await groupAPI.getGroupDetail('1');
       expect(res).toBe(`/api/group/1/`);
     });
     it('delete group', async () => {
-      const res = await groupApi.deleteGroup('1');
+      const res = await groupAPI.deleteGroup('1');
       expect(res).toBe(`/api/group/1/`);
     });
   });
   describe('Group Member', () => {
     it('check member status', async () => {
-      const res = await groupApi.checkGroupMember('1');
+      const res = await groupAPI.checkGroupMember('1');
       expect(res).toBe(`/api/group/1/mem_check/`);
     });
     it('get members', async () => {
-      const res = await groupApi.getGroupMembers('1');
+      const res = await groupAPI.getGroupMembers('1');
       expect(res).toBe(`/api/group/1/member/`);
     });
     it('joinGroup', async () => {
-      const res = await groupApi.joinGroup('1');
+      const res = await groupAPI.joinGroup('1');
       expect(res).toBe(`/api/group/1/member/`);
     });
     it('exitGroup', async () => {
-      const res = await groupApi.exitGroup('1');
+      const res = await groupAPI.exitGroup('1');
       expect(res).toBe(`/api/group/1/member/`);
     });
   });
