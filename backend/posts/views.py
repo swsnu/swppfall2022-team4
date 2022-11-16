@@ -7,7 +7,7 @@ from django.http import (
 )
 from django.views.decorators.http import require_http_methods
 from math import ceil
-from posts.models import Post
+from posts.models import Post, PostImage
 from users.models import User
 from tags.models import Tag, TagClass
 
@@ -125,6 +125,9 @@ def post_home(request):
             for tag in data["tags"]:
                 tag = Tag.objects.get(pk=tag["id"])
                 created_post.tags.add(tag)
+            for image in data["images"]:  # image would be string type
+                PostImage.objects.create(image=image, post=created_post)
+
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
         except (KeyError, json.JSONDecodeError, User.DoesNotExist, Tag.DoesNotExist):
