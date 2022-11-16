@@ -8,7 +8,7 @@ from .models import Notification
 def index(request):
     """
     GET : 알림 리스트
-    DELETE : 알림 삭제
+    DELETE : 모든 알림 삭제
     """
     if request.method == "GET":
         notifications = Notification.objects.filter(user=request.user).order_by('-created')
@@ -25,7 +25,21 @@ def index(request):
                 "created": notification_data['fields']['created']
             })
 
-    else: # DELETE
-        pass
+        return JsonResponse(response, safe=False)
 
-    return JsonResponse(response, safe=False)
+    else: # DELETE
+        Notification.objects.filter(user=request.user).delete()
+        return HttpResponse(status=204)
+
+
+
+@require_http_methods(["DELETE"])
+def delete_notification(request, notification_id):
+    """
+    DELETE : 특정 알림 삭제
+    """
+    Notification.objects.filter(id=notification_id).delete()
+    return HttpResponse(status=204)
+
+
+

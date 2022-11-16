@@ -16,7 +16,7 @@ describe('slices - notification', () => {
     [notificationActions.getNotificationListSuccess('data'), { ...initialState, notificationList: 'data' }],
     [notificationActions.getNotificationListFailure('error'), initialState],
     [notificationActions.deleteAllNotification(), initialState],
-    [notificationActions.deleteNotification('1234'), initialState],
+    [notificationActions.deleteNotification(1234), initialState],
   ])('reducer', (action, state) => {
     const store = configureStore({
       reducer: rootReducer,
@@ -46,8 +46,8 @@ describe('slices - notification', () => {
     test('deleteNotification', () => {
       return expectSaga(notificationSaga)
         .withReducer(notificationSlice.reducer)
-        .provide([[call(notificationAPI.deleteNotification, '1234'), undefined]])
-        .dispatch({ type: 'notification/deleteNotification', payload: '1234' })
+        .provide([[call(notificationAPI.deleteNotification, 1234), undefined]])
+        .dispatch({ type: 'notification/deleteNotification', payload: 1234 })
         .hasFinalState(initialState)
         .silentRun();
     });

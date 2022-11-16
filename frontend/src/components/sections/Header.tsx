@@ -128,7 +128,7 @@ const Header = () => {
     }
   };
   const onDelete = (id: number) => {
-    console.log(id);
+    dispatch(notificationActions.deleteNotification(id));
   };
   const nav = ({ isActive }: { isActive: boolean }) => (isActive ? 'active' : '');
 

@@ -8,7 +8,7 @@ export const deleteAllNotification = async () => {
   const response = await client.delete<undefined>(`/api/notification/`);
   return response.data;
 };
-export const deleteNotification = async (payload: string) => {
+export const deleteNotification = async (payload: number) => {
   const response = await client.delete<undefined>(`/api/notification/${payload}/`);
   return response.data;
 };

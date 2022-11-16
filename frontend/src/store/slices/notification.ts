@@ -22,8 +22,12 @@ export const notificationSlice = createSlice({
     getNotificationListFailure: (state, { payload }) => {
       alert(payload.response?.data.message);
     },
-    deleteAllNotification: state => state,
-    deleteNotification: (state, action: PayloadAction<string>) => state,
+    deleteAllNotification: state => {
+      state.notificationList = [];
+    },
+    deleteNotification: (state, action: PayloadAction<number>) => {
+      state.notificationList = state.notificationList.filter(x => x.id !== action.payload);
+    },
   },
 });
 export const notificationActions = notificationSlice.actions;
@@ -39,7 +43,7 @@ function* getNotificationListSaga() {
 function* deleteAllNotificationSaga() {
   yield call(notificationAPI.deleteAllNotification);
 }
-function* deleteNotificationSaga(action: PayloadAction<string>) {
+function* deleteNotificationSaga(action: PayloadAction<number>) {
   yield call(notificationAPI.deleteNotification, action.payload);
 }
 

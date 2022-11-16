@@ -278,7 +278,7 @@ describe('API TEST', () => {
       expect(result).toBe(`/api/notification/`);
     });
     test('deleteNotification', async () => {
-      const result = await notificationAPI.deleteNotification('1234');
+      const result = await notificationAPI.deleteNotification(1234);
       expect(result).toBe(`/api/notification/1234/`);
     });
   });
