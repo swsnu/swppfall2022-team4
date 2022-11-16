@@ -102,13 +102,20 @@ const Header = () => {
     if (data.type === 'CHAT') {
       if (where.substring(0, 5) !== '/chat') {
         console.log('[CHAT] ignore...');
-      } else if (where === `/chat/${data.where.toString()}`) {
+      } else if (where === `/chat/${data.where}` || where === `/chat/${data.where}/`) {
         console.log('[CHAT] update list and message...');
         dispatch(chatActions.getChatroomList());
-        dispatch(chatActions.addMessage(data.data));
+        dispatch(chatActions.addMessage(data.message));
       } else {
         console.log('[CHAT] update list...');
         dispatch(chatActions.getChatroomList());
+      }
+    } else if (data.type === 'GROUP_CHAT') {
+      if (where === `/group/chat/${data.where}` || where === `/group/chat/${data.where}/`) {
+        console.log('[GROUP_CHAT] update message...');
+        dispatch(chatActions.addMessage(data.message));
+      } else {
+        console.log('[GROUP_CHAT] ignore...');
       }
     } else if (data.type === 'NOTIFICATION') {
       console.log('[NOTIFICATION] get noticifation');

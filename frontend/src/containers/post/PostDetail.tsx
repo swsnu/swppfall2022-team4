@@ -131,7 +131,7 @@ const PostDetail = () => {
         }),
       );
 
-      if (post?.author_name !== user.username) {
+      if (socket && post?.author_name !== user.username) {
         socket.send(
           JSON.stringify({
             type: 'notification',

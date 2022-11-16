@@ -48,7 +48,7 @@ describe('Header', () => {
 
       const logoutButton = screen.getByTestId('logoutButton');
       fireEvent.click(logoutButton);
-      expect(mockDispatch).toBeCalledTimes(1);
+      expect(mockDispatch).toBeCalledTimes(3);
 
       const mypageButton = screen.getByTestId('mypageButton');
       fireEvent.click(mypageButton);

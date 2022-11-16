@@ -38,8 +38,7 @@ describe('[Chat Page]', () => {
   describe('useEffect', () => {
     test('init', () => {
       setup();
-      expect(mockDispatch).toBeCalledTimes(4);
-      expect(mockDispatch).toHaveBeenCalledWith({ payload: '1234', type: 'chat/setWhere' });
+      expect(mockDispatch).toBeCalledTimes(2);
       expect(mockDispatch).toHaveBeenCalledWith({ type: 'chat/getChatroomList' });
       expect(mockDispatch).toHaveBeenCalledWith({ payload: '1234', type: 'chat/getMessageList' });
     });

@@ -1,11 +1,8 @@
 import styled from 'styled-components';
+import { userType } from 'store/apis/user';
 
 interface IProps {
-  user: {
-    username: string;
-    nickname: string;
-    image: string;
-  } | null;
+  user: userType | null;
   clicked: React.MouseEventHandler<HTMLDivElement>;
   active: boolean;
 }

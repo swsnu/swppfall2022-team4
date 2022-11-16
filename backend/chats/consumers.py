@@ -2,6 +2,7 @@ import json
 import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from users.models import User
+from groups.models import Group
 from chatrooms.models import Chatroom, Message
 from notifications.models import Notification
 
@@ -24,14 +25,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if data_type == "1:1":
             if not (
-                (User.objects.filter(username=data["author"])).exists() and
-                (Chatroom.objects.filter(id=data["room"])).exists()
+                User.objects.filter(username=data["author"]).exists() and
+                Chatroom.objects.filter(id=data["room"]).exists()
             ):
                 return
 
             author = User.objects.get(username=data["author"])
             chatroom = Chatroom.objects.get(id=data["room"])
-            target = [chatroom.username1, chatroom.username2]
 
             message = Message.objects.create(
                 room=chatroom,
@@ -45,9 +45,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "main",
                 {
                     "type": "send_chat",
-                    "target": target,
-                    "room": chatroom.id,
-                    "data": {
+                    "target": [chatroom.username1, chatroom.username2],
+                    "where": chatroom.id,
+                    "message": {
                         "id": message.id,
                         "author": {
                             "username": message.author.username,
@@ -61,7 +61,43 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
 
         elif data_type == "group":
-            pass
+            if not (
+                User.objects.filter(username=data["author"]).exists() and
+                Group.objects.filter(id=data["group"]).exists()
+            ):
+                return
+
+            author = User.objects.get(username=data["author"])
+            group = Group.objects.get(id=data["group"])
+            group_members = group.members.all().values("username")
+            group_username_list = []
+            for member in group_members:
+                group_username_list.append(member["username"])
+
+            message = Message.objects.create(
+                group=group,
+                author=author,
+                content=data["content"]
+            )
+
+            await self.channel_layer.group_send(
+                "main",
+                {
+                    "type": "send_group_chat",
+                    "target": group_username_list,
+                    "where": group.id,
+                    "message": {
+                        "id": message.id,
+                        "author": {
+                            "username": message.author.username,
+                            "nickname": message.author.nickname,
+                            "image": message.author.image
+                        },
+                        "content": message.content,
+                        "created": str(message.created)
+                    }
+                }
+            )
 
         elif data_type == "notification":
             for target_username in data["target"]:
@@ -86,8 +122,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print(self.username + "에게 메시지 전달")
             await self.send(text_data=json.dumps({
                 "type": "CHAT",
-                "where": event["room"],
-                "data": event["data"]
+                "where": str(event["where"]),
+                "message": event["message"]
+            }))
+
+    async def send_group_chat(self, event):
+        if self.username in event["target"]:
+            print(self.username + "에게 그룹 메시지 전달")
+            await self.send(text_data=json.dumps({
+                "type": "GROUP_CHAT",
+                "where": str(event["where"]),
+                "message": event["message"]
             }))
 
     async def send_notification(self, event):

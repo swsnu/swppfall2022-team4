@@ -21,7 +21,6 @@ export const getGroupMessageList = async (groupId: string) => {
 export type chatroomType = {
   id: number;
   user: userType | null;
-  new: boolean;
 };
 export type messageType = {
   id: number;

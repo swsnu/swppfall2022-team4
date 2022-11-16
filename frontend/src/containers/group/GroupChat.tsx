@@ -1,38 +1,32 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { BsFillPencilFill } from 'react-icons/bs';
 import styled from 'styled-components';
-import { RootState } from 'index';
 import { chatActions } from 'store/slices/chat';
-
-import ChatroomButton from 'components/chat/ChatroomButton';
+import { RootState } from 'index';
 import { MyMessage, OtherMessage } from 'components/chat/Message';
 
-const Chat = () => {
-  const navigate = useNavigate();
+const GroupChat = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const chatRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
-  const { id } = useParams();
+  const { group_id } = useParams<{ group_id: string }>();
   const [input, setInput] = useState('');
-  const { user, socket, chatroomList, messageList } = useSelector(({ user, chat }: RootState) => ({
+  const { user, socket, messageList } = useSelector(({ user, chat }: RootState) => ({
     user: user.user,
     socket: chat.socket,
-    chatroomList: chat.chatroomList,
     messageList: chat.messageList,
   }));
 
   useEffect(() => {
-    dispatch(chatActions.getChatroomList());
+    dispatch(chatActions.getGroupMessageList(group_id || '-1'));
     return () => {
       dispatch(chatActions.resetChat());
     };
   }, []);
-  useEffect(() => {
-    setInput('');
-    if (id) dispatch(chatActions.getMessageList(id || ''));
-  }, [id]);
+
   useEffect(() => {
     scrollEnd();
   }, [messageList]);
@@ -46,10 +40,10 @@ const Chat = () => {
     if (!user || input === '') return;
     socket.send(
       JSON.stringify({
-        type: '1:1',
+        type: 'group',
         data: {
           author: user.username,
-          room: id,
+          group: group_id,
           content: input,
         },
       }),
@@ -60,58 +54,37 @@ const Chat = () => {
   if (!user) return <div>no user</div>;
   return (
     <Wrapper>
-      <ChatroomListWrapper>
-        <ChatroomListText>Chatting</ChatroomListText>
-        {chatroomList.map(chatroom => (
-          <ChatroomButton
-            key={chatroom.id}
-            user={chatroom.user}
-            clicked={() => navigate(`/chat/${chatroom.id}`)}
-            active={chatroom.id.toString() === id}
-          />
-        ))}
-      </ChatroomListWrapper>
-
       <ChatroomWrapper>
-        {id ? (
-          <ChatWrapper ref={chatRef}>
-            {messageList.map(message => (
-              <div key={message.id}>
-                {message.author?.username === user.username ? (
-                  <MyMessage message={message} />
-                ) : (
-                  <OtherMessage message={message} />
-                )}
-              </div>
-            ))}
-          </ChatWrapper>
-        ) : (
-          <ChatWrapper style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <NoChatText>선택된 채팅방이 없습니다.</NoChatText>
-          </ChatWrapper>
-        )}
-
-        {id && (
-          <InputWrapper>
-            <Input
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyPress={e => {
-                if (e.key === 'Enter') onSendMessage();
-              }}
-              placeholder="채팅을 입력하세요."
-            />
-            <InputWriteButton onClick={onSendMessage}>
-              <BsFillPencilFill />
-            </InputWriteButton>
-          </InputWrapper>
-        )}
+        <ChatWrapper ref={chatRef}>
+          {messageList.map(message => (
+            <div key={message.id}>
+              {message.author?.username === user.username ? (
+                <MyMessage message={message} />
+              ) : (
+                <OtherMessage message={message} />
+              )}
+            </div>
+          ))}
+        </ChatWrapper>
+        <InputWrapper>
+          <Input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyPress={e => {
+              if (e.key === 'Enter') onSendMessage();
+            }}
+            placeholder="채팅을 입력하세요."
+          />
+          <InputWriteButton onClick={onSendMessage}>
+            <BsFillPencilFill />
+          </InputWriteButton>
+        </InputWrapper>
       </ChatroomWrapper>
     </Wrapper>
   );
 };
 
-export default Chat;
+export default GroupChat;
 
 const Wrapper = styled.div`
   width: 100%;

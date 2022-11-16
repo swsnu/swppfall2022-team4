@@ -4,6 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.core import serializers
 from users.models import User
+from groups.models import Group
 from .models import Chatroom, Message
 
 @require_http_methods(["GET", "POST"])
@@ -107,4 +108,44 @@ def message(request, room_id):
             })
 
         return JsonResponse(response, safe=False)
-        
+
+
+@require_http_methods(["GET"])
+def group_message(request, group_id):
+    """
+    GET : 그룹 채팅방의 메시지 목록 불러오기
+    """
+    if not (Group.objects.filter(id=group_id)).exists():
+        return HttpResponse(status=404)
+
+    group = Group.objects.get(id=group_id)
+    if not group.members.filter(username=request.user.username):
+        return HttpResponse(status=403)
+
+    if request.method == 'GET':
+        messages = Message.objects.filter(group=group_id).order_by('created')
+        data = json.loads(serializers.serialize('json', messages))
+        response = []
+
+        for message_data in data:
+            author = message_data['fields']['author']
+            content = message_data['fields']['content']
+
+            if not (User.objects.filter(id=author)).exists():
+                author = None
+            else:
+                author = User.objects.get(id=author)
+                author = {
+                    "username": author.username,
+                    "nickname": author.nickname,
+                    "image": author.image,
+                }
+
+            response.append({
+                "id": message_data['pk'],
+                "author": author,
+                "content": content,
+                "created": message_data['fields']['created']
+            })
+
+        return JsonResponse(response, safe=False)
