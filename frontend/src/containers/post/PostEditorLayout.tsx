@@ -71,8 +71,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
   const [tagRandColor, setTagRandColor] = useState(''); // Random Color for Tag Class creation
   const [tagUpdate, setTagUpdate] = useState(0);
 
-  const [images, setImages] = useState<string[]>([]);
-
   const [currentTagClass, setCurrentTagClass] = useState<TagClass | null>(null);
 
   useEffect(() => {
@@ -112,7 +110,12 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
       ...state,
       prime_tag,
     }));
-
+  const addImages = (newImage: string) => {
+    setPostContent(state => ({
+      ...state,
+      images: [...state.images, newImage],
+    }));
+  };
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tagId = e.target.options[e.target.selectedIndex].value;
     const tagName = e.target.options[e.target.selectedIndex].text;
@@ -369,7 +372,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     formData.append('image', file);
     try {
       const result = await client.post(process.env.REACT_APP_API_IMAGE_UPLOAD || '', formData);
-      setImages(images => [...images, result.data.title]);
+      addImages(result.data.title);
     } catch (error) {
       alert('이미지 업로드 오류');
     }
@@ -421,7 +424,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             <ContentImageWrapper>
               <SectionTitle>Image</SectionTitle>
               <ImageSection>
-                {images.map(img => (
+                {postContent.images.map(img => (
                   <PostUploadedImage src={process.env.REACT_APP_API_IMAGE + img} />
                 ))}
                 <PostImagePlaceholder />

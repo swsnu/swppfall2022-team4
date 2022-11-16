@@ -74,6 +74,7 @@ export const simplePosts: postAPI.Post[] = [
 const simplePostID: postAPI.postIdentifyingType = {
   post_id: '59',
 };
+const simpleImages: string[] = ['test_image1.jpg', 'test_image2.png'];
 export const simpleComments: commentAPI.Comment[] = [
   {
     comment_id: '1',
@@ -118,6 +119,7 @@ const createPostRequest: postAPI.createPostRequestType = {
   content: 'post content',
   author_name: 'KJY',
   tags: simpleTagVisuals,
+  images: simpleImages,
   prime_tag: simpleTagVisuals[0],
 };
 const updatePostDetailRequest: postAPI.postIdentifyingType = simplePostID;
@@ -127,6 +129,7 @@ const editPostRequest: postAPI.editPostRequestType = {
   title: 'title modified',
   content: 'content modified',
   tags: simpleTagVisuals,
+  images: simpleImages,
   prime_tag: simpleTagVisuals[0],
 };
 const getPostCommentRequest: postAPI.postIdentifyingType = simplePostID;

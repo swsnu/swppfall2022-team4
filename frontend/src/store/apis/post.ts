@@ -77,6 +77,7 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
   tags: TagVisual[];
+  images: string[];
   prime_tag: TagVisual | undefined;
 };
 
@@ -100,6 +101,7 @@ export type editPostRequestType = {
   title: string;
   content: string;
   tags: TagVisual[];
+  images: string[];
   prime_tag: TagVisual | undefined;
 };
 

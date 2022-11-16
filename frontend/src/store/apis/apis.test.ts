@@ -56,6 +56,7 @@ const createPostRequest: postAPI.createPostRequestType = {
   content: 'content',
   author_name: testUsername,
   tags: [testTag],
+  images: [],
   prime_tag: undefined,
 };
 const editPostRequest: postAPI.editPostRequestType = {
@@ -63,6 +64,7 @@ const editPostRequest: postAPI.editPostRequestType = {
   title: 'title',
   content: 'content',
   tags: [testTag],
+  images: ['hi.jpeg'],
   prime_tag: undefined,
 };
 const postFuncRequest: postAPI.postFuncRequestType = {
