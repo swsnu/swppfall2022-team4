@@ -6,6 +6,7 @@ import { tagSlice } from 'store/slices/tag';
 import { userSlice } from 'store/slices/user';
 import { workoutLogSlice } from 'store/slices/workout';
 import { chatSlice } from 'store/slices/chat';
+import { notificationSlice } from 'store/slices/notification';
 
 export const initialState: PreloadedState<RootState> = {
   user: {
@@ -187,6 +188,7 @@ export const getMockStore = (preloadedState?: PreloadedState<RootState>) => {
       group: groupSlice.reducer,
       tag: tagSlice.reducer,
       chat: chatSlice.reducer,
+      notification: notificationSlice.reducer,
     },
     preloadedState,
   });

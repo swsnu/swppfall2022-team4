@@ -22,6 +22,8 @@ export const notificationSlice = createSlice({
     getNotificationListFailure: (state, { payload }) => {
       alert(payload.response?.data.message);
     },
+    deleteAllNotification: state => state,
+    deleteNotification: (state, action: PayloadAction<string>) => state,
   },
 });
 export const notificationActions = notificationSlice.actions;
@@ -34,7 +36,15 @@ function* getNotificationListSaga() {
     yield put(notificationActions.getNotificationListFailure(error));
   }
 }
+function* deleteAllNotificationSaga() {
+  yield call(notificationAPI.deleteAllNotification);
+}
+function* deleteNotificationSaga(action: PayloadAction<string>) {
+  yield call(notificationAPI.deleteNotification, action.payload);
+}
 
 export default function* notificationSaga() {
   yield takeLatest(notificationActions.getNotificationList, getNotificationListSaga);
+  yield takeLatest(notificationActions.deleteAllNotification, deleteAllNotificationSaga);
+  yield takeLatest(notificationActions.deleteNotification, deleteNotificationSaga);
 }

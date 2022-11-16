@@ -13,14 +13,17 @@ jest.spyOn(global, 'alert').mockImplementation(msg => msg);
 describe('slices - chat', () => {
   test.each([
     [chatActions.resetCreate(), initialState],
+    [chatActions.resetChat(), initialState],
     [chatActions.setSocket('socket'), { ...initialState, socket: 'socket' }],
+    [chatActions.setWhere('where'), { ...initialState, where: 'where' }],
+    [chatActions.addMessage('message'), { ...initialState, messageList: ['message'] }],
     [chatActions.getChatroomList(), initialState],
     [chatActions.getChatroomListSuccess('data'), { ...initialState, chatroomList: 'data' }],
     [chatActions.getChatroomListFailure('error'), { ...initialState, error: 'error' }],
     [chatActions.createChatroom({ username: '11111111' }), initialState],
     [
-      chatActions.createChatroomSuccess({ id: 'data' }),
-      { ...initialState, create: { ...initialState.create, id: 'data' } },
+      chatActions.createChatroomSuccess({ id: '1234' }),
+      { ...initialState, create: { ...initialState.create, id: '1234' } },
     ],
     [
       chatActions.createChatroomFailure('error'),
@@ -29,12 +32,35 @@ describe('slices - chat', () => {
     [chatActions.getMessageList('11111111'), initialState],
     [chatActions.getMessageListSuccess('data'), { ...initialState, messageList: 'data' }],
     [chatActions.getMessageListFailure('error'), { ...initialState, error: 'error' }],
+    [chatActions.getGroupMessageList('11111111'), initialState],
+    [chatActions.getGroupMessageListSuccess('data'), { ...initialState, messageList: 'data' }],
+    [chatActions.getGroupMessageListFailure('error'), { ...initialState, error: 'error' }],
   ])('reducer', (action, state) => {
     const store = configureStore({
       reducer: rootReducer,
     });
     store.dispatch(action);
     expect(store.getState().chat).toEqual(state);
+  });
+
+  test('newChatroom...', () => {
+    const store = configureStore({
+      reducer: rootReducer,
+    });
+    store.dispatch(
+      chatActions.getChatroomListSuccess([
+        { id: 1234, user: null, new: false },
+        { id: 2345, user: null, new: false },
+      ]),
+    );
+    store.dispatch(chatActions.newChatroom(1234));
+    expect(store.getState().chat).toEqual({
+      ...initialState,
+      chatroomList: [
+        { id: 1234, user: null, new: true },
+        { id: 2345, user: null, new: false },
+      ],
+    });
   });
 
   describe('saga success', () => {
@@ -65,6 +91,15 @@ describe('slices - chat', () => {
         .hasFinalState({ ...initialState, messageList: 'data' })
         .silentRun();
     });
+    test('getGroupMessageList', () => {
+      return expectSaga(chatSaga)
+        .withReducer(chatSlice.reducer)
+        .provide([[call(chatAPI.getGroupMessageList, '11111111'), 'data']])
+        .put({ type: 'chat/getGroupMessageListSuccess', payload: 'data' })
+        .dispatch({ type: 'chat/getGroupMessageList', payload: '11111111' })
+        .hasFinalState({ ...initialState, messageList: 'data' })
+        .silentRun();
+    });
   });
 
   describe('saga failure', () => {
@@ -92,6 +127,15 @@ describe('slices - chat', () => {
         .provide([[call(chatAPI.getMessageList, '11111111'), throwError(simpleError)]])
         .put({ type: 'chat/getMessageListFailure', payload: simpleError })
         .dispatch({ type: 'chat/getMessageList', payload: '11111111' })
+        .hasFinalState({ ...initialState, error: simpleError })
+        .silentRun();
+    });
+    test('getGroupMessageList', () => {
+      return expectSaga(chatSaga)
+        .withReducer(chatSlice.reducer)
+        .provide([[call(chatAPI.getGroupMessageList, '11111111'), throwError(simpleError)]])
+        .put({ type: 'chat/getGroupMessageListFailure', payload: simpleError })
+        .dispatch({ type: 'chat/getGroupMessageList', payload: '11111111' })
         .hasFinalState({ ...initialState, error: simpleError })
         .silentRun();
     });

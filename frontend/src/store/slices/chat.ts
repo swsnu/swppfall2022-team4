@@ -40,6 +40,11 @@ export const chatSlice = createSlice({
       state.create.id = null;
       state.create.error = null;
     },
+    resetChat: state => {
+      state.chatroomList = [];
+      state.messageList = [];
+      state.error = null;
+    },
 
     setSocket: (state, { payload }) => {
       state.socket = payload;
@@ -50,6 +55,10 @@ export const chatSlice = createSlice({
     addMessage: (state, { payload }) => {
       state.messageList.push(payload);
     },
+    newChatroom: (state, { payload }) => {
+      state.chatroomList = state.chatroomList.map(x => (x.id === payload ? { ...x, new: true } : x));
+    },
+
     getChatroomList: state => {
       state.error = null;
     },
@@ -88,6 +97,19 @@ export const chatSlice = createSlice({
       state.error = payload;
       alert(payload.response?.data.message);
     },
+    getGroupMessageList: (state, action: PayloadAction<string>) => {
+      state.messageList = [];
+      state.error = null;
+    },
+    getGroupMessageListSuccess: (state, { payload }) => {
+      state.messageList = payload;
+      state.error = null;
+    },
+    getGroupMessageListFailure: (state, { payload }) => {
+      state.messageList = [];
+      state.error = payload;
+      alert(payload.response?.data.message);
+    },
   },
 });
 export const chatActions = chatSlice.actions;
@@ -116,9 +138,18 @@ function* getMessageListSaga(action: PayloadAction<string>) {
     yield put(chatActions.getMessageListFailure(error));
   }
 }
+function* getGroupMessageListSaga(action: PayloadAction<string>) {
+  try {
+    const response: AxiosResponse = yield call(chatAPI.getGroupMessageList, action.payload);
+    yield put(chatActions.getGroupMessageListSuccess(response));
+  } catch (error) {
+    yield put(chatActions.getGroupMessageListFailure(error));
+  }
+}
 
 export default function* chatSaga() {
   yield takeLatest(chatActions.getChatroomList, getChatroomListSaga);
   yield takeLatest(chatActions.createChatroom, createChatroomSaga);
   yield takeLatest(chatActions.getMessageList, getMessageListSaga);
+  yield takeLatest(chatActions.getGroupMessageList, getGroupMessageListSaga);
 }
