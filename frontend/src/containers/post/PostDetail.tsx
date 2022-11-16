@@ -15,7 +15,8 @@ import { BlueBigBtn, CommentGreenBtn, RedSmallBtn, GreenCommentSubmitBtn } from 
 import { TagBubble } from 'components/tag/tagbubble';
 import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
-import { PostDetailLayout, SideBarWrapper } from './PostLayout';
+import { PostDetailLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
+import ImageDetailModal from 'components/post/ImageDetailModal';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -50,11 +51,15 @@ const PostDetail = () => {
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [commentModalDisable, setCommentModalDisable] = useState(false);
   const [commentModalNum, setCommentModalNum] = useState('');
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [activeImage, setActiveImage] = useState('');
 
   const commentModalPivot = useRef<HTMLImageElement[]>([]);
   const postModalPivot = useRef<HTMLImageElement>(null);
   const postModalRef = useRef(null);
   const commentModalRef = useRef(null);
+  const imageModalRef = useRef(null);
+  const imageModalAnimRef = useRef(null);
 
   // Disable modal when OnClickOutside
   useOnClickOutside(
@@ -72,6 +77,7 @@ const PostDetail = () => {
     },
     'mousedown',
   );
+  useOnClickOutside(imageModalRef, () => setImageModalOpen(false), 'mousedown');
 
   // Disable scroll when modal is active
   useEffect(() => {
@@ -396,7 +402,13 @@ const PostDetail = () => {
             <ContentImageSection>
               {post.images?.map((img, index) => (
                 <PostUploadedImageWrapper key={index}>
-                  <PostUploadedImage src={process.env.REACT_APP_API_IMAGE + img} />
+                  <PostUploadedImage
+                    src={process.env.REACT_APP_API_IMAGE + img}
+                    onClick={() => {
+                      setActiveImage(img);
+                      setImageModalOpen(true);
+                    }}
+                  />
                 </PostUploadedImageWrapper>
               ))}
             </ContentImageSection>
@@ -482,7 +494,18 @@ const PostDetail = () => {
       <SideBarItem>사이드바 공간2</SideBarItem>
     </SideBarWrapper>
   );
-  return PostDetailLayout(PostDetailContent, SideBar);
+  return (
+    <PostPageWrapper>
+      {PostDetailLayout(PostDetailContent, SideBar)}
+      {ImageDetailModal({
+        isActive: imageModalOpen,
+        onClose: () => setImageModalOpen(false),
+        modalRef: imageModalRef,
+        modalAnimRef: imageModalAnimRef,
+        activeImage,
+      })}
+    </PostPageWrapper>
+  );
 };
 
 const TagBubbleWrapper = styled.div`
@@ -808,7 +831,8 @@ const PostUploadedImage = styled.img`
   height: 130px;
   background-color: var(--fit-disabled-gray);
   border-radius: 15px;
-  object-fit: contain;
+  object-fit: cover;
+  cursor: pointer;
 `;
 
 export default PostDetail;
