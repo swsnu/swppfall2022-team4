@@ -37,6 +37,7 @@ const GroupList = () => {
           }}
         />
       </SearchWrapper>
+      <Button1 content="지도 보기" clicked={() => navigate('/group/location')} />
       <Button1
         content="Create Group"
         clicked={() => navigate('/group/create')}
