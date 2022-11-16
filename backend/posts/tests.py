@@ -94,6 +94,7 @@ class PostTestCase(TestCase):
                 'author_name': 'username',
                 'prime_tag': {'id': '1'},
                 'tags': [{'id': '1'}, {'id': '2'}],
+                'images': [],
                 'title': 'new by test',
                 'content': 'new by test..',
             },
