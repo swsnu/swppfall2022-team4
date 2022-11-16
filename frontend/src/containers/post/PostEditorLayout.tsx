@@ -7,9 +7,10 @@ import { RootState } from 'index';
 import { TagClass, TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
 import client from 'store/apis/client';
-import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn } from 'components/post/button';
+import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
 import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
-import { Main_SideWrapper, PostContentWrapper, PostPageWrapper, SideBarWrapper } from './PostLayout';
+import { PostContentWrapper, PostPageWrapper, SideBarWrapper } from './PostLayout';
+import { notificationSuccess } from 'utils/sendNotification';
 
 interface IPropsColorButton {
   color?: string;
@@ -25,6 +26,7 @@ const SEARCH_OPTION = '$SEARCH$';
 
 const TITLE_CHAR_LIMIT = 60;
 const CONTENT_CHAR_LIMIT = 800;
+const CONTENT_IMAGE_LIMIT = 5;
 
 const getRandomColor = () => {
   return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
@@ -115,6 +117,15 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
       ...state,
       images: [...state.images, newImage],
     }));
+    notificationSuccess('Image', '이미지 추가에 성공했어요!');
+  };
+  const removeImages = (targetImage: string) => {
+    const removedArray = postContent.images.filter(img => img !== targetImage);
+    setPostContent(state => ({
+      ...state,
+      images: removedArray,
+    }));
+    notificationSuccess('Image', '이미지 삭제에 성공했어요!');
   };
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tagId = e.target.options[e.target.selectedIndex].value;
@@ -402,9 +413,9 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               if (charInput.length <= TITLE_CHAR_LIMIT) setTitle(e.target.value);
             }}
           />
-          <TitleCharNum isFull={postContent.title.length >= TITLE_CHAR_LIMIT}>
+          <CharNumIndicator isFull={postContent.title.length >= TITLE_CHAR_LIMIT}>
             {postContent.title.length} / {TITLE_CHAR_LIMIT}
-          </TitleCharNum>
+          </CharNumIndicator>
         </TopElementWrapperWithoutPadding>
         <Main_SideWrapper>
           <ContentWrapper>
@@ -421,17 +432,25 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                 {postContent.content.length} / {CONTENT_CHAR_LIMIT}
               </ContentCharNum>
             </ContentTextWrapper>
-            <ContentImageWrapper>
-              <SectionTitle>Image</SectionTitle>
-              <ImageSection>
-                {postContent.images.map(img => (
+            <ContentImageSection>
+              {postContent.images.map((img, index) => (
+                <PostUploadedImageWrapper key={index}>
                   <PostUploadedImage src={process.env.REACT_APP_API_IMAGE + img} />
-                ))}
-                <PostImagePlaceholder />
-              </ImageSection>
+                  <RedSmallBtn onClick={() => removeImages(img)}>삭제</RedSmallBtn>
+                </PostUploadedImageWrapper>
+              ))}
+              {postContent.images.length < CONTENT_IMAGE_LIMIT && <PostImagePlaceholder />}
+              <ContentCharNum isFull={postContent.images.length >= CONTENT_IMAGE_LIMIT}>
+                {postContent.images.length} / {CONTENT_IMAGE_LIMIT}
+              </ContentCharNum>
               <FileInput type="file" id="FileInput_PostContent" onChange={uploadPostImage} />
-            </ContentImageWrapper>
-            <ContentOtherWrapper></ContentOtherWrapper>
+            </ContentImageSection>
+            <ContentRoutineSection>
+              <SectionTitle>루틴</SectionTitle>
+            </ContentRoutineSection>
+            <ContentGroupSection>
+              <SectionTitle>그룹</SectionTitle>
+            </ContentGroupSection>
             <CreateBtnWrapper>
               <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
               <BlueBigActiveBtn
@@ -451,45 +470,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     </PostPageWrapper>
   );
 };
-
-const PostImageBtn = styled(ColumnCenterFlex)`
-  justify-content: center;
-  width: 120px;
-  height: 120px;
-  background-color: var(--fit-disabled-gray);
-  padding: 10px 10px;
-  border-radius: 15px;
-  margin: 5px 5px;
-  cursor: pointer;
-  svg {
-    font-size: 32px;
-    margin-bottom: 12px;
-  }
-`;
-
-const SectionTitle = styled.span`
-  width: 100%;
-  font-size: 20px;
-`;
-const ImageSection = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-`;
-
-const PostUploadedImage = styled.img`
-  width: 120px;
-  height: 120px;
-  background-color: var(--fit-disabled-gray);
-  border-radius: 15px;
-  margin: 5px 5px;
-
-  background-size: contain;
-`;
-
-const FileInput = styled.input`
-  display: none;
-`;
 
 const TopElementWrapperWithoutPadding = styled.div`
   margin: 40px 0px 15px 0px;
@@ -619,15 +599,60 @@ const RandColorBtn = styled.button`
 
 const TagSubWrapper = styled(ColumnFlex)``;
 
+const CreateBtnWrapper = styled.div`
+  width: 100%;
+  height: 10%;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+`;
+
+const Main_SideWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  row-gap: 10px;
+  column-gap: 10px;
+  width: 100%;
+  min-height: 800px;
+  margin-bottom: 50px;
+`;
+
+const ContentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
+
+// Text Content Section
+const ContentTextWrapper = styled.div`
+  width: 100%;
+  height: 60%;
+  position: relative;
+  border-bottom: 1px solid gray;
+`;
+
+const ContentCharNum = styled.span<IPropsCharNum>`
+  position: absolute;
+  right: 10px;
+  bottom: 3px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
+`;
+
 const TitleInput = styled.input`
   width: 100%;
   height: 100%;
-  padding: 8px 20px;
-  font-size: 24px;
+  padding: 8px 30px;
+  font-size: 23px;
   border: none;
 `;
 
-const TitleCharNum = styled.span<IPropsCharNum>`
+const CharNumIndicator = styled.span<IPropsCharNum>`
   position: absolute;
   right: 5px;
   bottom: 3px;
@@ -648,48 +673,88 @@ const ContentTextArea = styled.textarea`
   border: none;
 `;
 
-const CreateBtnWrapper = styled.div`
-  width: 100%;
-  height: 10%;
-  margin-top: 15px;
+// Image Content Section
+const ContentImageSection = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
-`;
-
-const ContentWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  position: relative;
-`;
-const ContentTextWrapper = styled.div`
-  width: 100%;
-  height: 60%;
-  position: relative;
-  border-bottom: 1px solid gray;
-`;
-const ContentCharNum = styled.span<IPropsCharNum>`
-  position: absolute;
-  right: 10px;
-  bottom: 3px;
-  color: var(--fit-support-gray);
-  ${({ isFull }) =>
-    isFull &&
-    `
-      color: var(--fit-red-neg-hover);
-    `}
-`;
-const ContentImageWrapper = styled(ColumnCenterFlex)`
   justify-content: flex-start;
   width: 100%;
-  height: 20%;
+  height: fit-content;
   position: relative;
   background-color: var(--fit-white);
+  padding: 8px 10px;
   border-bottom: 1px solid gray;
 `;
-const ContentOtherWrapper = styled.div`
+
+const PostImageBtn = styled(ColumnCenterFlex)`
+  justify-content: center;
+  width: 130px;
+  height: 130px;
+  background-color: var(--fit-disabled-gray);
+  padding: 10px 10px;
+  border-radius: 15px;
+  margin: 5px 5px;
+  cursor: pointer;
+  svg {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  &:active {
+    background-color: var(--fit-disabled-gray-deep);
+  }
+`;
+
+const SectionTitle = styled.span`
   width: 100%;
-  height: 10%;
+  font-size: 24px;
+`;
+
+const PostUploadedImageWrapper = styled.div`
+  width: 130px;
+  height: 130px;
+  border-radius: 15px;
+  margin: 5px 5px;
   position: relative;
-  background-color: aquamarine;
+
+  button {
+    display: none;
+  }
+  &:hover button {
+    display: block;
+    width: 60px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -30px;
+    margin-top: -15px;
+  }
+`;
+
+const PostUploadedImage = styled.img`
+  width: 130px;
+  height: 130px;
+  background-color: var(--fit-disabled-gray);
+  border-radius: 15px;
+  object-fit: cover;
+`;
+
+const FileInput = styled.input`
+  display: none;
+`;
+
+// Other Content
+const ContentRoutineSection = styled.div`
+  width: 100%;
+  height: fit-content;
+  position: relative;
+  background-color: var(--fit-white);
+  padding: 8px 10px;
+`;
+const ContentGroupSection = styled.div`
+  width: 100%;
+  height: fit-content;
+  position: relative;
+  background-color: var(--fit-white);
+  padding: 8px 10px;
 `;

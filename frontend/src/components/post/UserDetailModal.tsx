@@ -215,18 +215,8 @@ const UserHorizontalAvatar = styled.img`
   border-radius: 50%;
   cursor: pointer;
 
-  background-position: center;
-  background-size: cover;
+  object-fit: cover;
 `;
-
-//   ${({ src, alt }) =>
-//     `
-//     title: ${alt}
-//     background-size: contain;
-//     background-position: center;
-//     background-image: url(${src});
-//   `}
-// `;
 
 const UserAvatarHorizontalWrapper = styled(ColumnCenterFlex)`
   width: 40%;
@@ -326,6 +316,5 @@ const UserAvatar = styled.img`
   border-radius: 50%;
   cursor: pointer;
 
-  background-position: center;
-  background-size: cover;
+  object-fit: cover;
 `;

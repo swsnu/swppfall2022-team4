@@ -101,7 +101,7 @@ export const CommentGreenBtn = styled(CommentBtn)`
     background-color: var(--fit-green-btn-active);
   }
 `;
-export const CommentRedBtn = styled(CommentBtn)`
+export const RedSmallBtn = styled(CommentBtn)`
   background-color: var(--fit-red-neg);
   &:hover {
     background-color: var(--fit-red-neg-hover);
