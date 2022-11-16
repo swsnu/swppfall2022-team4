@@ -55,9 +55,6 @@ export const chatSlice = createSlice({
     addMessage: (state, { payload }) => {
       state.messageList.push(payload);
     },
-    newChatroom: (state, { payload }) => {
-      state.chatroomList = state.chatroomList.map(x => (x.id === payload ? { ...x, new: true } : x));
-    },
 
     getChatroomList: state => {
       state.error = null;

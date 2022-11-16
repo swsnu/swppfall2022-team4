@@ -43,26 +43,6 @@ describe('slices - chat', () => {
     expect(store.getState().chat).toEqual(state);
   });
 
-  test('newChatroom...', () => {
-    const store = configureStore({
-      reducer: rootReducer,
-    });
-    store.dispatch(
-      chatActions.getChatroomListSuccess([
-        { id: 1234, user: null, new: false },
-        { id: 2345, user: null, new: false },
-      ]),
-    );
-    store.dispatch(chatActions.newChatroom(1234));
-    expect(store.getState().chat).toEqual({
-      ...initialState,
-      chatroomList: [
-        { id: 1234, user: null, new: true },
-        { id: 2345, user: null, new: false },
-      ],
-    });
-  });
-
   describe('saga success', () => {
     test('getChatroomList', () => {
       return expectSaga(chatSaga)
