@@ -36,6 +36,22 @@ export const OtherMessage = ({ message }: IProps) => {
   );
 };
 
+export const OtherGroupMessage = ({ message }: IProps) => {
+  return (
+    <Wrapper my={false}>
+      <TopWrapper>
+        <Image
+          src={message.author ? process.env.REACT_APP_API_IMAGE + message.author.image : 'profile_default.png'}
+          alt="profile"
+        />
+        <Nickname>{message.author ? message.author.nickname : '(알수없음)'}</Nickname>
+        <Created>{timeAgoFormat(message.created)}</Created>
+      </TopWrapper>
+      <ContentWrapper my={false}>{message.content}</ContentWrapper>
+    </Wrapper>
+  );
+};
+
 const Wrapper = styled.div<{ my: boolean }>`
   width: 100%;
   display: flex;
@@ -48,6 +64,10 @@ const TopWrapper = styled.div`
   display: flex;
   align-items: flex-end;
   margin-bottom: 8px;
+`;
+const Image = styled.img`
+  width: 45px;
+  height: 45px;
 `;
 const Nickname = styled.div`
   font-size: 20px;

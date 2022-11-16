@@ -5,7 +5,7 @@ import { BsFillPencilFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { chatActions } from 'store/slices/chat';
 import { RootState } from 'index';
-import { MyMessage, OtherMessage } from 'components/chat/Message';
+import { MyMessage, OtherGroupMessage } from 'components/chat/Message';
 
 const GroupChat = () => {
   const dispatch = useDispatch();
@@ -61,7 +61,7 @@ const GroupChat = () => {
               {message.author?.username === user.username ? (
                 <MyMessage message={message} />
               ) : (
-                <OtherMessage message={message} />
+                <OtherGroupMessage message={message} />
               )}
             </div>
           ))}
@@ -88,48 +88,13 @@ export default GroupChat;
 
 const Wrapper = styled.div`
   width: 100%;
-  max-width: 1200px;
+  max-width: 800px;
   height: calc(100vh - 60px);
   min-height: 400px;
   display: flex;
-
-  @media all and (max-width: 735px) {
-    flex-direction: column;
-  }
-`;
-const ChatroomListWrapper = styled.div`
-  width: 300px;
-  height: calc(100vh - 60px);
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #f9f9f9;
-  border-left: 1px solid #d1d1d1;
-  border-right: 1px solid #d1d1d1;
-  padding: 20px 0;
-  overflow-y: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  @media all and (max-width: 735px) {
-    width: 100%;
-    height: 300px;
-    min-height: 300px;
-    border: 1px solid #d1d1d1;
-    border-bottom: 1px solid #363636;
-  }
-`;
-const ChatroomListText = styled.div`
-  font-size: 32px;
-  font-family: FugazOne;
-  padding: 15px;
-  border-bottom: 1px solid #d1d1d1;
-  margin-bottom: 15px;
 `;
 const ChatroomWrapper = styled.div`
-  width: calc(100% - 300px);
+  width: 100%;
   height: calc(100vh - 60px);
   min-height: 400px;
   background-color: #fbfff8;
@@ -137,14 +102,6 @@ const ChatroomWrapper = styled.div`
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
-  }
-
-  @media all and (max-width: 735px) {
-    width: 100%;
-    height: calc(100vh - 360px);
-    min-height: 300px;
-    border: 1px solid #d1d1d1;
-    border-bottom: 1px solid #363636;
   }
 `;
 const ChatWrapper = styled.div`
@@ -156,11 +113,6 @@ const ChatWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-`;
-const NoChatText = styled.div`
-  color: #454545;
-  font-size: 24px;
-  font-family: NanumSquareR;
 `;
 const InputWrapper = styled.div`
   width: 100%;
