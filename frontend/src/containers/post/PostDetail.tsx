@@ -11,7 +11,7 @@ import { timeAgoFormat } from 'utils/datetime';
 import { postActions } from 'store/slices/post';
 import { Comment } from 'store/apis/comment';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
-import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
+import { BlueBigBtn, CommentGreenBtn, RedSmallBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
 import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
@@ -238,7 +238,7 @@ const PostDetail = () => {
     if (comment.editActive) {
       return (
         <FuncBtnWrapper>
-          <CommentRedBtn onClick={() => commentEditCancelOnClick(comment)}>취소</CommentRedBtn>
+          <RedSmallBtn onClick={() => commentEditCancelOnClick(comment)}>취소</RedSmallBtn>
           <CommentGreenBtn disabled={commentEditInput == ''} onClick={() => commentEditConfirmOnClick(comment)}>
             완료
           </CommentGreenBtn>
@@ -260,9 +260,9 @@ const PostDetail = () => {
               <CommentGreenBtn disabled={editActivated} onClick={() => commentEditOpenOnClick(comment)}>
                 수정
               </CommentGreenBtn>
-              <CommentRedBtn onClick={commentDeleteOnClick} data-comment_id={comment.comment_id}>
+              <RedSmallBtn onClick={commentDeleteOnClick} data-comment_id={comment.comment_id}>
                 삭제
-              </CommentRedBtn>
+              </RedSmallBtn>
             </>
           )}
         </FuncBtnWrapper>
