@@ -53,7 +53,7 @@ const WorkoutLog = () => {
   const [weight, setWeight] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
   const [workout_time, setWorkoutTime] = useState<number | null>(null);
-  const [workout_category, setWorkoutCategory] = useState('');
+  const [workout_category, setWorkoutCategory] = useState('등');
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
@@ -377,15 +377,16 @@ const WorkoutLog = () => {
             </LogUpper>
             <Frame className="right">
               <LogHeader>
+                <LogCategory>부위</LogCategory>
                 <LogCategory className="type">종류</LogCategory>
-                <LogCategory className="type2">강도</LogCategory>
-                <LogCategory className="type2">반복</LogCategory>
-                <LogCategory className="type2">세트</LogCategory>
-                <LogCategory className="type2">시간</LogCategory>
+                <LogCategory>강도</LogCategory>
+                <LogCategory>반복</LogCategory>
+                <LogCategory>세트</LogCategory>
+                <LogCategory>시간</LogCategory>
               </LogHeader>
               <LogInputBody>
                 <LogInputBodyInput>
-                  <WorkoutTypeSelect value={workout_category} onChange={e => setWorkoutCategory(e.target.value)}>
+                  <WorkoutTypeSelect className="type2" value={workout_category} onChange={e => setWorkoutCategory(e.target.value)}>
                     {WORKOUT_CATEGORY.map(fitelement_category => (
                       <option>{fitelement_category}</option>
                     ))}
@@ -398,28 +399,24 @@ const WorkoutLog = () => {
                     )}
                   </WorkoutTypeSelect>
                   <WorkoutTypeInput
-                    className="type2"
                     type="number"
                     min="0"
                     value={weight || ''}
                     onChange={e => setWeight(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
-                    className="type2"
                     type="number"
                     min="0"
                     value={rep || ''}
                     onChange={e => setRep(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
-                    className="type2"
                     type="number"
                     min="0"
                     value={set || ''}
                     onChange={e => setSet(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
-                    className="type2"
                     type="number"
                     min="0"
                     value={workout_time || ''}
@@ -789,7 +786,7 @@ const LogHeader = styled.div`
 `;
 
 const LogCategory = styled.div`
-  width: 10%;
+  width: 15%;
   height: 20px;
   font-size: 14px;
   display: flex;
@@ -798,11 +795,11 @@ const LogCategory = styled.div`
   font-family: IBMPlexSansThaiLooped;
   cursor: pointer;
   color: black;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding: 4px 10px;
 
   &&.type {
-    width: 40%;
-  }
-  &&.type2 {
     width: 20%;
   }
 `;
@@ -816,32 +813,24 @@ const LogInputBodyInput = styled.div`
 `;
 
 const WorkoutTypeInput = styled.input`
-  width: 40%;
+  width: 15%;
   height: 100%;
-  padding: 8px 20px;
+  padding: 8px 10px;
   font-size: 14px;
-  margin: 7px;
-
-  &&.type1 {
-    width: 10%;
-  }
-  &&.type2 {
-    width: 20%;
-  }
+  margin: 5px;
+  margin-top: 7px;
 `;
 
 const WorkoutTypeSelect = styled.select`
-  width: 40%;
+  width: 20%;
   height: 100%;
-  padding: 8px 20px;
+  padding: 8px 10px;
   font-size: 14px;
-  margin: 7px;
+  margin: 5px;
+  margin-top: 7px;
 
-  &&.type1 {
-    width: 10%;
-  }
   &&.type2 {
-    width: 20%;
+    width: 15%;
   }
 `;
 
