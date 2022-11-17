@@ -174,6 +174,14 @@ export const initialState: PreloadedState<RootState> = {
       fitelements: [],
       status: false,
     },
+    fitelement_type: {
+      name: '',
+      korean_name: '',
+      calories: 0,
+      category: ''
+
+    },
+    fitelement_types: []
   },
 };
 

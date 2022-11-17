@@ -1,3 +1,4 @@
+import { ClientRequest } from 'http';
 import { List } from 'reselect/es/types';
 import client from './client';
 
@@ -67,6 +68,10 @@ export type createDailyLogRequestType = {
   year: number;
   month: number;
   specific_date: number;
+};
+
+export type createDailyLogResponseType = {
+  dailylog_date: string | null;
 };
 
 export type editMemoRequestType = {
@@ -229,4 +234,9 @@ export const getSpecificRoutineFitElements = async (payload: getSpecificRoutineF
   });
 
   return response;
+};
+
+export const getFitelementTypes = async () => {
+  const response = await client.get(`/api/fitelement/type/`);
+  return response.data;
 };

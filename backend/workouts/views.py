@@ -296,6 +296,7 @@ def get_fitelement_types(request):
     for fitelement_type in types:
         type_json = {
             'name': fitelement_type.name,
+            'korean_name': fitelement_type.korean_name,
             'calories': fitelement_type.calories,
             'category': fitelement_type.category
         }

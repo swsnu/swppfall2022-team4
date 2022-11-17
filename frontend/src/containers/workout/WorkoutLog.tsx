@@ -12,6 +12,7 @@ import {
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
 } from 'store/apis/workout';
+import { Dictionary } from '@reduxjs/toolkit';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -171,6 +172,8 @@ const WorkoutLog = () => {
   const calendarInfo = useSelector((rootState: RootState) => rootState.workout_log.calendar_info);
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
+  const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
+  console.log(fitElementTypes);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
@@ -198,6 +201,7 @@ const WorkoutLog = () => {
     setMonth(date.getMonth());
     setYear(date.getFullYear());
     setStartDay(getStartDayOfMonth(date));
+    dispatch(workoutLogActions.getFitElementsType());
   }, [date, calendarInfo]);
 
   function isLeapYear(year: number) {
@@ -366,11 +370,11 @@ const WorkoutLog = () => {
               </LogHeader>
               <LogInputBody>
                 <LogInputBodyInput>
-                  <WorkoutTypeInput
-                    type="text"
-                    value={workout_type || ''}
-                    onChange={e => setWorkoutType(e.target.value)}
-                  />
+                  <WorkoutTypeSelect value={workout_type} onChange={e => setWorkoutType(e.target.value)}>
+                    {fitElementTypes.map(fitelement_type => (
+                      <option>{fitelement_type.korean_name}</option>
+                    ))}
+                  </WorkoutTypeSelect>
                   <WorkoutTypeInput
                     className="type2"
                     type="number"
@@ -790,6 +794,21 @@ const LogInputBodyInput = styled.div`
 `;
 
 const WorkoutTypeInput = styled.input`
+  width: 40%;
+  height: 100%;
+  padding: 8px 20px;
+  font-size: 14px;
+  margin: 7px;
+
+  &&.type1 {
+    width: 10%;
+  }
+  &&.type2 {
+    width: 20%;
+  }
+`;
+
+const WorkoutTypeSelect = styled.select`
   width: 40%;
   height: 100%;
   padding: 8px 20px;

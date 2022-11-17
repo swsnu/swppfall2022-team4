@@ -1,8 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, Dictionary, PayloadAction } from '@reduxjs/toolkit';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as workoutLogAPI from 'store/apis/workout';
+
+export type FitelementType = {
+  name: string;
+  korean_name: string;
+  calories: number;
+  category: string;
+};
 
 export interface WorkoutLogState {
   workout_log: {
@@ -30,7 +37,7 @@ export interface WorkoutLogState {
   };
   dailyLogCreate: {
     status: boolean;
-    dailylog_date: Date | null;
+    dailylog_date: string | null;
   };
   calendar_info: workoutLogAPI.calendarInfoResponse[];
   selected_routine: {
@@ -41,6 +48,13 @@ export interface WorkoutLogState {
     fitelements: Array<any>;
     status: boolean;
   };
+  fitelement_type: {
+    name: string;
+    korean_name: string;
+    calories: number;
+    category: string;
+  };
+  fitelement_types: FitelementType[];
 }
 
 export const initialState: WorkoutLogState = {
@@ -80,6 +94,13 @@ export const initialState: WorkoutLogState = {
     fitelements: [],
     status: false,
   },
+  fitelement_type: {
+    name: '',
+    korean_name: '',
+    category: '',
+    calories: 0,
+  },
+  fitelement_types: [],
 };
 
 export const workoutLogSlice = createSlice({
@@ -176,6 +197,11 @@ export const workoutLogSlice = createSlice({
     getFitElementsSuccess: (state, { payload }) => {
       state.daily_fit_elements = payload;
     },
+    getFitElementsType: state => {},
+    getFitElementTypesSuccess: (state, { payload }) => {
+      console.log(payload);
+      state.fitelement_types = payload;
+    },
   },
 });
 
@@ -271,6 +297,13 @@ function* getSpecificRoutineFitElementsSaga(
   } catch (error) {}
 }
 
+function* getFitElementTypesSaga() {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.getFitelementTypes);
+    yield put(workoutLogActions.getFitElementTypesSuccess(response));
+  } catch (error) {}
+}
+
 export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getFitElement, getFitElementSaga);
   yield takeLatest(workoutLogActions.getDailyLog, getDailyLogSaga);
@@ -284,4 +317,5 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.createRoutineWithFitElements, createRoutineWithFitElementsSaga);
   yield takeLatest(workoutLogActions.getFitElements, getFitElementsSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutineFitElements, getSpecificRoutineFitElementsSaga);
+  yield takeLatest(workoutLogActions.getFitElementsType, getFitElementTypesSaga);
 }

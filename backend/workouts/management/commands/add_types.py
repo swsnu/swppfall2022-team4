@@ -13,6 +13,7 @@ class Command(BaseCommand):
         for line in rdr:
             fitelement_type = FitElementType(
                 name=line[1],
+                korean_name=line[2],
                 category=line[3],
                 calories=int(line[4])
             )

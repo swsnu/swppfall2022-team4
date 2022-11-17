@@ -99,6 +99,10 @@ const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
   specific_date: 1,
 };
 
+const createDailyLogResponse: workoutAPI.createDailyLogResponseType = {
+  dailylog_date: '2022-10-01',
+};
+
 const getDailyFitElementsRequest: workoutAPI.getDailyFitElementsRequestType = {
   fitelements: [],
 };
@@ -154,7 +158,13 @@ describe('slices - workout', () => {
     ],
     [workoutLogActions.getDailyLog(getDailyLogRequest), initialState],
     [workoutLogActions.createDailyLog(createDailyLogRequest), initialState],
-    // [workoutLogActions.createDailyLogSuccess(createDailyLogSuccessRequest), initialState],
+    [
+      workoutLogActions.createDailyLogSuccess(createDailyLogResponse),
+      {
+        ...initialState,
+        dailyLogCreate: { dailylog_date: '2022-10-01', status: true },
+      },
+    ],
     [workoutLogActions.getDailyFitElements(getDailyFitElementsRequest), initialState],
     [workoutLogActions.editMemo(editMemoRequest), initialState],
     [workoutLogActions.getCalendarInfo(getCalendarInfoRequest), initialState],
