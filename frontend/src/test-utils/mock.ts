@@ -14,11 +14,7 @@ export const initialState: PreloadedState<RootState> = {
     error: null,
 
     profile: null,
-    profileContent: {
-      post: null,
-      comment: null,
-      scrap: null,
-    },
+
     loading: false,
     editProfile: false,
     deleteProfile: false,
