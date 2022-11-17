@@ -237,10 +237,6 @@ describe('API TEST', () => {
       const result = await userAPI.getProfile(testUsername);
       expect(result).toBe(`/api/user/profile/11111111/`);
     });
-    test('getProfileContent', async () => {
-      const result = await userAPI.getProfileContent(testUsername);
-      expect(result).toBe(`/api/user/profile/11111111/content/`);
-    });
     test('editProfile', async () => {
       const result = await userAPI.editProfile(editProfileRequest);
       expect(result).toBe(`/api/user/profile/11111111/`);
@@ -249,11 +245,19 @@ describe('API TEST', () => {
       const result = await userAPI.signout(testUsername);
       expect(result).toBe(`/api/user/profile/11111111/`);
     });
+    test('follow', async () => {
+      const result = await userAPI.follow(testUsername);
+      expect(result).toBe(`/api/user/follow/11111111/`);
+    });
   });
   describe('Chat', () => {
     test('getChatroomList', async () => {
       const result = await chatAPI.getChatroomList();
       expect(result).toBe(`/api/chat/`);
+    });
+    test('readChatroom', async () => {
+      const result = await chatAPI.readChatroom('1234');
+      expect(result).toBe(`/api/chat/read/1234/`);
     });
     test('createChatroom', async () => {
       const result = await chatAPI.createChatroom({ username: 'target' });
