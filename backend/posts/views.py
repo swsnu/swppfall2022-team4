@@ -168,6 +168,19 @@ def post_detail(request, query_id):
             for tag in tags:
                 tag = Tag.objects.get(pk=tag["id"])
                 post_obj.tags.add(tag)
+
+            # Image add
+            for image in data["images"]:  # image would be string type
+                try:
+                    PostImage.objects.get(image=image, post=post_obj)
+                    # Already there
+                except PostImage.DoesNotExist:
+                    PostImage.objects.create(image=image, post=post_obj)
+            # Image deletion
+            for image in post_obj.images.all():
+                if not image.image in data["images"]:
+                    image.delete()
+
             post_obj.save()
             return JsonResponse({"message": "success"}, status=200)
         except Post.DoesNotExist:

@@ -815,7 +815,6 @@ const ContentImageSection = styled.div`
   position: relative;
   background-color: var(--fit-white);
   padding: 8px 10px;
-  border-bottom: 1px solid gray;
 `;
 
 const PostUploadedImageWrapper = styled.div`

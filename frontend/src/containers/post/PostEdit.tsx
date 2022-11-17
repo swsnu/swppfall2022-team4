@@ -33,6 +33,7 @@ const PostEdit = () => {
         content: post.content,
         tags: post.tags,
         prime_tag: post.prime_tag,
+        images: post.images ? post.images : [],
       }));
     }
   }, [post]);
