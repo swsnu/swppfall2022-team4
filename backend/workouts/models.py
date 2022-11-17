@@ -24,7 +24,8 @@ class FitElement(models.Model):
 
 class DailyLog(models.Model):
     """ daily log definition """
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='daily_log')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='daily_log')
     date = models.DateField(null=False)
     memo = models.TextField(null=True)
     fit_element = models.ManyToManyField(FitElement, blank=True)
@@ -36,3 +37,19 @@ class Routine(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='routine')
     fit_element = models.ManyToManyField(FitElement, blank=True)
+
+
+class FitElementType(models.Model):
+    """ fitelement type definition """
+    TYPE_CHOICE = (
+        ('arm', 'arm'),
+        ('leg', 'leg'),
+        ('back', 'back'),
+        ('chest', 'chest'),
+        ('deltoid', 'deltoid'),
+        ('abs', 'abs'),
+        ('etc', 'etc')
+    )
+    name = models.CharField(max_length=120, null=False)
+    calories = models.IntegerField()
+    category = models.CharField(max_length=10, choices=TYPE_CHOICE, null=False)
