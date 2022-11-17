@@ -3,6 +3,7 @@ import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from users.models import User
 from posts.models import Post
+from comments.models import Comment
 from groups.models import Group
 from chatrooms.models import Chatroom, Message
 from notifications.models import Notification
@@ -113,11 +114,53 @@ class ChatConsumer(AsyncWebsocketConsumer):
             category에 따라 info를 바탕으로 알림을 받을 대상(target)을 탐색
             """
             target = []
+
             if data["category"] == "comment":
-                # info: post의 ID
-                if not Post.objects.filter(id=data["info"]).exists():
+                # info: 작성자의 username, 게시글 id, 부모 댓글 id
+                my_username = data["info"]["me"]
+                post_id = data["info"]["post"]
+                comment_id = data["info"]["comment"]
+
+                if not Post.objects.filter(id=post_id).exists():
                     return
-                target.append(Post.objects.get(id=data["info"]).author.username)
+
+                post = Post.objects.get(id=post_id)
+                if post.author.username != my_username:
+                    target.append(post.author.username)
+
+                if Comment.objects.filter(id=comment_id).exists():
+                    comment = Comment.objects.get(id=comment_id)
+                    if comment.author.username != my_username and post.author.username != comment.author.username:
+                        target.append(comment.author.username)
+
+            elif data["category"] == "postFunc":
+                # info: 작성자의 username, 게시글 id
+                my_username = data["info"]["me"]
+                post_id = data["info"]["post"]
+
+                if not Post.objects.filter(id=post_id).exists():
+                    return
+
+                post = Post.objects.get(id=post_id)
+                if post.author.username != my_username:
+                    target.append(post.author.username)
+
+            elif data["category"] == "commentFunc":
+                # info: 작성자의 username, 댓글 id
+                my_username = data["info"]["me"]
+                comment_id = data["info"]["comment"]
+
+                if not Comment.objects.filter(id=comment_id).exists():
+                    return
+
+                comment = Comment.objects.get(id=comment_id)
+                if comment.author.username != my_username:
+                    target.append(comment.author.username)
+
+            elif data["category"] == "follow":
+                # info : 대상 username
+                target.append(data["info"])
+
             else:
                 pass
 
