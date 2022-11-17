@@ -2,6 +2,7 @@ import json
 import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from users.models import User
+from posts.models import Post
 from groups.models import Group
 from chatrooms.models import Chatroom, Message
 from notifications.models import Notification
@@ -12,11 +13,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.username = username
         await self.channel_layer.group_add("main", self.channel_name)
         await self.accept()
-        print(self.username + "님이 채팅 서버에 접속했습니다.")
+        print(self.username + "님이 서버에 접속했습니다.")
 
     async def disconnect(self, _):
         await self.channel_layer.group_discard("main", self.channel_name)
-        print(self.username + "님이 채팅 서버에서 나갔습니다.")
+        print(self.username + "님이 서버에서 나갔습니다.")
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -105,20 +106,33 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
 
         elif data_type == "notification":
-            for target_username in data["target"]:
-                if User.objects.filter(username=target_username).exists():
-                    Notification.objects.create(
-                        user=User.objects.get(username=target_username),
-                        category=data["category"],
-                        content=data["content"],
-                        image=data["image"],
-                        link=data["link"]
-                    )
+            """
+            [알림 생성]
+            data 형식: category, info, content, image, link
+            category에 따라 info를 바탕으로 알림을 받을 대상(target)을 탐색
+            """
+            target = []
+            if data["category"] == "comment":
+                # info: post의 ID
+                if not Post.objects.filter(id=data["info"]).exists():
+                    return
+                target.append(Post.objects.get(id=data["info"]).author.username)
+            else:
+                pass
+
+            for target_username in target:
+                Notification.objects.create(
+                    user=User.objects.get(username=target_username),
+                    category=data["category"],
+                    content=data["content"],
+                    image=data["image"],
+                    link=data["link"]
+                )
             await self.channel_layer.group_send(
                 "main",
                 {
                     "type": "send_notification",
-                    "target": data["target"]
+                    "target": target
                 }
             )
 
