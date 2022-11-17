@@ -44,6 +44,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 chatroom.new2 = True
             else:
                 chatroom.new1 = True
+            chatroom.recent_message = data["content"]
             chatroom.updated = datetime.datetime.now()
             chatroom.save()
 

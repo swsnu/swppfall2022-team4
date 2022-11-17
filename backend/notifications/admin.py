@@ -3,7 +3,7 @@ from .models import Notification
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    """Message admin definition"""
+    """Notification admin definition"""
     list_display = (
         "id",
         "user",

@@ -41,7 +41,8 @@ def chatroom(request):
             response.append({
                 "id": chatroom_data['pk'],
                 "user": user,
-                "new": target_new
+                "new": target_new,
+                "recent_message": chatroom_data['fields']['recent_message']
             })
 
         return JsonResponse(response, safe=False)
