@@ -12,7 +12,6 @@ import {
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
 } from 'store/apis/workout';
-import { Dictionary } from '@reduxjs/toolkit';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -22,6 +21,21 @@ const WorkoutLog = () => {
   const DAYS_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   const DAYS_OF_THE_WEEK = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const WORKOUT_CATEGORY = ['등', '가슴', '하체', '팔(이두,삼두 등)', '어깨', '기타(유산소 포함)', '복근'];
+
+  type categoryOption = {
+    [key: string]: string;
+  };
+
+  const category_enum: categoryOption = {
+    등: 'back',
+    가슴: 'chest',
+    하체: 'leg',
+    '팔(이두,삼두 등)': 'arm',
+    어깨: 'deltoid',
+    복근: 'abs',
+    '기타(유산소 포함)': 'etc',
+  };
 
   const today = new Date();
   const [date, setDate] = useState(today);
@@ -39,6 +53,7 @@ const WorkoutLog = () => {
   const [weight, setWeight] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
   const [workout_time, setWorkoutTime] = useState<number | null>(null);
+  const [workout_category, setWorkoutCategory] = useState('');
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
@@ -370,37 +385,44 @@ const WorkoutLog = () => {
               </LogHeader>
               <LogInputBody>
                 <LogInputBodyInput>
-                  <WorkoutTypeSelect value={workout_type} onChange={e => setWorkoutType(e.target.value)}>
-                    {fitElementTypes.map(fitelement_type => (
-                      <option>{fitelement_type.korean_name}</option>
+                  <WorkoutTypeSelect value={workout_category} onChange={e => setWorkoutCategory(e.target.value)}>
+                    {WORKOUT_CATEGORY.map(fitelement_category => (
+                      <option>{fitelement_category}</option>
                     ))}
+                  </WorkoutTypeSelect>
+                  <WorkoutTypeSelect value={workout_type} onChange={e => setWorkoutType(e.target.value)}>
+                    {fitElementTypes.map(fitelement_type =>
+                      fitelement_type.category === category_enum[workout_category] ? (
+                        <option>{fitelement_type.korean_name}</option>
+                      ) : null,
+                    )}
                   </WorkoutTypeSelect>
                   <WorkoutTypeInput
                     className="type2"
                     type="number"
                     min="0"
-                    value={weight || 0}
+                    value={weight || ''}
                     onChange={e => setWeight(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
                     className="type2"
                     type="number"
                     min="0"
-                    value={rep || 0}
+                    value={rep || ''}
                     onChange={e => setRep(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
                     className="type2"
                     type="number"
                     min="0"
-                    value={set || 0}
+                    value={set || ''}
                     onChange={e => setSet(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
                     className="type2"
                     type="number"
                     min="0"
-                    value={workout_time || 0}
+                    value={workout_time || ''}
                     onChange={e => setWorkoutTime(Number(e.target.value))}
                   />
                 </LogInputBodyInput>
