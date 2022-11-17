@@ -1,13 +1,10 @@
 import styled from 'styled-components';
+import { userType } from 'store/apis/user';
 import { timeAgoFormat } from 'utils/datetime';
 
 interface IProps {
   message: {
-    author: {
-      username: string;
-      nickname: string;
-      image: string;
-    } | null;
+    author: userType | null;
     content: string;
     created: string;
   };
@@ -66,8 +63,11 @@ const TopWrapper = styled.div`
   margin-bottom: 8px;
 `;
 const Image = styled.img`
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d1d1d1;
+  border-radius: 5px;
+  margin-right: 8px;
 `;
 const Nickname = styled.div`
   font-size: 20px;
@@ -77,6 +77,7 @@ const Nickname = styled.div`
 const Created = styled.div`
   font-size: 14px;
   margin-bottom: 2px;
+  color: #707070;
 `;
 const ContentWrapper = styled.div<{ my: boolean }>`
   width: 100%;
