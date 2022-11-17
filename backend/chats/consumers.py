@@ -38,6 +38,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 author=author,
                 content=data["content"]
             )
+
+            if chatroom.username1 == data["author"]:
+                chatroom.new2 = True
+            else:
+                chatroom.new1 = True
             chatroom.updated = datetime.datetime.now()
             chatroom.save()
 
