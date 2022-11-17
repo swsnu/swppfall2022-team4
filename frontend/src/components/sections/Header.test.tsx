@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fireEvent, render, screen } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import { configureStore } from '@reduxjs/toolkit';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -40,23 +41,48 @@ const setup = () => {
 };
 
 describe('Header', () => {
-  describe('button', () => {
-    test('info', () => {
-      setup();
-      const button = screen.getByTestId('infoIcon');
-      fireEvent.click(button);
+  test('button', () => {
+    const store = setup();
 
-      const logoutButton = screen.getByTestId('logoutButton');
-      fireEvent.click(logoutButton);
-      expect(mockDispatch).toBeCalledTimes(3);
-
-      const mypageButton = screen.getByTestId('mypageButton');
-      fireEvent.click(mypageButton);
-      expect(mockNavigate).toBeCalledTimes(1);
-
-      const chatButton = screen.getByTestId('chatButton');
-      fireEvent.click(chatButton);
-      expect(mockNavigate).toBeCalledTimes(2);
+    fireEvent.click(screen.getByTestId('notificationIcon'));
+    expect(screen.getByTestId('notificationIcon')).toBeInTheDocument();
+    act(() => {
+      store.dispatch({
+        type: 'notification/getNotificationListSuccess',
+        payload: [
+          {
+            id: 1234,
+            category: 'comment',
+            content: 'content',
+            image: 'image',
+            link: '/link',
+            created: '2022-11-11',
+          },
+        ],
+      });
     });
+    fireEvent.click(screen.getByTestId('notificationIcon'));
+    expect(screen.getByTestId('notificationIcon')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('notificationIcon'));
+
+    fireEvent.click(screen.getByText('더 보기'));
+    expect(mockNavigate).toBeCalledTimes(1);
+    fireEvent.click(screen.getByText('content'));
+    expect(mockNavigate).toBeCalledTimes(2);
+
+    const button = screen.getByTestId('infoIcon');
+    fireEvent.click(button);
+
+    const logoutButton = screen.getByTestId('logoutButton');
+    fireEvent.click(logoutButton);
+    expect(mockDispatch).toBeCalledTimes(3);
+
+    const mypageButton = screen.getByTestId('mypageButton');
+    fireEvent.click(mypageButton);
+    expect(mockNavigate).toBeCalledTimes(3);
+
+    const chatButton = screen.getByTestId('chatButton');
+    fireEvent.click(chatButton);
+    expect(mockNavigate).toBeCalledTimes(4);
   });
 });

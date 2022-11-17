@@ -127,9 +127,6 @@ const Header = () => {
       dispatch(userActions.logout());
     }
   };
-  const onDelete = (id: number) => {
-    dispatch(notificationActions.deleteNotification(id));
-  };
   const nav = ({ isActive }: { isActive: boolean }) => (isActive ? 'active' : '');
 
   if (!user) return <div>no user</div>;
@@ -175,12 +172,11 @@ const Header = () => {
                   {notificationList.slice(0, 4).map(x => (
                     <NotificationItem
                       key={x.id}
-                      category={x.category}
                       content={x.content}
                       image={x.image}
                       created={x.created}
                       clicked={() => navigate(x.link)}
-                      clickedDelete={() => onDelete(x.id)}
+                      clickedDelete={() => dispatch(notificationActions.deleteNotification(x.id))}
                     />
                   ))}
                   {notificationList.length === 0 ? (
