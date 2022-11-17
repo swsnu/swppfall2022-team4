@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import Input1 from 'components/common/inputs/Input1';
 import Button1 from 'components/common/buttons/Button1';
 import Button2 from 'components/common/buttons/Button2';
+import { KAKAO_REDIRECT_URI } from './SocialLoginCallback';
 
 const BACKGROUND_LIST = [
   require('assets/images/main/background_image/1.jpg'),
@@ -65,8 +66,13 @@ const Login = () => {
   const onLogin = () => {
     dispatch(userActions.login(input));
   };
-  const onSocialLogin = (type: string) => {
-    alert(type + ' 소셜 로그인');
+  const onSocialLogin = async (type: string) => {
+    if (type === 'kakao') {
+      const rest_api_key = process.env.REACT_APP_KAKAO_KEY;
+      window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${rest_api_key}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
+    } else {
+      alert(type + ' 소셜 로그인');
+    }
   };
 
   return (

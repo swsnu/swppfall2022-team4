@@ -2,10 +2,11 @@ import os
 import json
 import bcrypt
 import jwt
+import requests
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from .models import User
+from users.models import User
 from posts.views import prepare_posts_response
 from comments.views import prepare_comment_response
 
@@ -253,3 +254,86 @@ def profile_post(request, user_id):
         {"posts": posts_serializable, "comments": proc_comm, "scraps": scraps_serializable},
         status=200,
     )
+
+
+class KakaoException(Exception):
+    pass
+
+
+def kakao_callback(request):
+    try:
+        rest_api_key = os.environ.get("KAKAO_KEY")
+        redirect_uri = 'http://localhost:3000/oauth/kakao/'
+        code = request.GET.get("code")
+        token_request = requests.get(
+            f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}",
+            headers={"Content-type": "application/x-www-form-urlencoded;charset=utf-8"},
+        )
+        response_json = token_request.json()
+        error = response_json.get("error", None)
+        if error is not None:
+            raise KakaoException("Error with authorization.")
+        else:
+            access_token = response_json.get("access_token")
+            profile_request = requests.get(
+                f"https://kapi.kakao.com/v2/user/me",
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+                },
+            )
+            profile_json = profile_request.json()
+            kakao_account = profile_json.get("kakao_account")
+            properties = profile_json.get("properties")
+
+            # print(f"profile json : {profile_json}") # id, connected_at, properties, kakao_account.
+            # print(f"properties : {properties}")
+
+            username = properties.get("nickname")
+
+            try:
+                user = User.objects.get(username=username)
+                # if user.login_method == User.LOGIN_KAKAO:
+                # trying to login.
+                # login(request, user)
+                # else:
+                # raise KakaoException(f"Please log in with: {user.login_method}")
+
+            except User.DoesNotExist:
+                new_user = User.objects.create(
+                    username=username,
+                    hashed_password='',
+                    nickname=username,
+                    gender='',
+                    age=0,
+                    height=0,
+                    weight=0,
+                    image='profile_default.png',
+                    exp=0,
+                    level=1,
+                )
+        token = jwt.encode(
+            {'username': username},
+            os.environ.get("JWT_SECRET"),
+            os.environ.get("ALGORITHM"),
+        )
+        response = JsonResponse(
+            {
+                "username": username,
+                "nickname": username,
+                "image": 'profile_default.png',
+            },
+            status=200,
+        )
+        response.set_cookie(
+            'access_token',
+            token,
+            max_age=60 * 60 * 24 * 7,
+            samesite='None',
+            secure=True,
+            httponly=True,
+        )
+        return response
+    except KakaoException as e:
+        print(f"KakaoException. MSG : {str(e)}")
+        return HttpResponse(201)

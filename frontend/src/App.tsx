@@ -37,6 +37,7 @@ import GroupList from 'containers/group/GroupList';
 import GroupDetail from 'containers/group/GroupDetail';
 import GroupCreate from 'containers/group/GroupCreate';
 import GroupMembers from 'containers/group/GroupMembers';
+import SocialLoginCallback from 'containers/user/SocialLoginCallback';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -122,6 +123,9 @@ const InsideComponent = () => {
     <Routes>
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
+      <Route path="oauth/*">
+        <Route path="kakao" element={<SocialLoginCallback />} />
+      </Route>
       <Route
         path="*"
         element={
