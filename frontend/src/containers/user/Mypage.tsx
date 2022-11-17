@@ -53,7 +53,7 @@ const Mypage = () => {
       dispatch(userActions.resetProfile());
       dispatch(chatActions.resetCreate());
     };
-  }, [username]);
+  }, [dispatch, username]);
   useEffect(() => {
     if (profileError && profileError.response?.status === 404) {
       navigate('/not_found');
@@ -63,7 +63,7 @@ const Mypage = () => {
     if (chatroomId) {
       navigate(`/chat/${chatroomId}`);
     }
-  }, [chatroomId]);
+  }, [navigate, chatroomId]);
 
   const onFollow = () => {
     if (username) {

@@ -45,7 +45,7 @@ const Header = () => {
   useEffect(() => {
     if (user) dispatch(notificationActions.getNotificationList());
     if (!user) navigate('/login');
-  }, [navigate, user]);
+  }, [dispatch, navigate, user]);
   useEffect(() => {
     function handleClickOutside(e: MouseEvent): void {
       if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
@@ -73,7 +73,7 @@ const Header = () => {
     window.scrollTo(0, 0);
     setNotificationOpen(false);
     setInfoOpen(false);
-  }, [location]);
+  }, [dispatch, location]);
   const ws: React.MutableRefObject<WebSocket | null> = useRef(null);
   useEffect(() => {
     ws.current = new WebSocket(`ws://${process.env.REACT_APP_API_SOCKET_URL}/ws/chat/${user && user.username}/`);

@@ -28,12 +28,12 @@ const EditPassword = () => {
     return () => {
       dispatch(userActions.resetProfile());
     };
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
-    if (editProfile) {
-      navigate(`/profile/${user?.username}`);
+    if (user && editProfile) {
+      navigate(`/profile/${user.username}`);
     }
-  }, [navigate, editProfile]);
+  }, [navigate, user, editProfile]);
 
   const onConfirm = () => {
     if (!user) {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { BsFillPencilFill } from 'react-icons/bs';
 import styled from 'styled-components';
@@ -9,7 +9,6 @@ import { MyMessage, OtherGroupMessage } from 'components/chat/Message';
 
 const GroupChat = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const chatRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
   const { group_id } = useParams<{ group_id: string }>();
@@ -25,7 +24,7 @@ const GroupChat = () => {
     return () => {
       dispatch(chatActions.resetChat());
     };
-  }, []);
+  }, [dispatch, group_id]);
 
   useEffect(() => {
     scrollEnd();

@@ -28,17 +28,17 @@ const Chat = () => {
     return () => {
       dispatch(chatActions.resetChat());
     };
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     setInput('');
     if (id) {
       dispatch(chatActions.getMessageList(id || ''));
       dispatch(chatActions.readChatroom(id || ''));
     }
-  }, [id]);
+  }, [dispatch, id]);
   useEffect(() => {
     if (id) dispatch(chatActions.readChatroom(id));
-  }, [chatroomList]);
+  }, [dispatch, chatroomList]);
   useEffect(() => {
     scrollEnd();
   }, [messageList]);
