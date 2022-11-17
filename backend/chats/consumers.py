@@ -130,7 +130,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 if Comment.objects.filter(id=comment_id).exists():
                     comment = Comment.objects.get(id=comment_id)
-                    if comment.author.username != my_username and post.author.username != comment.author.username:
+                    if comment.author.username not in [my_username, post.author.username]:
                         target.append(comment.author.username)
 
             elif data["category"] == "postFunc":
