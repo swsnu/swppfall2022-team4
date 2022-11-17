@@ -135,6 +135,7 @@ class PostTestCase(TestCase):
                 'tags': [{'id': '1'}],
                 'title': 'mod by test22',
                 'content': 'mod by test22..',
+                'images': []
             },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken,
