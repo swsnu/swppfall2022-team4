@@ -52,4 +52,3 @@ class ImageTestCase(TestCase):
             response = client.post('/api/image/', {'image': test_image}, HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(response.status_code, 200)
         os.remove(os.path.join("media", json.loads(response.content.decode())["title"]))
-
