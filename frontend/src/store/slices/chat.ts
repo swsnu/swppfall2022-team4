@@ -55,6 +55,14 @@ export const chatSlice = createSlice({
     addMessage: (state, { payload }) => {
       state.messageList.push(payload);
     },
+    readChatroom: (state, action: PayloadAction<string>) => {
+      const isTarget = (x: chatAPI.chatroomType) => {
+        if (x.id.toString() === action.payload) return true;
+      };
+      const targetIndex = state.chatroomList.findIndex(isTarget);
+
+      if (targetIndex >= 0) state.chatroomList[targetIndex].new = false;
+    },
 
     getChatroomList: state => {
       state.error = null;
@@ -119,6 +127,9 @@ function* getChatroomListSaga() {
     yield put(chatActions.getChatroomListFailure(error));
   }
 }
+function* readChatroomSaga(action: PayloadAction<string>) {
+  yield call(chatAPI.readChatroom, action.payload);
+}
 function* createChatroomSaga(action: PayloadAction<{ username: string }>) {
   try {
     const response: AxiosResponse = yield call(chatAPI.createChatroom, action.payload);
@@ -146,6 +157,7 @@ function* getGroupMessageListSaga(action: PayloadAction<string>) {
 
 export default function* chatSaga() {
   yield takeLatest(chatActions.getChatroomList, getChatroomListSaga);
+  yield takeLatest(chatActions.readChatroom, readChatroomSaga);
   yield takeLatest(chatActions.createChatroom, createChatroomSaga);
   yield takeLatest(chatActions.getMessageList, getMessageListSaga);
   yield takeLatest(chatActions.getGroupMessageList, getGroupMessageListSaga);

@@ -20,6 +20,7 @@ describe('slices - chat', () => {
     [chatActions.getChatroomList(), initialState],
     [chatActions.getChatroomListSuccess('data'), { ...initialState, chatroomList: 'data' }],
     [chatActions.getChatroomListFailure('error'), { ...initialState, error: 'error' }],
+    [chatActions.readChatroom('1234'), initialState],
     [chatActions.createChatroom({ username: '11111111' }), initialState],
     [
       chatActions.createChatroomSuccess({ id: '1234' }),
@@ -43,6 +44,26 @@ describe('slices - chat', () => {
     expect(store.getState().chat).toEqual(state);
   });
 
+  test('readChatroom', () => {
+    const store = configureStore({
+      reducer: rootReducer,
+    });
+    store.dispatch(
+      chatActions.getChatroomListSuccess([
+        { id: 1, new: true },
+        { id: 2, new: true },
+      ]),
+    );
+    store.dispatch(chatActions.readChatroom('1'));
+    expect(store.getState().chat).toEqual({
+      ...initialState,
+      chatroomList: [
+        { id: 1, new: false },
+        { id: 2, new: true },
+      ],
+    });
+  });
+
   describe('saga success', () => {
     test('getChatroomList', () => {
       return expectSaga(chatSaga)
@@ -51,6 +72,14 @@ describe('slices - chat', () => {
         .put({ type: 'chat/getChatroomListSuccess', payload: 'data' })
         .dispatch({ type: 'chat/getChatroomList' })
         .hasFinalState({ ...initialState, chatroomList: 'data' })
+        .silentRun();
+    });
+    test('readChatroom', () => {
+      return expectSaga(chatSaga)
+        .withReducer(chatSlice.reducer)
+        .provide([[call(chatAPI.readChatroom, '1234'), undefined]])
+        .dispatch({ type: 'chat/readChatroom', payload: '1234' })
+        .hasFinalState(initialState)
         .silentRun();
     });
     test('createChatroom', () => {
