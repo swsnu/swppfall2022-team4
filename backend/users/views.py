@@ -228,6 +228,25 @@ def profile(request, user_id):
         return response
 
 
+@require_http_methods(["POST"])
+def follow(request, user_id):
+    """
+    POST : 팔로우
+    """
+    data = json.loads(request.body.decode())
+    target_username = data["username"]
+
+    if not (User.objects.filter(username=user_id)).exists():
+        return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
+    target = User.objects.get(username=user_id)
+
+    user = User.objects.get(username=request.user.username)
+    user.follower.add(target)
+    target.following.add(user)
+
+    return HttpResponse(status=204)
+
+
 @require_http_methods(["GET"])
 def profile_post(request, user_id):
     """
