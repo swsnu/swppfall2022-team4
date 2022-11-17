@@ -58,6 +58,10 @@ class ChatroomTestCase(TestCase):
             username1='username2',
             username2='username3'
         )
+        Chatroom.objects.create(
+            username1='username5',
+            username2='username1'
+        )
 
         Message.objects.create(
             room=chatroom1,
@@ -151,6 +155,9 @@ class ChatroomTestCase(TestCase):
         self.assertEqual(res.status_code, 403)
 
         res = client.get('/api/chat/read/2/')
+        self.assertEqual(res.status_code, 204)
+
+        res = client.get('/api/chat/read/4/')
         self.assertEqual(res.status_code, 204)
 
     def test_message(self):
