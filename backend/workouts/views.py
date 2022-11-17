@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse, HttpResponseBadRequest
 
 from datetime import datetime, date
-from .models import FitElement, Routine, DailyLog
+from .models import FitElement, Routine, DailyLog, FitElementType
 import json
 from django.views.decorators.http import require_http_methods
 
@@ -287,3 +287,22 @@ def daily_log(request, year, month, specific_date):
                 daily_log_single[0].fit_element.add(fitelement)
         daily_log_single[0].save()
         return JsonResponse(return_json, safe=False, status=200)
+
+
+@require_http_methods(["GET"])
+def get_fitelement_types(request):
+    types = FitElementType.objects.all()
+    return_json = []
+    for fitelement_type in types:
+        type_json = {
+            'name': fitelement_type.name,
+            'calories': fitelement_type.calories,
+            'category': fitelement_type.category
+        }
+        return_json.append(type_json)
+    return JsonResponse(return_json, safe=False, status=200)
+
+
+@require_http_methods(["GET"])
+def get_fitelement_type(request, name):
+    pass
