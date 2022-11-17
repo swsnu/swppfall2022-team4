@@ -6,7 +6,7 @@ from django.test import TestCase, Client
 from users.models import User
 
 
-class ImageTestCase(TestCase):
+class UserTestCase(TestCase):
     def setUp(self):
         user1 = User.objects.create(
             username='username',

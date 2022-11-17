@@ -6,7 +6,7 @@ from groups.models import Group
 from .models import Chatroom, Message
 
 
-class ImageTestCase(TestCase):
+class ChatroomTestCase(TestCase):
 
     def setUp(self):
         user1 = User.objects.create(

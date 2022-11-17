@@ -27,11 +27,9 @@ def index(request):
 
         return JsonResponse(response, safe=False)
 
-    else: # DELETE
+    else:  # DELETE
         Notification.objects.filter(user=request.user).delete()
         return HttpResponse(status=204)
-
-
 
 @require_http_methods(["DELETE"])
 def delete_notification(request, notification_id):
@@ -40,6 +38,3 @@ def delete_notification(request, notification_id):
     """
     Notification.objects.filter(id=notification_id).delete()
     return HttpResponse(status=204)
-
-
-
