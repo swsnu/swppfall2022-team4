@@ -16,7 +16,6 @@ def set_csrf(request):
     """
     return HttpResponse(status=200)
 
-
 @require_http_methods(["POST"])
 def signup(request):
     """
@@ -72,7 +71,6 @@ def signup(request):
     except (KeyError, json.JSONDecodeError):
         return HttpResponseBadRequest()
 
-
 @require_http_methods(["POST"])
 def login(request):
     """
@@ -114,14 +112,12 @@ def login(request):
     except (KeyError, json.JSONDecodeError):
         return HttpResponseBadRequest()
 
-
 @require_http_methods(["GET"])
 def check(request):
     """
     GET : 자동 로그인을 위한 토큰 확인
     """
     return HttpResponse(status=200)
-
 
 @require_http_methods(["GET"])
 def logout(request):
@@ -133,7 +129,6 @@ def logout(request):
         'access_token', None, max_age=60 * 60 * 24 * 7, samesite='None', secure=True, httponly=True
     )
     return response
-
 
 @require_http_methods(["GET", "PUT", "DELETE"])
 def profile(request, user_id):
@@ -147,6 +142,80 @@ def profile(request, user_id):
     user = User.objects.get(username=user_id)
 
     if request.method == 'GET':
+        posts = user.posts.all()
+        posts_serializable = list(posts.values())
+        for index, _ in enumerate(posts_serializable):
+            posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
+            posts_serializable[index]["author_name"] = posts[index].author.username
+            posts_serializable[index]["like_num"] = posts[index].get_like_num()
+            posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
+            posts_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
+            posts_serializable[index]["prime_tag"] = None
+
+            if posts[index].prime_tag:
+                posts_serializable[index]["prime_tag"] = {
+                    "id": posts[index].prime_tag.pk,
+                    "name": posts[index].prime_tag.tag_name,
+                    "color": posts[index].prime_tag.tag_class.color,
+                }
+
+            del posts_serializable[index]["author_id"]
+            del posts_serializable[index]["prime_tag_id"]
+
+        comments = user.comments.all()
+        proc_comm = list(comments.values())
+        for index, _ in enumerate(proc_comm):
+            proc_comm[index]["like_num"] = comments[index].get_like_num()
+            proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
+            proc_comm[index]["liked"] = (
+                comments[index].liker.all().filter(username=request.user.username).exists()
+            )
+            proc_comm[index]["disliked"] = (
+                comments[index].disliker.all().filter(username=request.user.username).exists()
+            )
+            proc_comm[index]["author_name"] = comments[index].author.username
+            proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]
+            del proc_comm[index]["author_id"]
+            del proc_comm[index]["parent_comment_id"]
+
+        scraps = user.scraped_posts.all()
+        scraps_serializable = list(scraps.values())
+        for index, _ in enumerate(scraps_serializable):
+            scraps_serializable[index]["comments_num"] = scraps[index].get_comments_num()
+            scraps_serializable[index]["author_name"] = scraps[index].author.username
+            scraps_serializable[index]["like_num"] = scraps[index].get_like_num()
+            scraps_serializable[index]["dislike_num"] = scraps[index].get_dislike_num()
+            scraps_serializable[index]["scrap_num"] = scraps[index].get_scrap_num()
+            scraps_serializable[index]["prime_tag"] = None
+
+            if scraps[index].prime_tag:
+                scraps_serializable[index]["prime_tag"] = {
+                    "id": scraps[index].prime_tag.pk,
+                    "name": scraps[index].prime_tag.tag_name,
+                    "color": scraps[index].prime_tag.tag_class.color,
+                }
+
+            del scraps_serializable[index]["author_id"]
+            del scraps_serializable[index]["prime_tag_id"]
+
+        follower_datas = user.follower.all()
+        followers = []
+        for follower_data in follower_datas:
+            followers.append({
+                "username": follower_data.username,
+                "nickname": follower_data.nickname,
+                "image": follower_data.image
+            })
+
+        following_datas = user.following.all()
+        followings = []
+        for following_data in following_datas:
+            followings.append({
+                "username": following_data.username,
+                "nickname": following_data.nickname,
+                "image": following_data.image
+            })
+
         return JsonResponse(
             {
                 "username": user.username,
@@ -159,6 +228,14 @@ def profile(request, user_id):
                 "exp": user.exp,
                 "level": user.level,
                 "created": user.created,
+                "is_follow": user.follower.all().filter(username=request.user.username).exists(),
+                "information": {
+                    "post": posts_serializable,
+                    "comment": proc_comm,
+                    "scrap": scraps_serializable,
+                    "follower": followers,
+                    "following": followings
+                }
             }
         )
 
@@ -227,111 +304,24 @@ def profile(request, user_id):
         )
         return response
 
-
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 def follow(request, user_id):
     """
-    POST : 팔로우
+    GET : 팔로우 / 언팔로우
     """
-    data = json.loads(request.body.decode())
-    target_username = data["username"]
-
     if not (User.objects.filter(username=user_id)).exists():
         return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
-    target = User.objects.get(username=user_id)
 
     user = User.objects.get(username=request.user.username)
-    user.follower.add(target)
-    target.following.add(user)
+    target = User.objects.get(username=user_id)
 
-    return HttpResponse(status=204)
+    if target.follower.all().filter(username=user.username).exists():
+        target.follower.remove(user)
+        user.following.remove(target)
+        follow_result = False
+    else:
+        target.follower.add(user)
+        user.following.add(target)
+        follow_result = True
 
-
-@require_http_methods(["GET"])
-def profile_post(request, user_id):
-    """
-    GET : 유저가 쓴 글, 댓글, 스크랩 불러오기
-    """
-    if not (User.objects.filter(username=user_id)).exists():
-        return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
-    user = User.objects.get(username=user_id)
-
-    posts = user.posts.all()
-
-    posts_serializable = list(posts.values())
-    for index, _ in enumerate(posts_serializable):
-        posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
-        posts_serializable[index]["author_name"] = posts[index].author.username
-        posts_serializable[index]["like_num"] = posts[index].get_like_num()
-        posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
-        posts_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
-        posts_serializable[index]["prime_tag"] = None
-
-        if posts[index].prime_tag:
-            posts_serializable[index]["prime_tag"] = {
-                "id": posts[index].prime_tag.pk,
-                "name": posts[index].prime_tag.tag_name,
-                "color": posts[index].prime_tag.tag_class.color,
-            }
-
-        del posts_serializable[index]["author_id"]
-        del posts_serializable[index]["prime_tag_id"]
-
-    comments = user.comments.all()
-
-    proc_comm = list(comments.values())
-    for index, _ in enumerate(proc_comm):
-        proc_comm[index]["like_num"] = comments[index].get_like_num()
-        proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
-        proc_comm[index]["liked"] = (
-            comments[index].liker.all().filter(username=request.user.username).exists()
-        )
-        proc_comm[index]["disliked"] = (
-            comments[index].disliker.all().filter(username=request.user.username).exists()
-        )
-        proc_comm[index]["author_name"] = comments[index].author.username
-        proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]
-        del proc_comm[index]["author_id"]
-        del proc_comm[index]["parent_comment_id"]
-
-    # Re-ordering.
-    # comment_reservoir = copy.deepcopy(proc_comm)
-    # comment_response = []
-    # parent_id = None
-    # while len(comment_reservoir) != 0:
-    #     proc_comm = copy.deepcopy(comment_reservoir)
-    #     for comment in proc_comm:
-    #         if parent_id:
-    #             if comment["parent_comment"] == parent_id:
-    #                 comment_response.append(comment)
-    #                 comment_reservoir.remove(comment)
-    #         else:
-    #             comment_response.append(comment)
-    #             parent_id = comment["id"]
-    #             comment_reservoir.remove(comment)
-    #     parent_id = None
-
-    scraps = user.scraped_posts.all()
-
-    scraps_serializable = list(scraps.values())
-    for index, _ in enumerate(scraps_serializable):
-        scraps_serializable[index]["comments_num"] = scraps[index].get_comments_num()
-        scraps_serializable[index]["author_name"] = scraps[index].author.username
-        scraps_serializable[index]["like_num"] = scraps[index].get_like_num()
-        scraps_serializable[index]["dislike_num"] = scraps[index].get_dislike_num()
-        scraps_serializable[index]["scrap_num"] = scraps[index].get_scrap_num()
-        scraps_serializable[index]["prime_tag"] = None
-
-        if scraps[index].prime_tag:
-            scraps_serializable[index]["prime_tag"] = {
-                "id": scraps[index].prime_tag.pk,
-                "name": scraps[index].prime_tag.tag_name,
-                "color": scraps[index].prime_tag.tag_class.color,
-            }
-
-        del scraps_serializable[index]["author_id"]
-        del scraps_serializable[index]["prime_tag_id"]
-    return JsonResponse(
-        {"posts": posts_serializable, "comments": proc_comm, "scraps": scraps_serializable},
-        status=200,
-    )
+    return JsonResponse({"is_follow": follow_result}, status=200)

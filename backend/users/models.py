@@ -16,8 +16,8 @@ class User(AbstractTimeStampedModel):
     exp = models.IntegerField(null=False)
     level = models.IntegerField(null=False)
 
-    follower = models.ManyToManyField('self', blank=True)
-    following = models.ManyToManyField('self', blank=True)
+    follower = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='+')
+    following = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='+')
 
     # Related_name : posts <- posts.Post
     # Related_name : comments <- comments.Comment

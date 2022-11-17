@@ -90,8 +90,11 @@ def read_chatroom(request, room_id):
     if request.user.username not in [room.username1, room.username2]:
         return HttpResponse(status=403)
 
-    room.new1 = False
-    room.new2 = False
+    if request.user.username == room.username1:
+        room.new1 = False
+    else:
+        room.new2 = False
+
     room.save()
     return HttpResponse(status=204)
 
