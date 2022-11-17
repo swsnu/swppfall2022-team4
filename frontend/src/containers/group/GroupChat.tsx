@@ -44,7 +44,7 @@ const GroupChat = () => {
         data: {
           author: user.username,
           group: group_id,
-          content: input,
+          content: input.substring(0, 255),
         },
       }),
     );
