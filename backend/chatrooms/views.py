@@ -11,7 +11,7 @@ from .models import Chatroom, Message
 def chatroom(request):
     """
     GET : 채팅방 목록 불러오기
-    POST : 채팅방 개설
+    POST : 새로운 채팅방 개설
     """
     if request.method == "GET":
         username = request.user.username
@@ -24,7 +24,9 @@ def chatroom(request):
             username2 = chatroom_data['fields']['username2']
             new1 = chatroom_data['fields']['new1']
             new2 = chatroom_data['fields']['new2']
-            target_username, target_new = username1, new2 if username2 == username else username2, new1
+
+            target_username = username1 if username2 == username else username2
+            target_new = new1 if username1 == username else new2
 
             if not (User.objects.filter(username=target_username)).exists():
                 user = None
@@ -44,7 +46,7 @@ def chatroom(request):
 
         return JsonResponse(response, safe=False)
 
-    else:   # POST
+    else:  # POST
         data = json.loads(request.body.decode())
         user = User.objects.get(username=request.user.username)
         target_username = data["username"]
@@ -53,6 +55,7 @@ def chatroom(request):
             Q(username1=request.user.username, username2=target_username) |
             Q(username2=request.user.username, username1=target_username)
         )
+
         if len(chatrooms) == 1:
             target_room = Chatroom.objects.get(
                 Q(username1=request.user.username, username2=target_username) |
@@ -63,7 +66,8 @@ def chatroom(request):
             target_room = Chatroom.objects.create(
                 username1=request.user.username,
                 username2=target_username,
-                new2=True
+                new2=True,
+                recent_message=f"{request.user.nickname}님이 채팅방을 개설했습니다."
             )
             Message.objects.create(
                 room=target_room,
@@ -75,6 +79,9 @@ def chatroom(request):
 
 @require_http_methods(["GET"])
 def read_chatroom(request, room_id):
+    """
+    GET : 채팅방 메시지 읽음 처리
+    """
     if not (Chatroom.objects.filter(id=room_id)).exists():
         return HttpResponse(status=404)
 
@@ -84,8 +91,8 @@ def read_chatroom(request, room_id):
 
     room.new1 = False
     room.new2 = False
+    room.save()
     return HttpResponse(status=204)
-        
 
 @require_http_methods(["GET"])
 def message(request, room_id):
@@ -100,10 +107,10 @@ def message(request, room_id):
         return HttpResponse(status=403)
 
     messages = Message.objects.filter(room=room_id).order_by('created')
-    data = json.loads(serializers.serialize('json', messages))
+    message_datas = json.loads(serializers.serialize('json', messages))
     response = []
 
-    for message_data in data:
+    for message_data in message_datas:
         author = message_data['fields']['author']
         content = message_data['fields']['content']
 
