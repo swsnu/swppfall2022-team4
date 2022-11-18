@@ -8567,6 +8567,13 @@ react-is@^17.0.1:
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-kakao-maps-sdk@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/react-kakao-maps-sdk/-/react-kakao-maps-sdk-1.1.5.tgz#e8027a56ce9da770769be0e5faee5442bffe01f9"
+  integrity sha512-NYL1ZwjwlcOwLDogw3jTB4b9JMlo5uVsJ6z7+jUXCYQMFoKlQfFuBQoh4zCeMADL28yy4yoa8BT4H4pSg79vwg==
+  dependencies:
+    kakao.maps.d.ts "^0.1.33"
+
 react-redux@^8.0.4:
   version "8.0.4"
   resolved "https://registry.npmjs.org/react-redux/-/react-redux-8.0.4.tgz"
