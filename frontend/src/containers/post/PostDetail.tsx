@@ -204,7 +204,7 @@ const PostDetail = () => {
             category: 'commentFunc',
             info: {
               me: user.username,
-              comment: comment.id,
+              comment: comment.comment_id,
             },
             content: `${user.nickname}님이 내 댓글에 ${pair(type_str)} 눌렀습니다.`,
             image: user.image,

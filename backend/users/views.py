@@ -7,6 +7,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from users.models import User
+from posts.views import prepare_posts_response
+from comments.views import prepare_comments_response
 
 
 def prepare_login_response(username, nickname, image, response_status=200):
@@ -135,61 +137,9 @@ def profile(request, user_id):
     user = User.objects.get(username=user_id)
 
     if request.method == 'GET':
-        posts = user.posts.all()
-        posts_serializable = list(posts.values())
-        for index, _ in enumerate(posts_serializable):
-            posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
-            posts_serializable[index]["author_name"] = posts[index].author.username
-            posts_serializable[index]["like_num"] = posts[index].get_like_num()
-            posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
-            posts_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
-            posts_serializable[index]["prime_tag"] = None
-
-            if posts[index].prime_tag:
-                posts_serializable[index]["prime_tag"] = {
-                    "id": posts[index].prime_tag.pk,
-                    "name": posts[index].prime_tag.tag_name,
-                    "color": posts[index].prime_tag.tag_class.color,
-                }
-
-            del posts_serializable[index]["author_id"]
-            del posts_serializable[index]["prime_tag_id"]
-
-        comments = user.comments.all()
-        proc_comm = list(comments.values())
-        for index, _ in enumerate(proc_comm):
-            proc_comm[index]["like_num"] = comments[index].get_like_num()
-            proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
-            proc_comm[index]["liked"] = (
-                comments[index].liker.all().filter(username=request.user.username).exists()
-            )
-            proc_comm[index]["disliked"] = (
-                comments[index].disliker.all().filter(username=request.user.username).exists()
-            )
-            proc_comm[index]["author_name"] = comments[index].author.username
-            proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]
-            del proc_comm[index]["author_id"]
-            del proc_comm[index]["parent_comment_id"]
-
-        scraps = user.scraped_posts.all()
-        scraps_serializable = list(scraps.values())
-        for index, _ in enumerate(scraps_serializable):
-            scraps_serializable[index]["comments_num"] = scraps[index].get_comments_num()
-            scraps_serializable[index]["author_name"] = scraps[index].author.username
-            scraps_serializable[index]["like_num"] = scraps[index].get_like_num()
-            scraps_serializable[index]["dislike_num"] = scraps[index].get_dislike_num()
-            scraps_serializable[index]["scrap_num"] = scraps[index].get_scrap_num()
-            scraps_serializable[index]["prime_tag"] = None
-
-            if scraps[index].prime_tag:
-                scraps_serializable[index]["prime_tag"] = {
-                    "id": scraps[index].prime_tag.pk,
-                    "name": scraps[index].prime_tag.tag_name,
-                    "color": scraps[index].prime_tag.tag_class.color,
-                }
-
-            del scraps_serializable[index]["author_id"]
-            del scraps_serializable[index]["prime_tag_id"]
+        posts_serial = prepare_posts_response(user.posts.all())
+        comments_serial = prepare_comments_response(user.comments.all())
+        scraps_serial = prepare_posts_response(user.scraped_posts.all())
 
         follower_datas = user.follower.all()
         followers = []
@@ -228,9 +178,9 @@ def profile(request, user_id):
                 "login_method": user.login_method,
                 "is_follow": user.follower.all().filter(username=request.user.username).exists(),
                 "information": {
-                    "post": posts_serializable,
-                    "comment": proc_comm,
-                    "scrap": scraps_serializable,
+                    "post": posts_serial,
+                    "comment": comments_serial,
+                    "scrap": scraps_serial,
                     "follower": followers,
                     "following": followings,
                 },

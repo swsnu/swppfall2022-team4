@@ -4,10 +4,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
-import * as tagAPI from 'store/apis/tag';
 import Mypage from './Mypage';
+import { simplePosts, simpleTagVisuals, simpleUserInfo } from 'store/slices/post.test';
 
-const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
 const simpleProfile = {
   username: 'username',
   nickname: 'nickname',
@@ -23,9 +22,9 @@ const simpleProfile = {
   information: {
     post: [
       {
-        id: '1',
+        post_id: '1',
         title: 'First Post',
-        author_name: 'KJY',
+        author: simpleUserInfo[0],
         content: 'Post Contents',
         created: '2022-11-11',
         updated: '2022-11-12',
@@ -35,6 +34,7 @@ const simpleProfile = {
         comments_num: 1,
         tags: simpleTagVisuals,
         prime_tag: simpleTagVisuals[0],
+        has_image: false,
         liked: true,
         disliked: true,
         scraped: true,
@@ -42,8 +42,8 @@ const simpleProfile = {
     ],
     comment: [
       {
-        id: '1',
-        author_name: 'KJY',
+        comment_id: '1',
+        author: simpleUserInfo[0],
         content: 'Comment Content',
         created: '2022-11-11',
         updated: '2022-11-12',
@@ -57,8 +57,8 @@ const simpleProfile = {
         post_id: '1',
       },
       {
-        id: '2',
-        author_name: 'username',
+        comment_id: '2',
+        author: simpleUserInfo[1],
         content: 'Comment Content2',
         created: '2022-11-12',
         updated: '2022-11-12',
@@ -72,8 +72,8 @@ const simpleProfile = {
         post_id: '1',
       },
       {
-        id: '3',
-        author_name: 'username',
+        comment_id: '3',
+        author: simpleUserInfo[1],
         content: 'Comment Content2',
         created: '2022-11-12',
         updated: '2022-11-12',
@@ -87,7 +87,7 @@ const simpleProfile = {
         post_id: '2',
       },
       {
-        id: '4',
+        comment_id: '4',
         author_name: 'username',
         content: 'Commeent332',
         created: '2022-11-12',
@@ -102,25 +102,7 @@ const simpleProfile = {
         post_id: '1',
       },
     ],
-    scrap: [
-      {
-        id: '1',
-        title: 'First Post',
-        author_name: 'KJY',
-        content: 'Post Contents',
-        created: '2022-11-11',
-        updated: '2022-11-12',
-        like_num: 1,
-        dislike_num: 2,
-        scrap_num: 3,
-        comments_num: 1,
-        tags: simpleTagVisuals,
-        prime_tag: simpleTagVisuals[0],
-        liked: true,
-        disliked: true,
-        scraped: true,
-      },
-    ],
+    scrap: [simplePosts[0]],
     follower: [{ username: '1', nickname: '2', image: '3' }],
     following: [{ username: '1', nickname: '2', image: '3' }],
   },

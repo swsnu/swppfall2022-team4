@@ -15,7 +15,7 @@ import { notification } from 'utils/sendNotification';
 const simpleSearch = {
   search_keyword: 'searchKeyword',
 };
-const simpleComments: commentAPI.Comment[] = [
+export const simpleComments: commentAPI.Comment[] = [
   {
     comment_id: '1',
     author: simpleUserInfo[0],

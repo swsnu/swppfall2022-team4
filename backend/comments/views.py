@@ -35,6 +35,12 @@ def prepare_comment_response(comment, is_detail=False, username=''):
     return response
 
 
+def prepare_comments_response(comments, is_detail=False, username=''):
+    comments_serial = []
+    for comment in comments:
+        comments_serial.append(prepare_comment_response(comment, is_detail, username))
+    return comments_serial
+
 @require_http_methods(["POST"])
 def comment_home(request):
     """

@@ -29,6 +29,15 @@ import {
   IPropsComment,
 } from 'containers/post/PostDetail';
 import UserItem from 'components/user/UserItem';
+import { Post } from 'store/apis/post';
+import { Comment } from 'store/apis/comment';
+
+interface MyPageArticleIprops {
+  post: Post;
+}
+interface MyPageCommentIprops {
+  comment: Comment;
+}
 
 const CATEGORY = ['게시글', '댓글', '스크랩', '팔로잉'];
 
@@ -84,6 +93,50 @@ const Mypage = () => {
       }
     }
   };
+
+  const MyPageArticleItem = ({ post }: MyPageArticleIprops) => (
+    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
+      {post.prime_tag ? (
+        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
+      ) : (
+        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
+      )}
+      <span>
+        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
+        <span>[{post.comments_num}]</span>
+      </span>
+      <span>{post.author.username}</span>
+      <span>{post.like_num - post.dislike_num}</span>
+      <span>{timeAgoFormat(post.created)}</span>
+    </ArticleItem>
+  );
+  const MyPageCommentItem = ({ comment }: MyPageCommentIprops) => (
+    <CommentItem
+      key={comment.comment_id}
+      isChild={comment.parent_comment !== null}
+      onClick={() => navigate(`/post/${comment.post_id}`)}
+    >
+      {comment.parent_comment !== null && (
+        <CommentChildIndicator>
+          <FontAwesomeIcon icon={faArrowRight} />
+        </CommentChildIndicator>
+      )}
+      <CommentContentWrapper>
+        <CommentContent>{comment.content}</CommentContent>
+      </CommentContentWrapper>
+      <CommentFuncWrapper>
+        <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
+          <FontAwesomeIcon icon={faThumbsUp} />
+        </FuncBtn>
+        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
+        <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
+          <FontAwesomeIcon icon={faThumbsDown} />
+        </FuncBtn>
+        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
+        <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
+      </CommentFuncWrapper>
+    </CommentItem>
+  );
 
   if (!user || !username) return <div>no user</div>;
   if (loading || !profile) return <Loading />;
@@ -170,71 +223,21 @@ const Mypage = () => {
               0: (
                 <ProfileContentWrapper>
                   {profile.information.post.map(post => (
-                    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
-                      {post.prime_tag ? (
-                        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-                      ) : (
-                        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-                      )}
-                      <span>
-                        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
-                        <span>[{post.comments_num}]</span>
-                      </span>
-                      <span>{post.author.username}</span>
-                      <span>{post.like_num - post.dislike_num}</span>
-                      <span>{timeAgoFormat(post.created)}</span>
-                    </ArticleItem>
+                    <MyPageArticleItem key={post.post_id} post={post} />
                   ))}
                 </ProfileContentWrapper>
               ),
               1: (
                 <ProfileContentWrapper>
                   {profile.information.comment.map(comment => (
-                    <CommentItem
-                      key={comment.comment_id}
-                      isChild={comment.parent_comment !== null}
-                      onClick={() => navigate(`/post/${comment.post_id}`)}
-                    >
-                      {comment.parent_comment !== null && (
-                        <CommentChildIndicator>
-                          <FontAwesomeIcon icon={faArrowRight} />
-                        </CommentChildIndicator>
-                      )}
-                      <CommentContentWrapper>
-                        <CommentContent>{comment.content}</CommentContent>
-                      </CommentContentWrapper>
-                      <CommentFuncWrapper>
-                        <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
-                          <FontAwesomeIcon icon={faThumbsUp} />
-                        </FuncBtn>
-                        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-                        <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
-                          <FontAwesomeIcon icon={faThumbsDown} />
-                        </FuncBtn>
-                        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-                        <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
-                      </CommentFuncWrapper>
-                    </CommentItem>
+                    <MyPageCommentItem key={comment.comment_id} comment={comment} />
                   ))}
                 </ProfileContentWrapper>
               ),
               2: (
                 <ProfileContentWrapper>
                   {profile.information.scrap.map(post => (
-                    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
-                      {post.prime_tag ? (
-                        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-                      ) : (
-                        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-                      )}
-                      <span>
-                        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
-                        <span>[{post.comments_num}]</span>
-                      </span>
-                      <span>{post.author.username}</span>
-                      <span>{post.like_num - post.dislike_num}</span>
-                      <span>{timeAgoFormat(post.created)}</span>
-                    </ArticleItem>
+                    <MyPageArticleItem key={post.post_id} post={post} />
                   ))}
                 </ProfileContentWrapper>
               ),
