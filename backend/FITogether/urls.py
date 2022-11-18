@@ -28,4 +28,5 @@ urlpatterns = [
     path('api/comment/', include('comments.urls', namespace="comment")),
     path('api/tag/', include('tags.urls', namespace="tag")),
     path('api/chat/', include('chatrooms.urls')),
+    path('api/notification/', include('notifications.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

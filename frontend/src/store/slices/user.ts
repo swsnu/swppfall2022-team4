@@ -3,46 +3,26 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as userAPI from 'store/apis/user';
-import * as postAPI from 'store/apis/post';
-import * as commentAPI from 'store/apis/comment';
 
 interface UserState {
-  user: {
-    username: string;
-    nickname: string;
-    image: string;
-  } | null;
+  user: userAPI.userType | null;
   error: AxiosError | null;
 
   profile: userAPI.profileType | null;
-  profileContent: {
-    post: postAPI.Post[] | null;
-    comment: commentAPI.Comment[] | null;
-    scrap: postAPI.Post[] | null;
-  };
   loading: boolean;
   editProfile: boolean;
   deleteProfile: boolean;
   profileError: AxiosError | null;
-
-  notice: string[];
 }
 export const initialState: UserState = {
   user: null,
   error: null,
 
   profile: null,
-  profileContent: {
-    post: null,
-    comment: null,
-    scrap: null,
-  },
   loading: false,
   editProfile: false,
   deleteProfile: false,
   profileError: null,
-
-  notice: [],
 };
 
 export const userSlice = createSlice({
@@ -58,9 +38,6 @@ export const userSlice = createSlice({
       state.editProfile = false;
       state.deleteProfile = false;
       state.profileError = null;
-      state.profileContent.post = null;
-      state.profileContent.comment = null;
-      state.profileContent.scrap = null;
     },
     token: state => state,
 
@@ -163,16 +140,12 @@ export const userSlice = createSlice({
       state.profileError = payload;
       alert(payload.response?.data.message);
     },
-
-    getProfileContent: (state, action: PayloadAction<string>) => {
-      state.profileContent.post = null;
-      state.profileContent.comment = null;
-      state.profileContent.scrap = null;
+    follow: (state, action: PayloadAction<string>) => state,
+    followSuccess: (state, { payload }) => {
+      if (state.profile) state.profile.is_follow = payload.is_follow;
     },
-    getProfileContentSuccess: (state, { payload }) => {
-      state.profileContent.post = payload.posts;
-      state.profileContent.comment = payload.comments;
-      state.profileContent.scrap = payload.scraps;
+    followFailure: (state, { payload }) => {
+      alert(payload.response?.data.message);
     },
   },
 });
@@ -241,13 +214,12 @@ function* signoutSaga(action: PayloadAction<string>) {
     yield put(userActions.signoutFailure(error));
   }
 }
-
-function* getProfileContentSaga(action: PayloadAction<string>) {
+function* followSaga(action: PayloadAction<string>) {
   try {
-    const response: AxiosResponse = yield call(userAPI.getProfileContent, action.payload);
-    yield put(userActions.getProfileContentSuccess(response));
+    const response: AxiosResponse = yield call(userAPI.follow, action.payload);
+    yield put(userActions.followSuccess(response));
   } catch (error) {
-    // yield put(userActions.getProfileFailure(error));
+    yield put(userActions.followFailure(error));
   }
 }
 
@@ -259,7 +231,7 @@ export default function* userSaga() {
   yield takeLatest(userActions.check, checkSaga);
   yield takeLatest(userActions.logout, logoutSaga);
   yield takeLatest(userActions.getProfile, getProfileSaga);
-  yield takeLatest(userActions.getProfileContent, getProfileContentSaga);
   yield takeLatest(userActions.editProfile, editProfileSaga);
   yield takeLatest(userActions.signout, signoutSaga);
+  yield takeLatest(userActions.follow, followSaga);
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
@@ -6,7 +7,7 @@ import * as chatAPI from 'store/apis/chat';
 
 interface ChatState {
   socket: any;
-  where: string | null;
+  where: string;
 
   create: {
     id: string | null;
@@ -19,7 +20,7 @@ interface ChatState {
 }
 export const initialState: ChatState = {
   socket: null,
-  where: null,
+  where: '/',
 
   create: {
     id: null,
@@ -39,6 +40,11 @@ export const chatSlice = createSlice({
       state.create.id = null;
       state.create.error = null;
     },
+    resetChat: state => {
+      state.chatroomList = [];
+      state.messageList = [];
+      state.error = null;
+    },
 
     setSocket: (state, { payload }) => {
       state.socket = payload;
@@ -49,6 +55,15 @@ export const chatSlice = createSlice({
     addMessage: (state, { payload }) => {
       state.messageList.push(payload);
     },
+    readChatroom: (state, action: PayloadAction<string>) => {
+      const isTarget = (x: chatAPI.chatroomType) => {
+        if (x.id.toString() === action.payload) return true;
+      };
+      const targetIndex = state.chatroomList.findIndex(isTarget);
+
+      if (targetIndex >= 0) state.chatroomList[targetIndex].new = false;
+    },
+
     getChatroomList: state => {
       state.error = null;
     },
@@ -87,6 +102,19 @@ export const chatSlice = createSlice({
       state.error = payload;
       alert(payload.response?.data.message);
     },
+    getGroupMessageList: (state, action: PayloadAction<string>) => {
+      state.messageList = [];
+      state.error = null;
+    },
+    getGroupMessageListSuccess: (state, { payload }) => {
+      state.messageList = payload;
+      state.error = null;
+    },
+    getGroupMessageListFailure: (state, { payload }) => {
+      state.messageList = [];
+      state.error = payload;
+      alert(payload.response?.data.message);
+    },
   },
 });
 export const chatActions = chatSlice.actions;
@@ -98,6 +126,9 @@ function* getChatroomListSaga() {
   } catch (error) {
     yield put(chatActions.getChatroomListFailure(error));
   }
+}
+function* readChatroomSaga(action: PayloadAction<string>) {
+  yield call(chatAPI.readChatroom, action.payload);
 }
 function* createChatroomSaga(action: PayloadAction<{ username: string }>) {
   try {
@@ -115,9 +146,19 @@ function* getMessageListSaga(action: PayloadAction<string>) {
     yield put(chatActions.getMessageListFailure(error));
   }
 }
+function* getGroupMessageListSaga(action: PayloadAction<string>) {
+  try {
+    const response: AxiosResponse = yield call(chatAPI.getGroupMessageList, action.payload);
+    yield put(chatActions.getGroupMessageListSuccess(response));
+  } catch (error) {
+    yield put(chatActions.getGroupMessageListFailure(error));
+  }
+}
 
 export default function* chatSaga() {
   yield takeLatest(chatActions.getChatroomList, getChatroomListSaga);
+  yield takeLatest(chatActions.readChatroom, readChatroomSaga);
   yield takeLatest(chatActions.createChatroom, createChatroomSaga);
   yield takeLatest(chatActions.getMessageList, getMessageListSaga);
+  yield takeLatest(chatActions.getGroupMessageList, getGroupMessageListSaga);
 }

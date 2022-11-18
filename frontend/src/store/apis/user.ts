@@ -1,4 +1,6 @@
 import client from './client';
+import * as postAPI from 'store/apis/post';
+import * as commentAPI from 'store/apis/comment';
 
 export const token = async () => {
   const response = await client.get<undefined>(`/api/user/token/`);
@@ -38,9 +40,8 @@ export const signout = async (username: string) => {
   const response = await client.delete<undefined>(`/api/user/profile/${username}/`);
   return response.data;
 };
-
-export const getProfileContent = async (username: string) => {
-  const response = await client.get(`/api/user/profile/${username}/content/`);
+export const follow = async (username: string) => {
+  const response = await client.get<undefined>(`/api/user/follow/${username}/`);
   return response.data;
 };
 
@@ -82,6 +83,14 @@ export type profileType = {
   level: number;
   created: string;
   login_method: string;
+  is_follow: boolean;
+  information: {
+    post: postAPI.Post[];
+    comment: commentAPI.Comment[];
+    scrap: postAPI.Post[];
+    follower: userType[];
+    following: userType[];
+  };
 };
 export type editProfileRequestType =
   | {

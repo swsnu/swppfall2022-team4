@@ -32,7 +32,7 @@ const EditProfile = () => {
     return () => {
       dispatch(userActions.resetProfile());
     };
-  }, []);
+  }, [dispatch, user]);
   useEffect(() => {
     if (profile) {
       setImage(profile.image);
@@ -44,15 +44,15 @@ const EditProfile = () => {
     }
   }, [profile]);
   useEffect(() => {
-    if (editProfile) {
-      navigate(`/profile/${user?.username}`);
+    if (user && editProfile) {
+      navigate(`/profile/${user.username}`);
       try {
         localStorage.setItem('user', JSON.stringify(user));
       } catch (e) {
         console.log('localStorage is not working');
       }
     }
-  }, [navigate, editProfile]);
+  }, [navigate, user, editProfile]);
   useEffect(() => {
     if (deleteProfile) {
       navigate(`/`);
