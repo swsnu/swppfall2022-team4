@@ -386,20 +386,25 @@ const WorkoutLog = () => {
                 <LogCategory>강도</LogCategory>
                 <LogCategory>반복</LogCategory>
                 <LogCategory>세트</LogCategory>
-                <LogCategory>시간</LogCategory>
+                <LogCategory>시간(분)</LogCategory>
               </LogHeader>
               <LogInputBody>
                 <LogInputBodyInput>
                   <WorkoutTypeSelect
                     className="type2"
-                    value={workout_category}
                     onChange={e => setWorkoutCategory(category_enum[e.target.value])}
                   >
+                    <option disabled selected value="">
+                      선택
+                    </option>
                     {WORKOUT_CATEGORY.map(fitelement_category => (
                       <option>{fitelement_category}</option>
                     ))}
                   </WorkoutTypeSelect>
-                  <WorkoutTypeSelect defaultValue={''} onChange={e => setWorkoutType(e.target.value)}>
+                  <WorkoutTypeSelect onChange={e => setWorkoutType(e.target.value)}>
+                    <option disabled selected value="">
+                      종류 선택
+                    </option>
                     {fitElementTypes.map(fitelement_type =>
                       fitelement_type.category === workout_category ? (
                         <option>{fitelement_type.korean_name}</option>
