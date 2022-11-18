@@ -24,19 +24,21 @@ const Chat = () => {
   }));
 
   useEffect(() => {
-    dispatch(chatActions.setWhere(id || 'lobby'));
     dispatch(chatActions.getChatroomList());
     return () => {
-      dispatch(chatActions.setWhere(null));
+      dispatch(chatActions.resetChat());
     };
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     setInput('');
-    dispatch(chatActions.setWhere(id || 'lobby'));
     if (id) {
       dispatch(chatActions.getMessageList(id || ''));
+      dispatch(chatActions.readChatroom(id || ''));
     }
-  }, [id]);
+  }, [dispatch, id]);
+  useEffect(() => {
+    if (id) dispatch(chatActions.readChatroom(id));
+  }, [dispatch, chatroomList]);
   useEffect(() => {
     scrollEnd();
   }, [messageList]);
@@ -54,7 +56,7 @@ const Chat = () => {
         data: {
           author: user.username,
           room: id,
-          content: input,
+          content: input.substring(0, 255),
         },
       }),
     );
@@ -70,6 +72,8 @@ const Chat = () => {
           <ChatroomButton
             key={chatroom.id}
             user={chatroom.user}
+            newChat={chatroom.new}
+            recentMessage={chatroom.recent_message}
             clicked={() => navigate(`/chat/${chatroom.id}`)}
             active={chatroom.id.toString() === id}
           />
@@ -105,7 +109,7 @@ const Chat = () => {
               }}
               placeholder="채팅을 입력하세요."
             />
-            <InputWriteButton onClick={onSendMessage}>
+            <InputWriteButton onClick={onSendMessage} data-testid="sendIcon">
               <BsFillPencilFill />
             </InputWriteButton>
           </InputWrapper>

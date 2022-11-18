@@ -6,6 +6,7 @@ import tagSaga, { tagSlice } from './slices/tag';
 import userSaga, { userSlice } from './slices/user';
 import workoutLogSage, { workoutLogSlice } from './slices/workout';
 import chatSaga, { chatSlice } from './slices/chat';
+import notificationSaga, { notificationSlice } from './slices/notification';
 
 export const rootReducer = combineReducers({
   user: userSlice.reducer,
@@ -14,6 +15,7 @@ export const rootReducer = combineReducers({
   group: groupSlice.reducer,
   tag: tagSlice.reducer,
   chat: chatSlice.reducer,
+  notification: notificationSlice.reducer,
 });
 export function* rootSaga() {
   yield all([fork(userSaga)]);
@@ -22,4 +24,5 @@ export function* rootSaga() {
   yield all([fork(groupSaga)]);
   yield all([fork(tagSaga)]);
   yield all([fork(chatSaga)]);
+  yield all([fork(notificationSaga)]);
 }

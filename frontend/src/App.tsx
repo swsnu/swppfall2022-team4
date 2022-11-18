@@ -17,6 +17,7 @@ import Signup from 'containers/user/Signup';
 import Mypage from 'containers/user/Mypage';
 import EditProfile from 'containers/user/EditProfile';
 import EditPassword from 'containers/user/EditPassword';
+import Notification from 'containers/user/Notification';
 
 import Chat from 'containers/chat/Chat';
 
@@ -33,6 +34,7 @@ import GroupList from 'containers/group/GroupList';
 import GroupDetail from 'containers/group/GroupDetail';
 import GroupCreate from 'containers/group/GroupCreate';
 import GroupMembers from 'containers/group/GroupMembers';
+import GroupChat from 'containers/group/GroupChat';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -130,6 +132,7 @@ const InsideComponent = () => {
               <Route path="profile/:username" element={<Mypage />} />
               <Route path="edit_profile" element={<EditProfile />} />
               <Route path="edit_password" element={<EditPassword />} />
+              <Route path="notification" element={<Notification />} />
 
               <Route path="chat" element={<Chat />} />
               <Route path="chat/:id" element={<Chat />} />
@@ -149,6 +152,7 @@ const InsideComponent = () => {
                 <Route path="detail/:group_id" element={<GroupDetail />} />
                 <Route path="detail/:group_id/member" element={<GroupMembers />} />
                 <Route path="create" element={<GroupCreate />} />
+                <Route path="chat/:group_id" element={<GroupChat />} />
               </Route>
 
               <Route path="information" element={<InformationLobby />} />

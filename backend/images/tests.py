@@ -1,3 +1,5 @@
+import os
+import json
 import bcrypt
 import datetime
 from django.test import TestCase, Client
@@ -49,3 +51,4 @@ class ImageTestCase(TestCase):
         with open('images/test/test.jpg', 'rb') as test_image:
             response = client.post('/api/image/', {'image': test_image}, HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(response.status_code, 200)
+        os.remove(os.path.join("media", json.loads(response.content.decode())["title"]))

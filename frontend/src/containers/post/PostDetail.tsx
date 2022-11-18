@@ -37,8 +37,9 @@ const PostDetail = () => {
   const navigate = useNavigate();
 
   const user = useSelector(({ user }: RootState) => user.user);
-  const { post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
-    ({ post }: RootState) => ({
+  const { socket, post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
+    ({ chat, post }: RootState) => ({
+      socket: chat.socket,
       post: post.postDetail.post,
       postComment: post.postComment.comments,
       postDeleteStatus: post.postDelete,
@@ -97,6 +98,34 @@ const PostDetail = () => {
         }),
       );
     }
+
+    if (user && post && socket) {
+      if (type_str === 'like' && post.liked) return;
+      if (type_str === 'dislike' && post.disliked) return;
+      if (type_str === 'scrap' && post.scraped) return;
+
+      const pair = (x: string) => {
+        if (x === 'like') return '좋아요를';
+        else if (x === 'dislike') return '싫어요를';
+        else return '스크랩을';
+      };
+
+      socket.send(
+        JSON.stringify({
+          type: 'notification',
+          data: {
+            category: 'postFunc',
+            info: {
+              me: user.username,
+              post: id,
+            },
+            content: `${user.nickname}님이 내 글에 ${pair(type_str)} 눌렀습니다.`,
+            image: user.image,
+            link: `/post/${id}`,
+          },
+        }),
+      );
+    }
   };
   // type_str : { 'like', 'dislike' }
   const commentFuncOnClick = (comment: Comment, type_str: string) => {
@@ -106,6 +135,32 @@ const PostDetail = () => {
         func_type: type_str,
       }),
     );
+
+    if (user && socket) {
+      if (type_str === 'like' && comment.liked) return;
+      if (type_str === 'dislike' && comment.disliked) return;
+
+      const pair = (x: string) => {
+        if (x === 'like') return '좋아요를';
+        else if (x === 'dislike') return '싫어요를';
+      };
+
+      socket.send(
+        JSON.stringify({
+          type: 'notification',
+          data: {
+            category: 'commentFunc',
+            info: {
+              me: user.username,
+              comment: comment.id,
+            },
+            content: `${user.nickname}님이 내 댓글에 ${pair(type_str)} 눌렀습니다.`,
+            image: user.image,
+            link: `/post/${id}`,
+          },
+        }),
+      );
+    }
   };
 
   const postDeleteOnClick = () => {
@@ -129,6 +184,28 @@ const PostDetail = () => {
           parent_comment: parent_comment ? parent_comment : 'none',
         }),
       );
+
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'comment',
+              info: {
+                me: user.username,
+                post: id,
+                comment: parent_comment,
+              },
+              content: `${user.nickname}님이 ${parent_comment ? '답글' : '댓글'}을 남겼습니다. "${
+                parent_comment ? commentReplyInput : commentInput
+              }"`,
+              image: user.image,
+              link: `/post/${id}`,
+            },
+          }),
+        );
+      }
+
       dispatch(
         postActions.getPostComment({
           post_id: id,
