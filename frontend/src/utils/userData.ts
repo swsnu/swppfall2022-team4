@@ -274,10 +274,6 @@ export type socialUserStateType = {
   weight: string;
   age: string;
 
-  usernameWarning: {
-    content: string;
-    color: string;
-  };
   nicknameWarning: {
     content: string;
     color: string;
@@ -295,10 +291,6 @@ export const socialUserInitialState: socialUserStateType = {
   weight: '',
   age: '',
 
-  usernameWarning: {
-    content: '* 8 ~ 16자 영문, 숫자',
-    color: '#686868',
-  },
   nicknameWarning: {
     content: '* 2자 이상 8자 이하',
     color: '#686868',
