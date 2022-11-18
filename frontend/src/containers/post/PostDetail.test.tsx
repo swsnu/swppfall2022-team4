@@ -78,12 +78,6 @@ export const simpleComments: commentAPI.Comment[] = [
   },
 ];
 
-// const mockOnClickOutside = jest.fn();
-// jest.mock('usehooks-ts', () => ({
-//   ...jest.requireActual('usehooks-ts'),
-//   useOnClickOutside: () => mockOnClickOutside,
-// }));
-
 const addNotification = jest.fn();
 beforeEach(() => {
   Store.addNotification = addNotification;

@@ -223,6 +223,10 @@ describe('API TEST', () => {
       const result = await userAPI.signup(signupRequest);
       expect(result).toBe(`/api/user/signup/`);
     });
+    test('socialSignup', async () => {
+      const result = await userAPI.socialSignup(signupRequest);
+      expect(result).toBe(`/api/user/signup/social/validate/`);
+    });
     test('login', async () => {
       const result = await userAPI.login(loginRequest);
       expect(result).toBe(`/api/user/login/`);

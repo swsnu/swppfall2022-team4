@@ -1,6 +1,6 @@
 import { Dispatch, useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavigateFunction, useLocation, useNavigate } from 'react-router';
+import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import client from 'store/apis/client';
 import { userActions } from 'store/slices/user';
