@@ -110,7 +110,15 @@ function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          <Route path="*" element={<InsideComponent />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <ReactNotifications />
+                <InsideComponent />
+              </>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
@@ -131,7 +139,6 @@ const InsideComponent = () => {
         element={
           <Wrapper>
             <Header />
-            <ReactNotifications />
             <Routes>
               <Route path="" element={<Main />} />
 

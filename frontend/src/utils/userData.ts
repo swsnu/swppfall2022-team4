@@ -264,3 +264,143 @@ export const checkBody = (h: string, w: string, a: string) => {
 
   return true;
 };
+
+// Social Login
+export type socialUserStateType = {
+  username: string;
+  nickname: string;
+  gender: string;
+  height: string;
+  weight: string;
+  age: string;
+
+  usernameWarning: {
+    content: string;
+    color: string;
+  };
+  nicknameWarning: {
+    content: string;
+    color: string;
+  };
+  bodyWarning: {
+    content: string;
+    color: string;
+  };
+};
+export const socialUserInitialState: socialUserStateType = {
+  username: '',
+  nickname: '',
+  gender: '',
+  height: '',
+  weight: '',
+  age: '',
+
+  usernameWarning: {
+    content: '* 8 ~ 16자 영문, 숫자',
+    color: '#686868',
+  },
+  nicknameWarning: {
+    content: '* 2자 이상 8자 이하',
+    color: '#686868',
+  },
+  bodyWarning: {
+    content: '',
+    color: '#686868',
+  },
+};
+export const socialUserReducer = (state: socialUserStateType, action: { name: string; value: string }) => {
+  const actionName: string = action.name;
+  let newValue: string = action.value;
+  const newWarning = {
+    content: '',
+    color: '',
+  };
+
+  switch (actionName) {
+    case 'username': {
+      return {
+        ...state,
+        [actionName]: newValue,
+      };
+    }
+    case 'nickname': {
+      newWarning.content = '* 2자 이상 8자 이하';
+
+      newValue = newValue.substring(0, 8);
+      if (newValue.length >= 2 && newValue.length <= 8) {
+        newWarning.color = '#009112';
+      } else if (newValue.length === 0) {
+        newWarning.color = '#686868';
+      } else {
+        newWarning.color = '#ff3939';
+      }
+
+      return {
+        ...state,
+        [actionName]: newValue,
+        [actionName + 'Warning']: newWarning,
+      };
+    }
+    case 'gender': {
+      return {
+        ...state,
+        [actionName]: newValue,
+      };
+    }
+    case 'height': {
+      newValue = newValue.substring(0, 5);
+
+      const exceptNum = /[^\d.]/g;
+      newValue = newValue.replace(exceptNum, '');
+
+      const regex = /^(\d{1,3})([.]\d)?$/;
+      if (!regex.test(newValue)) {
+        newWarning.content = '* 키는 정수 또는 소수점 첫째 자리까지여야 합니다.';
+        newWarning.color = '#ff3939';
+      } else {
+        newWarning.content = '';
+        newWarning.color = '#009112';
+      }
+
+      return {
+        ...state,
+        [actionName]: newValue,
+        bodyWarning: newWarning,
+      };
+    }
+    case 'weight': {
+      newValue = newValue.substring(0, 5);
+
+      const exceptNum = /[^\d.]/g;
+      newValue = newValue.replace(exceptNum, '');
+
+      const regex = /^(\d{1,3})([.]\d)?$/;
+      if (!regex.test(newValue)) {
+        newWarning.content = '* 몸무게는 정수 또는 소수점 첫째 자리까지여야 합니다.';
+        newWarning.color = '#ff3939';
+      } else {
+        newWarning.content = '';
+        newWarning.color = '#009112';
+      }
+
+      return {
+        ...state,
+        [actionName]: newValue,
+        bodyWarning: newWarning,
+      };
+    }
+    case 'age': {
+      newValue = newValue.substring(0, 2);
+
+      const exceptNum = /[^\d]/g;
+      newValue = newValue.replace(exceptNum, '');
+
+      return {
+        ...state,
+        [actionName]: newValue,
+      };
+    }
+    default:
+      return state;
+  }
+};

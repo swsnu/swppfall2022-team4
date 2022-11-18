@@ -9,6 +9,10 @@ export const signup = async (payload: signupRequestType) => {
   const response = await client.post<userType>(`/api/user/signup/`, payload);
   return response.data;
 };
+export const socialSignup = async (payload: socialSignupRequestType) => {
+  const response = await client.put<userType>(`/api/user/signup/social/validate/`, payload);
+  return response.data;
+};
 export const login = async (payload: loginRequestType) => {
   const response = await client.post<userType>(`/api/user/login/`, payload);
   return response.data;
@@ -48,6 +52,14 @@ export type userType = {
 export type signupRequestType = {
   username: string;
   password: string;
+  nickname: string;
+  gender: string;
+  height: number;
+  weight: number;
+  age: number;
+};
+export type socialSignupRequestType = {
+  username: string;
   nickname: string;
   gender: string;
   height: number;

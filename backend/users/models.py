@@ -18,6 +18,8 @@ class User(AbstractTimeStampedModel):
     )
 
     login_method = models.CharField(max_length=20, choices=LOGIN_CHOICES, default=LOGIN_EMAIL)
+    validated = models.BooleanField(default=True)
+
     username = models.CharField(max_length=20, null=False)
     hashed_password = models.CharField(max_length=255, null=False)
     nickname = models.CharField(max_length=8, null=False)

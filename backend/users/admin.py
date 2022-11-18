@@ -19,4 +19,5 @@ class UserAdmin(admin.ModelAdmin):
         "level",
         "exp",
         "login_method",
+        "validated",
     )

@@ -11,7 +11,7 @@ from posts.views import prepare_posts_response
 from comments.views import prepare_comment_response
 
 
-def prepare_login_response(username, nickname, image):
+def prepare_login_response(username, nickname, image, response_status=200):
     token = jwt.encode(
         {'username': username},
         os.environ.get("JWT_SECRET"),
@@ -23,7 +23,7 @@ def prepare_login_response(username, nickname, image):
             "nickname": nickname,
             "image": image,
         },
-        status=200,
+        status=response_status,
     )
     response.set_cookie(
         'access_token',
@@ -233,7 +233,11 @@ class KakaoException(Exception):
     pass
 
 
+@require_http_methods(["GET"])
 def kakao_callback(request):
+    """
+    GET : Kakao login callback 함수.
+    """
     try:
         rest_api_key = os.environ.get("KAKAO_KEY")
         redirect_uri = 'http://localhost:3000/oauth/kakao/'
@@ -263,8 +267,12 @@ def kakao_callback(request):
         try:
             user = User.objects.get(username=username)
             if user.login_method == User.LOGIN_KAKAO:
-                # Login
-                return prepare_login_response(user.username, user.nickname, user.image)
+                if user.validated:
+                    return prepare_login_response(user.username, user.nickname, user.image)
+                else:
+                    return prepare_login_response(
+                        user.username, user.nickname, user.image, response_status=201
+                    )
             else:
                 raise KakaoException(f"Please log in with: {user.login_method}")
 
@@ -281,8 +289,36 @@ def kakao_callback(request):
                 exp=0,
                 level=1,
                 login_method=User.LOGIN_KAKAO,
+                validated=False,
             )
-            return prepare_login_response(username, username, 'profile_default.png')
+            return prepare_login_response(
+                username, username, 'profile_default.png', response_status=201
+            )
     except KakaoException as error:
-        print(f"KakaoException. MSG : {str(error)}")
-        return HttpResponse(400)
+        return JsonResponse(
+            {
+                "error": str(error),
+            },
+            status=400,
+        )
+
+
+@require_http_methods(["PUT"])
+def validate_social_account(request):
+    """
+    PUT : Social login 개인정보 입력 & Validate
+    """
+    data = json.loads(request.body.decode())
+    try:
+        user = User.objects.get(username=data["username"])
+        user.gender = data["gender"]
+        user.height = data["height"]
+        user.weight = data["weight"]
+        user.age = data["age"]
+        user.validated = True
+        user.save()
+        return prepare_login_response(user.username, user.nickname, user.image)
+    except User.DoesNotExist:
+        return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
+    except KeyError:
+        return HttpResponseBadRequest()
