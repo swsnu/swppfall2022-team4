@@ -53,7 +53,7 @@ const WorkoutLog = () => {
   const [weight, setWeight] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
   const [workout_time, setWorkoutTime] = useState<number | null>(null);
-  const [workout_category, setWorkoutCategory] = useState('등');
+  const [workout_category, setWorkoutCategory] = useState('back');
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
@@ -106,24 +106,28 @@ const WorkoutLog = () => {
   };
 
   const createWorkoutLog = () => {
-    const newLogConfig: createWorkoutLogRequestType = {
-      user_id: 1,
-      type: 'log',
-      workout_type: workout_type,
-      period: workout_period,
-      category: 'leg',
-      weight: weight,
-      rep: rep,
-      set: set,
-      time: workout_time,
-      date: new Date(year, month, day + 1),
-    };
-    dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
-    setWorkoutType('');
-    setRep(0);
-    setWeight(0);
-    setSet(0);
-    setWorkoutTime(0);
+    if (workout_type === '') {
+      alert('운동종류를 입력해주세요.');
+    } else {
+      const newLogConfig: createWorkoutLogRequestType = {
+        user_id: 1,
+        type: 'log',
+        workout_type: workout_type,
+        period: workout_period,
+        category: workout_category,
+        weight: weight,
+        rep: rep,
+        set: set,
+        time: workout_time,
+        date: new Date(year, month, day + 1),
+      };
+      dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
+      setWorkoutType('');
+      setRep(0);
+      setWeight(0);
+      setSet(0);
+      setWorkoutTime(0);
+    }
   };
 
   const copyDailyLog = () => {
@@ -386,14 +390,18 @@ const WorkoutLog = () => {
               </LogHeader>
               <LogInputBody>
                 <LogInputBodyInput>
-                  <WorkoutTypeSelect className="type2" value={workout_category} onChange={e => setWorkoutCategory(e.target.value)}>
+                  <WorkoutTypeSelect
+                    className="type2"
+                    value={workout_category}
+                    onChange={e => setWorkoutCategory(category_enum[e.target.value])}
+                  >
                     {WORKOUT_CATEGORY.map(fitelement_category => (
                       <option>{fitelement_category}</option>
                     ))}
                   </WorkoutTypeSelect>
-                  <WorkoutTypeSelect value={workout_type} onChange={e => setWorkoutType(e.target.value)}>
+                  <WorkoutTypeSelect defaultValue={''} onChange={e => setWorkoutType(e.target.value)}>
                     {fitElementTypes.map(fitelement_type =>
-                      fitelement_type.category === category_enum[workout_category] ? (
+                      fitelement_type.category === workout_category ? (
                         <option>{fitelement_type.korean_name}</option>
                       ) : null,
                     )}
