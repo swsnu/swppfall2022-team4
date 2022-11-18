@@ -37,7 +37,7 @@ const GroupChat = () => {
   };
   const onSendMessage = () => {
     if (!user || input === '') return;
-    socket.send(
+    socket?.send(
       JSON.stringify({
         type: 'group',
         data: {

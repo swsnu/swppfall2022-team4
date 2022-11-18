@@ -6,7 +6,7 @@ import { put, call, takeLatest } from 'redux-saga/effects';
 import * as chatAPI from 'store/apis/chat';
 
 interface ChatState {
-  socket: any;
+  socket: WebSocket | null;
   where: string;
 
   create: {

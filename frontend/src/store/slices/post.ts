@@ -64,16 +64,16 @@ export const initialState: PostState = {
   postSearch: '',
 };
 
-const funcTypeToStr = (type: string) => {
+export const funcTypeToStr = (type: string) => {
   switch (type) {
     case 'like':
-      return '좋아요';
+      return '좋아요를';
     case 'dislike':
-      return '싫어요';
+      return '싫어요를';
     case 'scrap':
-      return '스크랩';
+      return '스크랩을';
     default:
-      return '[알 수 없음]';
+      return '[알 수 없음]을';
   }
 };
 
@@ -235,7 +235,7 @@ export const postSlice = createSlice({
     },
     postFuncSuccess: (state, { payload }) => {
       state.postFunc = true;
-      notificationSuccess('Post', `글 ${funcTypeToStr(payload.type)}에 성공했어요!`);
+      notificationSuccess('Post', `글 ${funcTypeToStr(payload.type)} 성공했어요!`);
     },
     postFuncFailure: (state, { payload }) => {
       state.postFunc = false;
@@ -246,7 +246,7 @@ export const postSlice = createSlice({
     },
     commentFuncSuccess: (state, { payload }) => {
       state.postComment.commentFunc = true;
-      notificationSuccess('Comment', `댓글 ${funcTypeToStr(payload.type)}에 성공했어요!`);
+      notificationSuccess('Comment', `댓글 ${funcTypeToStr(payload.type)} 성공했어요!`);
     },
     commentFuncFailure: (state, { payload }) => {
       state.postComment.commentFunc = true;

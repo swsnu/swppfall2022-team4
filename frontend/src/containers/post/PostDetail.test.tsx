@@ -319,7 +319,7 @@ describe('[PostDetail Page]', () => {
     expect(addNotification).toBeCalledWith({
       ...notification,
       title: 'Post',
-      message: '글 좋아요에 성공했어요!',
+      message: '글 좋아요를 성공했어요!',
       type: 'success',
     });
 
@@ -340,7 +340,7 @@ describe('[PostDetail Page]', () => {
     expect(addNotification).toBeCalledWith({
       ...notification,
       title: 'Post',
-      message: '글 싫어요에 성공했어요!',
+      message: '글 싫어요를 성공했어요!',
       type: 'success',
     });
 
@@ -361,7 +361,7 @@ describe('[PostDetail Page]', () => {
     expect(addNotification).toBeCalledWith({
       ...notification,
       title: 'Post',
-      message: '글 스크랩에 성공했어요!',
+      message: '글 스크랩을 성공했어요!',
       type: 'success',
     });
 
@@ -375,7 +375,7 @@ describe('[PostDetail Page]', () => {
     expect(addNotification).toBeCalledWith({
       ...notification,
       title: 'Post',
-      message: '글 [알 수 없음]에 성공했어요!',
+      message: '글 [알 수 없음]을 성공했어요!',
       type: 'success',
     });
 
