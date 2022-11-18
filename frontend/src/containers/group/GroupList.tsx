@@ -10,6 +10,27 @@ import Button1 from 'components/common/buttons/Button1';
 import Loading from 'components/common/Loading';
 import { GroupElement } from 'components/group/GroupElement';
 
+type geolocationResponseType = {
+  center: {
+    lat: number | null;
+    lng: number | null;
+  };
+  errMsg: string | null;
+  isLoading: boolean;
+};
+
+type addressNameResponseType = {
+  region_type: string;
+  address_name: string;
+  region_1depth_name: string;
+  region_2depth_name: string;
+  region_3depth_name: string;
+  region_4depth_name: string;
+  code: string;
+  x: number;
+  y: number;
+};
+
 const GroupList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -17,6 +38,62 @@ const GroupList = () => {
   const groupList = useSelector((rootState: RootState) => rootState.group.groupList.groups);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentLocation, setCurrentLocation] = useState<geolocationResponseType>({
+    center: {
+      lat: null,
+      lng: null,
+    },
+    errMsg: null,
+    isLoading: true,
+  });
+  const [currentAddressName, setCurrentAddressName] = useState<string | null>();
+  const displayCenterInfo = (result: addressNameResponseType[], status: kakao.maps.services.Status) => {
+    if (status === kakao.maps.services.Status.OK) {
+      for (let i = 0; i < result.length; i++) {
+        if (result[i].region_type === 'H') {
+          setCurrentAddressName(result[i].address_name);
+          break;
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setCurrentLocation(prev => ({
+            ...prev,
+            center: {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            },
+            isLoading: false,
+          }));
+        },
+        err => {
+          setCurrentLocation(prev => ({
+            ...prev,
+            errMsg: err.message,
+            isLoading: false,
+          }));
+        },
+      );
+    } else {
+      setCurrentLocation(prev => ({
+        ...prev,
+        errMsg: 'geolocation을 사용할 수 없습니다.',
+        isLoading: false,
+      }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentLocation.center.lng && currentLocation.center.lat) {
+      const geocoder = new kakao.maps.services.Geocoder();
+      geocoder.coord2RegionCode(currentLocation.center.lng, currentLocation.center.lat, displayCenterInfo);
+    }
+  }, [currentLocation]);
 
   useEffect(() => {
     dispatch(groupActions.getGroups());
@@ -37,6 +114,9 @@ const GroupList = () => {
           }}
         />
       </SearchWrapper>
+      {currentLocation.isLoading && <div>{'위치를 불러오는 중입니다.'}</div>}
+      {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
+      {currentAddressName && <div>{`유저의 위치는 ${currentAddressName} 입니다`}</div>}
       <Button1 content="지도 보기" clicked={() => navigate('/group/location')} />
       <Button1
         content="Create Group"
