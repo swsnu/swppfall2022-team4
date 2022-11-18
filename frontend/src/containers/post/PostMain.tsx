@@ -94,7 +94,7 @@ const PostMain = () => {
                 <SideBarCommentTitle>
                   {comment.content.length > 12 ? comment.content.slice(0, 12) + '...' : comment.content}
                 </SideBarCommentTitle>
-                <SideBarCommentTime>{timeAgoFormat(comment.created)}</SideBarCommentTime>
+                <SideBarCommentTime>{timeAgoFormat(new Date(), new Date(comment.created))}</SideBarCommentTime>
               </SideBarCommentItem>
             ))}
         </SideBarContentWrapper>
@@ -125,7 +125,7 @@ const PostMain = () => {
               </PostTitle>
               <span>{post.author.username}</span>
               <span>{post.like_num - post.dislike_num}</span>
-              <span>{timeAgoFormat(post.created)}</span>
+              <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
             </ArticleItem>
           );
         })

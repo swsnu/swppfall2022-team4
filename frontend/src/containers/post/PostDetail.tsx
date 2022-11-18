@@ -418,7 +418,9 @@ const PostDetail = () => {
                 <FontAwesomeIcon icon={faThumbsDown} />
               </FuncBtn>
               <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-              <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
+              <CommentFuncTimeIndicator>
+                {timeAgoFormat(new Date(), new Date(comment.created))}
+              </CommentFuncTimeIndicator>
             </CommentFuncWrapper>
           </CommentRightWrapper>
         </CommentItem>
@@ -456,7 +458,7 @@ const PostDetail = () => {
               <PostWritterWrapper>
                 <PostWritterLeftWrapper>
                   <PostWritterText> {post.author.username} </PostWritterText>
-                  <PostTimeText>{timeAgoFormat(post.created)}</PostTimeText>
+                  <PostTimeText>{timeAgoFormat(new Date(), new Date(post.created))}</PostTimeText>
                 </PostWritterLeftWrapper>
                 <PostWritterAvatar>
                   <UserAvatar

@@ -16,7 +16,7 @@ const NotificationItem = ({ content, image, created, clicked, clickedDelete }: I
       <ContentWrapper onClick={clicked}>
         <Image src={process.env.REACT_APP_API_IMAGE + image} />
         <Content>{content}</Content>
-        <Created>{timeAgoFormat(created)}</Created>
+        <Created>{timeAgoFormat(new Date(), new Date(created))}</Created>
       </ContentWrapper>
       <CloseButtonWrapper onClick={clickedDelete}>
         <CloseButton />

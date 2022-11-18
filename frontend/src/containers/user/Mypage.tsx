@@ -107,7 +107,7 @@ const Mypage = () => {
       </span>
       <span>{post.author.username}</span>
       <span>{post.like_num - post.dislike_num}</span>
-      <span>{timeAgoFormat(post.created)}</span>
+      <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
     </ArticleItem>
   );
   const MyPageCommentItem = ({ comment }: MyPageCommentIprops) => (
@@ -133,7 +133,7 @@ const Mypage = () => {
           <FontAwesomeIcon icon={faThumbsDown} />
         </FuncBtn>
         <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-        <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
+        <CommentFuncTimeIndicator> {timeAgoFormat(new Date(), new Date(comment.created))} </CommentFuncTimeIndicator>
       </CommentFuncWrapper>
     </CommentItem>
   );
