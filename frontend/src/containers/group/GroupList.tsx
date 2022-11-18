@@ -10,27 +10,7 @@ import { Group } from 'store/apis/group';
 import Button1 from 'components/common/buttons/Button1';
 import Loading from 'components/common/Loading';
 import { GroupElement } from 'components/group/GroupElement';
-
-type geolocationResponseType = {
-  center: {
-    lat: number | null;
-    lng: number | null;
-  };
-  errMsg: string | null;
-  isLoading: boolean;
-};
-
-type addressNameResponseType = {
-  region_type: string;
-  address_name: string;
-  region_1depth_name: string;
-  region_2depth_name: string;
-  region_3depth_name: string;
-  region_4depth_name: string;
-  code: string;
-  x: number;
-  y: number;
-};
+import { geolocationResponseType, co2regionResponseType } from 'assets/types/group';
 
 const distance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
   return ((lat1 - lat2) ^ 2) + ((lng1 - lng2) ^ 2);
@@ -46,14 +26,14 @@ const GroupList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentLocation, setCurrentLocation] = useState<geolocationResponseType>({
     center: {
-      lat: null,
-      lng: null,
+      lat: 37.480966,
+      lng: 126.952317,
     },
     errMsg: null,
     isLoading: true,
   });
   const [currentAddressName, setCurrentAddressName] = useState<string | null>(null);
-  const displayCenterInfo = (result: addressNameResponseType[], status: kakao.maps.services.Status) => {
+  const displayCenterInfo = (result: co2regionResponseType[], status: kakao.maps.services.Status) => {
     if (status === kakao.maps.services.Status.OK) {
       for (let i = 0; i < result.length; i++) {
         if (result[i].region_type === 'H') {
