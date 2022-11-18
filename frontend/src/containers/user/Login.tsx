@@ -67,11 +67,11 @@ const Login = () => {
     dispatch(userActions.login(input));
   };
   const onSocialLogin = async (type: string) => {
-    if (type === 'kakao') {
-      const rest_api_key = process.env.REACT_APP_KAKAO_KEY;
-      window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${rest_api_key}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
-    } else {
-      alert(type + ' 소셜 로그인');
+    switch (type) {
+      case 'kakao':
+        const rest_api_key = process.env.REACT_APP_KAKAO_KEY;
+        window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${rest_api_key}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
+        break;
     }
   };
 
@@ -111,14 +111,14 @@ const Login = () => {
           <SocialLoginText>Social Login</SocialLoginText>
           <SocialLoginIconWrapper>
             <SocialLoginIcon
-              src={require('assets/images/main/social_login_icon/google.png')}
-              alt="google"
-              onClick={() => onSocialLogin('google')}
-            />
-            <SocialLoginIcon
               src={require('assets/images/main/social_login_icon/kakao.jpg')}
               alt="kakao"
               onClick={() => onSocialLogin('kakao')}
+            />
+            <SocialLoginIcon
+              src={require('assets/images/main/social_login_icon/google.png')}
+              alt="google"
+              onClick={() => onSocialLogin('google')}
             />
             <SocialLoginIcon
               src={require('assets/images/main/social_login_icon/facebook.png')}

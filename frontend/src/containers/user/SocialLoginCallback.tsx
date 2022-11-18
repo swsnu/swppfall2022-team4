@@ -1,10 +1,10 @@
-import { useEffect, useReducer, useState } from 'react';
+import { Dispatch, useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router';
+import { NavigateFunction, useLocation, useNavigate } from 'react-router';
 import styled from 'styled-components';
 import client from 'store/apis/client';
 import { userActions } from 'store/slices/user';
-import { checkBody, socialUserInitialState, socialUserReducer } from 'utils/userData';
+import { checkBody, socialUserInitialState, socialUserReducer, socialUserStateType } from 'utils/userData';
 import Loading from 'components/common/Loading';
 import Input1 from 'components/common/inputs/Input1';
 import Button1 from 'components/common/buttons/Button1';
@@ -14,22 +14,31 @@ import OtherInfos from 'components/user/OtherInfos';
 import { RootState } from 'index';
 import { notificationFailure } from 'utils/sendNotification';
 import { AxiosError } from 'axios';
+import { AnyAction } from 'redux';
 
 export const KAKAO_REDIRECT_URI = 'http://localhost:3000/oauth/kakao/';
+export const GITHUB_REDIRECT_URI = 'http://localhost:3000/oauth/github/';
 
 type errorIProps = {
   error: string;
 };
 
-const SocialLoginCallback = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const location = useLocation();
-  const KAKAO_CODE = location.search.split('=')[1];
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [state, stateDispatch] = useReducer(socialUserReducer, socialUserInitialState);
+interface socialLoginCallbackIprops {
+  dispatch: Dispatch<AnyAction>;
+  navigate: NavigateFunction;
+  processFn: () => Promise<void>;
+  isLoading: boolean;
+  state: socialUserStateType;
+  stateDispatch: Dispatch<{ name: string; value: string }>;
+}
+const SocialLoginCallback = ({
+  dispatch,
+  navigate,
+  processFn,
+  isLoading,
+  state,
+  stateDispatch,
+}: socialLoginCallbackIprops) => {
   const { user } = useSelector(({ user }: RootState) => ({
     user: user.user,
   }));
@@ -43,41 +52,7 @@ const SocialLoginCallback = () => {
         console.log('localStorage is not working');
       }
     } else {
-      const func = async () => {
-        try {
-          const kakao_response = await client.get(
-            `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${process.env.REACT_APP_KAKAO_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&code=${KAKAO_CODE}`,
-            { headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' } },
-          );
-          const response = await client.get(`/api/user/login/kakao/callback/?code=${kakao_response.data.access_token}`);
-
-          if (response.status === 200) {
-            try {
-              localStorage.setItem('user', JSON.stringify(response.data));
-              dispatch(userActions.setUser(response.data));
-              dispatch(userActions.check());
-            } catch (e) {
-              console.log('localStorage is not working');
-            }
-            navigate(`/`);
-          } else if (response.status === 201) {
-            stateDispatch({ name: 'username', value: response.data.username });
-            stateDispatch({ name: 'nickname', value: response.data.nickname });
-            stateDispatch({ name: 'image', value: response.data.image });
-            setIsLoading(false);
-          } else {
-          }
-        } catch (error) {
-          const axiosError: AxiosError = error as AxiosError;
-          if (axiosError.response?.status === 400) {
-            notificationFailure('User', '오류가 발생했습니다. 다시 시도해주세요.');
-          } else {
-            notificationFailure('User', ((error as AxiosError).response?.data as errorIProps).error);
-          }
-          navigate('/login');
-        }
-      };
-      func();
+      processFn();
     }
   }, [user, navigate]);
 
@@ -148,7 +123,59 @@ const SocialLoginCallback = () => {
   }
 };
 
-export default SocialLoginCallback;
+export const KakaoLoginCallback = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const KAKAO_CODE = location.search.split('=')[1];
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [state, stateDispatch] = useReducer(socialUserReducer, socialUserInitialState);
+
+  const func = async () => {
+    try {
+      const kakao_response = await client.get(
+        `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${process.env.REACT_APP_KAKAO_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&code=${KAKAO_CODE}`,
+        { headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' } },
+      );
+      const response = await client.get(`/api/user/login/kakao/callback/?code=${kakao_response.data.access_token}`);
+
+      if (response.status === 200) {
+        try {
+          localStorage.setItem('user', JSON.stringify(response.data));
+          dispatch(userActions.setUser(response.data));
+          dispatch(userActions.check());
+        } catch (e) {
+          console.log('localStorage is not working');
+        }
+        navigate(`/`);
+      } else {
+        // status code == 201
+        stateDispatch({ name: 'username', value: response.data.username });
+        stateDispatch({ name: 'nickname', value: response.data.nickname });
+        stateDispatch({ name: 'image', value: response.data.image });
+        setIsLoading(false);
+      }
+    } catch (error) {
+      const axiosError: AxiosError = error as AxiosError;
+      if (axiosError.response?.status === 400) {
+        notificationFailure('User', '오류가 발생했습니다. 다시 시도해주세요.');
+      } else {
+        notificationFailure('User', ((error as AxiosError).response?.data as errorIProps).error);
+      }
+      navigate('/login');
+    }
+  };
+  return SocialLoginCallback({
+    dispatch,
+    navigate,
+    processFn: func,
+    isLoading,
+    state,
+    stateDispatch,
+  });
+};
 
 const Wrapper = styled.div`
   width: 100%;
