@@ -25,13 +25,15 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
     {
       id: 1,
-      class_name: 'workout',
+      class_name: 'hey',
+      class_type: 'general',
       color: '#101010',
       tags: simpleTagVisuals,
     },
     {
       id: 2,
       class_name: 'place',
+      class_type: 'place',
       color: '#111111',
       tags: simpleTagVisuals2,
     },
@@ -162,7 +164,7 @@ describe('[PostEditor Page - Tag]', () => {
       });
     });
 
-    const tagClassOption = screen.getByRole('option', { name: 'workout' }); // Tag Class
+    const tagClassOption = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class
     expect((tagClassOption as HTMLOptionElement).selected).not.toBeTruthy();
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
@@ -257,7 +259,7 @@ describe('[PostEditor Page - Tag]', () => {
       });
     });
 
-    const tagClassOption = screen.getByRole('option', { name: 'workout' }); // Tag Class
+    const tagClassOption = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
 

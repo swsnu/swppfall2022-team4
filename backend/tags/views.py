@@ -21,7 +21,12 @@ def tag_home(request):
             tag_visual_list = []
             for tag in tag_classes[index].tags.all():
                 tag_visual_list.append(
-                    {"id": tag.pk, "name": tag.tag_name, "color": tag_classes[index].color}
+                    {
+                        "id": tag.pk,
+                        "name": tag.tag_name,
+                        "color": tag_classes[index].color,
+                        "type": tag_classes[index].class_type,
+                    }
                 )
             tag_classes_serializable[index]["tags"] = tag_visual_list
         response = JsonResponse(

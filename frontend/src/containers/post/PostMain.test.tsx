@@ -40,6 +40,7 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
     {
       id: 1,
       class_name: 'workout',
+      class_type: 'workout',
       color: '#101010',
       tags: simpleTagVisuals,
     },
