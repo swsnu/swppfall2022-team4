@@ -190,7 +190,7 @@ const PostDetail = () => {
         if (x === 'like') return '좋아요를';
         else if (x === 'dislike') return '싫어요를';
       };
-
+      // console.log(socket);
       socket.send(
         JSON.stringify({
           type: 'notification',

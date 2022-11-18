@@ -99,12 +99,13 @@ jest.mock('react-redux', () => ({
 beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
-const setup = () => {
+const setup = async () => {
   const store = configureStore({ reducer: rootReducer });
   store.dispatch({
     type: 'user/setUser',
     payload: { username: 'KJY', nickname: 'nickname', image: 'image' },
   });
+  // store.dispatch(chatActions.setSocket({ send: (x: any) => console.log(x) }));
   render(
     <Provider store={store}>
       <ReactNotifications />
@@ -115,9 +116,9 @@ const setup = () => {
 };
 
 describe('[PostDetail Page]', () => {
-  test('basic rendering my comment', () => {
+  test('basic rendering my comment', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
-    const store = setup();
+    const store = await setup();
     expect(mockDispatch).toBeCalledTimes(2); // resetPost, updatePostDetail
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/getPostComment' });
@@ -189,9 +190,9 @@ describe('[PostDetail Page]', () => {
     expect(mockNavigate).toBeCalledWith('/post');
   });
 
-  test('basic rendering not my comment', () => {
+  test('basic rendering not my comment', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
-    const store = setup();
+    const store = await setup();
 
     expect(mockDispatch).toBeCalledTimes(2); // resetPost, updatePostDetail
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
@@ -249,9 +250,9 @@ describe('[PostDetail Page]', () => {
     fireEvent.click(commentReplySubmitBtn);
   });
 
-  test('basic rendering my post - edit, delete', () => {
+  test('basic rendering my post - edit, delete', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
-    const store = setup();
+    const store = await setup();
 
     act(() => {
       store.dispatch({
@@ -286,9 +287,9 @@ describe('[PostDetail Page]', () => {
     expect(mockNavigate).toBeCalledWith('/post');
   });
 
-  test('basic rendering not my post', () => {
+  test('basic rendering not my post', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '2' });
-    const store = setup();
+    const store = await setup();
 
     act(() => {
       store.dispatch({
@@ -394,9 +395,9 @@ describe('[PostDetail Page]', () => {
       type: 'post/createComment',
     });
   });
-  test('basic rendering with invalid id', () => {
+  test('basic rendering with invalid id', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: undefined });
-    const store = setup();
+    const store = await setup();
 
     act(() => {
       store.dispatch({
@@ -432,9 +433,9 @@ describe('[PostDetail Page]', () => {
     fireEvent.click(commentDeleteBtn);
   });
 
-  test('multiple comment', () => {
+  test('multiple comment', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
-    const store = setup();
+    const store = await setup();
 
     expect(mockDispatch).toBeCalledTimes(2); // resetPost, updatePostDetail
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
@@ -452,9 +453,9 @@ describe('[PostDetail Page]', () => {
     });
   });
 
-  test('search', () => {
+  test('search', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
-    const store = setup();
+    const store = await setup();
     act(() => {
       store.dispatch({
         type: 'post/postSearch',
@@ -471,9 +472,9 @@ describe('[PostDetail Page]', () => {
     fireEvent.submit(searchInput);
   });
 
-  test('modal test', () => {
+  test('modal test', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
-    const store = setup();
+    const store = await setup();
     act(() => {
       store.dispatch({
         type: 'post/updatePostDetailSuccess',
@@ -493,5 +494,21 @@ describe('[PostDetail Page]', () => {
 
     const commentAvatar = screen.getByAltText(`commentAvatar${simpleComments[1].comment_id}`);
     fireEvent.click(commentAvatar);
+  });
+
+  test('socket', async () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    const store = await setup();
+
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: simplePosts[0],
+      });
+      store.dispatch({
+        type: 'post/getPostCommentSuccess',
+        payload: { comments: [simpleComments[1], simpleComments[3]] },
+      });
+    });
   });
 });
