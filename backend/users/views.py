@@ -10,6 +10,8 @@ from users.models import User
 from posts.views import prepare_posts_response
 from comments.views import prepare_comments_response
 
+NO_USER = "존재하지 않는 유저입니다."
+
 
 def prepare_login_response(username, nickname, image, response_status=200):
     token = jwt.encode(
@@ -133,7 +135,7 @@ def profile(request, user_id):
     DELETE : 회원 탈퇴
     """
     if not (User.objects.filter(username=user_id)).exists():
-        return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
+        return JsonResponse({"message": NO_USER}, status=404)
     user = User.objects.get(username=user_id)
 
     if request.method == 'GET':
@@ -245,7 +247,7 @@ def follow(request, user_id):
     GET : 팔로우 / 언팔로우
     """
     if not (User.objects.filter(username=user_id)).exists():
-        return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
+        return JsonResponse({"message": NO_USER}, status=404)
 
     user = User.objects.get(username=request.user.username)
     target = User.objects.get(username=user_id)
@@ -347,6 +349,6 @@ def validate_social_account(request):
         user.save()
         return prepare_login_response(user.username, user.nickname, user.image)
     except User.DoesNotExist:
-        return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
+        return JsonResponse({"message": NO_USER}, status=404)
     except KeyError:
         return HttpResponseBadRequest()

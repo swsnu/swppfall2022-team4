@@ -67,11 +67,9 @@ const Login = () => {
     dispatch(userActions.login(input));
   };
   const onSocialLogin = async (type: string) => {
-    switch (type) {
-      case 'kakao':
-        const rest_api_key = process.env.REACT_APP_KAKAO_KEY;
-        window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${rest_api_key}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
-        break;
+    if (type === 'kakao') {
+      const rest_api_key = process.env.REACT_APP_KAKAO_KEY;
+      window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${rest_api_key}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
     }
   };
 

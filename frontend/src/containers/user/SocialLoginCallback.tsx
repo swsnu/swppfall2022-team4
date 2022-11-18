@@ -23,7 +23,7 @@ type errorIProps = {
   error: string;
 };
 
-interface socialLoginCallbackIprops {
+interface SocialLoginCallbackIprops {
   dispatch: Dispatch<AnyAction>;
   navigate: NavigateFunction;
   processFn: () => Promise<void>;
@@ -38,7 +38,7 @@ const SocialLoginCallback = ({
   isLoading,
   state,
   stateDispatch,
-}: socialLoginCallbackIprops) => {
+}: SocialLoginCallbackIprops) => {
   const { user } = useSelector(({ user }: RootState) => ({
     user: user.user,
   }));

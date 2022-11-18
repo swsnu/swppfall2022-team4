@@ -178,7 +178,7 @@ def post_detail(request, query_id):
                     PostImage.objects.create(image=image, post=post_obj)
             # Image deletion
             for image in post_obj.images.all():
-                if not image.image in data["images"]:
+                if image.image not in data["images"]:
                     image.delete()
 
             post_obj.save()

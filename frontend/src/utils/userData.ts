@@ -309,7 +309,8 @@ export const socialUserReducer = (state: socialUserStateType, action: { name: st
   };
 
   switch (actionName) {
-    case 'username': {
+    case 'username':
+    case 'gender': {
       return {
         ...state,
         [actionName]: newValue,
@@ -331,12 +332,6 @@ export const socialUserReducer = (state: socialUserStateType, action: { name: st
         ...state,
         [actionName]: newValue,
         [actionName + 'Warning']: newWarning,
-      };
-    }
-    case 'gender': {
-      return {
-        ...state,
-        [actionName]: newValue,
       };
     }
     case 'height': {
