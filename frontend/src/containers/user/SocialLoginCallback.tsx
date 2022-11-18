@@ -13,8 +13,13 @@ import OtherInfos from 'components/user/OtherInfos';
 
 import { RootState } from 'index';
 import { notificationFailure } from 'utils/sendNotification';
+import { AxiosError } from 'axios';
 
 export const KAKAO_REDIRECT_URI = 'http://localhost:3000/oauth/kakao/';
+
+type errorIProps = {
+  error: string;
+};
 
 const SocialLoginCallback = () => {
   const dispatch = useDispatch();
@@ -40,7 +45,11 @@ const SocialLoginCallback = () => {
     } else {
       const func = async () => {
         try {
-          const response = await client.get(`/api/user/login/kakao/callback/?code=${KAKAO_CODE}`);
+          const kakao_response = await client.get(
+            `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${process.env.REACT_APP_KAKAO_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&code=${KAKAO_CODE}`,
+            { headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' } },
+          );
+          const response = await client.get(`/api/user/login/kakao/callback/?code=${kakao_response.data.access_token}`);
 
           if (response.status === 200) {
             try {
@@ -59,7 +68,12 @@ const SocialLoginCallback = () => {
           } else {
           }
         } catch (error) {
-          notificationFailure('User', '오류가 발생했습니다. 다시 시도해주세요.');
+          const axiosError: AxiosError = error as AxiosError;
+          if (axiosError.response?.status === 400) {
+            notificationFailure('User', '오류가 발생했습니다. 다시 시도해주세요.');
+          } else {
+            notificationFailure('User', ((error as AxiosError).response?.data as errorIProps).error);
+          }
           navigate('/login');
         }
       };

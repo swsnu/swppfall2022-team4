@@ -239,23 +239,11 @@ def kakao_callback(request):
     GET : Kakao login callback 함수.
     """
     try:
-        rest_api_key = os.environ.get("KAKAO_KEY")
-        redirect_uri = 'http://localhost:3000/oauth/kakao/'
         code = request.GET.get("code")
-        response_json = requests.get(
-            f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}",
-            headers={"Content-type": "application/x-www-form-urlencoded;charset=utf-8"},
-            timeout=5,
-        ).json()
-
-        if response_json.get("error", None) is not None:
-            raise KakaoException("Error with authorization.")
-
-        access_token = response_json.get("access_token")
         profile_request = requests.get(
             "https://kapi.kakao.com/v2/user/me",
             headers={
-                "Authorization": f"Bearer {access_token}",
+                "Authorization": f"Bearer {code}",
                 "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
             },
             timeout=5,
@@ -274,12 +262,12 @@ def kakao_callback(request):
                         user.username, user.nickname, user.image, response_status=201
                     )
             else:
-                raise KakaoException(f"Please log in with: {user.login_method}")
+                raise KakaoException(f"{user.login_method}(으)로 가입한 '{username}'이 이미 존재합니다.")
 
         except User.DoesNotExist:
             User.objects.create(
                 username=username,
-                hashed_password='',
+                hashed_password='KAKAO_PASSWORD',
                 nickname=username,
                 gender='',
                 age=0,
@@ -299,7 +287,14 @@ def kakao_callback(request):
             {
                 "error": str(error),
             },
-            status=400,
+            status=401,
+        )
+    except Exception:
+        return JsonResponse(
+            {
+                "error": "오류가 발생했습니다. 다시 시도해주세요.",
+            },
+            status=401,
         )
 
 
