@@ -11,6 +11,31 @@ from posts.views import prepare_posts_response
 from comments.views import prepare_comment_response
 
 
+def prepare_login_response(username, nickname, image):
+    token = jwt.encode(
+        {'username': username},
+        os.environ.get("JWT_SECRET"),
+        os.environ.get("ALGORITHM"),
+    )
+    response = JsonResponse(
+        {
+            "username": username,
+            "nickname": nickname,
+            "image": image,
+        },
+        status=200,
+    )
+    response.set_cookie(
+        'access_token',
+        token,
+        max_age=60 * 60 * 24 * 7,
+        samesite='None',
+        secure=True,
+        httponly=True,
+    )
+    return response
+
+
 @ensure_csrf_cookie
 @require_http_methods(["GET"])
 def set_csrf(request):
@@ -49,28 +74,7 @@ def signup(request):
             level=1,
         )
 
-        token = jwt.encode(
-            {'username': data['username']},
-            os.environ.get("JWT_SECRET"),
-            os.environ.get("ALGORITHM"),
-        )
-        response = JsonResponse(
-            {
-                "username": data['username'],
-                "nickname": data['nickname'],
-                "image": 'profile_default.png',
-            },
-            status=200,
-        )
-        response.set_cookie(
-            'access_token',
-            token,
-            max_age=60 * 60 * 24 * 7,
-            samesite='None',
-            secure=True,
-            httponly=True,
-        )
-        return response
+        return prepare_login_response(data['username'], data['nickname'], 'profile_default.jpg')
 
     except (KeyError, json.JSONDecodeError):
         return HttpResponseBadRequest()
@@ -93,24 +97,7 @@ def login(request):
 
         user = User.objects.get(username=data['username'])
         if bcrypt.checkpw(data['password'].encode('utf-8'), user.hashed_password.encode('utf-8')):
-            token = jwt.encode(
-                {'username': data['username']},
-                os.environ.get("JWT_SECRET"),
-                os.environ.get("ALGORITHM"),
-            )
-            response = JsonResponse(
-                {"username": user.username, "nickname": user.nickname, "image": user.image},
-                status=200,
-            )
-            response.set_cookie(
-                'access_token',
-                token,
-                max_age=60 * 60 * 24 * 7,
-                samesite='None',
-                secure=True,
-                httponly=True,
-            )
-            return response
+            return prepare_login_response(user.username, user.nickname, user.image)
         else:
             return JsonResponse({"message": "비밀번호가 틀렸습니다."}, status=401)
 
@@ -198,21 +185,7 @@ def profile(request, user_id):
             except KeyError:
                 return HttpResponseBadRequest()
 
-        token = jwt.encode(
-            {'username': user.username}, os.environ.get("JWT_SECRET"), os.environ.get("ALGORITHM")
-        )
-        response = JsonResponse(
-            {"username": user.username, "nickname": user.nickname, "image": user.image}, status=200
-        )
-        response.set_cookie(
-            'access_token',
-            token,
-            max_age=60 * 60 * 24 * 7,
-            samesite='None',
-            secure=True,
-            httponly=True,
-        )
-        return response
+        return prepare_login_response(user.username, user.nickname, user.image)
 
     elif request.method == 'DELETE':
         if request.user.username != user.username:
@@ -265,75 +238,51 @@ def kakao_callback(request):
         rest_api_key = os.environ.get("KAKAO_KEY")
         redirect_uri = 'http://localhost:3000/oauth/kakao/'
         code = request.GET.get("code")
-        token_request = requests.get(
+        response_json = requests.get(
             f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}",
             headers={"Content-type": "application/x-www-form-urlencoded;charset=utf-8"},
-        )
-        response_json = token_request.json()
-        error = response_json.get("error", None)
-        if error is not None:
+            timeout=5,
+        ).json()
+
+        if response_json.get("error", None) is not None:
             raise KakaoException("Error with authorization.")
-        else:
-            access_token = response_json.get("access_token")
-            profile_request = requests.get(
-                f"https://kapi.kakao.com/v2/user/me",
-                headers={
-                    "Authorization": f"Bearer {access_token}",
-                    "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
-                },
-            )
-            profile_json = profile_request.json()
-            kakao_account = profile_json.get("kakao_account")
-            properties = profile_json.get("properties")
 
-            # print(f"profile json : {profile_json}") # id, connected_at, properties, kakao_account.
-            # print(f"properties : {properties}")
-
-            username = properties.get("nickname")
-
-            try:
-                user = User.objects.get(username=username)
-                # if user.login_method == User.LOGIN_KAKAO:
-                # trying to login.
-                # login(request, user)
-                # else:
-                # raise KakaoException(f"Please log in with: {user.login_method}")
-
-            except User.DoesNotExist:
-                new_user = User.objects.create(
-                    username=username,
-                    hashed_password='',
-                    nickname=username,
-                    gender='',
-                    age=0,
-                    height=0,
-                    weight=0,
-                    image='profile_default.png',
-                    exp=0,
-                    level=1,
-                )
-        token = jwt.encode(
-            {'username': username},
-            os.environ.get("JWT_SECRET"),
-            os.environ.get("ALGORITHM"),
-        )
-        response = JsonResponse(
-            {
-                "username": username,
-                "nickname": username,
-                "image": 'profile_default.png',
+        access_token = response_json.get("access_token")
+        profile_request = requests.get(
+            "https://kapi.kakao.com/v2/user/me",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
             },
-            status=200,
+            timeout=5,
         )
-        response.set_cookie(
-            'access_token',
-            token,
-            max_age=60 * 60 * 24 * 7,
-            samesite='None',
-            secure=True,
-            httponly=True,
-        )
-        return response
-    except KakaoException as e:
-        print(f"KakaoException. MSG : {str(e)}")
-        return HttpResponse(201)
+        profile_json = profile_request.json()
+        properties = profile_json.get("properties")
+        username = properties.get("nickname")
+
+        try:
+            user = User.objects.get(username=username)
+            if user.login_method == User.LOGIN_KAKAO:
+                # Login
+                return prepare_login_response(user.username, user.nickname, user.image)
+            else:
+                raise KakaoException(f"Please log in with: {user.login_method}")
+
+        except User.DoesNotExist:
+            User.objects.create(
+                username=username,
+                hashed_password='',
+                nickname=username,
+                gender='',
+                age=0,
+                height=0,
+                weight=0,
+                image='profile_default.png',
+                exp=0,
+                level=1,
+                login_method=User.LOGIN_KAKAO,
+            )
+            return prepare_login_response(username, username, 'profile_default.png')
+    except KakaoException as error:
+        print(f"KakaoException. MSG : {str(error)}")
+        return HttpResponse(400)
