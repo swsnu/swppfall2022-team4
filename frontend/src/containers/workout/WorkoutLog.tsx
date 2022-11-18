@@ -170,8 +170,8 @@ const WorkoutLog = () => {
     dispatch(workoutLogActions.addFitElements(addFitElementConfig));
   };
 
-  const memoOnClick = () => {
-    if (memo_write_mode === false) {
+  const memoOnClick = (click_type: string) => {
+    if ((memo_write_mode === false && click_type !== 'complete_button') || click_type === 'edit_button') {
       setMemoWriteMode(true);
     } else {
       const editMemoConfig: editMemoRequestType = {
@@ -200,7 +200,7 @@ const WorkoutLog = () => {
   }, [createDailyLogStatus, pasteStatus]);
 
   useEffect(() => {
-    setMemo(dailyLog.memo || '연필 클릭 후 메모를 추가해 보세요.');
+    setMemo(dailyLog.memo || '여기를 클릭 후 메모를 추가해 보세요.');
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
 
@@ -343,14 +343,22 @@ const WorkoutLog = () => {
               <MemoTitleWrapper>
                 Notes
                 <MemoEditButton
-                  onClick={() => memoOnClick()}
                   data-testid="memo_edit"
                   src={require('assets/images/workout_log/memo/memo_edit.png')}
                 ></MemoEditButton>
               </MemoTitleWrapper>
-              <MemoContentWrapper>
+              <MemoContentWrapper onClick={() => memoOnClick('')}>
                 {memo_write_mode ? <MemoInput value={memo} onChange={e => setMemo(e.target.value)} /> : memo}
               </MemoContentWrapper>
+              <MemoButtonWrapper>
+                <AnyButton className="memo-type">취소</AnyButton>
+                <AnyButton className="memo-type" onClick={() => memoOnClick('edit_button')}>
+                  수정
+                </AnyButton>
+                <AnyButton className="memo-type" onClick={() => memoOnClick('complete_button')}>
+                  완료
+                </AnyButton>
+              </MemoButtonWrapper>
             </Frame>
           </MemoWrapper>
         </LeftWrapper>
@@ -362,6 +370,7 @@ const WorkoutLog = () => {
               </DateWrapper>
               <AnyButton onClick={() => routineClick()}>루틴</AnyButton>
               <AnyButton
+                className="disable-type"
                 disabled={
                   isCopy
                     ? copy_date.getFullYear() === selected_year &&
@@ -709,6 +718,20 @@ const MemoContentWrapper = styled.div`
   color: #818281;
 `;
 
+const MemoButtonWrapper = styled.div`
+  display: flex;
+  margin: 10px;
+  width: 90%;
+  height: 20%;
+  align-items: center;
+  justify-content: end;
+  flex-direction: row;
+  font-family: IBMPlexSansThaiLooped;
+  font-size: 14px;
+  font-weight: 600;
+  color: #818281;
+`;
+
 const CenterContentWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -740,6 +763,15 @@ const AnyButton = styled.button`
 
   &&.type1 {
     width: 120px;
+    height: 20px;
+  }
+
+  &&.disable-type {
+    background-color: #d7efe3;
+  }
+
+  &&.memo-type {
+    width: 60px;
     height: 20px;
   }
 `;
