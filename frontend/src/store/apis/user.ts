@@ -81,6 +81,7 @@ export type profileType = {
   exp: number;
   level: number;
   created: string;
+  login_method: string;
 };
 export type editProfileRequestType =
   | {

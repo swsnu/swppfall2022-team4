@@ -149,6 +149,7 @@ def profile(request, user_id):
                 "exp": user.exp,
                 "level": user.level,
                 "created": user.created,
+                "login_method": user.login_method,
             }
         )
 

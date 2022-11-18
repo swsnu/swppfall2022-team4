@@ -125,6 +125,11 @@ const Login = () => {
               alt="facebook"
               onClick={() => onSocialLogin('facebook')}
             />
+            <SocialLoginIcon
+              src={require('assets/images/main/social_login_icon/github.png')}
+              alt="github"
+              onClick={() => onSocialLogin('github')}
+            />
           </SocialLoginIconWrapper>
         </SocialLoginWrapper>
       </ContentWrapper>

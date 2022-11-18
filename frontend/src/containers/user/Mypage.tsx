@@ -76,7 +76,21 @@ const Mypage = () => {
         <LeftWrapper>
           <ProfileImage src={process.env.REACT_APP_API_IMAGE + profile.image} alt="profile" />
           <ProfileInfoWrapper>
-            <Nickname>{profile.nickname}</Nickname>
+            <NicknameWrapper>
+              <Nickname>{profile.nickname}</Nickname>
+              {profile.login_method == 'kakao' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/kakao.jpg')} alt="kakao" />
+              )}
+              {profile.login_method == 'google' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/google.png')} alt="google" />
+              )}
+              {profile.login_method == 'facebook' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/facebook.png')} alt="facebook" />
+              )}
+              {profile.login_method == 'github' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/github.png')} alt="github" />
+              )}
+            </NicknameWrapper>
             <Username>{profile.username}</Username>
             <Gender>{profile.gender === 'male' ? '남성' : '여성'}</Gender>
             <BodyWrapper>
@@ -298,6 +312,11 @@ const ProfileInfoWrapper = styled.div`
   justify-content: center;
   font-family: NanumSquareR;
 `;
+const NicknameWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
 const Nickname = styled.div`
   font-size: 32px;
   font-weight: 600;
@@ -307,6 +326,13 @@ const Nickname = styled.div`
     font-size: 24px;
   }
 `;
+const SocialLoginIcon = styled.img`
+  width: 25px;
+  height: 25px;
+  border-radius: 10px;
+  margin-left: 10px;
+`;
+
 const Username = styled.div`
   color: #464646;
   font-size: 21px;
