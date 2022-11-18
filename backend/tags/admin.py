@@ -9,7 +9,7 @@ class TagClassAdmin(admin.ModelAdmin):
     list_display = (
         "pk",
         "class_name",
-        "color",
+        "class_type",
         "created",
     )
 
