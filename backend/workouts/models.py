@@ -29,6 +29,7 @@ class DailyLog(models.Model):
     date = models.DateField(null=False)
     memo = models.TextField(null=True)
     fit_element = models.ManyToManyField(FitElement, blank=True)
+    calories = models.IntegerField(default=0, null=True)
 
 
 class Routine(models.Model):
@@ -37,6 +38,7 @@ class Routine(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='routine')
     fit_element = models.ManyToManyField(FitElement, blank=True)
+    calories = models.IntegerField(null=True)
 
 
 class FitElementType(models.Model):

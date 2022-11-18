@@ -47,8 +47,6 @@ const WorkoutLog = () => {
   const [selected_month, setSelectedMonth] = useState(date.getMonth());
   const [selected_date, setSelectedDay] = useState(date.getDate());
   const [workout_type, setWorkoutType] = useState('');
-  //TODO: workout_type이 비어있을 경우, alert
-  //TODO: fitelement 추가 후, 값 비우기
   const [rep, setRep] = useState<number | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
@@ -192,7 +190,6 @@ const WorkoutLog = () => {
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
-  console.log(fitElementTypes);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
@@ -471,7 +468,7 @@ const WorkoutLog = () => {
                   ))
                 )}
               </LogBody>
-              <LogFooter></LogFooter>
+              <LogFooter>{dailyLog.calories}</LogFooter>
             </Frame>
           </LogWrapper>
         </RightWrapper>
