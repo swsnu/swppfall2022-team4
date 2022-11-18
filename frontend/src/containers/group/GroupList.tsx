@@ -5,6 +5,7 @@ import { RootState } from 'index';
 import { groupActions } from 'store/slices/group';
 import { BsSearch } from 'react-icons/bs';
 import styled from 'styled-components';
+import { Group } from 'store/apis/group';
 
 import Button1 from 'components/common/buttons/Button1';
 import Loading from 'components/common/Loading';
@@ -31,12 +32,17 @@ type addressNameResponseType = {
   y: number;
 };
 
+const distance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+  return ((lat1 - lat2) ^ 2) + ((lng1 - lng2) ^ 2);
+};
+
 const GroupList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const groupList = useSelector((rootState: RootState) => rootState.group.groupList.groups);
 
+  const [groupListOrdered, setGroupListOrdered] = useState<Group[] | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentLocation, setCurrentLocation] = useState<geolocationResponseType>({
     center: {
@@ -46,7 +52,7 @@ const GroupList = () => {
     errMsg: null,
     isLoading: true,
   });
-  const [currentAddressName, setCurrentAddressName] = useState<string | null>();
+  const [currentAddressName, setCurrentAddressName] = useState<string | null>(null);
   const displayCenterInfo = (result: addressNameResponseType[], status: kakao.maps.services.Status) => {
     if (status === kakao.maps.services.Status.OK) {
       for (let i = 0; i < result.length; i++) {
@@ -57,6 +63,17 @@ const GroupList = () => {
       }
     }
   };
+
+  useEffect(() => {
+    dispatch(groupActions.getGroups());
+    return () => {
+      dispatch(groupActions.stateRefresh());
+    };
+  }, []);
+
+  useEffect(() => {
+    setGroupListOrdered(groupList);
+  }, [groupList]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -95,14 +112,34 @@ const GroupList = () => {
     }
   }, [currentLocation]);
 
-  useEffect(() => {
-    dispatch(groupActions.getGroups());
-    return () => {
-      dispatch(groupActions.stateRefresh());
-    };
-  }, []);
+  const orderRecentClicked = () => {
+    console.log('recent');
+    if (groupListOrdered) {
+      const newGroupOrdered: Group[] = [...groupListOrdered];
+      newGroupOrdered.sort((a, b) => b.id - a.id);
+      setGroupListOrdered(newGroupOrdered);
+    }
+  };
 
-  if (!groupList) return <Loading />;
+  const orderOldClicked = () => {
+    console.log('close');
+    if (groupListOrdered) {
+      const newGroupOrdered: Group[] = [...groupListOrdered];
+      newGroupOrdered.sort((a, b) => a.id - b.id);
+      setGroupListOrdered(newGroupOrdered);
+    }
+  };
+
+  const orderCloseClicked = () => {
+    console.log('old');
+    if (groupListOrdered) {
+      const newGroupOrdered: Group[] = [...groupListOrdered];
+      //newGroupOrdered.sort((a, b) => distance(a.lat, a.lat, currentLocation.center.lat, currentLocation.center.lng) - distance(b.lat, b.lat, currentLocation.center.lat, currentLocation.center.lng));
+      setGroupListOrdered(newGroupOrdered);
+    }
+  };
+
+  if (!groupListOrdered) return <Loading />;
   return (
     <Wrapper>
       <SearchWrapper>
@@ -114,34 +151,40 @@ const GroupList = () => {
           }}
         />
       </SearchWrapper>
-      {currentLocation.isLoading && <div>{'위치를 불러오는 중입니다.'}</div>}
-      {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
-      {currentAddressName && <div>{`유저의 위치는 ${currentAddressName} 입니다`}</div>}
-      <Button1 content="지도 보기" clicked={() => navigate('/group/location')} />
+      <div>
+        {currentLocation.isLoading && <div>{'위치를 불러오는 중입니다.'}</div>}
+        {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
+        {currentAddressName && <div>{`유저의 위치는 ${currentAddressName} 입니다`}</div>}
+      </div>
+      <div>
+        <span onClick={orderRecentClicked}>최신순 </span>
+        <span onClick={orderOldClicked}>오래된순 </span>
+        <span onClick={orderCloseClicked}>가까운순 </span>
+      </div>
       <Button1
         content="Create Group"
         clicked={() => navigate('/group/create')}
         style={{ width: '180px', alignSelf: 'end', marginRight: '10px' }}
       />
       <GroupListWrapper>
-        {groupList
-          .filter(groupelement => {
+        {groupListOrdered
+          .filter(groupListOrdered => {
             if (searchTerm == '') {
-              return groupelement;
+              return groupListOrdered;
             } else {
-              return groupelement.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
+              return groupListOrdered.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
             }
           })
-          .map((groupelement, index) => (
+          .map((groupListOrdered, index) => (
             <GroupElement
               key={index}
-              id={groupelement.id}
-              group_name={groupelement.group_name}
-              number={groupelement.number}
-              start_date={groupelement.start_date}
-              end_date={groupelement.end_date}
-              member_number={groupelement.member_number}
-              clicked={() => navigate(`/group/detail/${groupelement.id}/`)}
+              id={groupListOrdered.id}
+              group_name={groupListOrdered.group_name}
+              number={groupListOrdered.number}
+              start_date={groupListOrdered.start_date}
+              end_date={groupListOrdered.end_date}
+              member_number={groupListOrdered.member_number}
+              clicked={() => navigate(`/group/detail/${groupListOrdered.id}/`)}
             />
           ))}
       </GroupListWrapper>

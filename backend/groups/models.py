@@ -16,3 +16,5 @@ class Group(models.Model):
     description = models.TextField(blank = False)
     free = models.BooleanField(null = False)
     goal = models.ManyToManyField(FitElement, related_name = 'group_goal')
+    class Meta:
+        ordering = ("-id",)
