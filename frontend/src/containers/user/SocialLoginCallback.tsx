@@ -158,11 +158,16 @@ export const KakaoLoginCallback = () => {
         setIsLoading(false);
       }
     } catch (error) {
-      const axiosError: AxiosError = error as AxiosError;
-      if (axiosError.response?.status === 400) {
+      try {
+        const axiosError: AxiosError = error as AxiosError;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (axiosError.response!.status === 400) {
+          notificationFailure('User', '오류가 발생했습니다. 다시 시도해주세요.');
+        } else {
+          notificationFailure('User', ((error as AxiosError).response?.data as errorIProps).error);
+        }
+      } catch {
         notificationFailure('User', '오류가 발생했습니다. 다시 시도해주세요.');
-      } else {
-        notificationFailure('User', ((error as AxiosError).response?.data as errorIProps).error);
       }
       navigate('/login');
     }
