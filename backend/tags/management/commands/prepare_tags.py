@@ -2,6 +2,7 @@ import random
 
 from django.core.management import BaseCommand
 from tags.models import TagClass, Tag
+from informations.models import Information
 
 
 def get_random_color():
@@ -115,8 +116,13 @@ class Command(BaseCommand):
                 color=get_random_color(),
             )
             for tag_name in tag_names:
-                Tag.objects.create(tag_name=tag_name, tag_class=tag_class)
+                tag = Tag.objects.create(tag_name=tag_name, tag_class=tag_class)
+
+                if get_tag_class_type(class_name) == 'workout':
+                    Information.objects.create(name=tag_name, tag=tag)
 
         self.stdout.write(
-            self.style.SUCCESS(f"Tag classes & Tag presets are prepared automatically.")
+            self.style.SUCCESS(
+                f"Tag classes & Tag & Information presets are prepared automatically."
+            )
         )
