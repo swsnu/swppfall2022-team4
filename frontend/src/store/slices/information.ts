@@ -11,7 +11,7 @@ interface InformationState {
     };
     posts: Post[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    youtubes: any;
+    youtubes: infoAPI.Youtube[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     articles: any;
   } | null;

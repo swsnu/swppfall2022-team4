@@ -8,3 +8,11 @@ export const getInformation = async (payload: getInformationRequestType) => {
 export type getInformationRequestType = {
   information_name: string;
 };
+
+export type Youtube = {
+  video_id: string;
+  title: string;
+  thumbnail: string;
+  channel: string;
+  published: string;
+};
