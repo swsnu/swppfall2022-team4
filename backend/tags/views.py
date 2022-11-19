@@ -5,8 +5,8 @@ from django.http import (
 )
 from django.views.decorators.http import require_http_methods
 from tags.models import Tag, TagClass
-from informations.models import Information
 from tags.management.commands.prepare_tags import get_tag_class_type
+from informations.models import Information
 
 
 @require_http_methods(["GET", "POST"])
