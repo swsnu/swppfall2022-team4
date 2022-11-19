@@ -5,6 +5,7 @@ import * as notificationAPI from './notification';
 import * as postAPI from './post';
 import * as commentAPI from './comment';
 import * as tagAPI from './tag';
+import * as infoAPI from './information';
 import * as groupAPI from './group';
 import * as workoutAPI from './workout';
 
@@ -364,6 +365,12 @@ describe('API TEST', () => {
     test('searchTag', async () => {
       const result = await tagAPI.searchTag(searchTagRequest);
       expect(result).toBe(`/api/tag/search/?tag=${searchTagRequest.tag_name}`);
+    });
+  });
+  describe('Information', () => {
+    test('getInformation', async () => {
+      const result = await infoAPI.getInformation({ information_name: 'Deadlift' });
+      expect(result).toBe(`/api/information/Deadlift/`);
     });
   });
   describe('Workout', () => {

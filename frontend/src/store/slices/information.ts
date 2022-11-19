@@ -25,19 +25,12 @@ const ERROR_STATE = {
 };
 
 export const initialState: InformationState = {
-  contents: {
-    basic: {
-      name: '',
-    },
-    posts: [],
-    youtubes: [],
-    articles: [],
-  },
+  contents: null,
   error: ERROR_STATE.NOT_ERROR,
 };
 
 export const informationSlice = createSlice({
-  name: 'information',
+  name: 'info',
   initialState,
   reducers: {
     /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -50,14 +43,15 @@ export const informationSlice = createSlice({
       state.contents = payload;
     },
     getInformationFailure: (state, { payload }) => {
-      if (payload.response.status === 404) {
+      if (payload?.response?.status === 404) {
         state.error = ERROR_STATE.NOT_FOUND;
       } else {
         state.error = ERROR_STATE.ETC;
       }
     },
     initializeInformation: state => {
-      state = initialState;
+      state.contents = initialState.contents;
+      state.error = initialState.error;
     },
     /* eslint-enable @typescript-eslint/no-unused-vars */
   },
