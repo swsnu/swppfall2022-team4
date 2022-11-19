@@ -265,12 +265,29 @@ const YoutubeItem = styled.div`
     padding: 8px 10px;
     padding-bottom: 0px;
     width: 100%;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 7fr 3fr;
 
     span {
-      text-overflow: ellipsis;
       color: var(--fit-support-gray);
+      line-height: 1rem;
+      font-weight: 450;
+      height: 1rem;
+    }
+    span:first-child {
+      overflow: hidden;
+      display: block;
+      -webkit-line-clamp: 1;
+      display: box;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
+    span:last-child {
+      width: 100%;
+      overflow: visible;
+      text-align: right;
     }
   }
   &:hover {
