@@ -50,7 +50,7 @@ const Chat = () => {
   };
   const onSendMessage = () => {
     if (!user || input === '') return;
-    socket.send(
+    socket?.send(
       JSON.stringify({
         type: '1:1',
         data: {

@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { RootState } from 'index';
-import { postActions } from 'store/slices/post';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { timeAgoFormat } from 'utils/datetime';
-import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
-import { Comment } from 'store/apis/comment';
+import { useSelector, useDispatch } from 'react-redux';
+import { useOnClickOutside } from 'usehooks-ts';
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
-import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
-import 'styles/color.css';
-import { BlueBigBtn, CommentGreenBtn, CommentRedBtn, GreenCommentSubmitBtn } from 'components/post/button';
+import { RootState } from 'index';
+import { timeAgoFormat } from 'utils/datetime';
+import { funcTypeToStr, postActions } from 'store/slices/post';
+import { Comment } from 'store/apis/comment';
+import { LoadingWithoutMinHeight } from 'components/common/Loading';
+import { BlueBigBtn, CommentGreenBtn, RedSmallBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
-import { columnCenterFlex, columnFlex, rowCenterFlex } from 'components/post/layout';
+import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
+import { PostDetailLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
+import ImageDetailModal from 'components/post/ImageDetailModal';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -36,6 +38,63 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [commentList, setCommentList] = useState<Comment[]>([]);
+  const [commentInput, setCommentInput] = useState('');
+  const [commentReplyInput, setCommentReplyInput] = useState('');
+  const [commentEditInput, setCommentEditInput] = useState('');
+  const [commentNum, changeCommentNum] = useState(0);
+  const [replyActivated, setReplyActivated] = useState(false);
+  const [editActivated, setEditActivated] = useState(false);
+
+  // --- Modal Configurations --------------------------------------------------------
+  const [postModalOpen, setPostModalOpen] = useState(false);
+  const [commentModalOpen, setCommentModalOpen] = useState(false);
+  const [commentModalDisable, setCommentModalDisable] = useState(false);
+  const [commentModalNum, setCommentModalNum] = useState('');
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [activeImage, setActiveImage] = useState('');
+
+  const commentModalPivot = useRef<HTMLImageElement[]>([]);
+  const postModalPivot = useRef<HTMLImageElement>(null);
+  const postModalRef = useRef(null);
+  const commentModalRef = useRef(null);
+  const imageModalRef = useRef(null);
+  const imageModalAnimRef = useRef(null);
+
+  // Disable modal when OnClickOutside
+  useOnClickOutside(
+    postModalRef,
+    () => {
+      setPostModalOpen(false);
+    },
+    'mousedown',
+  );
+  useOnClickOutside(
+    commentModalRef,
+    () => {
+      setCommentModalOpen(false);
+      setTimeout(() => setCommentModalDisable(false), 300);
+    },
+    'mousedown',
+  );
+  useOnClickOutside(imageModalRef, () => setImageModalOpen(false), 'mousedown');
+
+  // Disable scroll when modal is active
+  useEffect(() => {
+    const body = document.getElementById('articleDetailWrapper');
+    if (body) {
+      if (postModalOpen || commentModalOpen) {
+        document.body.style.overflowY = 'hidden';
+        body.style.overflowY = 'hidden';
+      } else {
+        document.body.style.overflowY = 'unset';
+        body.style.overflowY = 'auto';
+      }
+    }
+  }, [postModalOpen, commentModalOpen]);
+
+  // --- Modal Configurations End --------------------------------------------------------
+
   const user = useSelector(({ user }: RootState) => user.user);
   const { socket, post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
     ({ chat, post }: RootState) => ({
@@ -47,13 +106,6 @@ const PostDetail = () => {
       commentFuncStatus: post.postComment.commentFunc,
     }),
   );
-  const [commentList, setCommentList] = useState<Comment[]>([]);
-  const [commentInput, setCommentInput] = useState('');
-  const [commentReplyInput, setCommentReplyInput] = useState('');
-  const [commentEditInput, setCommentEditInput] = useState('');
-  const [commentNum, changeCommentNum] = useState(0);
-  const [replyActivated, setReplyActivated] = useState(false);
-  const [editActivated, setEditActivated] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -104,12 +156,6 @@ const PostDetail = () => {
       if (type_str === 'dislike' && post.disliked) return;
       if (type_str === 'scrap' && post.scraped) return;
 
-      const pair = (x: string) => {
-        if (x === 'like') return '좋아요를';
-        else if (x === 'dislike') return '싫어요를';
-        else return '스크랩을';
-      };
-
       socket.send(
         JSON.stringify({
           type: 'notification',
@@ -119,7 +165,7 @@ const PostDetail = () => {
               me: user.username,
               post: id,
             },
-            content: `${user.nickname}님이 내 글에 ${pair(type_str)} 눌렀습니다.`,
+            content: `${user.nickname}님이 내 글에 ${funcTypeToStr(type_str)} 눌렀습니다.`,
             image: user.image,
             link: `/post/${id}`,
           },
@@ -131,7 +177,7 @@ const PostDetail = () => {
   const commentFuncOnClick = (comment: Comment, type_str: string) => {
     dispatch(
       postActions.commentFunc({
-        comment_id: comment.id,
+        comment_id: comment.comment_id,
         func_type: type_str,
       }),
     );
@@ -144,7 +190,6 @@ const PostDetail = () => {
         if (x === 'like') return '좋아요를';
         else if (x === 'dislike') return '싫어요를';
       };
-
       socket.send(
         JSON.stringify({
           type: 'notification',
@@ -152,7 +197,7 @@ const PostDetail = () => {
             category: 'commentFunc',
             info: {
               me: user.username,
-              comment: comment.id,
+              comment: comment.comment_id,
             },
             content: `${user.nickname}님이 내 댓글에 ${pair(type_str)} 눌렀습니다.`,
             image: user.image,
@@ -221,12 +266,12 @@ const PostDetail = () => {
   };
 
   const commentReplyOpenOnClick = (comment: Comment) => {
-    dispatch(postActions.toggleCommentReply({ parent_comment: comment.id }));
+    dispatch(postActions.toggleCommentReply({ parent_comment: comment.comment_id }));
     setReplyActivated(!replyActivated);
   };
 
   const commentEditOpenOnClick = (comment: Comment) => {
-    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.comment_id }));
     setCommentEditInput(comment.content);
     setEditActivated(true);
   };
@@ -234,17 +279,17 @@ const PostDetail = () => {
   const commentEditConfirmOnClick = (comment: Comment) => {
     dispatch(
       postActions.editComment({
-        comment_id: comment.id,
+        comment_id: comment.comment_id,
         content: commentEditInput,
       }),
     );
-    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.comment_id }));
     changeCommentNum(Date.now());
     setEditActivated(false);
   };
 
   const commentEditCancelOnClick = (comment: Comment) => {
-    dispatch(postActions.toggleCommentEdit({ comment_id: comment.id }));
+    dispatch(postActions.toggleCommentEdit({ comment_id: comment.comment_id }));
     setEditActivated(false);
   };
 
@@ -269,8 +314,10 @@ const PostDetail = () => {
     if (comment.editActive) {
       return (
         <FuncBtnWrapper>
-          <CommentRedBtn onClick={() => commentEditCancelOnClick(comment)}>취소</CommentRedBtn>
-          <CommentGreenBtn onClick={() => commentEditConfirmOnClick(comment)}>완료</CommentGreenBtn>
+          <RedSmallBtn onClick={() => commentEditCancelOnClick(comment)}>취소</RedSmallBtn>
+          <CommentGreenBtn disabled={commentEditInput == ''} onClick={() => commentEditConfirmOnClick(comment)}>
+            완료
+          </CommentGreenBtn>
         </FuncBtnWrapper>
       );
     } else {
@@ -284,14 +331,14 @@ const PostDetail = () => {
               답글
             </CommentGreenBtn>
           )}
-          {user?.username == comment?.author_name && (
+          {user?.username == comment?.author.username && (
             <>
               <CommentGreenBtn disabled={editActivated} onClick={() => commentEditOpenOnClick(comment)}>
                 수정
               </CommentGreenBtn>
-              <CommentRedBtn onClick={commentDeleteOnClick} data-comment_id={comment.id}>
+              <RedSmallBtn onClick={commentDeleteOnClick} data-comment_id={comment.comment_id}>
                 삭제
-              </CommentRedBtn>
+              </RedSmallBtn>
             </>
           )}
         </FuncBtnWrapper>
@@ -301,13 +348,34 @@ const PostDetail = () => {
 
   const CommentItemComponent = (comment: Comment) => {
     return (
-      <CommentReplyWrapper key={comment.id}>
+      <CommentReplyWrapper key={comment.comment_id}>
         <CommentItem isChild={comment.parent_comment !== null}>
           {/* {comment.parent_comment !== null && <FontAwesomeIcon icon={faArrowRightLong} />} */}
           <CommentWritterWrapperO1>
             <CommentWritterWrapper>
-              <CommentWritterAvatar>Avatar</CommentWritterAvatar>
-              <CommentWritterText> {comment.author_name} </CommentWritterText>
+              <CommentWritterAvatar>
+                <UserAvatar
+                  ref={el => (commentModalPivot.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)}
+                  src={process.env.REACT_APP_API_IMAGE + comment.author.avatar}
+                  onClick={() => {
+                    if (!commentModalOpen && !commentModalDisable) {
+                      setCommentModalNum(comment.comment_id);
+                      setCommentModalOpen(true);
+                      setCommentModalDisable(true);
+                    }
+                  }}
+                  alt={`commentAvatar${comment.comment_id}`}
+                />
+                {UserDetailHorizontalModal({
+                  isActive: commentModalOpen && commentModalNum === comment.comment_id,
+                  modalRef: commentModalRef,
+                  pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
+                  userInfo: comment.author,
+                  // commentId: comment.comment_id,
+                  navigate,
+                })}
+              </CommentWritterAvatar>
+              <CommentWritterText> {comment.author.username} </CommentWritterText>
             </CommentWritterWrapper>
           </CommentWritterWrapperO1>
           <CommentRightWrapper>
@@ -343,7 +411,9 @@ const PostDetail = () => {
                 <FontAwesomeIcon icon={faThumbsDown} />
               </FuncBtn>
               <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-              <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
+              <CommentFuncTimeIndicator>
+                {timeAgoFormat(new Date(), new Date(comment.created))}
+              </CommentFuncTimeIndicator>
             </CommentFuncWrapper>
           </CommentRightWrapper>
         </CommentItem>
@@ -359,7 +429,7 @@ const PostDetail = () => {
                 data-testid="commentReplySubmitBtn"
                 disabled={commentReplyInput === ''}
                 onClick={commentCreateOnClick}
-                data-parent_comment={comment.id}
+                data-parent_comment={comment.comment_id}
               >
                 작성
               </GreenCommentSubmitBtn>
@@ -371,7 +441,7 @@ const PostDetail = () => {
   };
 
   const PostDetailContent = (
-    <ArticleDetailWrapper>
+    <ArticleDetailWrapper id="articleDetailWrapper">
       {post ? (
         <ArticleItem>
           <ArticleBody>
@@ -380,13 +450,40 @@ const PostDetail = () => {
               <ArticleTitle>{post.title}</ArticleTitle>
               <PostWritterWrapper>
                 <PostWritterLeftWrapper>
-                  <PostWritterText> {post.author_name} </PostWritterText>
-                  <PostTimeText>{timeAgoFormat(post.created)}</PostTimeText>
+                  <PostWritterText> {post.author.username} </PostWritterText>
+                  <PostTimeText>{timeAgoFormat(new Date(), new Date(post.created))}</PostTimeText>
                 </PostWritterLeftWrapper>
-                <PostWritterAvatar>Avatar</PostWritterAvatar>
+                <PostWritterAvatar>
+                  <UserAvatar
+                    ref={postModalPivot}
+                    src={process.env.REACT_APP_API_IMAGE + post.author.avatar}
+                    onClick={() => setPostModalOpen(true)}
+                    alt="postAvatar"
+                  />
+                  {UserDetailModal({
+                    isActive: postModalOpen,
+                    modalRef: postModalRef,
+                    pivotRef: postModalPivot,
+                    userInfo: post.author,
+                    navigate,
+                  })}
+                </PostWritterAvatar>
               </PostWritterWrapper>
             </ArticleTitleWrapper>
             <ArticleBodyContent>{post.content}</ArticleBodyContent>
+            <ContentImageSection>
+              {post.images?.map((img, index) => (
+                <PostUploadedImageWrapper key={index}>
+                  <PostUploadedImage
+                    src={process.env.REACT_APP_API_IMAGE + img}
+                    onClick={() => {
+                      setActiveImage(img);
+                      setImageModalOpen(true);
+                    }}
+                  />
+                </PostUploadedImageWrapper>
+              ))}
+            </ContentImageSection>
             <ArticleBodyFooter>
               <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
               <FuncBtn
@@ -454,7 +551,7 @@ const PostDetail = () => {
   );
   const CreateBtn = <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
-    user?.username == post?.author_name ? (
+    user?.username == post?.author.username ? (
       <PostPanelWrapper>
         {CreateBtn}
         <BlueBigBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</BlueBigBtn>
@@ -469,7 +566,18 @@ const PostDetail = () => {
       <SideBarItem>사이드바 공간2</SideBarItem>
     </SideBarWrapper>
   );
-  return PostPageWithSearchBar(PostDetailContent, SideBar);
+  return (
+    <PostPageWrapper>
+      {PostDetailLayout(PostDetailContent, SideBar)}
+      {ImageDetailModal({
+        isActive: imageModalOpen,
+        onClose: () => setImageModalOpen(false),
+        modalRef: imageModalRef,
+        modalAnimRef: imageModalAnimRef,
+        activeImage,
+      })}
+    </PostPageWrapper>
+  );
 };
 
 const TagBubbleWrapper = styled.div`
@@ -492,7 +600,6 @@ const ArticleDetailWrapper = styled.div`
   width: 100%;
   height: 100%;
   background-color: var(--fit-white);
-  position: relative;
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
@@ -516,7 +623,6 @@ const SideBarItem = styled.div`
 `;
 
 const ArticleBody = styled.div`
-  /* padding: 10px 20px; */
   font-size: 14px;
   width: 100%;
   height: 80%;
@@ -528,7 +634,6 @@ const ArticleBody = styled.div`
 `;
 
 const ArticleItem = styled.div`
-  /* padding: 10px 20px; */
   font-size: 14px;
   width: 100%;
   height: fit-content;
@@ -544,7 +649,7 @@ const ArticleItem = styled.div`
 // Article Title
 const ArticleTitleWrapper = styled.div`
   width: 100%;
-  padding: 5px 40px 0px 40px;
+  padding: 5px 15px 0px 40px;
   background-color: var(--fit-white);
   height: fit-content;
   display: flex;
@@ -564,6 +669,8 @@ const ArticleBackBtn = styled.button`
 
 const ArticleTitle = styled.h1`
   font-size: 24px;
+  word-wrap: break-word;
+  word-break: break-all;
 `;
 
 const PostWritterWrapper = styled.div`
@@ -579,10 +686,9 @@ const PostWritterLeftWrapper = styled.div`
   margin-right: 8px;
 `;
 
-const PostWritterAvatar = styled(rowCenterFlex)`
+const PostWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
-  border: 1px solid black;
   border-radius: 50%;
   margin-bottom: 5px;
   font-size: 8px;
@@ -605,6 +711,8 @@ const ArticleBodyContent = styled.div`
   padding: 10px 20px;
   min-height: 360px;
   font-size: 16px;
+  word-wrap: break-word;
+  word-break: break-all;
 `;
 
 // Article Comment List
@@ -617,7 +725,7 @@ export const CommentWrapper = styled.div`
   padding: 0px 20px;
 `;
 
-const CommentReplyWrapper = styled(columnFlex)``;
+const CommentReplyWrapper = styled(ColumnFlex)``;
 
 const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
@@ -641,24 +749,32 @@ const CommentWritterWrapperO1 = styled.div`
   margin-right: 20px;
 `;
 
-const CommentWritterWrapper = styled(columnFlex)`
+const CommentWritterWrapper = styled(ColumnFlex)`
   align-items: center;
   font-size: 8px;
 `;
 
-const CommentWritterAvatar = styled(rowCenterFlex)`
+const CommentWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
-  border: 1px solid black;
   border-radius: 50%;
   margin-bottom: 5px;
+`;
+
+const UserAvatar = styled.img`
+  border: 1px solid black;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
 `;
 
 const CommentWritterText = styled.span`
   font-size: 12px;
 `;
 
-const CommentRightWrapper = styled(columnFlex)`
+const CommentRightWrapper = styled(ColumnFlex)`
   width: 100%;
   height: 100%;
   min-height: 50px;
@@ -707,13 +823,11 @@ const CommentNumIndicator = styled.span`
   width: 50px;
   margin-right: 5px;
   white-space: nowrap;
-  /* margin: 0px 5px; */
 `;
 export const CommentFuncNumIndicator = styled.span`
   font-size: 12px;
   margin-left: 8px;
   min-width: 15px;
-  /* margin: 0px 5px; */
 `;
 
 export const CommentContentWrapper = styled.div`
@@ -736,7 +850,6 @@ export const CommentContent = styled.span`
 // Comment Writing Form
 const CommentForm = styled.div`
   width: 100%;
-  background-color: var(--fit-white);
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
@@ -745,7 +858,6 @@ const CommentForm = styled.div`
 
 const CommentReplyForm = styled.div`
   width: 100%;
-  background-color: var(--fit-white);
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
@@ -761,8 +873,37 @@ const CommentInput = styled.input`
   padding: 10px 12px;
 `;
 
-const PostPanelWrapper = styled(columnCenterFlex)`
+const PostPanelWrapper = styled(ColumnCenterFlex)`
   width: 100%;
+`;
+
+// Image Content Section
+const ContentImageSection = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 100%;
+  height: fit-content;
+  position: relative;
+  background-color: var(--fit-white);
+  padding: 8px 10px;
+`;
+
+const PostUploadedImageWrapper = styled.div`
+  width: 130px;
+  height: 130px;
+  border-radius: 15px;
+  margin: 5px 5px;
+  position: relative;
+`;
+
+const PostUploadedImage = styled.img`
+  width: 130px;
+  height: 130px;
+  background-color: var(--fit-disabled-gray);
+  border-radius: 15px;
+  object-fit: cover;
+  cursor: pointer;
 `;
 
 export default PostDetail;

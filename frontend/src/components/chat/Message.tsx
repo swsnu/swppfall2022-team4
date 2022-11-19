@@ -14,7 +14,7 @@ export const MyMessage = ({ message }: IProps) => {
   return (
     <Wrapper my={true}>
       <TopWrapper>
-        <Created>{timeAgoFormat(message.created)}</Created>
+        <Created>{timeAgoFormat(new Date(), new Date(message.created))}</Created>
       </TopWrapper>
       <ContentWrapper my={true}>{message.content}</ContentWrapper>
     </Wrapper>
@@ -26,7 +26,7 @@ export const OtherMessage = ({ message }: IProps) => {
     <Wrapper my={false}>
       <TopWrapper>
         <Nickname>{message.author ? message.author.nickname : '(알수없음)'}</Nickname>
-        <Created>{timeAgoFormat(message.created)}</Created>
+        <Created>{timeAgoFormat(new Date(), new Date(message.created))}</Created>
       </TopWrapper>
       <ContentWrapper my={false}>{message.content}</ContentWrapper>
     </Wrapper>
@@ -42,7 +42,7 @@ export const OtherGroupMessage = ({ message }: IProps) => {
           alt="profile"
         />
         <Nickname>{message.author ? message.author.nickname : '(알수없음)'}</Nickname>
-        <Created>{timeAgoFormat(message.created)}</Created>
+        <Created>{timeAgoFormat(new Date(), new Date(message.created))}</Created>
       </TopWrapper>
       <ContentWrapper my={false}>{message.content}</ContentWrapper>
     </Wrapper>

@@ -2,10 +2,40 @@ import os
 import json
 import bcrypt
 import jwt
+import requests
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from .models import User
+from users.models import User
+from posts.views import prepare_posts_response
+from comments.views import prepare_comments_response
+
+NO_USER = "존재하지 않는 유저입니다."
+
+
+def prepare_login_response(username, nickname, image, response_status=200):
+    token = jwt.encode(
+        {'username': username},
+        os.environ.get("JWT_SECRET"),
+        os.environ.get("ALGORITHM"),
+    )
+    response = JsonResponse(
+        {
+            "username": username,
+            "nickname": nickname,
+            "image": image,
+        },
+        status=response_status,
+    )
+    response.set_cookie(
+        'access_token',
+        token,
+        max_age=60 * 60 * 24 * 7,
+        samesite='None',
+        secure=True,
+        httponly=True,
+    )
+    return response
 
 
 @ensure_csrf_cookie
@@ -15,6 +45,7 @@ def set_csrf(request):
     GET : csrf 설정
     """
     return HttpResponse(status=200)
+
 
 @require_http_methods(["POST"])
 def signup(request):
@@ -45,31 +76,11 @@ def signup(request):
             level=1,
         )
 
-        token = jwt.encode(
-            {'username': data['username']},
-            os.environ.get("JWT_SECRET"),
-            os.environ.get("ALGORITHM"),
-        )
-        response = JsonResponse(
-            {
-                "username": data['username'],
-                "nickname": data['nickname'],
-                "image": 'profile_default.png',
-            },
-            status=200,
-        )
-        response.set_cookie(
-            'access_token',
-            token,
-            max_age=60 * 60 * 24 * 7,
-            samesite='None',
-            secure=True,
-            httponly=True,
-        )
-        return response
+        return prepare_login_response(data['username'], data['nickname'], 'profile_default.jpg')
 
     except (KeyError, json.JSONDecodeError):
         return HttpResponseBadRequest()
+
 
 @require_http_methods(["POST"])
 def login(request):
@@ -88,29 +99,13 @@ def login(request):
 
         user = User.objects.get(username=data['username'])
         if bcrypt.checkpw(data['password'].encode('utf-8'), user.hashed_password.encode('utf-8')):
-            token = jwt.encode(
-                {'username': data['username']},
-                os.environ.get("JWT_SECRET"),
-                os.environ.get("ALGORITHM"),
-            )
-            response = JsonResponse(
-                {"username": user.username, "nickname": user.nickname, "image": user.image},
-                status=200,
-            )
-            response.set_cookie(
-                'access_token',
-                token,
-                max_age=60 * 60 * 24 * 7,
-                samesite='None',
-                secure=True,
-                httponly=True,
-            )
-            return response
+            return prepare_login_response(user.username, user.nickname, user.image)
         else:
             return JsonResponse({"message": "비밀번호가 틀렸습니다."}, status=401)
 
     except (KeyError, json.JSONDecodeError):
         return HttpResponseBadRequest()
+
 
 @require_http_methods(["GET"])
 def check(request):
@@ -118,6 +113,7 @@ def check(request):
     GET : 자동 로그인을 위한 토큰 확인
     """
     return HttpResponse(status=200)
+
 
 @require_http_methods(["GET"])
 def logout(request):
@@ -130,6 +126,7 @@ def logout(request):
     )
     return response
 
+
 @require_http_methods(["GET", "PUT", "DELETE"])
 def profile(request, user_id):
     """
@@ -138,83 +135,35 @@ def profile(request, user_id):
     DELETE : 회원 탈퇴
     """
     if not (User.objects.filter(username=user_id)).exists():
-        return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
+        return JsonResponse({"message": NO_USER}, status=404)
     user = User.objects.get(username=user_id)
 
     if request.method == 'GET':
-        posts = user.posts.all()
-        posts_serializable = list(posts.values())
-        for index, _ in enumerate(posts_serializable):
-            posts_serializable[index]["comments_num"] = posts[index].get_comments_num()
-            posts_serializable[index]["author_name"] = posts[index].author.username
-            posts_serializable[index]["like_num"] = posts[index].get_like_num()
-            posts_serializable[index]["dislike_num"] = posts[index].get_dislike_num()
-            posts_serializable[index]["scrap_num"] = posts[index].get_scrap_num()
-            posts_serializable[index]["prime_tag"] = None
-
-            if posts[index].prime_tag:
-                posts_serializable[index]["prime_tag"] = {
-                    "id": posts[index].prime_tag.pk,
-                    "name": posts[index].prime_tag.tag_name,
-                    "color": posts[index].prime_tag.tag_class.color,
-                }
-
-            del posts_serializable[index]["author_id"]
-            del posts_serializable[index]["prime_tag_id"]
-
-        comments = user.comments.all()
-        proc_comm = list(comments.values())
-        for index, _ in enumerate(proc_comm):
-            proc_comm[index]["like_num"] = comments[index].get_like_num()
-            proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
-            proc_comm[index]["liked"] = (
-                comments[index].liker.all().filter(username=request.user.username).exists()
-            )
-            proc_comm[index]["disliked"] = (
-                comments[index].disliker.all().filter(username=request.user.username).exists()
-            )
-            proc_comm[index]["author_name"] = comments[index].author.username
-            proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]
-            del proc_comm[index]["author_id"]
-            del proc_comm[index]["parent_comment_id"]
-
-        scraps = user.scraped_posts.all()
-        scraps_serializable = list(scraps.values())
-        for index, _ in enumerate(scraps_serializable):
-            scraps_serializable[index]["comments_num"] = scraps[index].get_comments_num()
-            scraps_serializable[index]["author_name"] = scraps[index].author.username
-            scraps_serializable[index]["like_num"] = scraps[index].get_like_num()
-            scraps_serializable[index]["dislike_num"] = scraps[index].get_dislike_num()
-            scraps_serializable[index]["scrap_num"] = scraps[index].get_scrap_num()
-            scraps_serializable[index]["prime_tag"] = None
-
-            if scraps[index].prime_tag:
-                scraps_serializable[index]["prime_tag"] = {
-                    "id": scraps[index].prime_tag.pk,
-                    "name": scraps[index].prime_tag.tag_name,
-                    "color": scraps[index].prime_tag.tag_class.color,
-                }
-
-            del scraps_serializable[index]["author_id"]
-            del scraps_serializable[index]["prime_tag_id"]
+        posts_serial = prepare_posts_response(user.posts.all())
+        comments_serial = prepare_comments_response(user.comments.all())
+        scraps_serial = prepare_posts_response(user.scraped_posts.all())
 
         follower_datas = user.follower.all()
         followers = []
         for follower_data in follower_datas:
-            followers.append({
-                "username": follower_data.username,
-                "nickname": follower_data.nickname,
-                "image": follower_data.image
-            })
+            followers.append(
+                {
+                    "username": follower_data.username,
+                    "nickname": follower_data.nickname,
+                    "image": follower_data.image,
+                }
+            )
 
         following_datas = user.following.all()
         followings = []
         for following_data in following_datas:
-            followings.append({
-                "username": following_data.username,
-                "nickname": following_data.nickname,
-                "image": following_data.image
-            })
+            followings.append(
+                {
+                    "username": following_data.username,
+                    "nickname": following_data.nickname,
+                    "image": following_data.image,
+                }
+            )
 
         return JsonResponse(
             {
@@ -228,14 +177,15 @@ def profile(request, user_id):
                 "exp": user.exp,
                 "level": user.level,
                 "created": user.created,
+                "login_method": user.login_method,
                 "is_follow": user.follower.all().filter(username=request.user.username).exists(),
                 "information": {
-                    "post": posts_serializable,
-                    "comment": proc_comm,
-                    "scrap": scraps_serializable,
+                    "post": posts_serial,
+                    "comment": comments_serial,
+                    "scrap": scraps_serial,
                     "follower": followers,
-                    "following": followings
-                }
+                    "following": followings,
+                },
             }
         )
 
@@ -272,21 +222,7 @@ def profile(request, user_id):
             except KeyError:
                 return HttpResponseBadRequest()
 
-        token = jwt.encode(
-            {'username': user.username}, os.environ.get("JWT_SECRET"), os.environ.get("ALGORITHM")
-        )
-        response = JsonResponse(
-            {"username": user.username, "nickname": user.nickname, "image": user.image}, status=200
-        )
-        response.set_cookie(
-            'access_token',
-            token,
-            max_age=60 * 60 * 24 * 7,
-            samesite='None',
-            secure=True,
-            httponly=True,
-        )
-        return response
+        return prepare_login_response(user.username, user.nickname, user.image)
 
     elif request.method == 'DELETE':
         if request.user.username != user.username:
@@ -304,13 +240,14 @@ def profile(request, user_id):
         )
         return response
 
+
 @require_http_methods(["GET"])
 def follow(request, user_id):
     """
     GET : 팔로우 / 언팔로우
     """
     if not (User.objects.filter(username=user_id)).exists():
-        return JsonResponse({"message": "존재하지 않는 유저입니다."}, status=404)
+        return JsonResponse({"message": NO_USER}, status=404)
 
     user = User.objects.get(username=request.user.username)
     target = User.objects.get(username=user_id)
@@ -325,3 +262,93 @@ def follow(request, user_id):
         follow_result = True
 
     return JsonResponse({"is_follow": follow_result}, status=200)
+
+
+class KakaoException(Exception):
+    pass
+
+
+@require_http_methods(["GET"])
+def kakao_callback(request):
+    """
+    GET : Kakao login callback 함수.
+    """
+    try:
+        code = request.GET.get("code")
+        profile_request = requests.get(
+            "https://kapi.kakao.com/v2/user/me",
+            headers={
+                "Authorization": f"Bearer {code}",
+                "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+            },
+            timeout=5,
+        )
+        profile_json = profile_request.json()
+        properties = profile_json.get("properties")
+        username = properties.get("nickname")
+
+        try:
+            user = User.objects.get(username=username)
+            if user.login_method == User.LOGIN_KAKAO:
+                if user.validated:
+                    return prepare_login_response(user.username, user.nickname, user.image)
+                else:
+                    return prepare_login_response(
+                        user.username, user.nickname, user.image, response_status=201
+                    )
+            else:
+                raise KakaoException(f"{user.login_method}(으)로 가입한 '{username}'이 이미 존재합니다.")
+
+        except User.DoesNotExist:
+            User.objects.create(
+                username=username,
+                hashed_password='KAKAO_PASSWORD',
+                nickname=username,
+                gender='',
+                age=0,
+                height=0,
+                weight=0,
+                image='profile_default.png',
+                exp=0,
+                level=1,
+                login_method=User.LOGIN_KAKAO,
+                validated=False,
+            )
+            return prepare_login_response(
+                username, username, 'profile_default.png', response_status=201
+            )
+    except KakaoException as error:
+        return JsonResponse(
+            {
+                "error": str(error),
+            },
+            status=401,
+        )
+    except Exception:
+        return JsonResponse(
+            {
+                "error": "오류가 발생했습니다. 다시 시도해주세요.",
+            },
+            status=401,
+        )
+
+
+@require_http_methods(["PUT"])
+def validate_social_account(request):
+    """
+    PUT : Social login 개인정보 입력 & Validate
+    """
+    data = json.loads(request.body.decode())
+    try:
+        user = User.objects.get(username=data["username"])
+        user.gender = data["gender"]
+        user.height = data["height"]
+        user.weight = data["weight"]
+        user.age = data["age"]
+        user.validated = True
+        user.save()
+        return prepare_login_response(user.username, user.nickname, user.image)
+    except User.DoesNotExist:
+        return JsonResponse({"message": NO_USER}, status=404)
+    except KeyError:
+        return HttpResponseBadRequest()

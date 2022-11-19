@@ -1,4 +1,4 @@
-import { userInitialState, userReducer, checkBody } from './userData';
+import { userInitialState, userReducer, checkBody, socialUserInitialState, socialUserReducer } from './userData';
 
 describe('userData', () => {
   describe('userReducer', () => {
@@ -158,6 +158,80 @@ describe('userData', () => {
 
     test('etc', () => {
       expect(userReducer(userInitialState, { name: 'etc', value: '' })).toEqual(userInitialState);
+    });
+  });
+
+  describe('socialUserReducer', () => {
+    test('username', () => {
+      expect(socialUserReducer(socialUserInitialState, { name: 'username', value: '12341234' })).toEqual({
+        ...socialUserInitialState,
+        username: '12341234',
+      });
+    });
+    test('nickname', () => {
+      expect(socialUserReducer(socialUserInitialState, { name: 'nickname', value: '' })).toEqual({
+        ...socialUserInitialState,
+        nickname: '',
+        nicknameWarning: { content: '* 2자 이상 8자 이하', color: '#686868' },
+      });
+
+      expect(socialUserReducer(socialUserInitialState, { name: 'nickname', value: '1' })).toEqual({
+        ...socialUserInitialState,
+        nickname: '1',
+        nicknameWarning: { content: '* 2자 이상 8자 이하', color: '#ff3939' },
+      });
+
+      expect(socialUserReducer(socialUserInitialState, { name: 'nickname', value: '12341234' })).toEqual({
+        ...socialUserInitialState,
+        nickname: '12341234',
+        nicknameWarning: { content: '* 2자 이상 8자 이하', color: '#009112' },
+      });
+    });
+
+    test('gender', () => {
+      expect(socialUserReducer(socialUserInitialState, { name: 'gender', value: 'male' })).toEqual({
+        ...socialUserInitialState,
+        gender: 'male',
+      });
+    });
+
+    test('height', () => {
+      expect(socialUserReducer(socialUserInitialState, { name: 'height', value: '26343' })).toEqual({
+        ...socialUserInitialState,
+        height: '26343',
+        bodyWarning: { content: '* 키는 정수 또는 소수점 첫째 자리까지여야 합니다.', color: '#ff3939' },
+      });
+
+      expect(socialUserReducer(socialUserInitialState, { name: 'height', value: '263.3' })).toEqual({
+        ...socialUserInitialState,
+        height: '263.3',
+        bodyWarning: { content: '', color: '#009112' },
+      });
+    });
+
+    test('weight', () => {
+      expect(socialUserReducer(socialUserInitialState, { name: 'weight', value: '26343' })).toEqual({
+        ...socialUserInitialState,
+        weight: '26343',
+        bodyWarning: { content: '* 몸무게는 정수 또는 소수점 첫째 자리까지여야 합니다.', color: '#ff3939' },
+      });
+
+      expect(socialUserReducer(socialUserInitialState, { name: 'weight', value: '263.3' })).toEqual({
+        ...socialUserInitialState,
+        weight: '263.3',
+        bodyWarning: { content: '', color: '#009112' },
+      });
+    });
+
+    test('age', () => {
+      expect(socialUserReducer(socialUserInitialState, { name: 'age', value: '33' })).toEqual({
+        ...socialUserInitialState,
+        age: '33',
+      });
+    });
+
+    test('etc', () => {
+      expect(socialUserReducer(socialUserInitialState, { name: 'etc', value: '' })).toEqual(socialUserInitialState);
     });
   });
 

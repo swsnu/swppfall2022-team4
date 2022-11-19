@@ -1,5 +1,5 @@
 import client from './client';
-import { postIdentifyingType } from './post';
+import { postIdentifyingType, UserInfo } from './post';
 
 export type commentIdentifyingRequestType = {
   comment_id: string;
@@ -11,19 +11,25 @@ export const getPostComment = async (payload: postIdentifyingType) => {
 };
 
 export type Comment = {
-  id: string;
-  author_name: string;
+  post_id: string;
+  comment_id: string;
+
+  author: UserInfo;
   content: string;
+
   created: string;
   updated: string;
+
   like_num: number;
   dislike_num: number;
+
   parent_comment: number | null;
+
   replyActive?: boolean;
   editActive?: boolean;
+
   liked?: boolean;
   disliked?: boolean;
-  post_id: string;
 };
 
 export type getPostCommentResponseType = {

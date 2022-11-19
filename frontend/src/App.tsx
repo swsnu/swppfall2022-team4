@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ReactNotifications } from 'react-notifications-component';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
@@ -6,6 +7,9 @@ import FugazOne from 'assets/fonts/FugazOne.ttf';
 import IBMPlexSansThaiLooped from 'assets/fonts/IBMPlexSansThaiLooped.ttf';
 import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 import Acme from 'assets/fonts/Acme.ttf';
+import 'styles/react-notification-custom.css';
+import 'styles/color.css';
+import 'styles/modalTransition.css';
 
 import Header from 'components/sections/Header';
 import Footer from 'components/sections/Footer';
@@ -34,6 +38,7 @@ import GroupList from 'containers/group/GroupList';
 import GroupDetail from 'containers/group/GroupDetail';
 import GroupCreate from 'containers/group/GroupCreate';
 import GroupMembers from 'containers/group/GroupMembers';
+import { KakaoLoginCallback } from 'containers/user/SocialLoginCallback';
 import GroupChat from 'containers/group/GroupChat';
 
 const GlobalStyles = createGlobalStyle`
@@ -107,7 +112,15 @@ function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          <Route path="*" element={<InsideComponent />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <ReactNotifications />
+                <InsideComponent />
+              </>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
@@ -120,12 +133,14 @@ const InsideComponent = () => {
     <Routes>
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
+      <Route path="oauth/*">
+        <Route path="kakao" element={<KakaoLoginCallback />} />
+      </Route>
       <Route
         path="*"
         element={
           <Wrapper>
             <Header />
-
             <Routes>
               <Route path="" element={<Main />} />
 

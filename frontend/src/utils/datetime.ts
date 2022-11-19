@@ -3,11 +3,8 @@ export function processTime(dateString: string) {
   return date.toString();
 }
 
-export function timeAgoFormat(dateString: string) {
-  const dateNow = new Date();
-  const date = new Date(dateString);
-
-  const timeDiff = dateNow.valueOf() - date.valueOf(); // (ms)
+export function timeAgoFormat(nowDate: Date, targetDate: Date) {
+  const timeDiff = nowDate.valueOf() - targetDate.valueOf(); // (ms)
   const timeDiffInSec = Math.ceil(timeDiff / 1000);
 
   if (timeDiffInSec < 60) {

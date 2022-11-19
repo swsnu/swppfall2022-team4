@@ -17,7 +17,7 @@ const NotificationDetail = ({ content, image, created, clicked, clickedDelete }:
         <Image src={process.env.REACT_APP_API_IMAGE + image} />
         <ContentSmallWrapper>
           <Content>{content}</Content>
-          <Created>{timeAgoFormat(created)}</Created>
+          <Created>{timeAgoFormat(new Date(), new Date(created))}</Created>
         </ContentSmallWrapper>
       </ContentWrapper>
       <CloseButtonWrapper onClick={clickedDelete}>

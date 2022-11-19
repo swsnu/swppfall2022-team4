@@ -5,6 +5,7 @@ import * as notificationAPI from './notification';
 import * as postAPI from './post';
 import * as commentAPI from './comment';
 import * as tagAPI from './tag';
+import * as infoAPI from './information';
 import * as groupAPI from './group';
 import * as workoutAPI from './workout';
 
@@ -57,6 +58,7 @@ const createPostRequest: postAPI.createPostRequestType = {
   content: 'content',
   author_name: testUsername,
   tags: [testTag],
+  images: [],
   prime_tag: undefined,
 };
 const editPostRequest: postAPI.editPostRequestType = {
@@ -64,6 +66,7 @@ const editPostRequest: postAPI.editPostRequestType = {
   title: 'title',
   content: 'content',
   tags: [testTag],
+  images: ['hi.jpeg'],
   prime_tag: undefined,
 };
 const postFuncRequest: postAPI.postFuncRequestType = {
@@ -221,6 +224,10 @@ describe('API TEST', () => {
       const result = await userAPI.signup(signupRequest);
       expect(result).toBe(`/api/user/signup/`);
     });
+    test('socialSignup', async () => {
+      const result = await userAPI.socialSignup(signupRequest);
+      expect(result).toBe(`/api/user/signup/social/validate/`);
+    });
     test('login', async () => {
       const result = await userAPI.login(loginRequest);
       expect(result).toBe(`/api/user/login/`);
@@ -358,6 +365,12 @@ describe('API TEST', () => {
     test('searchTag', async () => {
       const result = await tagAPI.searchTag(searchTagRequest);
       expect(result).toBe(`/api/tag/search/?tag=${searchTagRequest.tag_name}`);
+    });
+  });
+  describe('Information', () => {
+    test('getInformation', async () => {
+      const result = await infoAPI.getInformation({ information_name: 'Deadlift' });
+      expect(result).toBe(`/api/information/Deadlift/`);
     });
   });
   describe('Workout', () => {

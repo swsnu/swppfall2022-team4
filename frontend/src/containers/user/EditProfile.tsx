@@ -92,6 +92,7 @@ const EditProfile = () => {
       dispatch(userActions.signout(user.username));
     }
   };
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const onChangeProfileImage = async (e: any) => {
     const file = e.target.files[0];
     const formData = new FormData();
@@ -115,7 +116,9 @@ const EditProfile = () => {
       </TitleWrapper>
 
       <ButtonWrapper>
-        <Button3 content="비밀번호 변경" clicked={() => navigate('/edit_password')} />
+        {profile.login_method === 'email' && (
+          <Button3 content="비밀번호 변경" clicked={() => navigate('/edit_password')} />
+        )}
         <Button3 content="회원 탈퇴" clicked={onSignout} />
       </ButtonWrapper>
 

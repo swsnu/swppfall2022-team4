@@ -11,6 +11,10 @@ export const signup = async (payload: signupRequestType) => {
   const response = await client.post<userType>(`/api/user/signup/`, payload);
   return response.data;
 };
+export const socialSignup = async (payload: socialSignupRequestType) => {
+  const response = await client.put<userType>(`/api/user/signup/social/validate/`, payload);
+  return response.data;
+};
 export const login = async (payload: loginRequestType) => {
   const response = await client.post<userType>(`/api/user/login/`, payload);
   return response.data;
@@ -55,6 +59,14 @@ export type signupRequestType = {
   weight: number;
   age: number;
 };
+export type socialSignupRequestType = {
+  username: string;
+  nickname: string;
+  gender: string;
+  height: number;
+  weight: number;
+  age: number;
+};
 export type loginRequestType = {
   username: string;
   password: string;
@@ -70,6 +82,7 @@ export type profileType = {
   exp: number;
   level: number;
   created: string;
+  login_method: string;
   is_follow: boolean;
   information: {
     post: postAPI.Post[];

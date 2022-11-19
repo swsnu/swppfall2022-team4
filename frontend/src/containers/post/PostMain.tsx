@@ -1,23 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useOnClickOutside } from 'usehooks-ts';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { getPostsRequestType } from 'store/apis/post';
-import { timeAgoFormat } from 'utils/datetime';
-import { useNavigate } from 'react-router-dom';
-import { PostPageWithSearchBar, SideBarWrapper } from './PostLayout';
 import { tagActions } from 'store/slices/tag';
+import { timeAgoFormat } from 'utils/datetime';
 import { BlueBigBtn } from 'components/post/button';
 import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
-import { articleItemGrid, columnFlex } from 'components/post/layout';
+import { ArticleItemGrid, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
+import TagDetailModal from 'components/post/TagDetailModal';
+import { PostMainLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImage } from '@fortawesome/free-regular-svg-icons';
 
 const PostMain = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [tagModalOpen, setTagModalOpen] = useState(false);
+
+  const modalRef = useRef(null);
+  const modalAnimRef = useRef(null);
+
+  // Disable modal when OnClickOutside
+  useOnClickOutside(modalRef, () => setTagModalOpen(false), 'mousedown');
+  // Disable scroll when modal is active
+  useEffect(() => {
+    if (tagModalOpen) {
+      document.body.style.overflowY = 'hidden';
+    } else {
+      document.body.style.overflowY = 'unset';
+    }
+  }, [tagModalOpen]);
 
   const { postList, maxPage, searchKeyword, recentCommentPost, tagList } = useSelector(({ post, tag }: RootState) => ({
     postList: post.postList.posts,
@@ -45,7 +64,11 @@ const PostMain = () => {
         <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
       </PostPanelWrapper>
       <SideBarItem>
-        <SideBarTitle>태그 목록</SideBarTitle>
+        <SideBarTitleWrapper>
+          <SideBarTitle>태그 목록</SideBarTitle>
+          <SideBarSubtitle onClick={() => setTagModalOpen(true)}>자세히보기</SideBarSubtitle>
+        </SideBarTitleWrapper>
+
         <TagBubbleWrapper>
           {tagList &&
             tagList.map(
@@ -60,16 +83,18 @@ const PostMain = () => {
         </TagBubbleWrapper>
       </SideBarItem>
       <SideBarItem>
-        <SideBarTitle>최근 댓글이 달린 글</SideBarTitle>
+        <SideBarTitleWrapper>
+          <SideBarTitle>최근 댓글이 달린 글</SideBarTitle>
+        </SideBarTitleWrapper>
         <SideBarContentWrapper>
           {recentCommentPost &&
             recentCommentPost.map(comment => (
-              <SideBarCommentItem key={comment.id} onClick={() => navigate(`/post/${comment.post_id}`)}>
+              <SideBarCommentItem key={comment.comment_id} onClick={() => navigate(`/post/${comment.post_id}`)}>
                 •
                 <SideBarCommentTitle>
                   {comment.content.length > 12 ? comment.content.slice(0, 12) + '...' : comment.content}
                 </SideBarCommentTitle>
-                <SideBarCommentTime>{timeAgoFormat(comment.created)}</SideBarCommentTime>
+                <SideBarCommentTime>{timeAgoFormat(new Date(), new Date(comment.created))}</SideBarCommentTime>
               </SideBarCommentItem>
             ))}
         </SideBarContentWrapper>
@@ -89,18 +114,18 @@ const PostMain = () => {
       {postList ? (
         postList.map((post, id) => {
           return (
-            <ArticleItem data-testid="ArticleItem" key={id} onClick={() => navigate(`/post/${post.id}`)}>
+            <ArticleItem data-testid="ArticleItem" key={id} onClick={() => navigate(`/post/${post.post_id}`)}>
               {post.prime_tag ? (
                 <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
               ) : (
                 <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
               )}
-              <span>
-                {post.title} <span>[{post.comments_num}]</span>
-              </span>
-              <span>{post.author_name}</span>
+              <PostTitle>
+                {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
+              </PostTitle>
+              <span>{post.author.username}</span>
               <span>{post.like_num - post.dislike_num}</span>
-              <span>{timeAgoFormat(post.created)}</span>
+              <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
             </ArticleItem>
           );
         })
@@ -111,16 +136,39 @@ const PostMain = () => {
     </ArticleListWrapper>
   );
 
-  return PostPageWithSearchBar(MainContent, SideBar);
+  return (
+    <PostPageWrapper>
+      {PostMainLayout(MainContent, SideBar)}
+      {TagDetailModal({ isActive: tagModalOpen, onClose: () => setTagModalOpen(false), modalRef, modalAnimRef })}
+    </PostPageWrapper>
+  );
 };
 
-const SideBarTitle = styled.span`
-  font-size: 18px;
+const PostTitle = styled.span`
+  word-wrap: break-word;
+  word-break: break-all;
+`;
+
+const SideBarTitleWrapper = styled(RowCenterFlex)`
   width: 100%;
-  text-align: center;
   border-bottom: 1px solid gray;
-  padding-bottom: 5px;
   margin-bottom: 8px;
+  position: relative;
+`;
+
+const SideBarTitle = styled.span`
+  font-size: 16px;
+  text-align: center;
+  padding-bottom: 5px;
+`;
+const SideBarSubtitle = styled.span`
+  font-size: 11px;
+  padding-bottom: 5px;
+  margin-left: 10px;
+  position: absolute;
+  right: 6px;
+  cursor: pointer;
+  color: var(--fit-green-text);
 `;
 const SideBarCommentItem = styled.div`
   width: 100%;
@@ -156,14 +204,14 @@ const ArticleListWrapper = styled.div`
   position: relative;
 `;
 
-const ArticleHeader = styled(articleItemGrid)`
+const ArticleHeader = styled(ArticleItemGrid)`
   padding: 10px 10px 10px 10px;
   font-size: 14px;
   width: 100%;
   border-bottom: 1px solid black;
 `;
 
-export const ArticleItem = styled(articleItemGrid)`
+export const ArticleItem = styled(ArticleItemGrid)`
   padding: 8px 10px 8px 10px;
   font-size: 14px;
   width: 100%;
@@ -171,7 +219,7 @@ export const ArticleItem = styled(articleItemGrid)`
   cursor: pointer;
 `;
 
-const SideBarItem = styled(columnFlex)`
+const SideBarItem = styled(ColumnFlex)`
   margin-top: 15px;
   width: 100%;
   height: fit-content;
@@ -181,7 +229,7 @@ const SideBarItem = styled(columnFlex)`
   padding: 10px 0px;
 `;
 
-const PostPanelWrapper = styled(columnFlex)`
+const PostPanelWrapper = styled(ColumnFlex)`
   width: 100%;
   align-items: center;
 `;

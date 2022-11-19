@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { BtnBlueprint } from './button';
-import 'styles/color.css';
 
 interface IProps {
   page: number;

@@ -5,7 +5,7 @@ import { AiOutlineEdit } from 'react-icons/ai';
 import { BsChatDots } from 'react-icons/bs';
 import { FaHeart, FaHeartBroken } from 'react-icons/fa';
 import styled from 'styled-components';
-import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import { faImage, faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -29,6 +29,15 @@ import {
   IPropsComment,
 } from 'containers/post/PostDetail';
 import UserItem from 'components/user/UserItem';
+import { Post } from 'store/apis/post';
+import { Comment } from 'store/apis/comment';
+
+interface MyPageArticleIprops {
+  post: Post;
+}
+interface MyPageCommentIprops {
+  comment: Comment;
+}
 
 const CATEGORY = ['게시글', '댓글', '스크랩', '팔로잉'];
 
@@ -85,6 +94,50 @@ const Mypage = () => {
     }
   };
 
+  const MyPageArticleItem = ({ post }: MyPageArticleIprops) => (
+    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
+      {post.prime_tag ? (
+        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
+      ) : (
+        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
+      )}
+      <span>
+        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
+        <span>[{post.comments_num}]</span>
+      </span>
+      <span>{post.author.username}</span>
+      <span>{post.like_num - post.dislike_num}</span>
+      <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
+    </ArticleItem>
+  );
+  const MyPageCommentItem = ({ comment }: MyPageCommentIprops) => (
+    <CommentItem
+      key={comment.comment_id}
+      isChild={comment.parent_comment !== null}
+      onClick={() => navigate(`/post/${comment.post_id}`)}
+    >
+      {comment.parent_comment !== null && (
+        <CommentChildIndicator>
+          <FontAwesomeIcon icon={faArrowRight} />
+        </CommentChildIndicator>
+      )}
+      <CommentContentWrapper>
+        <CommentContent>{comment.content}</CommentContent>
+      </CommentContentWrapper>
+      <CommentFuncWrapper>
+        <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
+          <FontAwesomeIcon icon={faThumbsUp} />
+        </FuncBtn>
+        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
+        <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
+          <FontAwesomeIcon icon={faThumbsDown} />
+        </FuncBtn>
+        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
+        <CommentFuncTimeIndicator> {timeAgoFormat(new Date(), new Date(comment.created))} </CommentFuncTimeIndicator>
+      </CommentFuncWrapper>
+    </CommentItem>
+  );
+
   if (!user || !username) return <div>no user</div>;
   if (loading || !profile) return <Loading />;
   return (
@@ -93,7 +146,21 @@ const Mypage = () => {
         <LeftWrapper>
           <ProfileImage src={process.env.REACT_APP_API_IMAGE + profile.image} alt="profile" />
           <ProfileInfoWrapper>
-            <Nickname>{profile.nickname}</Nickname>
+            <NicknameWrapper>
+              <Nickname>{profile.nickname}</Nickname>
+              {profile.login_method == 'kakao' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/kakao.jpg')} alt="kakao" />
+              )}
+              {profile.login_method == 'google' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/google.png')} alt="google" />
+              )}
+              {profile.login_method == 'facebook' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/facebook.png')} alt="facebook" />
+              )}
+              {profile.login_method == 'github' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/github.png')} alt="github" />
+              )}
+            </NicknameWrapper>
             <Username>{profile.username}</Username>
             <Gender>{profile.gender === 'male' ? '남성' : '여성'}</Gender>
             <BodyWrapper>
@@ -156,69 +223,21 @@ const Mypage = () => {
               0: (
                 <ProfileContentWrapper>
                   {profile.information.post.map(post => (
-                    <ArticleItem key={post.id} onClick={() => navigate(`/post/${post.id}`)}>
-                      {post.prime_tag ? (
-                        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-                      ) : (
-                        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-                      )}
-                      <span>
-                        {post.title} <span>[{post.comments_num}]</span>
-                      </span>
-                      <span>{post.author_name}</span>
-                      <span>{post.like_num - post.dislike_num}</span>
-                      <span>{timeAgoFormat(post.created)}</span>
-                    </ArticleItem>
+                    <MyPageArticleItem key={post.post_id} post={post} />
                   ))}
                 </ProfileContentWrapper>
               ),
               1: (
                 <ProfileContentWrapper>
                   {profile.information.comment.map(comment => (
-                    <CommentItem
-                      key={comment.id}
-                      isChild={comment.parent_comment !== null}
-                      onClick={() => navigate(`/post/${comment.post_id}`)}
-                    >
-                      {comment.parent_comment !== null && (
-                        <CommentChildIndicator>
-                          <FontAwesomeIcon icon={faArrowRight} />
-                        </CommentChildIndicator>
-                      )}
-                      <CommentContentWrapper>
-                        <CommentContent>{comment.content}</CommentContent>
-                      </CommentContentWrapper>
-                      <CommentFuncWrapper>
-                        <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
-                          <FontAwesomeIcon icon={faThumbsUp} />
-                        </FuncBtn>
-                        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-                        <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
-                          <FontAwesomeIcon icon={faThumbsDown} />
-                        </FuncBtn>
-                        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-                        <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
-                      </CommentFuncWrapper>
-                    </CommentItem>
+                    <MyPageCommentItem key={comment.comment_id} comment={comment} />
                   ))}
                 </ProfileContentWrapper>
               ),
               2: (
                 <ProfileContentWrapper>
                   {profile.information.scrap.map(post => (
-                    <ArticleItem key={post.id} onClick={() => navigate(`/post/${post.id}`)}>
-                      {post.prime_tag ? (
-                        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-                      ) : (
-                        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-                      )}
-                      <span>
-                        {post.title} <span>[{post.comments_num}]</span>
-                      </span>
-                      <span>{post.author_name}</span>
-                      <span>{post.like_num - post.dislike_num}</span>
-                      <span>{timeAgoFormat(post.created)}</span>
-                    </ArticleItem>
+                    <MyPageArticleItem key={post.post_id} post={post} />
                   ))}
                 </ProfileContentWrapper>
               ),
@@ -320,6 +339,11 @@ const ProfileInfoWrapper = styled.div`
   justify-content: center;
   font-family: NanumSquareR;
 `;
+const NicknameWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
 const Nickname = styled.div`
   font-size: 32px;
   font-weight: 600;
@@ -329,6 +353,13 @@ const Nickname = styled.div`
     font-size: 24px;
   }
 `;
+const SocialLoginIcon = styled.img`
+  width: 25px;
+  height: 25px;
+  border-radius: 10px;
+  margin-left: 10px;
+`;
+
 const Username = styled.div`
   color: #464646;
   font-size: 21px;

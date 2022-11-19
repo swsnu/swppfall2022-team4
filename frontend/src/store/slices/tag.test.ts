@@ -6,6 +6,12 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer } from 'store';
 
+import { Store } from 'react-notifications-component';
+beforeEach(() => {
+  Store.addNotification = jest.fn();
+});
+afterAll(() => jest.restoreAllMocks());
+
 // Mock objects
 const simpleError = new Error('error!');
 const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
@@ -29,6 +35,7 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
     {
       id: 1,
       class_name: 'workout',
+      class_type: 'workout',
       color: '#101010',
       tags: simpleTagVisuals,
     },

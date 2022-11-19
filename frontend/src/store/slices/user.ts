@@ -54,6 +54,19 @@ export const userSlice = createSlice({
       state.error = payload;
       alert(payload.response?.data.message);
     },
+    socialSignup: (state, action: PayloadAction<userAPI.socialSignupRequestType>) => {
+      state.user = null;
+      state.error = null;
+    },
+    socialSignupSuccess: (state, { payload }) => {
+      state.user = payload;
+      state.error = null;
+    },
+    socialSignupFailure: (state, { payload }) => {
+      state.user = null;
+      state.error = payload;
+      alert(payload.response?.data.message);
+    },
     login: (state, action: PayloadAction<userAPI.loginRequestType>) => {
       state.user = null;
       state.error = null;
@@ -150,6 +163,14 @@ function* signupSaga(action: PayloadAction<userAPI.signupRequestType>) {
     yield put(userActions.signupFailure(error));
   }
 }
+function* socialSignupSaga(action: PayloadAction<userAPI.socialSignupRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(userAPI.socialSignup, action.payload);
+    yield put(userActions.socialSignupSuccess(response));
+  } catch (error) {
+    yield put(userActions.socialSignupFailure(error));
+  }
+}
 function* loginSaga(action: PayloadAction<userAPI.loginRequestType>) {
   try {
     const response: AxiosResponse = yield call(userAPI.login, action.payload);
@@ -205,6 +226,7 @@ function* followSaga(action: PayloadAction<string>) {
 export default function* userSaga() {
   yield takeLatest(userActions.token, tokenSaga);
   yield takeLatest(userActions.signup, signupSaga);
+  yield takeLatest(userActions.socialSignup, socialSignupSaga);
   yield takeLatest(userActions.login, loginSaga);
   yield takeLatest(userActions.check, checkSaga);
   yield takeLatest(userActions.logout, logoutSaga);
