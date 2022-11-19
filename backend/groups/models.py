@@ -16,5 +16,8 @@ class Group(models.Model):
     description = models.TextField(blank = False)
     free = models.BooleanField(null = False)
     goal = models.ManyToManyField(FitElement, related_name = 'group_goal')
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
+    address = models.CharField(max_length = 30, null = True)
     class Meta:
         ordering = ("-id",)

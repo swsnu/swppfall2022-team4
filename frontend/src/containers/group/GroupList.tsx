@@ -1,3 +1,4 @@
+/*global kakao*/
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -12,8 +13,8 @@ import Loading from 'components/common/Loading';
 import { GroupElement } from 'components/group/GroupElement';
 import { geolocationResponseType, co2regionResponseType } from 'assets/types/group';
 
-const distance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
-  return ((lat1 - lat2) ^ 2) + ((lng1 - lng2) ^ 2);
+const distance = (lat1: number | null, lng1: number | null, lat2: number | null, lng2: number | null) => {
+  return (((lat1 || 0) - (lat2 || 0)) ^ 2) + (((lng1 || 0) - (lng2 || 0)) ^ 2);
 };
 
 const GroupList = () => {
@@ -102,7 +103,7 @@ const GroupList = () => {
   };
 
   const orderOldClicked = () => {
-    console.log('close');
+    console.log('old');
     if (groupListOrdered) {
       const newGroupOrdered: Group[] = [...groupListOrdered];
       newGroupOrdered.sort((a, b) => a.id - b.id);
@@ -111,10 +112,15 @@ const GroupList = () => {
   };
 
   const orderCloseClicked = () => {
-    console.log('old');
+    console.log('close');
     if (groupListOrdered) {
       const newGroupOrdered: Group[] = [...groupListOrdered];
-      //newGroupOrdered.sort((a, b) => distance(a.lat, a.lat, currentLocation.center.lat, currentLocation.center.lng) - distance(b.lat, b.lat, currentLocation.center.lat, currentLocation.center.lng));
+      newGroupOrdered.sort((a, b) => {
+        return (
+          distance(b.lat, b.lng, currentLocation.center.lat, currentLocation.center.lng) -
+          distance(a.lat, a.lng, currentLocation.center.lat, currentLocation.center.lng)
+        );
+      });
       setGroupListOrdered(newGroupOrdered);
     }
   };
@@ -160,6 +166,7 @@ const GroupList = () => {
               key={index}
               id={groupListOrdered.id}
               group_name={groupListOrdered.group_name}
+              address={groupListOrdered.address}
               number={groupListOrdered.number}
               start_date={groupListOrdered.start_date}
               end_date={groupListOrdered.end_date}

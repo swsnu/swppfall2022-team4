@@ -84,6 +84,9 @@ const GroupCreate = () => {
     const param_num = max_num ? group_num : null;
     const param_start_date = set_date ? start_date : null;
     const param_end_date = set_date ? end_date : null;
+    const param_lat = place ? clickedPosition.lat : null;
+    const param_lng = place ? clickedPosition.lng : null;
+    const param_address = place ? clickedAddress : null;
 
     dispatch(
       groupActions.createGroup({
@@ -94,6 +97,9 @@ const GroupCreate = () => {
         description: description,
         free: free,
         group_leader: user.username,
+        lat: param_lat,
+        lng: param_lng,
+        address: param_address,
         goal: [example_fit, example_fit],
       }),
     );

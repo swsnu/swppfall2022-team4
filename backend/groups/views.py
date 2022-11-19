@@ -16,7 +16,7 @@ def general_group(request):
     if request.method == 'GET':
         group_list = list(
             Group.objects.all().values(
-                'id', 'group_name', 'number', 'start_date', 'end_date', 'member_number'
+                'id', 'group_name', 'number', 'start_date', 'end_date', 'member_number', 'lat', 'lng', 'address'
             )
         )
         return JsonResponse({"groups": group_list}, safe=False)
@@ -31,6 +31,9 @@ def general_group(request):
                 end_date=req_data["end_date"],
                 description=req_data["description"],
                 free=req_data["free"],
+                lat=req_data["lat"],
+                lng=req_data["lng"],
+                address=req_data["address"],
                 group_leader=request.user,
             )
             goal_list = req_data["goal"]

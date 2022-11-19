@@ -46,6 +46,9 @@ export type Group = {
   start_date: string | null;
   end_date: string | null;
   member_number: number;
+  lat: number | null;
+  lng: number | null;
+  address: string | null;
 };
 
 export type Fitelement = {
@@ -77,6 +80,9 @@ export type postGroupRequestType = {
   description: string;
   free: boolean;
   group_leader: string | null;
+  lat: number | null;
+  lng: number | null;
+  address: string | null;
   goal: Fitelement[];
 };
 
