@@ -14,7 +14,6 @@ import { Post } from 'store/apis/post';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { timeAgoFormat } from 'utils/datetime';
 import { Youtube } from 'store/apis/information';
-// import { timeAgoFormat } from 'utils/datetime';
 
 interface IPropsSearchClear {
   isActive?: boolean;

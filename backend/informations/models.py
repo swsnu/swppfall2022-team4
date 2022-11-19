@@ -6,10 +6,6 @@ from tags.models import Tag
 class Information(AbstractTimeStampedModel):
     # created, updated.
     name = models.CharField(max_length=15)
-
-    # youtube_info = models.ManyToManyField(YoutubeContent, related_name="information", blank=True)
-    # article_info = models.ManyToManyField(ArticleContent, related_name="information", blank=True)
-
     tag = models.ForeignKey(Tag, related_name="information", on_delete=models.CASCADE, null=True)
 
     def __str__(self):

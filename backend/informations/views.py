@@ -40,7 +40,7 @@ def youtube_search(query, max_result=25):
     return videos
 
 
-def information_update(request, target):  # Target Information.
+def information_update(target):  # Target Information.
     youtube_result = youtube_search(target.name)
     for video in youtube_result:
         try:
@@ -72,7 +72,7 @@ def information_detail(request, information_name):
             datetime.datetime.now() - target.updated > datetime.timedelta(hours=1)
             or target.youtube.count() == 0
         ):
-            information_update(request, target)
+            information_update(target)
             target.updated = datetime.datetime.now()
             target.save()
         return JsonResponse(
