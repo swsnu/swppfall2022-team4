@@ -89,6 +89,9 @@ def group_detail(request, group_id):
                     "nickname": group_leader.nickname,
                     "image": group_leader.image,
                 },
+                "lat": gr_obj.lat,
+                "lng": gr_obj.lng,
+                "address": gr_obj.address,
                 "goal": list(gr_obj.goal.values()),
                 "member_number": gr_obj.member_number,
             }

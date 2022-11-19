@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { groupActions } from 'store/slices/group';
+import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
 import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
@@ -78,6 +79,11 @@ const GroupDetail = () => {
         ) : (
           <GroupNumber>{`인원수: ${group_detail.member_number}명`}</GroupNumber>
         )}
+        {group_detail.address ? (
+          <GroupNumber>{`장소: ${group_detail.address}`}</GroupNumber>
+        ) : (
+          <GroupNumber>{`장소: 장소 없음`}</GroupNumber>
+        )}
       </GroupDetailHeader>
 
       <GroupAboutWrapper>
@@ -89,6 +95,28 @@ const GroupDetail = () => {
         </div>
         <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
       </GroupAboutWrapper>
+
+      {group_detail.lat && group_detail.lng && (
+        <GroupAboutWrapper>
+          <GroupAboutText>Place</GroupAboutText>
+          <GroupDetailDate>장소 : {group_detail.address || '주소명을 불러오지 못했습니다.'}</GroupDetailDate>
+          <Map // 로드뷰를 표시할 Container
+            center={{
+              lat: group_detail.lat,
+              lng: group_detail.lng,
+            }}
+            style={{
+              width: '60%',
+              height: '350px',
+            }}
+            level={3}
+          >
+            <MapMarker position={{ lat: group_detail.lat, lng: group_detail.lng }}>
+              {group_detail.address && <div style={{ color: '#000' }}>{group_detail.address}</div>}
+            </MapMarker>
+          </Map>
+        </GroupAboutWrapper>
+      )}
 
       <GroupDetailWrapper>
         <GroupAboutText>Specification</GroupAboutText>

@@ -101,6 +101,9 @@ export type getGroupDetailResponseType = {
   group_leader: userType;
   goal: Fitelement[];
   member_number: number;
+  lat: number | null;
+  lng: number | null;
+  address: string | null;
 };
 
 export type checkGroupMemberResponseType = {
