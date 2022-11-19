@@ -68,7 +68,10 @@ def information_detail(request, information_name):
     try:
         target = Information.objects.get(name=information_name)
 
-        if datetime.datetime.now() - target.updated > datetime.timedelta(hours=1):
+        if (
+            datetime.datetime.now() - target.updated > datetime.timedelta(hours=1)
+            or target.youtube.count() == 0
+        ):
             information_update(request, target)
             target.updated = datetime.datetime.now()
             target.save()

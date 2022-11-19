@@ -259,7 +259,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                   </option>
                 );
               })}
-            {currentTagClass?.class_type === 'general' && <option value={NEW_OPTION}> - 태그 만들기 - </option>}
+            {currentTagClass?.class_type !== 'place' && <option value={NEW_OPTION}> - 태그 만들기 - </option>}
           </TagSelect>
           {tagSelect === NEW_OPTION && (
             <TagClassFuncWrapper>

@@ -5,6 +5,8 @@ from django.http import (
 )
 from django.views.decorators.http import require_http_methods
 from tags.models import Tag, TagClass
+from informations.models import Information
+from tags.management.commands.prepare_tags import get_tag_class_type
 
 
 @require_http_methods(["GET", "POST"])
@@ -44,6 +46,9 @@ def tag_home(request):
             class_id = data["classId"]
             parent_class = TagClass.objects.get(pk=class_id)
             created_tag = Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
+
+            if get_tag_class_type(parent_class.class_name) == 'workout':
+                Information.objects.create(name=tag_name, tag=created_tag)
             return JsonResponse(
                 {
                     "tags": {"id": created_tag.pk, "name": tag_name, "color": parent_class.color},
@@ -65,6 +70,7 @@ def tag_class(request):
         class_name = data["name"]
         class_color = data["color"]
         TagClass.objects.create(class_name=class_name, color=class_color)
+
         return JsonResponse({"message": "Success!"}, status=201)
     except (KeyError, json.JSONDecodeError):
         return HttpResponseBadRequest()

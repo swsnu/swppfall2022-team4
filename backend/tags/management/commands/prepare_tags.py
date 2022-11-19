@@ -15,15 +15,7 @@ def get_random_color():
 
 
 def get_tag_class_type(class_name):
-    if class_name in [
-        "등운동",
-        "가슴운동",
-        "어깨운동",
-        "하체운동",
-        "복근운동",
-        "팔운동",
-        "유산소",
-    ]:
+    if class_name in ["등운동", "가슴운동", "어깨운동", "하체운동", "복근운동", "팔운동", "유산소", "기타운동"]:
         return "workout"
     elif class_name in ["장소"]:
         return "place"
