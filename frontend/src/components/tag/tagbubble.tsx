@@ -14,7 +14,7 @@ interface IPropsTagBubbleX {
 }
 
 export const TagBubbleX = ({ testId, onClick }: IPropsTagBubbleX) => (
-  <TagBubbleXstyle data-testId={testId} onClick={onClick}>
+  <TagBubbleXstyle data-testid={testId} onClick={onClick}>
     <FontAwesomeIcon icon={faX} />
   </TagBubbleXstyle>
 );

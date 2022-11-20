@@ -16,8 +16,6 @@ export interface TagDetailModalIprops {
   tagList: TagClass[] | null;
   selected: TagVisual[];
   setSelected: (value: React.SetStateAction<TagVisual[]>) => void;
-  isFiltering: boolean;
-  setIsFiltering: (value: React.SetStateAction<boolean>) => void;
 }
 
 const UNSELECTED = '#dbdbdb';
@@ -30,8 +28,6 @@ const TagDetailModal = ({
   tagList,
   selected,
   setSelected,
-  isFiltering,
-  setIsFiltering,
 }: TagDetailModalIprops) => {
   const filterOnClick = (tag: TagVisual) => {
     if (selected.filter(item => item.id == tag.id).length === 0) {
@@ -62,12 +58,9 @@ const TagDetailModal = ({
                 </ModalCloseBtn>
               </ModalExitWrapper>
             </ModalTitleWrapper>
-            <TagClassSection>
-              <div>
-                <h1>태그로 필터링하기 :</h1>
-                <h1 onClick={() => setIsFiltering(state => !state)}>{isFiltering ? 'True' : 'False'}</h1>
-              </div>
-            </TagClassSection>
+            <ModalDescriptionSection>
+              <span>아래 태그를 클릭하여 태그로 필터링할 수 있습니다.</span>
+            </ModalDescriptionSection>
             {tagList?.map(tagClass => (
               <TagClassSection key={tagClass.id}>
                 <div>
@@ -79,13 +72,16 @@ const TagDetailModal = ({
                     <TagBubble
                       key={tag.id}
                       color={
-                        isFiltering && selected.filter(item => item.id == tag.id).length === 0 ? UNSELECTED : tag.color
+                        selected.length > 0 && selected.filter(item => item.id == tag.id).length === 0
+                          ? UNSELECTED
+                          : tag.color
                       }
                       onClick={() => filterOnClick(tag)}
                     >
                       {tag.name}
                     </TagBubble>
                   ))}
+                  {selected.length == 0 && <TagBubble color={tagClass.color}>눌러서 추가</TagBubble>}
                 </div>
               </TagClassSection>
             ))}
@@ -110,27 +106,44 @@ export const ModalOverlay = styled.div`
   background-color: var(--fit-modal-background);
 `;
 
+const ModalDescriptionSection = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin-top: 5px;
+  padding: 0px 20px 10px 20px;
+
+  > span {
+    font-size: 15px;
+    text-align: right;
+  }
+`;
+
 const TagClassSection = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
 
   padding: 10px 20px;
-  div:first-child {
-    h1 {
+  > div:first-child {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    > h1 {
       /* Title */
       font-size: 18px;
       font-weight: 500;
       margin-bottom: 5px;
     }
-    div {
+    > div:nth-child(2) {
       width: 15px;
       height: 15px;
       margin-left: 5px;
       border-radius: 20px;
     }
   }
-  div {
+  > div:nth-child(2) {
     display: flex;
     width: 100%;
     flex-direction: row;
@@ -162,7 +175,8 @@ const ModalContent = styled.div`
 
 const ModalTitleWrapper = styled(RowCenterFlex)`
   width: 100%;
-  padding: 15px 20px;
+  padding: 15px 20px 8px 20px;
+  border-bottom: 1px solid gray;
 `;
 
 const ModalTitle = styled.span`

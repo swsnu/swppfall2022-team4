@@ -31,14 +31,13 @@ const PostMain = () => {
   const [page, setPage] = useState(1);
   const [tagModalOpen, setTagModalOpen] = useState(false);
   const [selected, setSelected] = useState<TagVisual[]>([]);
-  const [isFiltering, setIsFiltering] = useState<boolean>(false);
 
   const modalRef = useRef(null);
   const modalAnimRef = useRef(null);
 
   // Disable modal when OnClickOutside
   const TagDetailOnClose = () => {
-    if (isFiltering) {
+    if (selected.length > 0) {
       const defaultPageConfig: getPostsRequestType = {
         pageNum: page,
         pageSize: 15,
@@ -222,8 +221,6 @@ const PostMain = () => {
         tagList,
         selected,
         setSelected,
-        isFiltering,
-        setIsFiltering,
       })}
     </PostPageWrapper>
   );
