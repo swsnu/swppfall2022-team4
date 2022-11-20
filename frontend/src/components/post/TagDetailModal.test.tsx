@@ -23,6 +23,8 @@ const setup = () => {
       tagList={[]}
       selected={[]}
       setSelected={jest.fn()}
+      isFiltering={false}
+      setIsFiltering={jest.fn()}
     />,
   );
 };

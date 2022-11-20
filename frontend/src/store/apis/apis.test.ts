@@ -47,11 +47,13 @@ const editProfileRequest = {
 const getPostsRequest: postAPI.getPostsRequestType = {
   pageNum: 1,
   pageSize: 15,
+  tags: [],
 };
 const searchPostsRequest: postAPI.getPostsRequestType = {
   pageNum: 1,
   pageSize: 15,
   searchKeyword: 'test',
+  tags: [],
 };
 const createPostRequest: postAPI.createPostRequestType = {
   title: 'title',

@@ -12,59 +12,6 @@ interface IPropsSearchClear {
   isActive?: boolean;
 }
 
-export const PostMainLayout = (mainElement: JSX.Element, sideElement: JSX.Element) => {
-  const postSearch = useSelector(({ post }: RootState) => post.postSearch);
-  const [search, setSearch] = useState(postSearch);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    setSearch(postSearch);
-  }, []);
-  return (
-    <PostPageWrapper>
-      <PostContentWrapper>
-        <TopWrapper>
-          <SearchForm
-            onSubmit={e => {
-              e.preventDefault();
-              dispatch(
-                postActions.postSearch({
-                  search_keyword: search,
-                }),
-              );
-            }}
-          >
-            <SearchIcon>
-              <FontAwesomeIcon icon={faSearch} />
-            </SearchIcon>
-            <SearchInput
-              placeholder="Search keyword"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            ></SearchInput>
-            <ClearSearchInput
-              isActive={search !== ''}
-              onClick={() => {
-                setSearch('');
-                dispatch(
-                  postActions.postSearch({
-                    search_keyword: '',
-                  }),
-                );
-              }}
-            >
-              Clear
-            </ClearSearchInput>
-          </SearchForm>
-        </TopWrapper>
-        <Main_SideWrapper>
-          {mainElement}
-          {sideElement}
-        </Main_SideWrapper>
-      </PostContentWrapper>
-    </PostPageWrapper>
-  );
-};
-
 export const PostDetailLayout = (mainElement: JSX.Element, sideElement: JSX.Element) => {
   const postSearch = useSelector(({ post }: RootState) => post.postSearch);
   const [search, setSearch] = useState(postSearch);

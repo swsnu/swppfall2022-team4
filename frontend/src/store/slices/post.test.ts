@@ -113,6 +113,7 @@ const getPostsRequest: postAPI.getPostsRequestType = {
   pageNum: 1,
   pageSize: 15,
   searchKeyword: '',
+  tags: [],
 };
 const createPostRequest: postAPI.createPostRequestType = {
   title: 'post title',

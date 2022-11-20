@@ -85,6 +85,7 @@ const defaultPageConfig: postAPI.getPostsRequestType = {
   pageNum: 1,
   pageSize: 15,
   searchKeyword: undefined,
+  tags: [],
 };
 
 describe('[PostMain Page]', () => {

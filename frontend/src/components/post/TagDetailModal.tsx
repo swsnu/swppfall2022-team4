@@ -6,7 +6,7 @@ import { CSSTransition } from 'react-transition-group';
 import { TagClass, TagVisual } from 'store/apis/tag';
 import { RowCenterFlex } from './layout';
 import { TagBubble } from 'components/tag/tagbubble';
-import { useState } from 'react';
+import React from 'react';
 
 export interface TagDetailModalIprops {
   isActive: boolean;
@@ -16,6 +16,8 @@ export interface TagDetailModalIprops {
   tagList: TagClass[] | null;
   selected: TagVisual[];
   setSelected: (value: React.SetStateAction<TagVisual[]>) => void;
+  isFiltering: boolean;
+  setIsFiltering: (value: React.SetStateAction<boolean>) => void;
 }
 
 const UNSELECTED = '#dbdbdb';
@@ -28,17 +30,17 @@ const TagDetailModal = ({
   tagList,
   selected,
   setSelected,
+  isFiltering,
+  setIsFiltering,
 }: TagDetailModalIprops) => {
-  const [isFiltering, setIsFiltering] = useState<boolean>(false);
   const filterOnClick = (tag: TagVisual) => {
-    if (selected.includes(tag)) {
+    if (selected.filter(item => item.id == tag.id).length === 0) {
       setSelected(state => {
-        return state.filter(t => t !== tag);
+        return [...state, tag];
       });
     } else {
       setSelected(state => {
-        state.push(tag);
-        return state;
+        return state.filter(item => item.id !== tag.id);
       });
     }
   };
@@ -76,7 +78,9 @@ const TagDetailModal = ({
                   {tagClass.tags.map(tag => (
                     <TagBubble
                       key={tag.id}
-                      color={isFiltering && !selected.includes(tag) ? UNSELECTED : tag.color}
+                      color={
+                        isFiltering && selected.filter(item => item.id == tag.id).length === 0 ? UNSELECTED : tag.color
+                      }
                       onClick={() => filterOnClick(tag)}
                     >
                       {tag.name}
