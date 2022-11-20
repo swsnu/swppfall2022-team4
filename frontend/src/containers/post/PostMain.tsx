@@ -10,7 +10,13 @@ import { tagActions } from 'store/slices/tag';
 import { timeAgoFormat } from 'utils/datetime';
 import { BlueBigBtn } from 'components/post/button';
 import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
-import { ArticleItemGrid, ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import {
+  ArticleItemGrid,
+  ColumnCenterFlex,
+  ColumnFlex,
+  PostContentWrapper,
+  RowCenterFlex,
+} from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 import TagDetailModal from 'components/post/TagDetailModal';
@@ -92,7 +98,7 @@ const PostMain = () => {
     setSelected(s => s.filter(item => item.id != id));
   };
   const SideBar = (
-    <SideBarWrapper>
+    <div>
       <PostPanelWrapper>
         <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
       </PostPanelWrapper>
@@ -148,7 +154,7 @@ const PostMain = () => {
             ))}
         </SideBarContentWrapper>
       </SideBarItem>
-    </SideBarWrapper>
+    </div>
   );
 
   const MainContent = (
@@ -188,7 +194,7 @@ const PostMain = () => {
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <TopWrapper>
+        <div>
           <SearchBar
             onSubmit={e => {
               e.preventDefault();
@@ -209,11 +215,11 @@ const PostMain = () => {
             search={search}
             setSearch={setSearch}
           />
-        </TopWrapper>
-        <Main_SideWrapper>
+        </div>
+        <div>
           {MainContent}
           {SideBar}
-        </Main_SideWrapper>
+        </div>
       </PostContentWrapper>
       {TagDetailModal({
         isActive: tagModalOpen,
@@ -352,38 +358,6 @@ export const PostPageWrapper = styled(ColumnCenterFlex)`
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
-`;
-
-export const PostContentWrapper = styled(ColumnCenterFlex)`
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  max-width: 1200px;
-
-  @media all and (max-width: 650px) {
-    width: 100%;
-  }
-`;
-
-export const TopWrapper = styled.div`
-  margin: 40px 0px 15px 0px;
-  width: 100%;
-  background-color: var(--fit-white);
-`;
-
-export const Main_SideWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 8fr 2fr;
-  row-gap: 10px;
-  column-gap: 10px;
-  width: 100%;
-  height: 80vh;
-  min-height: 640px;
-  margin-bottom: 50px;
-`;
-
-export const SideBarWrapper = styled.div`
-  width: 100%;
 `;
 
 export default PostMain;

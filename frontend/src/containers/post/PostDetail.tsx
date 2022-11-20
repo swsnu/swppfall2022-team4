@@ -13,7 +13,7 @@ import { Comment } from 'store/apis/comment';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { BlueBigBtn, CommentGreenBtn, RedSmallBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
-import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
 import ImageDetailModal from 'components/post/ImageDetailModal';
 import SearchBar from 'components/post/SearchBar';
@@ -293,8 +293,7 @@ const PostDetail = () => {
     setEditActivated(false);
   };
 
-  const commentDeleteOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const target_id = e.currentTarget.getAttribute('data-comment_id');
+  const commentDeleteOnClick = (target_id: string) => {
     if (target_id && id) {
       dispatch(
         postActions.deleteComment({
@@ -336,9 +335,7 @@ const PostDetail = () => {
               <CommentGreenBtn disabled={editActivated} onClick={() => commentEditOpenOnClick(comment)}>
                 수정
               </CommentGreenBtn>
-              <RedSmallBtn onClick={commentDeleteOnClick} data-comment_id={comment.comment_id}>
-                삭제
-              </RedSmallBtn>
+              <RedSmallBtn onClick={() => commentDeleteOnClick(comment.comment_id)}>삭제</RedSmallBtn>
             </>
           )}
         </FuncBtnWrapper>
@@ -440,7 +437,7 @@ const PostDetail = () => {
     );
   };
 
-  const PostDetailContent = (
+  const PostDetailContent = () => (
     <ArticleDetailWrapper id="articleDetailWrapper">
       {post ? (
         <ArticleItem>
@@ -560,11 +557,11 @@ const PostDetail = () => {
     ) : (
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
     );
-  const SideBar = (
-    <SideBarWrapper>
+  const SideBar = () => (
+    <div>
       {PostAuthorPanel}
       <SideBarItem>사이드바 공간2</SideBarItem>
-    </SideBarWrapper>
+    </div>
   );
 
   const postSearch = useSelector(({ post }: RootState) => post.postSearch);
@@ -576,7 +573,7 @@ const PostDetail = () => {
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <TopWrapper>
+        <div>
           <SearchBar
             onSubmit={e => {
               e.preventDefault();
@@ -598,11 +595,11 @@ const PostDetail = () => {
             search={search}
             setSearch={setSearch}
           />
-        </TopWrapper>
-        <Main_SideWrapper>
-          {PostDetailContent}
-          {SideBar}
-        </Main_SideWrapper>
+        </div>
+        <div>
+          <PostDetailContent />
+          <SideBar />
+        </div>
       </PostContentWrapper>
       {ImageDetailModal({
         isActive: imageModalOpen,
@@ -948,38 +945,6 @@ export const PostPageWrapper = styled(ColumnCenterFlex)`
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
-`;
-
-export const PostContentWrapper = styled(ColumnCenterFlex)`
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  max-width: 1200px;
-
-  @media all and (max-width: 650px) {
-    width: 100%;
-  }
-`;
-
-export const TopWrapper = styled.div`
-  margin: 40px 0px 15px 0px;
-  width: 100%;
-  background-color: var(--fit-white);
-`;
-
-export const Main_SideWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 8fr 2fr;
-  row-gap: 10px;
-  column-gap: 10px;
-  width: 100%;
-  height: 80vh;
-  min-height: 640px;
-  margin-bottom: 50px;
-`;
-
-export const SideBarWrapper = styled.div`
-  width: 100%;
 `;
 
 export default PostDetail;

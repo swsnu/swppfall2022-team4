@@ -8,7 +8,7 @@ import { TagClass, TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
 import client from 'store/apis/client';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
-import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
 import { notificationSuccess } from 'utils/sendNotification';
 
 interface IPropsColorButton {
@@ -459,10 +459,10 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               </BlueBigActiveBtn>
             </CreateBtnWrapper>
           </ContentWrapper>
-          <SideBarWrapper>
+          <div>
             {TagPanel}
             {PrimeTagPanel}
-          </SideBarWrapper>
+          </div>
         </Main_SideWrapper>
       </PostContentWrapper>
     </PostPageWrapper>
@@ -765,25 +765,4 @@ export const PostPageWrapper = styled(ColumnCenterFlex)`
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
-`;
-
-export const PostContentWrapper = styled(ColumnCenterFlex)`
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  max-width: 1200px;
-
-  @media all and (max-width: 650px) {
-    width: 100%;
-  }
-`;
-
-export const TopWrapper = styled.div`
-  margin: 40px 0px 15px 0px;
-  width: 100%;
-  background-color: var(--fit-white);
-`;
-
-export const SideBarWrapper = styled.div`
-  width: 100%;
 `;
