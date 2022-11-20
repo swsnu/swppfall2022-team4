@@ -39,7 +39,19 @@ const PostMain = () => {
   const modalAnimRef = useRef(null);
 
   // Disable modal when OnClickOutside
-  useOnClickOutside(modalRef, () => setTagModalOpen(false), 'mousedown');
+  const TagDetailOnClose = () => {
+    if (isFiltering) {
+      const defaultPageConfig: getPostsRequestType = {
+        pageNum: page,
+        pageSize: 15,
+        searchKeyword: searchKeyword ? searchKeyword : undefined,
+        tags: selected,
+      };
+      dispatch(postActions.getPosts(defaultPageConfig));
+    }
+    setTagModalOpen(false);
+  };
+  useOnClickOutside(modalRef, TagDetailOnClose, 'mousedown');
   // Disable scroll when modal is active
   useEffect(() => {
     if (tagModalOpen) {
@@ -220,18 +232,7 @@ const PostMain = () => {
       </PostContentWrapper>
       {TagDetailModal({
         isActive: tagModalOpen,
-        onClose: () => {
-          if (isFiltering) {
-            const defaultPageConfig: getPostsRequestType = {
-              pageNum: page,
-              pageSize: 15,
-              searchKeyword: searchKeyword ? searchKeyword : undefined,
-              tags: selected,
-            };
-            dispatch(postActions.getPosts(defaultPageConfig));
-          }
-          setTagModalOpen(false);
-        },
+        onClose: TagDetailOnClose,
         modalRef,
         modalAnimRef,
         tagList,
