@@ -27,6 +27,8 @@ const SEARCH_OPTION = '$SEARCH$';
 const TITLE_CHAR_LIMIT = 60;
 const CONTENT_CHAR_LIMIT = 800;
 const CONTENT_IMAGE_LIMIT = 5;
+const TAG_CLASS_LIMIT = 20;
+const TAG_NAME_LIMIT = 12;
 
 const getRandomColor = () => {
   return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
@@ -165,11 +167,19 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     if (tagClassSelect === NEW_OPTION) {
       return (
         <TagClassFuncWrapper>
-          <TagInput
-            placeholder="카테고리 이름"
-            value={tagClassInput}
-            onChange={e => setTagClassInput(e.target.value)}
-          ></TagInput>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <TagInput
+              placeholder="카테고리 이름"
+              value={tagClassInput}
+              onChange={e => {
+                const charInput = e.target.value;
+                if (charInput.length <= TAG_CLASS_LIMIT) setTagClassInput(charInput);
+              }}
+            ></TagInput>
+            <TagCharNum isFull={tagClassInput.length >= TAG_CLASS_LIMIT}>
+              {tagClassInput.length} / {TAG_CLASS_LIMIT}
+            </TagCharNum>
+          </div>
           <TagClassColorWrapper>
             <TagClassColorLabel>색상:</TagClassColorLabel>
             <ColorCircle color={tagRandColor}></ColorCircle>
@@ -199,16 +209,9 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     if (tagClassSelect === SEARCH_OPTION) {
       return (
         <TagClassFuncWrapper>
-          <TagInput placeholder="카테고리" disabled></TagInput>
-          <TagInput
-            placeholder="태그 이름"
-            value={tagSearchInput}
-            onChange={e => setTagSearchInput(e.target.value)}
-          ></TagInput>
-          <GreenBigBtn
-            data-testid="tagSearchBtn"
-            disabled={tagSearchInput === ''}
-            onClick={() => {
+          <form
+            onSubmit={e => {
+              e.preventDefault();
               dispatch(
                 tagActions.searchTag({
                   class_name: '',
@@ -217,8 +220,18 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               );
             }}
           >
-            검색
-          </GreenBigBtn>
+            <TagInput
+              placeholder="태그 이름"
+              value={tagSearchInput}
+              onChange={e => {
+                dispatch(tagActions.searchTagClear());
+                setTagSearchInput(e.target.value);
+              }}
+            ></TagInput>
+            <GreenBigBtn data-testid="tagSearchBtn" disabled={tagSearchInput === ''}>
+              검색
+            </GreenBigBtn>
+          </form>
           {tagSearchInput !== '' && tagSearch && (
             <TagBubbleWrapper>
               {tagSearch.map(tag => {
@@ -263,11 +276,19 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
           {tagSelect === NEW_OPTION && (
             <TagClassFuncWrapper>
               {/* 태그 만들기 */}
-              <TagInput
-                placeholder="생성할 태그 이름"
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
-              ></TagInput>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <TagInput
+                  placeholder="생성할 태그 이름"
+                  value={tagInput}
+                  onChange={e => {
+                    const charInput = e.target.value;
+                    if (charInput.length <= TAG_NAME_LIMIT) setTagInput(charInput);
+                  }}
+                ></TagInput>
+                <TagCharNum isFull={tagInput.length >= TAG_NAME_LIMIT}>
+                  {tagInput.length} / {TAG_NAME_LIMIT}
+                </TagCharNum>
+              </div>
               <GreenBigBtn
                 disabled={tagInput === ''}
                 onClick={() => {
@@ -401,7 +422,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             value={postContent.title}
             onChange={e => {
               const charInput = e.target.value;
-              if (charInput.length <= TITLE_CHAR_LIMIT) setTitle(e.target.value);
+              if (charInput.length <= TITLE_CHAR_LIMIT) setTitle(charInput);
             }}
           />
           <CharNumIndicator isFull={postContent.title.length >= TITLE_CHAR_LIMIT}>
@@ -416,7 +437,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                 value={postContent.content}
                 onChange={e => {
                   const charInput = e.target.value;
-                  if (charInput.length <= CONTENT_CHAR_LIMIT) setContent(e.target.value);
+                  if (charInput.length <= CONTENT_CHAR_LIMIT) setContent(charInput);
                 }}
               />
               <ContentCharNum isFull={postContent.content.length >= CONTENT_CHAR_LIMIT}>
@@ -482,6 +503,16 @@ const TagClassColorLabel = styled.span`
 
 const TagClassFuncWrapper = styled(ColumnFlex)`
   width: 100%;
+  > form {
+    display: flex;
+    flex-direction: column;
+    > input {
+      width: auto;
+    }
+    > button {
+      width: auto;
+    }
+  }
 `;
 
 const TagBubbleWrapper = styled.div`
@@ -501,6 +532,7 @@ const TagTitle = styled.span`
 `;
 
 const TagWrapperIn = styled(ColumnFlex)`
+  width: 100%;
   justify-content: flex-start;
   background-color: var(--fit-white);
 `;
@@ -508,6 +540,7 @@ const TagWrapperIn = styled(ColumnFlex)`
 const TagWrapper = styled(ColumnFlex)`
   justify-content: space-between;
   background-color: var(--fit-white);
+  width: 100%;
   height: 60%;
   overflow-y: auto;
 `;
@@ -601,6 +634,19 @@ const ContentCharNum = styled.span<IPropsCharNum>`
   position: absolute;
   right: 10px;
   bottom: 3px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
+`;
+
+const TagCharNum = styled.span<IPropsCharNum>`
+  width: 100%;
+  text-align: right;
+  padding-right: 10px;
+  font-size: 12px;
   color: var(--fit-support-gray);
   ${({ isFull }) =>
     isFull &&

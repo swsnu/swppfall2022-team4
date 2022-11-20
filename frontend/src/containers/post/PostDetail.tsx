@@ -589,10 +589,7 @@ const PostDetail = () => {
               <LoadingWithoutMinHeight />
             )}
           </ArticleDetailWrapper>
-          <div>
-            {PostAuthorPanel}
-            <SideBarItem>사이드바 공간2</SideBarItem>
-          </div>
+          <div>{PostAuthorPanel}</div>
         </div>
       </PostContentWrapper>
       {ImageDetailModal({
@@ -640,12 +637,6 @@ const ArticleDetailWrapper = styled.div`
   background-repeat: no-repeat;
   background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
   background-attachment: local, local, scroll, scroll;
-`;
-
-const SideBarItem = styled.div`
-  margin-top: 15px;
-  width: 100%;
-  height: 40%;
 `;
 
 const ArticleBody = styled.div`
