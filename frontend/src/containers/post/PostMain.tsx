@@ -17,11 +17,8 @@ import TagDetailModal from 'components/post/TagDetailModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { TagVisual } from 'store/apis/tag';
-import { faSearch, faX } from '@fortawesome/free-solid-svg-icons';
-
-interface IPropsSearchClear {
-  isActive?: boolean;
-}
+import { faX } from '@fortawesome/free-solid-svg-icons';
+import SearchBar from 'components/post/SearchBar';
 
 interface IPropsColorButton {
   color?: string;
@@ -192,7 +189,7 @@ const PostMain = () => {
     <PostPageWrapper>
       <PostContentWrapper>
         <TopWrapper>
-          <SearchForm
+          <SearchBar
             onSubmit={e => {
               e.preventDefault();
               dispatch(
@@ -201,29 +198,17 @@ const PostMain = () => {
                 }),
               );
             }}
-          >
-            <SearchIcon>
-              <FontAwesomeIcon icon={faSearch} />
-            </SearchIcon>
-            <SearchInput
-              placeholder="Search keyword"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            ></SearchInput>
-            <ClearSearchInput
-              isActive={search !== ''}
-              onClick={() => {
-                setSearch('');
-                dispatch(
-                  postActions.postSearch({
-                    search_keyword: '',
-                  }),
-                );
-              }}
-            >
-              Clear
-            </ClearSearchInput>
-          </SearchForm>
+            onClear={() => {
+              setSearch('');
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: '',
+                }),
+              );
+            }}
+            search={search}
+            setSearch={setSearch}
+          />
         </TopWrapper>
         <Main_SideWrapper>
           {MainContent}
@@ -358,35 +343,6 @@ const SideBarItem = styled(ColumnFlex)`
 const PostPanelWrapper = styled(ColumnFlex)`
   width: 100%;
   align-items: center;
-`;
-
-const SearchForm = styled.form`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const SearchInput = styled.input`
-  width: 95%;
-  padding: 15px 20px;
-  font-size: 15px;
-  border: none;
-`;
-
-const ClearSearchInput = styled.span<IPropsSearchClear>`
-  width: 5%;
-  text-align: center;
-  cursor: pointer;
-  ${({ isActive }) =>
-    !isActive &&
-    `
-    display: none;
-  `}
-`;
-
-const SearchIcon = styled(RowCenterFlex)`
-  margin-left: 20px;
 `;
 
 export const PostPageWrapper = styled(ColumnCenterFlex)`

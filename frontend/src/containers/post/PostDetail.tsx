@@ -5,7 +5,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
-import { faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { RootState } from 'index';
 import { timeAgoFormat } from 'utils/datetime';
 import { funcTypeToStr, postActions } from 'store/slices/post';
@@ -16,6 +16,7 @@ import { TagBubble } from 'components/tag/tagbubble';
 import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
 import ImageDetailModal from 'components/post/ImageDetailModal';
+import SearchBar from 'components/post/SearchBar';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -27,10 +28,6 @@ export const FuncType = {
   Dislike: 'dislike',
   Scrap: 'scrap',
 };
-
-interface IPropsSearchClear {
-  isActive?: boolean;
-}
 
 interface IPropsFuncBtn {
   color: string;
@@ -580,7 +577,7 @@ const PostDetail = () => {
     <PostPageWrapper>
       <PostContentWrapper>
         <TopWrapper>
-          <SearchForm
+          <SearchBar
             onSubmit={e => {
               e.preventDefault();
               navigate(`/post`);
@@ -590,29 +587,17 @@ const PostDetail = () => {
                 }),
               );
             }}
-          >
-            <SearchIcon>
-              <FontAwesomeIcon icon={faSearch} />
-            </SearchIcon>
-            <SearchInput
-              placeholder="Search keyword"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            ></SearchInput>
-            <ClearSearchInput
-              isActive={search !== ''}
-              onClick={() => {
-                setSearch('');
-                dispatch(
-                  postActions.postSearch({
-                    search_keyword: '',
-                  }),
-                );
-              }}
-            >
-              Clear
-            </ClearSearchInput>
-          </SearchForm>
+            onClear={() => {
+              setSearch('');
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: '',
+                }),
+              );
+            }}
+            search={search}
+            setSearch={setSearch}
+          />
         </TopWrapper>
         <Main_SideWrapper>
           {PostDetailContent}
@@ -954,35 +939,6 @@ const PostUploadedImage = styled.img`
   border-radius: 15px;
   object-fit: cover;
   cursor: pointer;
-`;
-
-const SearchForm = styled.form`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const SearchInput = styled.input`
-  width: 95%;
-  padding: 15px 20px;
-  font-size: 15px;
-  border: none;
-`;
-
-const ClearSearchInput = styled.span<IPropsSearchClear>`
-  width: 5%;
-  text-align: center;
-  cursor: pointer;
-  ${({ isActive }) =>
-    !isActive &&
-    `
-    display: none;
-  `}
-`;
-
-const SearchIcon = styled(RowCenterFlex)`
-  margin-left: 20px;
 `;
 
 export const PostPageWrapper = styled(ColumnCenterFlex)`

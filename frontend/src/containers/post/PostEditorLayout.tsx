@@ -9,7 +9,6 @@ import { tagActions } from 'store/slices/tag';
 import client from 'store/apis/client';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
 import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
-import { PostContentWrapper, PostPageWrapper, SideBarWrapper } from './PostLayout';
 import { notificationSuccess } from 'utils/sendNotification';
 
 interface IPropsColorButton {
@@ -757,4 +756,34 @@ const ContentGroupSection = styled.div`
   position: relative;
   background-color: var(--fit-white);
   padding: 8px 10px;
+`;
+
+export const PostPageWrapper = styled(ColumnCenterFlex)`
+  background-color: var(--fit-green-back);
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+`;
+
+export const PostContentWrapper = styled(ColumnCenterFlex)`
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  max-width: 1200px;
+
+  @media all and (max-width: 650px) {
+    width: 100%;
+  }
+`;
+
+export const TopWrapper = styled.div`
+  margin: 40px 0px 15px 0px;
+  width: 100%;
+  background-color: var(--fit-white);
+`;
+
+export const SideBarWrapper = styled.div`
+  width: 100%;
 `;
