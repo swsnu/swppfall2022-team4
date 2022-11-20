@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RowCenterFlex } from 'components/post/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { infoActions } from 'store/slices/information';
 import { RootState } from 'index';
 import NotFound from 'components/common/NotFound';
@@ -14,10 +12,8 @@ import { Post } from 'store/apis/post';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { timeAgoFormat } from 'utils/datetime';
 import { Youtube } from 'store/apis/information';
+import SearchBar from 'components/common/SearchBar';
 
-interface IPropsSearchClear {
-  isActive?: boolean;
-}
 interface InfoPageArticleIprops {
   post: Post;
 }
@@ -74,7 +70,7 @@ const InformationDetail = () => {
     <PostPageWrapper>
       <PostContentWrapper>
         <TopElementWrapperWithoutPadding>
-          <SearchForm
+          <SearchBar
             onSubmit={e => {
               e.preventDefault();
               if (info.contents?.basic.name !== search)
@@ -85,24 +81,13 @@ const InformationDetail = () => {
                 );
               navigate(`/information/${search}`);
             }}
-          >
-            <SearchIcon>
-              <FontAwesomeIcon icon={faSearch} />
-            </SearchIcon>
-            <SearchInput
-              placeholder="Search keyword"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            ></SearchInput>
-            <ClearSearchInput
-              isActive={search !== ''}
-              onClick={() => {
-                setSearch('');
-              }}
-            >
-              Clear
-            </ClearSearchInput>
-          </SearchForm>
+            onClear={() => {
+              setSearch('');
+              navigate(`/information`);
+            }}
+            search={search}
+            setSearch={setSearch}
+          />
         </TopElementWrapperWithoutPadding>
 
         {info.error === 'NOTFOUND' && <NotFound />}
@@ -177,33 +162,6 @@ const SectionSubWrapper = styled.div`
   row-gap: 10px;
   column-gap: 10px;
   height: 100%;
-`;
-
-const SearchForm = styled.form`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const SearchInput = styled.input`
-  width: 95%;
-  padding: 15px 20px;
-  font-size: 15px;
-  border: none;
-`;
-const ClearSearchInput = styled.span<IPropsSearchClear>`
-  width: 5%;
-  text-align: center;
-  cursor: pointer;
-  ${({ isActive }) =>
-    !isActive &&
-    `
-    display: none;
-  `}
-`;
-const SearchIcon = styled(RowCenterFlex)`
-  margin-left: 20px;
 `;
 
 const BasicItemWrapper = styled.div`

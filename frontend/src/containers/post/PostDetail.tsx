@@ -16,7 +16,7 @@ import { TagBubble } from 'components/tag/tagbubble';
 import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
 import ImageDetailModal from 'components/post/ImageDetailModal';
-import SearchBar from 'components/post/SearchBar';
+import SearchBar from 'components/common/SearchBar';
 
 export interface IPropsComment {
   isChild?: boolean;

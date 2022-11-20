@@ -23,7 +23,7 @@ import TagDetailModal from 'components/post/TagDetailModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { TagVisual } from 'store/apis/tag';
-import SearchBar from 'components/post/SearchBar';
+import SearchBar from 'components/common/SearchBar';
 
 const PostMain = () => {
   const dispatch = useDispatch();

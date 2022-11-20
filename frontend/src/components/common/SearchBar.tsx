@@ -2,7 +2,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
-import { RowCenterFlex } from './layout';
+import { RowCenterFlex } from '../post/layout';
 
 interface IPropsSearchClear {
   isActive?: boolean;
