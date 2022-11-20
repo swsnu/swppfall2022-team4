@@ -14,6 +14,8 @@ import {
 } from 'assets/types/group';
 import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
+import { Fitelement } from 'store/apis/group';
+import { FitElement } from 'components/fitelement/FitElement';
 
 const GroupCreate = () => {
   const dispatch = useDispatch();
@@ -30,6 +32,14 @@ const GroupCreate = () => {
   const [end_date, setEndDate] = useState('');
   const [description, setDescription] = useState('');
   const [free, setFree] = useState(true);
+  // goal
+  const [workout_type, setWorkoutType] = useState<string | null>(null);
+  const [weight, setWeight] = useState<number | null>(null);
+  const [rep, setRep] = useState<number | null>(null);
+  const [set, setSet] = useState<number | null>(null);
+  const [wtime, setWTime] = useState<number | null>(null);
+  const [goal_list, setGoalList] = useState<Fitelement[]>([]);
+  // place
   const [place, setPlace] = useState(true);
   const [currentLocation, setCurrentLocation] = useState<geolocationResponseType>({
     center: {
@@ -50,6 +60,32 @@ const GroupCreate = () => {
     if (status === kakao.maps.services.Status.OK) {
       setClickedAddress(`${result[0].address.address_name} ${markerInfo || ''}`);
     }
+  };
+
+  const createGoal = () => {
+    if (workout_type && weight && rep && set && wtime) {
+      const goal: Fitelement = {
+        type: 'goal',
+        category: 'body',
+        workout_type: workout_type,
+        weight: weight,
+        rep: rep,
+        set: set,
+        time: wtime,
+      };
+      setGoalList([...goal_list, goal]);
+      setWorkoutType('');
+      setWeight(null);
+      setRep(null);
+      setSet(null);
+      setWTime(null);
+    } else alert('목표를 모두 채워주세요');
+  };
+
+  const removeGoal = (id: number) => {
+    const new_list = [...goal_list];
+    new_list.splice(id, 1);
+    setGoalList(new_list);
   };
 
   const example_fit = {
@@ -78,6 +114,8 @@ const GroupCreate = () => {
       return;
     } else if (description === '') {
       alert('그룹에 대한 설명을 작성해야 합니다.');
+    } else if (goal_list.length === 0) {
+      alert('목표는 하나 이상이어야 합니다.');
       return;
     }
 
@@ -100,7 +138,7 @@ const GroupCreate = () => {
         lat: param_lat,
         lng: param_lng,
         address: param_address,
-        goal: [example_fit, example_fit],
+        goal: goal_list,
       }),
     );
   };
@@ -231,6 +269,61 @@ const GroupCreate = () => {
           </DateWrapper>
         </div>
 
+        <CreateText>목표</CreateText>
+        <LogInputBody>
+          <LogInputBodyInput>
+            <WorkoutTypeInput type="text" value={workout_type || ''} onChange={e => setWorkoutType(e.target.value)} />
+            <WorkoutTypeInput
+              className="type2"
+              type="number"
+              min="0"
+              value={weight || 0}
+              onChange={e => setWeight(Number(e.target.value))}
+            />
+            <WorkoutTypeInput
+              className="type2"
+              type="number"
+              min="0"
+              value={rep || 0}
+              onChange={e => setRep(Number(e.target.value))}
+            />
+            <WorkoutTypeInput
+              className="type2"
+              type="number"
+              min="0"
+              value={set || 0}
+              onChange={e => setSet(Number(e.target.value))}
+            />
+            <WorkoutTypeInput
+              className="type2"
+              type="number"
+              min="0"
+              value={wtime || 0}
+              onChange={e => setWTime(Number(e.target.value))}
+            />
+          </LogInputBodyInput>
+          <LogInputBodyButton>
+            <AnyButton className="type1" onClick={() => createGoal()}>
+              추가
+            </AnyButton>
+          </LogInputBodyButton>
+        </LogInputBody>
+        {goal_list.map((go_obj, index) => (
+          <div style={{ display: 'flex' }}>
+            <FitElement
+              key={index}
+              id={index + 1}
+              type={go_obj.type}
+              workout_type={go_obj.workout_type}
+              category={go_obj.category}
+              weight={go_obj.weight}
+              rep={go_obj.rep}
+              set={go_obj.set}
+              time={go_obj.time}
+            />
+            <Button1 content="취소" clicked={() => removeGoal(goal_list.indexOf(go_obj))} />
+          </div>
+        ))}
         <CreateText>그룹 설명</CreateText>
         <CreateTextArea
           rows={10}
@@ -387,6 +480,70 @@ const CreateTextArea = styled.textarea`
   border-radius: 10px;
   background-color: #ffffff;
   resize: none;
+`;
+
+const LogInputBodyInput = styled.div`
+  width: 100%;
+  height: 80%;
+  display: flex;
+  min-height: 60px;
+  font-weight: normal;
+`;
+
+const WorkoutTypeInput = styled.input`
+  width: 40%;
+  height: 100%;
+  padding: 8px 20px;
+  font-size: 14px;
+  margin: 7px;
+
+  &&.type1 {
+    width: 10%;
+  }
+  &&.type2 {
+    width: 20%;
+  }
+`;
+
+const LogInputBodyButton = styled.div`
+  width: 100%;
+  height: 20%;
+  min-height: 40px;
+  display: flex;
+  justify-content: end;
+  font-weight: normal;
+`;
+
+const LogInputBody = styled.div`
+  width: 100%;
+  height: 10%;
+  max-height: 90px;
+  display: flex;
+  flex-direction: column;
+  font-weight: normal;
+  border-bottom: 1px solid black;
+`;
+
+const AnyButton = styled.button`
+  width: 180px;
+  height: 30px;
+  margin: 5px;
+  background-color: #d7efe3;
+  border: 0;
+  border-radius: 8px;
+  font-family: FugazOne;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  &:hover {
+    background-color: #3bb978;
+  }
+
+  &&.type1 {
+    width: 120px;
+    height: 20px;
+  }
 `;
 
 export default GroupCreate;
