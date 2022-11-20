@@ -12,6 +12,7 @@ import Button1 from 'components/common/buttons/Button1';
 import Loading from 'components/common/Loading';
 import { GroupElement } from 'components/group/GroupElement';
 import { geolocationResponseType, co2regionResponseType } from 'assets/types/group';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const distance = (lat1: number | null, lng1: number | null, lat2: number | null, lng2: number | null) => {
   return (((lat1 || 0) - (lat2 || 0)) ^ 2) + (((lng1 || 0) - (lng2 || 0)) ^ 2);
@@ -24,6 +25,9 @@ const GroupList = () => {
   const groupList = useSelector((rootState: RootState) => rootState.group.groupList.groups);
 
   const [groupListOrdered, setGroupListOrdered] = useState<Group[] | null>(null);
+  const [recent, setRecent] = useState<boolean>(true);
+  const [old, setOld] = useState<boolean>(false);
+  const [close, setClose] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentLocation, setCurrentLocation] = useState<geolocationResponseType>({
     center: {
@@ -94,25 +98,28 @@ const GroupList = () => {
   }, [currentLocation]);
 
   const orderRecentClicked = () => {
-    console.log('recent');
     if (groupListOrdered) {
       const newGroupOrdered: Group[] = [...groupListOrdered];
       newGroupOrdered.sort((a, b) => b.id - a.id);
       setGroupListOrdered(newGroupOrdered);
+      setRecent(true);
+      setOld(false);
+      setClose(false);
     }
   };
 
   const orderOldClicked = () => {
-    console.log('old');
     if (groupListOrdered) {
       const newGroupOrdered: Group[] = [...groupListOrdered];
       newGroupOrdered.sort((a, b) => a.id - b.id);
       setGroupListOrdered(newGroupOrdered);
+      setRecent(false);
+      setOld(true);
+      setClose(false);
     }
   };
 
   const orderCloseClicked = () => {
-    console.log('close');
     if (groupListOrdered) {
       const newGroupOrdered: Group[] = [...groupListOrdered];
       newGroupOrdered.sort((a, b) => {
@@ -122,6 +129,9 @@ const GroupList = () => {
         );
       });
       setGroupListOrdered(newGroupOrdered);
+      setRecent(false);
+      setOld(false);
+      setClose(true);
     }
   };
 
@@ -137,16 +147,23 @@ const GroupList = () => {
           }}
         />
       </SearchWrapper>
-      <div>
-        {currentLocation.isLoading && <div>{'위치를 불러오는 중입니다.'}</div>}
-        {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
-        {currentAddressName && <div>{`유저의 위치는 ${currentAddressName} 입니다`}</div>}
-      </div>
-      <div>
-        <span onClick={orderRecentClicked}>최신순 </span>
-        <span onClick={orderOldClicked}>오래된순 </span>
-        <span onClick={orderCloseClicked}>가까운순 </span>
-      </div>
+      <UnderSearch>
+        <div style={{ paddingLeft: '30px' }}>
+          {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
+          {currentAddressName && <div>{`유저의 위치는 ${currentAddressName} 입니다`}</div>}
+        </div>
+        <div style={{ display: 'flex', paddingRight: '30px' }}>
+          <SortButton onClick={orderRecentClicked} style={recent ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+            최신순
+          </SortButton>
+          <SortButton onClick={orderOldClicked} style={old ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+            오래된순
+          </SortButton>
+          <SortButton onClick={orderCloseClicked} style={close ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+            가까운순
+          </SortButton>
+        </div>
+      </UnderSearch>
       <Button1
         content="Create Group"
         clicked={() => navigate('/group/create')}
@@ -216,4 +233,16 @@ const GroupListWrapper = styled.div`
   margin-top: 30px;
   display: flex;
   flex-wrap: wrap;
+`;
+
+const SortButton = styled.div`
+  padding: 5px;
+  font-size: 16px;
+`;
+
+const UnderSearch = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
 `;

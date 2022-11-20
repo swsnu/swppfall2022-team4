@@ -16,7 +16,10 @@ export const GroupElement = (props: IProps) => {
     <GroupElementWrapper onClick={props.clicked}>
       <LogImage src={require('assets/images/workout_log/fitelement_category/example.png')} />
       <GroupElementLine style={{ fontSize: '24px', marginBottom: '15px' }}>{props.group_name}</GroupElementLine>
-      <GroupElementLine>장소 : {props.address ?? '장소없음'}</GroupElementLine>
+      <GroupElementLine>
+        장소 :
+        {props.address ? (props.address.length > 15 ? props.address.slice(0, 15) + '...' : props.address) : '장소없음'}
+      </GroupElementLine>
       <GroupElementLine>최대인원 : {props.number ?? '제한없음'}</GroupElementLine>
       <GroupElementLine>현재인원 : {props.member_number}</GroupElementLine>
       <GroupElementLine>시작일 : {props.start_date ?? '기한없음'}</GroupElementLine>
