@@ -189,7 +189,7 @@ describe('[PostEditor Page - Tag]', () => {
     const duplicatedTagOption = screen.getByRole('option', { name: 'interesting' }); // Duplicated Tag
     userEvent.selectOptions(screen.getByTestId('tagSelect'), duplicatedTagOption);
 
-    const selectedTagRemove = screen.getByTestId('selectedTagRemove');
+    const selectedTagRemove = screen.getByTestId('tagBubbleXBtn');
     fireEvent.click(selectedTagRemove);
     const selectedTagAfterRemove = screen.queryByTestId(`selectedTag-${getTagsResponse.tags[0].id}`);
     expect(selectedTagAfterRemove).toBeNull();

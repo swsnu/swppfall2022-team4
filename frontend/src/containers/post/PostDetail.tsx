@@ -437,115 +437,6 @@ const PostDetail = () => {
     );
   };
 
-  const PostDetailContent = () => (
-    <ArticleDetailWrapper id="articleDetailWrapper">
-      {post ? (
-        <ArticleItem>
-          <ArticleBody>
-            <ArticleTitleWrapper>
-              <ArticleBackBtn onClick={() => navigate('/post')}>◀︎</ArticleBackBtn>
-              <ArticleTitle>{post.title}</ArticleTitle>
-              <PostWritterWrapper>
-                <PostWritterLeftWrapper>
-                  <PostWritterText> {post.author.username} </PostWritterText>
-                  <PostTimeText>{timeAgoFormat(new Date(), new Date(post.created))}</PostTimeText>
-                </PostWritterLeftWrapper>
-                <PostWritterAvatar>
-                  <UserAvatar
-                    ref={postModalPivot}
-                    src={process.env.REACT_APP_API_IMAGE + post.author.avatar}
-                    onClick={() => setPostModalOpen(true)}
-                    alt="postAvatar"
-                  />
-                  {UserDetailModal({
-                    isActive: postModalOpen,
-                    modalRef: postModalRef,
-                    pivotRef: postModalPivot,
-                    userInfo: post.author,
-                    navigate,
-                  })}
-                </PostWritterAvatar>
-              </PostWritterWrapper>
-            </ArticleTitleWrapper>
-            <ArticleBodyContent>{post.content}</ArticleBodyContent>
-            <ContentImageSection>
-              {post.images?.map((img, index) => (
-                <PostUploadedImageWrapper key={index}>
-                  <PostUploadedImage
-                    src={process.env.REACT_APP_API_IMAGE + img}
-                    onClick={() => {
-                      setActiveImage(img);
-                      setImageModalOpen(true);
-                    }}
-                  />
-                </PostUploadedImageWrapper>
-              ))}
-            </ContentImageSection>
-            <ArticleBodyFooter>
-              <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
-              <FuncBtn
-                data-testid="postFuncLike"
-                onClick={() => postFuncOnClick(FuncType.Like)}
-                color={post.liked ? FuncType.Like : FuncType.None}
-              >
-                <FontAwesomeIcon icon={faThumbsUp} />
-              </FuncBtn>
-              <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
-              <FuncBtn
-                data-testid="postFuncDislike"
-                onClick={() => postFuncOnClick(FuncType.Dislike)}
-                color={post.disliked ? FuncType.Dislike : FuncType.None}
-              >
-                <FontAwesomeIcon icon={faThumbsDown} />
-              </FuncBtn>
-              <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
-              <FuncBtn
-                data-testid="postFuncScrap"
-                onClick={() => postFuncOnClick(FuncType.Scrap)}
-                color={post.scraped ? FuncType.Scrap : FuncType.None}
-              >
-                <FontAwesomeIcon icon={faStar} />
-              </FuncBtn>
-              <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
-
-              <TagBubbleWrapper>
-                {post.tags.map(tags => {
-                  return (
-                    <TagBubble
-                      key={tags.id}
-                      color={tags.color}
-                      isPrime={post.prime_tag && tags.id === post.prime_tag.id}
-                    >
-                      {tags.name}
-                    </TagBubble>
-                  );
-                })}
-              </TagBubbleWrapper>
-            </ArticleBodyFooter>
-          </ArticleBody>
-          <ArticleCommentWrapper>
-            <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
-            <CommentForm>
-              <CommentInput
-                placeholder="댓글 입력"
-                value={commentInput}
-                onChange={e => setCommentInput(e.target.value)}
-              ></CommentInput>
-              <GreenCommentSubmitBtn
-                disabled={commentInput === ''}
-                onClick={commentCreateOnClick}
-                data-parent_comment={null}
-              >
-                작성
-              </GreenCommentSubmitBtn>
-            </CommentForm>
-          </ArticleCommentWrapper>
-        </ArticleItem>
-      ) : (
-        <LoadingWithoutMinHeight />
-      )}
-    </ArticleDetailWrapper>
-  );
   const CreateBtn = <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
     user?.username == post?.author.username ? (
@@ -557,12 +448,6 @@ const PostDetail = () => {
     ) : (
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
     );
-  const SideBar = () => (
-    <div>
-      {PostAuthorPanel}
-      <SideBarItem>사이드바 공간2</SideBarItem>
-    </div>
-  );
 
   const postSearch = useSelector(({ post }: RootState) => post.postSearch);
   const [search, setSearch] = useState(postSearch);
@@ -597,8 +482,117 @@ const PostDetail = () => {
           />
         </div>
         <div>
-          <PostDetailContent />
-          <SideBar />
+          <ArticleDetailWrapper id="articleDetailWrapper">
+            {post ? (
+              <ArticleItem>
+                <ArticleBody>
+                  <ArticleTitleWrapper>
+                    <ArticleBackBtn onClick={() => navigate('/post')}>◀︎</ArticleBackBtn>
+                    <ArticleTitle>{post.title}</ArticleTitle>
+                    <PostWritterWrapper>
+                      <PostWritterLeftWrapper>
+                        <PostWritterText> {post.author.username} </PostWritterText>
+                        <PostTimeText>{timeAgoFormat(new Date(), new Date(post.created))}</PostTimeText>
+                      </PostWritterLeftWrapper>
+                      <PostWritterAvatar>
+                        <UserAvatar
+                          ref={postModalPivot}
+                          src={process.env.REACT_APP_API_IMAGE + post.author.avatar}
+                          onClick={() => setPostModalOpen(true)}
+                          alt="postAvatar"
+                        />
+                        {UserDetailModal({
+                          isActive: postModalOpen,
+                          modalRef: postModalRef,
+                          pivotRef: postModalPivot,
+                          userInfo: post.author,
+                          navigate,
+                        })}
+                      </PostWritterAvatar>
+                    </PostWritterWrapper>
+                  </ArticleTitleWrapper>
+                  <ArticleBodyContent>{post.content}</ArticleBodyContent>
+                  <ContentImageSection>
+                    {post.images?.map((img, index) => (
+                      <PostUploadedImageWrapper key={index}>
+                        <PostUploadedImage
+                          src={process.env.REACT_APP_API_IMAGE + img}
+                          onClick={() => {
+                            setActiveImage(img);
+                            setImageModalOpen(true);
+                          }}
+                        />
+                      </PostUploadedImageWrapper>
+                    ))}
+                  </ContentImageSection>
+                  <ArticleBodyFooter>
+                    <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
+                    <FuncBtn
+                      data-testid="postFuncLike"
+                      onClick={() => postFuncOnClick(FuncType.Like)}
+                      color={post.liked ? FuncType.Like : FuncType.None}
+                    >
+                      <FontAwesomeIcon icon={faThumbsUp} />
+                    </FuncBtn>
+                    <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
+                    <FuncBtn
+                      data-testid="postFuncDislike"
+                      onClick={() => postFuncOnClick(FuncType.Dislike)}
+                      color={post.disliked ? FuncType.Dislike : FuncType.None}
+                    >
+                      <FontAwesomeIcon icon={faThumbsDown} />
+                    </FuncBtn>
+                    <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
+                    <FuncBtn
+                      data-testid="postFuncScrap"
+                      onClick={() => postFuncOnClick(FuncType.Scrap)}
+                      color={post.scraped ? FuncType.Scrap : FuncType.None}
+                    >
+                      <FontAwesomeIcon icon={faStar} />
+                    </FuncBtn>
+                    <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
+
+                    <TagBubbleWrapper>
+                      {post.tags.map(tags => {
+                        return (
+                          <TagBubble
+                            key={tags.id}
+                            color={tags.color}
+                            isPrime={post.prime_tag && tags.id === post.prime_tag.id}
+                          >
+                            {tags.name}
+                          </TagBubble>
+                        );
+                      })}
+                    </TagBubbleWrapper>
+                  </ArticleBodyFooter>
+                </ArticleBody>
+                <ArticleCommentWrapper>
+                  <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
+                  <CommentForm>
+                    <CommentInput
+                      placeholder="댓글 입력"
+                      value={commentInput}
+                      onChange={e => setCommentInput(e.target.value)}
+                    ></CommentInput>
+                    <GreenCommentSubmitBtn
+                      disabled={commentInput === ''}
+                      onClick={commentCreateOnClick}
+                      data-parent_comment={null}
+                    >
+                      작성
+                    </GreenCommentSubmitBtn>
+                  </CommentForm>
+                </ArticleCommentWrapper>
+              </ArticleItem>
+            ) : (
+              <LoadingWithoutMinHeight />
+            )}
+          </ArticleDetailWrapper>
+          <div>
+            {PostAuthorPanel}
+            <SideBarItem>사이드바 공간2</SideBarItem>
+          </div>
         </div>
       </PostContentWrapper>
       {ImageDetailModal({

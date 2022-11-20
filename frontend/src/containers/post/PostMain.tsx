@@ -9,7 +9,7 @@ import { getPostsRequestType } from 'store/apis/post';
 import { tagActions } from 'store/slices/tag';
 import { timeAgoFormat } from 'utils/datetime';
 import { BlueBigBtn } from 'components/post/button';
-import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
+import { TagBubble, TagBubbleCompact, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
 import {
   ArticleItemGrid,
   ColumnCenterFlex,
@@ -23,12 +23,7 @@ import TagDetailModal from 'components/post/TagDetailModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { TagVisual } from 'store/apis/tag';
-import { faX } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from 'components/post/SearchBar';
-
-interface IPropsColorButton {
-  color?: string;
-}
 
 const PostMain = () => {
   const dispatch = useDispatch();
@@ -113,9 +108,7 @@ const PostMain = () => {
             {selected.map(tag => (
               <TagBubbleWithFunc key={tag.id} color={tag.color}>
                 {tag.name}
-                <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={() => tagOnRemove(tag.id)}>
-                  <FontAwesomeIcon icon={faX} />
-                </TagBubbleFunc>
+                <TagBubbleX testId={'selectedTagRemove'} onClick={() => tagOnRemove(tag.id)} />
               </TagBubbleWithFunc>
             ))}
           </TagBubbleWrapper>
@@ -262,31 +255,7 @@ const SideBarSubtitle = styled.span`
   cursor: pointer;
   color: var(--fit-green-text);
 `;
-const TagBubbleWithFunc = styled.button<IPropsColorButton>`
-  height: 25px;
-  border-radius: 30px;
-  padding: 1px 10px;
-  border: none;
-  margin: 1px 2px;
-  width: fit-content;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  ${({ color }) =>
-    color &&
-    `
-      background: ${color};
-    `}
-`;
-const TagBubbleFunc = styled.div`
-  margin-left: 5px;
-  font-size: 10px;
-  color: red;
-  width: fit-content;
-  height: fit-content;
-  display: block;
-  cursor: pointer;
-`;
+
 const SideBarCommentItem = styled.div`
   width: 100%;
   padding: 3px 8px 3px 6px;

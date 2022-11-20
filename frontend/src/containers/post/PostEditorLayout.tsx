@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDice, faImage, faX } from '@fortawesome/free-solid-svg-icons';
+import { faDice, faImage } from '@fortawesome/free-solid-svg-icons';
 import { RootState } from 'index';
 import { TagClass, TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
@@ -10,6 +10,7 @@ import client from 'store/apis/client';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
 import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
 import { notificationSuccess } from 'utils/sendNotification';
+import { TagBubble, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
 
 interface IPropsColorButton {
   color?: string;
@@ -294,14 +295,12 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     <TagBubbleWrapper>
       {postContent.tags.map(tag => {
         return (
-          <TagBubble key={tag.id} color={tag.color}>
+          <TagBubbleWithFunc key={tag.id} color={tag.color}>
             <ClickableSpan data-testid={`selectedTag-${tag.id}`} onClick={() => setPrimeTag(tag)}>
               {tag.name}
             </ClickableSpan>
-            <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={() => tagOnRemove(tag.id)}>
-              <FontAwesomeIcon icon={faX} />
-            </TagBubbleFunc>
-          </TagBubble>
+            <TagBubbleX testId="tagBubbleXBtn" onClick={() => tagOnRemove(tag.id)} />
+          </TagBubbleWithFunc>
         );
       })}
     </TagBubbleWrapper>
@@ -309,16 +308,10 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
   const primeTagComponent = (
     <PrimeTagDivWrapper>
       {postContent.prime_tag ? (
-        <TagBubble color={postContent.prime_tag.color}>
+        <TagBubbleWithFunc color={postContent.prime_tag.color}>
           {postContent.prime_tag.name}
-          <TagBubbleFunc
-            data-testid={`selectedPrimeTagRemove`}
-            onClick={primeTagOnRemove}
-            data-value={postContent.prime_tag.id}
-          >
-            <FontAwesomeIcon icon={faX} />
-          </TagBubbleFunc>
-        </TagBubble>
+          <TagBubbleX testId="selectedPrimeTagRemove" onClick={primeTagOnRemove} />
+        </TagBubbleWithFunc>
       ) : (
         <PrimeTagNotSpecified>Not specified</PrimeTagNotSpecified>
       )}
@@ -498,33 +491,6 @@ const TagBubbleWrapper = styled.div`
   justify-content: flex-start;
   align-items: flex-end;
   padding: 8px 5px;
-`;
-
-const TagBubbleFunc = styled.div`
-  margin-left: 5px;
-  font-size: 10px;
-  color: red;
-  width: fit-content;
-  height: fit-content;
-  display: block;
-  cursor: pointer;
-`;
-
-const TagBubble = styled.button<IPropsColorButton>`
-  height: 25px;
-  border-radius: 30px;
-  padding: 1px 10px;
-  border: none;
-  margin: 1px 2px;
-  width: fit-content;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  ${({ color }) =>
-    color &&
-    `
-      background: ${color};
-    `}
 `;
 
 const TagTitle = styled.span`
