@@ -270,46 +270,47 @@ const GroupCreate = () => {
         </div>
 
         <CreateText>목표</CreateText>
+        <div style={{ display: 'flex', width: '80%' }}>
+          <div style={{ paddingLeft: '2%' }}>Workout Type</div>
+          <div style={{ paddingLeft: '17%' }}>Weight</div>
+          <div style={{ paddingLeft: '11%' }}>Rep</div>
+          <div style={{ paddingLeft: '12%' }}>Set</div>
+          <div style={{ paddingLeft: '13%' }}>Time</div>
+        </div>
         <LogInputBody>
-          <LogInputBodyInput>
-            <WorkoutTypeInput type="text" value={workout_type || ''} onChange={e => setWorkoutType(e.target.value)} />
-            <WorkoutTypeInput
-              className="type2"
-              type="number"
-              min="0"
-              value={weight || 0}
-              onChange={e => setWeight(Number(e.target.value))}
-            />
-            <WorkoutTypeInput
-              className="type2"
-              type="number"
-              min="0"
-              value={rep || 0}
-              onChange={e => setRep(Number(e.target.value))}
-            />
-            <WorkoutTypeInput
-              className="type2"
-              type="number"
-              min="0"
-              value={set || 0}
-              onChange={e => setSet(Number(e.target.value))}
-            />
-            <WorkoutTypeInput
-              className="type2"
-              type="number"
-              min="0"
-              value={wtime || 0}
-              onChange={e => setWTime(Number(e.target.value))}
-            />
-          </LogInputBodyInput>
-          <LogInputBodyButton>
-            <AnyButton className="type1" onClick={() => createGoal()}>
-              추가
-            </AnyButton>
-          </LogInputBodyButton>
+          <WorkoutTypeInput type="text" value={workout_type || ''} onChange={e => setWorkoutType(e.target.value)} />
+          <WorkoutTypeInput
+            className="type2"
+            type="number"
+            min="0"
+            value={weight || 0}
+            onChange={e => setWeight(Number(e.target.value))}
+          />
+          <WorkoutTypeInput
+            className="type2"
+            type="number"
+            min="0"
+            value={rep || 0}
+            onChange={e => setRep(Number(e.target.value))}
+          />
+          <WorkoutTypeInput
+            className="type2"
+            type="number"
+            min="0"
+            value={set || 0}
+            onChange={e => setSet(Number(e.target.value))}
+          />
+          <WorkoutTypeInput
+            className="type2"
+            type="number"
+            min="0"
+            value={wtime || 0}
+            onChange={e => setWTime(Number(e.target.value))}
+          />
+          <Button1 content="추가" clicked={createGoal} />
         </LogInputBody>
         {goal_list.map((go_obj, index) => (
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', width: '80%', height: '10%' }}>
             <FitElement
               key={index}
               id={index + 1}
@@ -321,7 +322,12 @@ const GroupCreate = () => {
               set={go_obj.set}
               time={go_obj.time}
             />
-            <Button1 content="취소" clicked={() => removeGoal(goal_list.indexOf(go_obj))} />
+            <div
+              onClick={() => removeGoal(goal_list.indexOf(go_obj))}
+              style={{ paddingTop: '33px', fontSize: '18px', cursor: 'pointer', color: 'gray' }}
+            >
+              X
+            </div>
           </div>
         ))}
         <CreateText>그룹 설명</CreateText>
@@ -375,9 +381,11 @@ const GroupCreate = () => {
             </MapMarker>
           ))}
         </Map>
-        {currentLocation.isLoading && <div>{'현위치를 불러오는 중입니다.'}</div>}
-        {currentLocation.errMsg && <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>}
-        {currentLocation.center.lat && <div>{`현위치를 성공적으로 불렀습니다.`}</div>}
+        <div style={{ paddingTop: '15px', fontFamily: 'FugazOne' }}>
+          {currentLocation.isLoading && <div>{'현위치를 불러오는 중입니다.'}</div>}
+          {currentLocation.errMsg && <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>}
+          {currentLocation.center.lat && <div>{`현위치를 성공적으로 불렀습니다.`}</div>}
+        </div>
       </CreateWrapper>
 
       <Button1 content="Create" clicked={saveOnClick} />
@@ -482,14 +490,6 @@ const CreateTextArea = styled.textarea`
   resize: none;
 `;
 
-const LogInputBodyInput = styled.div`
-  width: 100%;
-  height: 80%;
-  display: flex;
-  min-height: 60px;
-  font-weight: normal;
-`;
-
 const WorkoutTypeInput = styled.input`
   width: 40%;
   height: 100%;
@@ -505,45 +505,17 @@ const WorkoutTypeInput = styled.input`
   }
 `;
 
-const LogInputBodyButton = styled.div`
-  width: 100%;
-  height: 20%;
-  min-height: 40px;
-  display: flex;
-  justify-content: end;
-  font-weight: normal;
-`;
-
 const LogInputBody = styled.div`
-  width: 100%;
+  width: 80%;
   height: 10%;
   max-height: 90px;
   display: flex;
-  flex-direction: column;
   font-weight: normal;
-  border-bottom: 1px solid black;
 `;
 
-const AnyButton = styled.button`
-  width: 180px;
-  height: 30px;
-  margin: 5px;
-  background-color: #d7efe3;
-  border: 0;
-  border-radius: 8px;
-  font-family: FugazOne;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s linear;
-  &:hover {
-    background-color: #3bb978;
-  }
-
-  &&.type1 {
-    width: 120px;
-    height: 20px;
-  }
+const deleteGoal = styled.div`
+  padding-top: 33px;
+  font-size: 20px;
 `;
 
 export default GroupCreate;
