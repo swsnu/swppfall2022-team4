@@ -40,6 +40,13 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
       tags: simpleTagVisuals,
     },
   ],
+  popularTags: [
+    {
+      id: '1',
+      name: '1',
+      color: '#111111',
+    },
+  ],
 };
 const createTagResponse: tagAPI.tagVisualsResponseType = {
   tags: simpleTagVisuals,
@@ -69,6 +76,7 @@ describe('slices - tags', () => {
         .hasFinalState({
           ...initialState,
           tagList: getTagsResponse.tags,
+          popularTags: getTagsResponse.popularTags,
         })
         .silentRun();
     });

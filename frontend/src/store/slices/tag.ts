@@ -5,12 +5,14 @@ import * as tagAPI from 'store/apis/tag';
 
 interface TagState {
   tagList: tagAPI.TagClass[] | null;
+  popularTags: tagAPI.TagVisual[] | null;
   tagSearch: tagAPI.TagVisual[] | null;
   tagCreate: tagAPI.TagVisual | null;
   error: string | null;
 }
 export const initialState: TagState = {
   tagList: null,
+  popularTags: null,
   tagSearch: null,
   tagCreate: null,
   error: null,
@@ -28,6 +30,7 @@ export const tagSlice = createSlice({
     },
     getTagsSuccess: (state, { payload }) => {
       state.tagList = payload.tags;
+      state.popularTags = payload.popularTags;
     },
     getTagsFailure: (state, { payload }) => {
       state.error = payload;

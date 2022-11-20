@@ -3,10 +3,15 @@ from django.http import (
     HttpResponseBadRequest,
     JsonResponse,
 )
+from django.db.models import Count
 from django.views.decorators.http import require_http_methods
 from tags.models import Tag, TagClass
 from tags.management.commands.prepare_tags import get_tag_class_type
 from informations.models import Information
+
+
+def prepare_tag_response(tag_id, name, color):
+    return {"id": tag_id, "name": name, "color": color}
 
 
 @require_http_methods(["GET", "POST"])
@@ -31,9 +36,15 @@ def tag_home(request):
                     }
                 )
             tag_classes_serializable[index]["tags"] = tag_visual_list
+
+        popular_tags = []
+        for tag in Tag.objects.annotate(p_count=Count('tagged_posts')).order_by('-p_count')[:10]:
+            popular_tags.append(prepare_tag_response(tag.pk, tag.tag_name, tag.tag_class.color))
+
         response = JsonResponse(
             {
                 "tags": tag_classes_serializable,
+                "popularTags": popular_tags,
             },
             status=200,
         )
@@ -43,15 +54,14 @@ def tag_home(request):
             data = json.loads(request.body.decode())
 
             tag_name = data["name"]
-            class_id = data["classId"]
-            parent_class = TagClass.objects.get(pk=class_id)
+            parent_class = TagClass.objects.get(pk=data["classId"])
             created_tag = Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
 
             if get_tag_class_type(parent_class.class_name) == 'workout':
                 Information.objects.create(name=tag_name, tag=created_tag)
             return JsonResponse(
                 {
-                    "tags": {"id": created_tag.pk, "name": tag_name, "color": parent_class.color},
+                    "tags": prepare_tag_response(created_tag.pk, tag_name, parent_class.color),
                 },
                 status=201,
             )

@@ -151,8 +151,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
       else return s;
     });
   };
-  const tagOnRemove = (e: React.MouseEvent) => {
-    const tagId = e.currentTarget.getAttribute('data-value');
+  const tagOnRemove = (tagId: string) => {
     setSelectedTags(s => s.filter(item => item.id != tagId));
     if (postContent.prime_tag && postContent.prime_tag.id == tagId) {
       setPrimeTag(undefined);
@@ -300,7 +299,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             <ClickableSpan data-testid={`selectedTag-${tag.id}`} onClick={() => setPrimeTag(tag)}>
               {tag.name}
             </ClickableSpan>
-            <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={tagOnRemove} data-value={tag.id}>
+            <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={() => tagOnRemove(tag.id)}>
               <FontAwesomeIcon icon={faX} />
             </TagBubbleFunc>
           </TagBubble>
@@ -545,6 +544,7 @@ const TagWrapper = styled(ColumnFlex)`
   justify-content: space-between;
   background-color: var(--fit-white);
   height: 60%;
+  overflow-y: auto;
 `;
 
 const PrimeTagDivWrapper = styled.div`

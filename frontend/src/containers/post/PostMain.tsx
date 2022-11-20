@@ -17,12 +17,19 @@ import TagDetailModal from 'components/post/TagDetailModal';
 import { PostMainLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
+import { TagVisual } from 'store/apis/tag';
+import { faX } from '@fortawesome/free-solid-svg-icons';
+
+interface IPropsColorButton {
+  color?: string;
+}
 
 const PostMain = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [tagModalOpen, setTagModalOpen] = useState(false);
+  const [selected, setSelected] = useState<TagVisual[]>([]);
 
   const modalRef = useRef(null);
   const modalAnimRef = useRef(null);
@@ -38,13 +45,16 @@ const PostMain = () => {
     }
   }, [tagModalOpen]);
 
-  const { postList, maxPage, searchKeyword, recentCommentPost, tagList } = useSelector(({ post, tag }: RootState) => ({
-    postList: post.postList.posts,
-    maxPage: post.postList.pageTotal,
-    searchKeyword: post.postSearch,
-    recentCommentPost: post.recentComments.comments,
-    tagList: tag.tagList,
-  }));
+  const { postList, maxPage, searchKeyword, recentCommentPost, popularTags, tagList } = useSelector(
+    ({ post, tag }: RootState) => ({
+      postList: post.postList.posts,
+      maxPage: post.postList.pageTotal,
+      searchKeyword: post.postSearch,
+      recentCommentPost: post.recentComments.comments,
+      popularTags: tag.popularTags,
+      tagList: tag.tagList,
+    }),
+  );
   useEffect(() => {
     const defaultPageConfig: getPostsRequestType = {
       pageNum: page,
@@ -53,16 +63,35 @@ const PostMain = () => {
     };
     dispatch(postActions.getPosts(defaultPageConfig));
     dispatch(postActions.getRecentComments());
-  }, [page, searchKeyword]);
-  useEffect(() => {
     dispatch(tagActions.getTags());
-  }, []);
+  }, [page, searchKeyword]);
 
+  const tagOnRemove = (id: string) => {
+    setSelected(s => s.filter(item => item.id != id));
+  };
   const SideBar = (
     <SideBarWrapper>
       <PostPanelWrapper>
         <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
       </PostPanelWrapper>
+      {selected.length > 0 && (
+        <SideBarItem>
+          <SideBarTitleWrapper>
+            <SideBarTitle>태그 필터링</SideBarTitle>
+          </SideBarTitleWrapper>
+
+          <TagBubbleWrapper>
+            {selected.map(tag => (
+              <TagBubbleWithFunc key={tag.id} color={tag.color}>
+                {tag.name}
+                <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={() => tagOnRemove(tag.id)}>
+                  <FontAwesomeIcon icon={faX} />
+                </TagBubbleFunc>
+              </TagBubbleWithFunc>
+            ))}
+          </TagBubbleWrapper>
+        </SideBarItem>
+      )}
       <SideBarItem>
         <SideBarTitleWrapper>
           <SideBarTitle>태그 목록</SideBarTitle>
@@ -70,15 +99,12 @@ const PostMain = () => {
         </SideBarTitleWrapper>
 
         <TagBubbleWrapper>
-          {tagList &&
-            tagList.map(
-              tagCategory =>
-                tagCategory.tags &&
-                tagCategory.tags.map(
-                  (tag, index) =>
-                    index <= 5 && <div key={tag.id}>{<TagBubble color={tag.color}>{tag.name}</TagBubble>}</div>,
-                ),
-            )}
+          {popularTags &&
+            popularTags.map(tag => (
+              <TagBubble key={tag.id} color={tag.color}>
+                {tag.name}
+              </TagBubble>
+            ))}
           ...
         </TagBubbleWrapper>
       </SideBarItem>
@@ -139,7 +165,15 @@ const PostMain = () => {
   return (
     <PostPageWrapper>
       {PostMainLayout(MainContent, SideBar)}
-      {TagDetailModal({ isActive: tagModalOpen, onClose: () => setTagModalOpen(false), modalRef, modalAnimRef })}
+      {TagDetailModal({
+        isActive: tagModalOpen,
+        onClose: () => setTagModalOpen(false),
+        modalRef,
+        modalAnimRef,
+        tagList,
+        selected,
+        setSelected,
+      })}
     </PostPageWrapper>
   );
 };
@@ -169,6 +203,31 @@ const SideBarSubtitle = styled.span`
   right: 6px;
   cursor: pointer;
   color: var(--fit-green-text);
+`;
+const TagBubbleWithFunc = styled.button<IPropsColorButton>`
+  height: 25px;
+  border-radius: 30px;
+  padding: 1px 10px;
+  border: none;
+  margin: 1px 2px;
+  width: fit-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  ${({ color }) =>
+    color &&
+    `
+      background: ${color};
+    `}
+`;
+const TagBubbleFunc = styled.div`
+  margin-left: 5px;
+  font-size: 10px;
+  color: red;
+  width: fit-content;
+  height: fit-content;
+  display: block;
+  cursor: pointer;
 `;
 const SideBarCommentItem = styled.div`
   width: 100%;

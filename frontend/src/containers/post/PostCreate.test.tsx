@@ -38,6 +38,13 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
       tags: simpleTagVisuals2,
     },
   ],
+  popularTags: [
+    {
+      id: '1',
+      name: '1',
+      color: '#111111',
+    },
+  ],
 };
 const searchTagsResponse = {
   tags: [simpleTagVisuals[0]],

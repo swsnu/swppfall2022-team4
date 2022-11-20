@@ -2,17 +2,47 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 
-import { RowCenterFlex } from './layout';
 import { CSSTransition } from 'react-transition-group';
+import { TagClass, TagVisual } from 'store/apis/tag';
+import { RowCenterFlex } from './layout';
+import { TagBubble } from 'components/tag/tagbubble';
+import { useState } from 'react';
 
 export interface TagDetailModalIprops {
   isActive: boolean;
   onClose: () => void;
   modalRef: React.MutableRefObject<null>;
   modalAnimRef: React.MutableRefObject<null>;
+  tagList: TagClass[] | null;
+  selected: TagVisual[];
+  setSelected: (value: React.SetStateAction<TagVisual[]>) => void;
 }
 
-const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef }: TagDetailModalIprops) => {
+const UNSELECTED = '#dbdbdb';
+
+const TagDetailModal = ({
+  isActive,
+  onClose,
+  modalRef,
+  modalAnimRef,
+  tagList,
+  selected,
+  setSelected,
+}: TagDetailModalIprops) => {
+  const [isFiltering, setIsFiltering] = useState<boolean>(false);
+  const filterOnClick = (tag: TagVisual) => {
+    if (selected.includes(tag)) {
+      setSelected(state => {
+        return state.filter(t => t !== tag);
+      });
+    } else {
+      setSelected(state => {
+        state.push(tag);
+        return state;
+      });
+    }
+  };
+
   const closeHandler = () => {
     onClose?.();
   };
@@ -30,6 +60,31 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef }: TagDetail
                 </ModalCloseBtn>
               </ModalExitWrapper>
             </ModalTitleWrapper>
+            <TagClassSection>
+              <div>
+                <h1>태그로 필터링하기 :</h1>
+                <h1 onClick={() => setIsFiltering(state => !state)}>{isFiltering ? 'True' : 'False'}</h1>
+              </div>
+            </TagClassSection>
+            {tagList?.map(tagClass => (
+              <TagClassSection key={tagClass.id}>
+                <div>
+                  <h1>{tagClass.class_name}</h1>
+                  <div style={{ backgroundColor: tagClass.color }}></div>
+                </div>
+                <div>
+                  {tagClass.tags.map(tag => (
+                    <TagBubble
+                      key={tag.id}
+                      color={isFiltering && !selected.includes(tag) ? UNSELECTED : tag.color}
+                      onClick={() => filterOnClick(tag)}
+                    >
+                      {tag.name}
+                    </TagBubble>
+                  ))}
+                </div>
+              </TagClassSection>
+            ))}
           </Divdiv>
         </ModalContent>
       </ModalOverlay>
@@ -51,6 +106,33 @@ export const ModalOverlay = styled.div`
   background-color: var(--fit-modal-background);
 `;
 
+const TagClassSection = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  padding: 10px 20px;
+  div:first-child {
+    h1 {
+      /* Title */
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    div {
+      width: 15px;
+      height: 15px;
+      margin-left: 5px;
+      border-radius: 20px;
+    }
+  }
+  div {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+`;
 const ModalContent = styled.div`
   width: fit-content;
   height: fit-content;
@@ -95,7 +177,7 @@ const Divdiv = styled.div`
   width: 1000px;
   height: 600px;
   background-color: var(--fit-white);
-
+  overflow: auto;
   border-radius: inherit;
 `;
 

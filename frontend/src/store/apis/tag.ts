@@ -26,6 +26,7 @@ export type TagVisual = {
 
 export type getTagListResponseType = {
   tags: TagClass[];
+  popularTags: TagVisual[];
 };
 
 export const createTagClass = async (payload: createTagClassRequestType) => {

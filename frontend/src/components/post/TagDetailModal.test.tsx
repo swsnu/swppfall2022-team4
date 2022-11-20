@@ -20,6 +20,9 @@ const setup = () => {
       onClose={jest.fn()}
       modalRef={{ current: document.createElement('button') } as unknown as React.MutableRefObject<null>}
       modalAnimRef={1 as unknown as React.MutableRefObject<null>}
+      tagList={[]}
+      selected={[]}
+      setSelected={jest.fn()}
     />,
   );
 };
