@@ -16,6 +16,7 @@ import { getRandomHex } from 'utils/color';
 import { ColorReactiveInput } from 'components/common/ColorReactiveInput';
 import { useSelector } from 'react-redux';
 import { RootState } from 'index';
+import { ScrollShadow } from 'components/common/ScrollShadow';
 
 export interface TagDetailModalIprops {
   isActive: boolean;
@@ -439,7 +440,7 @@ const Category = styled.div<{ active: boolean }>`
     font-family: 'Noto Sans KR', sans-serif;
   }
 `;
-const TagModalContent = styled.div`
+const TagModalContent = styled(ScrollShadow)`
   margin-top: 40px;
   width: 100%;
   display: flex;
@@ -449,14 +450,5 @@ const TagModalContent = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-  /* Scroll Shadow */
-  background-image: linear-gradient(to top, white, white), linear-gradient(to top, white, white),
-    linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));
-  background-position: bottom center, top center, bottom center, top center;
-  background-color: white;
-  background-repeat: no-repeat;
-  background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
-  background-attachment: local, local, scroll, scroll;
 `;
 export default TagDetailModal;

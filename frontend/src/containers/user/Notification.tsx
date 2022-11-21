@@ -125,6 +125,8 @@ const ContentWrapper = styled.div`
   box-shadow: 0 0 2px 2px #a0bd8f;
   border-radius: 10px;
   padding: 20px;
+
+  /* Scroll Shadow */
   background-image: linear-gradient(to top, #f7f7f7, #f7f7f7), linear-gradient(to top, #f7f7f7, #f7f7f7),
     linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));

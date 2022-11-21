@@ -17,6 +17,7 @@ import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
 import ImageDetailModal from 'components/post/ImageDetailModal';
 import SearchBar from 'components/common/SearchBar';
+import { ScrollShadow } from 'components/common/ScrollShadow';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -617,7 +618,7 @@ const ArticleBodyFooter = styled.div`
   width: 100%;
   align-items: center;
 `;
-const ArticleDetailWrapper = styled.div`
+const ArticleDetailWrapper = styled(ScrollShadow)`
   border: 1px solid black;
   width: 100%;
   height: 100%;
@@ -626,16 +627,6 @@ const ArticleDetailWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-
-  /* Scroll Shadow */
-  background-image: linear-gradient(to top, white, white), linear-gradient(to top, white, white),
-    linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));
-  background-position: bottom center, top center, bottom center, top center;
-  background-color: white;
-  background-repeat: no-repeat;
-  background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
-  background-attachment: local, local, scroll, scroll;
 `;
 
 const ArticleBody = styled.div`
