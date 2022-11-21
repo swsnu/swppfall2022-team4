@@ -45,7 +45,7 @@ export const Hover = (props: IProps) => {
     <HoverWrapper>
       <WorkoutList>{types.map(type_single => workout_type_list(type_single))}</WorkoutList>
       <br /><hr /><br />
-      {props.workouts?.length} 종목
+      {props.workouts?.length} 종류
     </HoverWrapper>
   );
 };

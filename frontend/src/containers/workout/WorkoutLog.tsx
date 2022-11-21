@@ -12,9 +12,10 @@ import {
   editMemoRequestType,
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
-  editImageRequestType
+  editImageRequestType,
 } from 'store/apis/workout';
 import client from 'store/apis/client';
+import Footer from 'components/sections/Footer';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -198,7 +199,7 @@ const WorkoutLog = () => {
       specific_date: day,
     };
     dispatch(workoutLogActions.editImage(editImageConfig));
-  }
+  };
 
   const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
@@ -206,7 +207,7 @@ const WorkoutLog = () => {
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
-  console.log(user)
+  console.log(user);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
@@ -383,15 +384,31 @@ const WorkoutLog = () => {
               <MemoContentWrapper onClick={() => memoOnClick('')}>
                 {memo_write_mode ? <MemoInput value={memo} onChange={e => setMemo(e.target.value)} /> : memo}
               </MemoContentWrapper>
-              <MemoButtonWrapper>
-                <AnyButton className="memo-type">취소</AnyButton>
-                <AnyButton className="memo-type" onClick={() => memoOnClick('edit_button')}>
-                  수정
-                </AnyButton>
-                <AnyButton className="memo-type" onClick={() => memoOnClick('complete_button')}>
-                  완료
-                </AnyButton>
-              </MemoButtonWrapper>
+
+              <MemoFooter>
+                <ImageWrapper>
+                  <FileInput type="file" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
+                  <WorkoutImage
+                    src={process.env.REACT_APP_API_IMAGE + image}
+                    alt="workout_image"
+                    onClick={() => {
+                      document.getElementById('FileInput_DailyLog')?.click();
+                    }}
+                  />
+                  <AnyButton className="image-type" onClick={() => imageOnClick()}>
+                    업로드
+                  </AnyButton>
+                </ImageWrapper>
+                <MemoButtonWrapper>
+                  <AnyButton className="memo-type">취소</AnyButton>
+                  <AnyButton className="memo-type" onClick={() => memoOnClick('edit_button')}>
+                    수정
+                  </AnyButton>
+                  <AnyButton className="memo-type" onClick={() => memoOnClick('complete_button')}>
+                    완료
+                  </AnyButton>
+                </MemoButtonWrapper>
+              </MemoFooter>
             </Frame>
           </MemoWrapper>
         </LeftWrapper>
@@ -505,16 +522,8 @@ const WorkoutLog = () => {
                 )}
               </LogBody>
               <LogFooter>
-                {dailyLog.fit_element?.length}종목 / {dailyLog.calories} cal
-                <FileInput type="file" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
-                <WorkoutImage
-                  src={process.env.REACT_APP_API_IMAGE + image}
-                  alt="workout_image"
-                  onClick={() => {
-                    document.getElementById('FileInput_DailyLog')?.click();
-                  }}
-                />
-                <AnyButton onClick={() => imageOnClick()}>이미지저장</AnyButton>
+                <FooterItem>{dailyLog.fit_element?.length}종류</FooterItem>
+                <FooterItem>{dailyLog.calories} cal</FooterItem>
               </LogFooter>
             </Frame>
           </LogWrapper>
@@ -539,10 +548,10 @@ const Wrapper = styled.div`
 `;
 
 const WorkoutImage = styled.img`
-  width: 180px;
-  height: 180px;
+  width: 90px;
+  height: 90px;
   border: 2px solid #727272;
-  border-radius: 30px;
+  border-radius: 15px;
   margin-top: 20px;
   cursor: pointer;
   transition: border 0.15s linear;
@@ -600,6 +609,10 @@ const Frame = styled.div`
     height: 90%;
     justify-content: center;
     min-height: 70.2vh;
+  }
+
+  &&.memo {
+    min-height: 120px;
   }
 `;
 
@@ -823,7 +836,7 @@ const DateWrapper = styled.div`
 const MemoContentWrapper = styled.div`
   display: flex;
   margin: 10px;
-  height: 80%;
+  height: 40%;
   align-items: center;
   font-family: IBMPlexSansThaiLooped;
   font-size: 14px;
@@ -833,10 +846,9 @@ const MemoContentWrapper = styled.div`
 
 const MemoButtonWrapper = styled.div`
   display: flex;
-  margin: 10px;
-  width: 90%;
-  height: 20%;
-  align-items: center;
+  width: 50%;
+  height: 100%;
+  align-items: end;
   justify-content: end;
   flex-direction: row;
   font-family: IBMPlexSansThaiLooped;
@@ -884,6 +896,12 @@ const AnyButton = styled.button`
   }
 
   &&.memo-type {
+    width: 60px;
+    height: 20px;
+  }
+
+  &&.image-type {
+    background-color: #3bb978;
     width: 60px;
     height: 20px;
   }
@@ -1029,8 +1047,37 @@ const LogFooter = styled.div`
   display: flex;
   flex-wrap: wrap;
   font-weight: normal;
+  padding: 15px 20px;
   background-color: #d7efe3;
   border-top: 1px solid black;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  align-items: center;
 `;
+
+const FooterItem = styled.div`
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-family: IBMPlexSansThaiLooped;
+  font-weight: 500;
+`;
+
+const MemoFooter = styled.div`
+  display: flex;
+  height: 50%;
+  width: 100%;
+  padding: 10px 10px;
+  flex-direction: row;
+`
+
+const ImageWrapper = styled.div`
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+`
