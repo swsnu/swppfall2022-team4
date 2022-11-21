@@ -21,14 +21,6 @@ export const ColumnCenterFlex = styled.div`
   align-items: center;
 `;
 
-// Used in PostMain.tsx
-export const ArticleItemGrid = styled.div`
-  display: grid;
-  grid-template-columns: 7fr 30fr 10fr 5fr 5fr;
-  grid-template-rows: 1fr;
-  place-items: center;
-`;
-
 // Used in PostMain.tsx, PostDetail.tsx
 export const PostContentWrapper = styled(ColumnCenterFlex)`
   width: 100%;

@@ -1,22 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { infoActions } from 'store/slices/information';
 import { RootState } from 'index';
 import NotFound from 'components/common/NotFound';
-import { TagBubbleCompact } from 'components/tag/tagbubble';
-import { ArticleItem } from 'containers/post/PostMain';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Post } from 'store/apis/post';
-import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { timeAgoFormat } from 'utils/datetime';
 import { Youtube } from 'store/apis/information';
 import SearchBar from 'components/common/SearchBar';
+import { ArticleItemCompact } from 'components/post/ArticleItem';
 
-interface InfoPageArticleIprops {
-  post: Post;
-}
 interface InfoPageYoutubeIprops {
   youtube: Youtube;
 }
@@ -36,22 +29,6 @@ const InformationDetail = () => {
       }),
     );
   }, []);
-  const InfoPageArticleItem = ({ post }: InfoPageArticleIprops) => (
-    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
-      {post.prime_tag ? (
-        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-      ) : (
-        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-      )}
-      <span>
-        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
-        <span>[{post.comments_num}]</span>
-      </span>
-      <span>{post.author.username}</span>
-      <span>{post.like_num - post.dislike_num}</span>
-      <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
-    </ArticleItem>
-  );
   const InfoPageYoutubeItem = ({ youtube }: InfoPageYoutubeIprops) => (
     <YoutubeItem
       onClick={() => {
@@ -99,7 +76,11 @@ const InformationDetail = () => {
               </BasicItemWrapper>
               <ArticleItemWrapper>
                 {info.contents?.posts.map(post => (
-                  <InfoPageArticleItem key={post.post_id} post={post} />
+                  <ArticleItemCompact
+                    key={post.post_id}
+                    post={post}
+                    onClick={() => navigate(`/post/${post.post_id}`)}
+                  />
                 ))}
               </ArticleItemWrapper>
             </SectionSubWrapper>

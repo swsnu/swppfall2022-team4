@@ -9,21 +9,14 @@ import { getPostsRequestType } from 'store/apis/post';
 import { tagActions } from 'store/slices/tag';
 import { timeAgoFormat } from 'utils/datetime';
 import { BlueBigBtn } from 'components/post/button';
-import { TagBubble, TagBubbleCompact, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
-import {
-  ArticleItemGrid,
-  ColumnCenterFlex,
-  ColumnFlex,
-  PostContentWrapper,
-  RowCenterFlex,
-} from 'components/post/layout';
+import { TagBubble, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
+import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 import TagDetailModal from 'components/post/TagDetailModal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { TagVisual } from 'store/apis/tag';
 import SearchBar from 'components/common/SearchBar';
+import { ArticleHeader, ArticleItemDefault } from 'components/post/ArticleItem';
 
 const PostMain = () => {
   const dispatch = useDispatch();
@@ -151,30 +144,10 @@ const PostMain = () => {
 
   const MainContent = (
     <ArticleListWrapper>
-      <ArticleHeader>
-        <span>대표태그</span>
-        <span>제목</span>
-        <span>작성자</span>
-        <span>추천수</span>
-        <span>작성시간</span>
-      </ArticleHeader>
+      <ArticleHeader />
       {postList ? (
-        postList.map((post, id) => {
-          return (
-            <ArticleItem data-testid="ArticleItem" key={id} onClick={() => navigate(`/post/${post.post_id}`)}>
-              {post.prime_tag ? (
-                <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-              ) : (
-                <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-              )}
-              <PostTitle>
-                {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
-              </PostTitle>
-              <span>{post.author.username}</span>
-              <span>{post.like_num - post.dislike_num}</span>
-              <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
-            </ArticleItem>
-          );
+        postList.map(post => {
+          return <ArticleItemDefault post={post} onClick={() => navigate(`/post/${post.post_id}`)} />;
         })
       ) : (
         <LoadingWithoutMinHeight />
@@ -225,11 +198,6 @@ const PostMain = () => {
     </PostPageWrapper>
   );
 };
-
-const PostTitle = styled.span`
-  word-wrap: break-word;
-  word-break: break-all;
-`;
 
 const SideBarTitleWrapper = styled(RowCenterFlex)`
   width: 100%;
@@ -285,21 +253,6 @@ const ArticleListWrapper = styled.div`
   min-height: 100%;
   background-color: #ffffff;
   position: relative;
-`;
-
-const ArticleHeader = styled(ArticleItemGrid)`
-  padding: 10px 10px 10px 10px;
-  font-size: 14px;
-  width: 100%;
-  border-bottom: 1px solid black;
-`;
-
-export const ArticleItem = styled(ArticleItemGrid)`
-  padding: 8px 10px 8px 10px;
-  font-size: 14px;
-  width: 100%;
-  border-bottom: 1px solid black;
-  cursor: pointer;
 `;
 
 const SideBarItem = styled(ColumnFlex)`
