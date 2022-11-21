@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { useRef, MouseEvent, useState } from 'react';
+import { useRef, MouseEvent, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,12 +10,10 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Chart, getElementAtEvent, Line } from 'react-chartjs-2';
+import { getElementAtEvent, Line } from 'react-chartjs-2';
 import { chartData } from 'containers/Main';
-import { AiOutlineConsoleSql } from 'react-icons/ai';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
 
 export interface IProps {
   info: chartData[];
@@ -23,11 +21,9 @@ export interface IProps {
 
 export const WorkoutChart = (props: IProps) => {
   const chartRef = useRef<ChartJS<'line'>>(null);
-  const [datasets, setDatasets] = useState(props.info);
-  console.log(props.info);
   const [index, setIndex] = useState(0);
   const data = {
-    labels: props.info!.map(data => data.date.substr(3,5)),
+    labels: props.info!.map(data => data.date.substr(3, 5)),
     datasets: [
       {
         data: props.info!.map(data => data.calories) as number[],
@@ -40,7 +36,7 @@ export const WorkoutChart = (props: IProps) => {
       },
     ],
   };
-  
+
   const options = {
     responsive: true,
     plugins: {
@@ -54,7 +50,12 @@ export const WorkoutChart = (props: IProps) => {
           size: 18,
           family: 'IBMPlexSansThaiLooped',
         },
-        text: `이번 달 칼로리 차트`
+        text: `이번 달 칼로리 차트`,
+      },
+    },
+    scales: {
+      y: {
+        min: 0,
       },
     },
   };
@@ -79,7 +80,7 @@ export const WorkoutChart = (props: IProps) => {
       <ChartWrapper>
         <div>Loading...</div>
       </ChartWrapper>
-    )
+    );
   }
 };
 
