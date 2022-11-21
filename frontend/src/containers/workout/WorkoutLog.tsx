@@ -63,6 +63,7 @@ const WorkoutLog = () => {
   const [isCopy, setIsCopy] = useState<boolean>(false);
   const [copy_date, setCopyDate] = useState<Date>(new Date());
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
+  const user = useSelector(({ user }: RootState) => user.user);
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -79,9 +80,9 @@ const WorkoutLog = () => {
     year: year,
     month: month + 1,
     specific_date: day,
-    user_id: 1,
+    username: user?.username!,
     data: {
-      user_id: 1,
+      username: user?.username!,
     },
   };
 
@@ -94,9 +95,9 @@ const WorkoutLog = () => {
       year: year,
       month: month + 1,
       specific_date: d,
-      user_id: 1,
+      username: user?.username!,
       data: {
-        user_id: 1,
+        username: user?.username!,
       },
     };
     dispatch(workoutLogActions.getDailyLog(dailyLogConfig));
@@ -112,7 +113,7 @@ const WorkoutLog = () => {
       alert('운동종류를 입력해주세요.');
     } else {
       const newLogConfig: createWorkoutLogRequestType = {
-        user_id: 1,
+        username: user?.username!,
         type: 'log',
         workout_type: workout_type,
         period: workout_period,
@@ -150,7 +151,7 @@ const WorkoutLog = () => {
         return Number(v.data.id);
       });
       const createRoutineConfig: createRoutineWithFitElementsRequestType = {
-        user_id: 1,
+        username: user?.username!,
         fitelements: fitelements_id_list,
       };
       dispatch(workoutLogActions.createRoutineWithFitElements(createRoutineConfig));
@@ -163,7 +164,7 @@ const WorkoutLog = () => {
     setIsCopy(false);
 
     const addFitElementConfig: addFitElementsRequestType = {
-      user_id: 1,
+      username: user?.username!,
       fitelements: copied_fitelements,
       year: year,
       month: month + 1,
@@ -177,7 +178,7 @@ const WorkoutLog = () => {
       setMemoWriteMode(true);
     } else {
       const editMemoConfig: editMemoRequestType = {
-        user_id: 1,
+        username: user?.username!,
         memo: memo,
         year: year,
         month: month + 1,
@@ -190,7 +191,7 @@ const WorkoutLog = () => {
 
   const imageOnClick = () => {
     const editImageConfig: editImageRequestType = {
-      user_id: 1,
+      username: user?.username!,
       image: image,
       year: year,
       month: month + 1,
@@ -205,7 +206,7 @@ const WorkoutLog = () => {
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
-  console.log(dailyLog)
+  console.log(user)
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
@@ -221,7 +222,7 @@ const WorkoutLog = () => {
   useEffect(() => {
     dispatch(
       workoutLogActions.getCalendarInfo({
-        user_id: 1,
+        username: user?.username!,
         year: year,
         month: month + 1,
       }),
@@ -279,7 +280,7 @@ const WorkoutLog = () => {
                   onClick={() => {
                     dispatch(
                       workoutLogActions.getCalendarInfo({
-                        user_id: 1,
+                        username: user?.username!,
                         year: month === 0 ? year - 1 : year,
                         month: month === 0 ? 12 : month,
                       }),
@@ -298,7 +299,7 @@ const WorkoutLog = () => {
                   onClick={() => {
                     dispatch(
                       workoutLogActions.getCalendarInfo({
-                        user_id: 1,
+                        username: user?.username!,
                         year: month === 11 ? year + 1 : year,
                         month: ((month + 1) % 12) + 1,
                       }),

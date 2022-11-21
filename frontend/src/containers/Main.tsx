@@ -18,11 +18,12 @@ const Main = () => {
   const [day, setDay] = useState(date.getDate());
   const [month, setMonth] = useState(date.getMonth());
   const [year, setYear] = useState(date.getFullYear());
+  const user = useSelector(({ user }: RootState) => user.user);
 
   useEffect(() => {
     dispatch(
       workoutLogActions.getCalendarInfo({
-        user_id: 1,
+        username: user?.username!,
         year: year,
         month: month + 1,
       }),
@@ -50,7 +51,16 @@ const Main = () => {
 
   return (
     <Wrapper>
-      <WorkoutChart info={calories_map} />
+      <ContentWrapper>
+        <SectionWrapper>
+          <SectionItemWrapper>
+            <WorkoutChart info={calories_map} />
+          </SectionItemWrapper>
+          <SectionItemWrapper></SectionItemWrapper>
+          <SectionItemWrapper></SectionItemWrapper>
+          <SectionItemWrapper></SectionItemWrapper>
+        </SectionWrapper>
+      </ContentWrapper>
     </Wrapper>
   );
 };
@@ -62,7 +72,45 @@ const Wrapper = styled.div`
   height: 100%;
   min-height: calc(100vh - 60px);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
+`;
+
+const ContentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  @media all and (max-width: 650px) {
+    width: 100%;
+  }
+`;
+
+const SectionWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  row-gap: 10px;
+  column-gap: 10px;
+  width: 100%;
+  min-height: 600px;
+  height: 70vh;
+`;
+
+const SectionItemWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 15px 20px;
+  border: 1px solid black;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;

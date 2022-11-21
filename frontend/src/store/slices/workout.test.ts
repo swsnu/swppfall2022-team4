@@ -39,9 +39,9 @@ const getDailyLogRequest: workoutAPI.getDailyLogRequestType = {
   year: 2022,
   month: 10,
   specific_date: 1,
-  user_id: 1,
+  username: 'user',
   data: {
-    user_id: 1,
+    username: 'user'
   },
 };
 
@@ -78,7 +78,7 @@ const getDailyLogResponse: workoutAPI.getDailyLogResponseType = {
 };
 
 const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
-  user_id: 1,
+  username: 'user',
   type: 'test',
   workout_type: 'test',
   period: 0,
@@ -91,7 +91,7 @@ const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
 };
 
 const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
-  user_id: 0,
+  username: 'user',
   date: '2022-10-01',
   memo: 'memo',
   fitelements: [],
@@ -109,7 +109,7 @@ const getDailyFitElementsRequest: workoutAPI.getDailyFitElementsRequestType = {
 };
 
 const editMemoRequest: workoutAPI.editMemoRequestType = {
-  user_id: 0,
+  username: 'user',
   memo: 'memo',
   year: 2022,
   month: 10,
@@ -117,22 +117,22 @@ const editMemoRequest: workoutAPI.editMemoRequestType = {
 };
 
 const getCalendarInfoRequest: workoutAPI.getCalendarInfoRequestType = {
-  user_id: 0,
+  username: 'user',
   year: 2022,
   month: 10,
 };
 
 const getRoutineRequest: workoutAPI.getRoutineRequestType = {
-  user_id: 0,
+  username: 'user'
 };
 
 const getSpecificRoutineRequest: workoutAPI.getSpecificRoutineRequestType = {
-  user_id: 0,
+  username: 'user',
   routine_id: 0,
 };
 
 const addFitElementsRequest: workoutAPI.addFitElementsRequestType = {
-  user_id: 1,
+  username: 'user',
   fitelements: [1],
   year: 2022,
   month: 10,
@@ -140,7 +140,7 @@ const addFitElementsRequest: workoutAPI.addFitElementsRequestType = {
 };
 
 const createRoutineWithFitElementsRequest: workoutAPI.createRoutineWithFitElementsRequestType = {
-  user_id: 0,
+  username: 'user',
   fitelements: [],
 };
 

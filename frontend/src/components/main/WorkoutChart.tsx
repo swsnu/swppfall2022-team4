@@ -31,12 +31,12 @@ export const WorkoutChart = (props: IProps) => {
     datasets: [
       {
         data: props.info!.map(data => data.calories) as number[],
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        borderColor: '#9fd6cd',
+        backgroundColor: 'green',
         pointBackgroundColor: props.info!.map(data => {
-          return 'red';
+          return 'green';
         }),
-        pointRadius: 4,
+        pointRadius: 3,
       },
     ],
   };
@@ -45,15 +45,16 @@ export const WorkoutChart = (props: IProps) => {
     responsive: true,
     plugins: {
       legend: {
+        display: false,
         position: 'top' as const,
       },
       title: {
         display: true,
         font: {
-          size: 24,
+          size: 18,
           family: 'IBMPlexSansThaiLooped',
         },
-        text: `이번달 칼로리 차트`
+        text: `이번 달 칼로리 차트`
       },
     },
   };
@@ -84,5 +85,4 @@ export const WorkoutChart = (props: IProps) => {
 
 const ChartWrapper = styled.div`
   width: 100%;
-  height: 100%;
 `;

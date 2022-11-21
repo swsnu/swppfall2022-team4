@@ -145,14 +145,14 @@ const getDailyLogRequest: workoutAPI.getDailyLogRequestType = {
   year: 2022,
   month: 10,
   specific_date: 1,
-  user_id: 1,
+  username: 'user',
   data: {
-    user_id: 1,
+    username: 'user',
   },
 };
 
 const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
-  user_id: 1,
+  username: 'user',
   type: 'test',
   workout_type: 'test',
   period: 0,
@@ -165,7 +165,7 @@ const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
 };
 
 const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
-  user_id: 0,
+  username: 'user',
   date: '2022-10-01',
   memo: 'memo',
   fitelements: [],
@@ -175,7 +175,7 @@ const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
 };
 
 const editMemoRequest: workoutAPI.editMemoRequestType = {
-  user_id: 0,
+  username: 'user',
   memo: 'memo',
   year: 2022,
   month: 10,
@@ -183,22 +183,22 @@ const editMemoRequest: workoutAPI.editMemoRequestType = {
 };
 
 const getCalendarInfoRequest: workoutAPI.getCalendarInfoRequestType = {
-  user_id: 0,
+  username: 'user',
   year: 2022,
   month: 10,
 };
 
 const getRoutineRequest: workoutAPI.getRoutineRequestType = {
-  user_id: 0,
+  username: 'user',
 };
 
 const getSpecificRoutineRequest: workoutAPI.getSpecificRoutineRequestType = {
-  user_id: 0,
+  username: 'user',
   routine_id: 0,
 };
 
 const addFitElementsRequest: workoutAPI.addFitElementsRequestType = {
-  user_id: 1,
+  username: 'user',
   fitelements: [1],
   year: 2022,
   month: 10,
@@ -206,7 +206,7 @@ const addFitElementsRequest: workoutAPI.addFitElementsRequestType = {
 };
 
 const createRoutineWithFitElementsRequest: workoutAPI.createRoutineWithFitElementsRequestType = {
-  user_id: 0,
+  username: 'user',
   fitelements: [],
 };
 
@@ -345,7 +345,7 @@ describe('User API TEST', () => {
     test('getDailyLog', async () => {
       const result = await workoutAPI.getDailyLog(getDailyLogRequest);
       expect(result).toBe(
-        `/api/fitelement/dailylog/${getDailyLogRequest.year}/${getDailyLogRequest.month}/${getDailyLogRequest.specific_date}/?&user_id=${getDailyLogRequest.user_id}`,
+        `/api/fitelement/dailylog/${getDailyLogRequest.year}/${getDailyLogRequest.month}/${getDailyLogRequest.specific_date}/?&username=${getDailyLogRequest.username}`,
       );
     });
     test('getFitElements', async () => {
@@ -359,39 +359,39 @@ describe('User API TEST', () => {
     test('createDailyLog', async () => {
       const result = await workoutAPI.createDailyLog(createDailyLogRequest);
       expect(result).toBe(
-        `/api/fitelement/dailylog/${createDailyLogRequest.year}/${createDailyLogRequest.month}/${createDailyLogRequest.specific_date}/?&user_id=${createDailyLogRequest.user_id}`,
+        `/api/fitelement/dailylog/${createDailyLogRequest.year}/${createDailyLogRequest.month}/${createDailyLogRequest.specific_date}/?&username=${createDailyLogRequest.username}`,
       );
     });
     test('editMemo', async () => {
       const result = await workoutAPI.editMemo(editMemoRequest);
       expect(result).toBe(
-        `/api/fitelement/dailylog/${editMemoRequest.year}/${editMemoRequest.month}/${editMemoRequest.specific_date}/?&user_id=${editMemoRequest.user_id}`,
+        `/api/fitelement/dailylog/${editMemoRequest.year}/${editMemoRequest.month}/${editMemoRequest.specific_date}/?&username=${editMemoRequest.username}`,
       );
     });
     test('getCalendarInfo', async () => {
       const result = await workoutAPI.getCalendarInfo(getCalendarInfoRequest);
       expect(result).toBe(
-        `/api/fitelement/${getCalendarInfoRequest.year}/${getCalendarInfoRequest.month}/?&user_id=${getCalendarInfoRequest.user_id}`,
+        `/api/fitelement/${getCalendarInfoRequest.year}/${getCalendarInfoRequest.month}/?&username=${getCalendarInfoRequest.username}`,
       );
     });
     test('getRoutine', async () => {
       const result = await workoutAPI.getRoutine(getRoutineRequest);
-      expect(result).toBe(`/api/fitelement/routine/?&user_id=${getRoutineRequest.user_id}`);
+      expect(result).toBe(`/api/fitelement/routine/?&username=${getRoutineRequest.username}`);
     });
     test('addFitElements', async () => {
       const result = await workoutAPI.addFitElements(addFitElementsRequest);
       expect(result).toBe(
-        `/api/fitelement/dailylog/${addFitElementsRequest.year}/${addFitElementsRequest.month}/${addFitElementsRequest.specific_date}/?&user_id=${addFitElementsRequest.user_id}`,
+        `/api/fitelement/dailylog/${addFitElementsRequest.year}/${addFitElementsRequest.month}/${addFitElementsRequest.specific_date}/?&username=${addFitElementsRequest.username}`,
       );
     });
     test('craeteRoutineWithFitElements', async () => {
       const result = await workoutAPI.createRoutineWithFitElements(createRoutineWithFitElementsRequest);
-      expect(result).toBe(`/api/fitelement/routine/?&user_id=${createRoutineWithFitElementsRequest.user_id}`);
+      expect(result).toBe(`/api/fitelement/routine/?&username=${createRoutineWithFitElementsRequest.username}`);
     });
     test('getSpecificRoutine', async () => {
       const result = await workoutAPI.getSpecificRoutine(getSpecificRoutineRequest);
       expect(result).toBe(
-        `/api/fitelement/routine/${getSpecificRoutineRequest.routine_id}/?&user_id=${getSpecificRoutineRequest.user_id}`,
+        `/api/fitelement/routine/${getSpecificRoutineRequest.routine_id}/?&username=${getSpecificRoutineRequest.username}`,
       );
     });
     test('getSpecificRoutineFitElements', async () => {

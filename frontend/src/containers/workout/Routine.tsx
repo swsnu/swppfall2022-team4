@@ -17,17 +17,18 @@ const Routine = () => {
   const routineClick = (id: number) => {
     setRoutineId(id);
   };
-
+  const user = useSelector(({ user }: RootState) => user.user);
   const [routine_id, setRoutineId] = useState<number>(-1);
 
   const defaultRoutineRequest: getRoutineRequestType = {
-    user_id: 1,
+    username: user?.username!,
   };
 
   const { selected_routine, routines } = useSelector(({ workout_log }: RootState) => ({
     selected_routine: workout_log.selected_routine,
     routines: workout_log.routine,
   }));
+  
 
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
@@ -38,7 +39,7 @@ const Routine = () => {
     if (routine_id !== -1) {
       dispatch(
         workoutLogActions.getSpecificRoutine({
-          user_id: 1,
+          username: user?.username!,
           routine_id: routine_id,
         }),
       );
