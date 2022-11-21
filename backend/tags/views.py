@@ -10,8 +10,11 @@ from tags.management.commands.prepare_tags import get_tag_class_type
 from informations.models import Information
 
 
-def prepare_tag_response(tag_id, name, color):
-    return {"id": tag_id, "name": name, "color": color}
+def prepare_tag_response(tag_id, name, color, post_num=None):
+    if post_num is not None:
+        return {"id": tag_id, "name": name, "color": color, "posts": post_num}
+    else:
+        return {"id": tag_id, "name": name, "color": color}
 
 
 @require_http_methods(["GET", "POST"])
@@ -39,7 +42,11 @@ def tag_home(request):
 
         popular_tags = []
         for tag in Tag.objects.annotate(p_count=Count('tagged_posts')).order_by('-p_count')[:10]:
-            popular_tags.append(prepare_tag_response(tag.pk, tag.tag_name, tag.tag_class.color))
+            popular_tags.append(
+                prepare_tag_response(
+                    tag.pk, tag.tag_name, tag.tag_class.color, tag.tagged_posts.count()
+                )
+            )
 
         response = JsonResponse(
             {

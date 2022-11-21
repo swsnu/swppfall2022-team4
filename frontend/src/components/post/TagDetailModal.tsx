@@ -7,7 +7,7 @@ import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { TagVisual } from 'store/apis/tag';
-import { RowCenterFlex } from './layout';
+import { ColumnCenterFlex } from './layout';
 import { TagBubble } from 'components/tag/tagbubble';
 import { TAG_CLASS_LIMIT, TAG_NAME_LIMIT } from 'containers/post/PostEditorLayout';
 import { tagActions } from 'store/slices/tag';
@@ -32,6 +32,7 @@ interface IPropsCharNum {
 }
 
 const UNSELECTED = '#dbdbdb';
+const CATEGORY = ['태그 목록', '인기있는 태그'];
 
 const TagDetailModal = ({
   isActive,
@@ -42,9 +43,11 @@ const TagDetailModal = ({
   setSelected,
   dispatch,
 }: TagDetailModalIprops) => {
-  const { tagList } = useSelector(({ tag }: RootState) => ({
+  const { tagList, popularTags } = useSelector(({ tag }: RootState) => ({
     tagList: tag.tagList,
+    popularTags: tag.popularTags,
   }));
+  const [type, setType] = useState(0);
   const [createCategory, setCreateCategory] = useState<number>(-1);
   const [newTagInput, setNewTagInput] = useState<string>('');
 
@@ -74,123 +77,161 @@ const TagDetailModal = ({
       <ModalOverlay ref={modalAnimRef}>
         <ModalContent className="modal" ref={modalRef}>
           <Divdiv>
-            <ModalTitleWrapper>
-              <ModalTitle>태그 자세히보기</ModalTitle>
-              <ModalExitWrapper>
-                <ModalCloseBtn onClick={closeHandler} data-testid="tagModalCloseBtn">
-                  <FontAwesomeIcon icon={faX} />
-                </ModalCloseBtn>
-              </ModalExitWrapper>
-            </ModalTitleWrapper>
-            <ModalDescriptionSection>
-              <span>아래 태그를 클릭하여 태그로 필터링할 수 있습니다.</span>
-            </ModalDescriptionSection>
-            {tagList?.map(tagClass => (
-              <TagClassSection key={tagClass.id}>
-                <div>
-                  <h1>{tagClass.class_name}</h1>
-                  <div style={{ backgroundColor: tagClass.color }}></div>
-                </div>
-                <div>
-                  {tagClass.tags.map(tag => (
-                    <TagBubble
-                      key={tag.id}
-                      color={
-                        selected.length > 0 && selected.filter(item => item.id == tag.id).length === 0
-                          ? UNSELECTED
-                          : tag.color
-                      }
-                      onClick={() => filterOnClick(tag)}
-                    >
-                      {tag.name}
-                    </TagBubble>
-                  ))}
-                  {selected.length == 0 && (
-                    <TagBubble
-                      color={tagClass.color}
-                      onClick={() => {
-                        setNewTagInput('');
-                        setCreateCategory(tagClass.id);
-                      }}
-                    >
-                      {createCategory === tagClass.id ? (
-                        <NewTagForm
-                          onSubmit={e => {
-                            e.preventDefault();
-                            dispatch(
-                              tagActions.createTag({
-                                name: newTagInput,
-                                classId: tagClass.id,
-                              }),
-                            );
-                            dispatch(tagActions.getTags());
-                            setNewTagInput('');
-                          }}
-                        >
-                          <ColorReactiveInput
-                            value={newTagInput}
-                            placeholder="태그 이름"
-                            onChange={e => {
-                              const charInput = e.target.value;
-                              if (charInput.length <= TAG_NAME_LIMIT) setNewTagInput(charInput);
+            <ContentWrapper>
+              <CategoryWrapper>
+                {CATEGORY.map((x, idx) => (
+                  <Category key={idx} active={type === idx} onClick={() => setType(idx)}>
+                    {x}
+                  </Category>
+                ))}
+                <ModalExitWrapper>
+                  <ModalCloseBtn onClick={closeHandler} data-testid="tagModalCloseBtn">
+                    <FontAwesomeIcon icon={faX} />
+                  </ModalCloseBtn>
+                </ModalExitWrapper>
+              </CategoryWrapper>
+              <ProfileContentLayout>
+                {
+                  {
+                    0: (
+                      <ColumnCenterFlex>
+                        <ModalDescriptionSection>
+                          <span>아래 태그를 클릭하여 태그로 필터링할 수 있습니다.</span>
+                        </ModalDescriptionSection>
+                        {tagList?.map(tagClass => (
+                          <TagClassSection key={tagClass.id}>
+                            <div>
+                              <h1>{tagClass.class_name}</h1>
+                              <div style={{ backgroundColor: tagClass.color }}></div>
+                            </div>
+                            <div>
+                              {tagClass.tags.map(tag => (
+                                <TagBubble
+                                  key={tag.id}
+                                  color={
+                                    selected.length > 0 && selected.filter(item => item.id == tag.id).length === 0
+                                      ? UNSELECTED
+                                      : tag.color
+                                  }
+                                  onClick={() => filterOnClick(tag)}
+                                >
+                                  {tag.name}
+                                </TagBubble>
+                              ))}
+                              {selected.length == 0 && (
+                                <TagBubble
+                                  color={tagClass.color}
+                                  onClick={() => {
+                                    setNewTagInput('');
+                                    setCreateCategory(tagClass.id);
+                                  }}
+                                >
+                                  {createCategory === tagClass.id ? (
+                                    <NewTagForm
+                                      onSubmit={e => {
+                                        e.preventDefault();
+                                        dispatch(
+                                          tagActions.createTag({
+                                            name: newTagInput,
+                                            classId: tagClass.id,
+                                          }),
+                                        );
+                                        dispatch(tagActions.getTags());
+                                        setNewTagInput('');
+                                      }}
+                                    >
+                                      <ColorReactiveInput
+                                        value={newTagInput}
+                                        placeholder="태그 이름"
+                                        onChange={e => {
+                                          const charInput = e.target.value;
+                                          if (charInput.length <= TAG_NAME_LIMIT) setNewTagInput(charInput);
+                                        }}
+                                        colorProp={tagClass.color}
+                                      />
+                                      <TagCharNum isFull={newTagInput.length >= TAG_NAME_LIMIT}>
+                                        {newTagInput.length} / {TAG_NAME_LIMIT}
+                                      </TagCharNum>
+                                    </NewTagForm>
+                                  ) : (
+                                    '눌러서 추가'
+                                  )}
+                                </TagBubble>
+                              )}
+                            </div>
+                          </TagClassSection>
+                        ))}
+                        <TagClassSection>
+                          <div>
+                            <h1>새로운 카테고리</h1>
+                            <div style={{ backgroundColor: newCategoryColor }}></div>
+                          </div>
+                          <NewCategoryForm
+                            onSubmit={e => {
+                              e.preventDefault();
+                              dispatch(
+                                tagActions.createTagClass({
+                                  name: newCategoryInput,
+                                  color: newCategoryColor,
+                                }),
+                              );
+                              dispatch(tagActions.getTags());
+                              setNewCategoryInput('');
                             }}
-                            colorProp={tagClass.color}
-                          />
-                          <TagCharNum isFull={newTagInput.length >= TAG_NAME_LIMIT}>
-                            {newTagInput.length} / {TAG_NAME_LIMIT}
-                          </TagCharNum>
-                        </NewTagForm>
-                      ) : (
-                        '눌러서 추가'
-                      )}
-                    </TagBubble>
-                  )}
-                </div>
-              </TagClassSection>
-            ))}
-            <TagClassSection>
-              <div>
-                <h1>새로운 카테고리</h1>
-                <div style={{ backgroundColor: newCategoryColor }}></div>
-              </div>
-              <NewCategoryForm
-                onSubmit={e => {
-                  e.preventDefault();
-                  dispatch(
-                    tagActions.createTagClass({
-                      name: newCategoryInput,
-                      color: newCategoryColor,
-                    }),
-                  );
-                  dispatch(tagActions.getTags());
-                  setNewCategoryInput('');
-                }}
-              >
-                <div>
-                  <GreenBigSpanBtn onClick={() => setColorPicker(state => !state)}>색상 직접 설정</GreenBigSpanBtn>
-                  <GreenBigSpanBtn onClick={() => setNewCategoryColor(getRandomHex())}>
-                    색상 임의 설정 <FontAwesomeIcon icon={faDice} />
-                  </GreenBigSpanBtn>
-                  <div>
-                    <input
-                      placeholder="새로운 카테고리 이름"
-                      value={newCategoryInput}
-                      onChange={e => {
-                        const charInput = e.target.value;
-                        if (charInput.length <= TAG_CLASS_LIMIT) setNewCategoryInput(charInput);
-                      }}
-                    />
-                    <TagCharNum isFull={newCategoryInput.length >= TAG_CLASS_LIMIT}>
-                      {newCategoryInput.length} / {TAG_CLASS_LIMIT}
-                    </TagCharNum>
-                  </div>
-                  <GreenBigBtn disabled={newCategoryInput == ''}>생성</GreenBigBtn>
-                </div>
-                {colorPicker && (
-                  <ChromePicker color={newCategoryColor} onChange={color => setNewCategoryColor(color.hex)} />
-                )}
-              </NewCategoryForm>
-            </TagClassSection>
+                          >
+                            <div>
+                              <GreenBigSpanBtn onClick={() => setColorPicker(state => !state)}>
+                                색상 직접 설정
+                              </GreenBigSpanBtn>
+                              <GreenBigSpanBtn onClick={() => setNewCategoryColor(getRandomHex())}>
+                                색상 임의 설정 <FontAwesomeIcon icon={faDice} />
+                              </GreenBigSpanBtn>
+                              <div>
+                                <input
+                                  placeholder="새로운 카테고리 이름"
+                                  value={newCategoryInput}
+                                  onChange={e => {
+                                    const charInput = e.target.value;
+                                    if (charInput.length <= TAG_CLASS_LIMIT) setNewCategoryInput(charInput);
+                                  }}
+                                />
+                                <TagCharNum isFull={newCategoryInput.length >= TAG_CLASS_LIMIT}>
+                                  {newCategoryInput.length} / {TAG_CLASS_LIMIT}
+                                </TagCharNum>
+                              </div>
+                              <GreenBigBtn disabled={newCategoryInput == ''}>생성</GreenBigBtn>
+                            </div>
+                            {colorPicker && (
+                              <ChromePicker
+                                color={newCategoryColor}
+                                onChange={color => setNewCategoryColor(color.hex)}
+                              />
+                            )}
+                          </NewCategoryForm>
+                        </TagClassSection>
+                      </ColumnCenterFlex>
+                    ),
+                    1: (
+                      <ColumnCenterFlex>
+                        <ModalDescriptionSection>
+                          <span>태그로 설정한 글의 개수 순위입니다.</span>
+                        </ModalDescriptionSection>
+                        <TagClassSection>
+                          {popularTags?.map((tag, index) => (
+                            <TagRankingItem>
+                              <span>{index + 1} 위</span>
+                              <TagBubble key={tag.id} color={tag.color}>
+                                {tag.name} | 글 {tag.posts} 개
+                              </TagBubble>
+                            </TagRankingItem>
+                          ))}
+                        </TagClassSection>
+                      </ColumnCenterFlex>
+                    ),
+                  }[type]
+                }
+              </ProfileContentLayout>
+            </ContentWrapper>
           </Divdiv>
         </ModalContent>
       </ModalOverlay>
@@ -280,7 +321,7 @@ const ModalDescriptionSection = styled.div`
 
   > span {
     font-size: 15px;
-    text-align: right;
+    text-align: left;
   }
 `;
 
@@ -339,22 +380,11 @@ const ModalContent = styled.div`
   background-clip: padding-box;
 `;
 
-const ModalTitleWrapper = styled(RowCenterFlex)`
-  width: 100%;
-  padding: 15px 20px 8px 20px;
-  border-bottom: 1px solid gray;
-`;
-
-const ModalTitle = styled.span`
-  font-size: 24px;
-`;
-
 const ModalExitWrapper = styled.div`
   position: absolute;
-  top: 12px;
+  top: 10px;
   right: 20px;
-
-  font-size: 25px;
+  font-size: 20px;
   color: var(--fit-red-neg);
 `;
 
@@ -371,4 +401,65 @@ const ModalCloseBtn = styled.div`
   cursor: pointer;
 `;
 
+const TagRankingItem = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 5px 10px;
+`;
+
+const ContentWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+`;
+const CategoryWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+`;
+const Category = styled.div<{ active: boolean }>`
+  width: 100%;
+  height: 100%;
+  padding: 10px 0px;
+  text-align: center;
+  color: ${props => (props.active ? '#198331' : '#000000')};
+  font-size: 20px;
+  font-weight: ${props => (props.active ? '600' : '400')};
+  font-family: NanumSquareR;
+  border-bottom: 1px solid black;
+
+  cursor: pointer;
+  &:hover {
+    font-weight: 600;
+  }
+
+  @media all and (max-width: 500px) {
+    font-size: 18px;
+  }
+  @media all and (max-width: 360px) {
+    font-size: 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+`;
+const ProfileContentLayout = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Scroll Shadow */
+  background-image: linear-gradient(to top, white, white), linear-gradient(to top, white, white),
+    linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));
+  background-position: bottom center, top center, bottom center, top center;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
+  background-attachment: local, local, scroll, scroll;
+`;
 export default TagDetailModal;

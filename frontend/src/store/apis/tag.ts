@@ -22,6 +22,7 @@ export type TagVisual = {
   id: string;
   name: string;
   color: string;
+  posts?: number;
 };
 
 export type getTagListResponseType = {
