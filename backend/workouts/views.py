@@ -270,7 +270,6 @@ def daily_log(request, year, month, specific_date):
         date=datetime(year, month, specific_date).date())
         
         req_data = json.loads(request.body.decode())
-        print(req_data)
         return_json = []
         if "image" in req_data:
             if len(daily_log_single) == 0:

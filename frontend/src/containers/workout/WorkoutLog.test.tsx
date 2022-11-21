@@ -48,7 +48,7 @@ describe('workout_log', () => {
 
   it('createWorkoutLog', () => {
     render(component);
-    const button = screen.getByText('완료');
+    const button = screen.getAllByText('완료')[0];
     fireEvent.click(button!);
     expect(mockDispatch).toHaveBeenCalled();
   });
@@ -93,7 +93,7 @@ describe('workout_log', () => {
     render(component);
     const button = screen.getByText('불러오기');
     fireEvent.click(button!);
-    expect(mockDispatch).toBeCalledTimes(2);
+    expect(mockDispatch).toBeCalledTimes(3);
   });
 
   it('memoOnClick', () => {

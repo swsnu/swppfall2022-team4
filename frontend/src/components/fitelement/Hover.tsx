@@ -31,7 +31,7 @@ export const Hover = (props: IProps) => {
     });
   }
 
-  const workout_type_list = (category: string) => (
+  const workout_type_list = (category: string, key: number) => (
     <WorkoutSingle>
       <WorkoutColor className={category} />
       {workouts_list.get(category) !== undefined && workouts_list.get(category)!.length > 1
@@ -43,7 +43,7 @@ export const Hover = (props: IProps) => {
   );
   return (
     <HoverWrapper>
-      <WorkoutList>{types.map(type_single => workout_type_list(type_single))}</WorkoutList>
+      <WorkoutList>{types.map((type_single, index) => workout_type_list(type_single, index))}</WorkoutList>
       <br /><hr /><br />
       {props.workouts?.length} 종류
     </HoverWrapper>

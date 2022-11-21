@@ -17,8 +17,8 @@ const user1: userType = {
 
 const fitelement1: groupApi.Fitelement = {
   type: 'goal',
-  workout_type: 'test',
-  category: 'test',
+  workout_type: '실외 걷기',
+  category: 'etc',
   weight: 20,
   rep: 10,
   set: 10,

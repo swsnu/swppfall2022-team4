@@ -100,14 +100,14 @@ export const initialState: PreloadedState<RootState> = {
   },
   workout_log: {
     workout_log: {
-      type: null,
-      workout_type: null,
+      type: 'log',
+      workout_type: '데드리프트',
       period: null,
-      category: null,
+      category: 'back',
       weight: null,
       rep: null,
       set: null,
-      time: null,
+      time: 20,
       date: null,
     },
     routine: [
@@ -121,13 +121,13 @@ export const initialState: PreloadedState<RootState> = {
           {
             data: {
               type: 'log',
-              workout_type: 'type',
+              workout_type: '데드리프트',
               period: null,
-              category: null,
+              category: 'back',
               weight: null,
               rep: null,
               set: null,
-              time: null,
+              time: 20,
               date: null,
             },
           },
@@ -146,13 +146,13 @@ export const initialState: PreloadedState<RootState> = {
       {
         data: {
           type: 'log',
-          workout_type: 'type',
+          workout_type: '데드리프트',
           period: null,
-          category: null,
+          category: 'back',
           weight: null,
           rep: null,
           set: null,
-          time: null,
+          time: 10,
           date: null,
         },
       },
