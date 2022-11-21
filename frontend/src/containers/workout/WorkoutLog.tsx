@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
+import { Hover } from 'components/fitelement/Hover';
 import { workoutLogActions } from 'store/slices/workout';
 import {
   getDailyLogRequestType,
@@ -298,6 +299,7 @@ const WorkoutLog = () => {
                   .fill(null)
                   .map((_, index) => {
                     const d = index - (startDay - 2);
+                    const opacity_value = d > 0 ? (d <= days[month] ? false : true) : true;
                     // {year}.{selected_month + 1}.{day}
                     let day_type = 'future_day';
                     if (year === selected_year && month === selected_month && d === selected_date) {
@@ -328,7 +330,12 @@ const WorkoutLog = () => {
                           clickDate(year, month, d);
                         }}
                       >
-                        <DayContent className={day_type}>{d > 0 ? (d <= days[month] ? d : '') : ''}</DayContent>
+                        <DayContent visibility={opacity_value} className={day_type}>
+                          {d > 0 ? (d <= days[month] ? d : '') : ''}
+                        </DayContent>
+                        <DayToolTip>
+                          <Hover workouts={calendarInfo[d - 1]?.workouts}/>
+                        </DayToolTip>
                       </Day>
                     );
                   })}
@@ -593,6 +600,7 @@ const Day = styled.div`
   width: 14.2%;
   height: 40px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
@@ -616,8 +624,56 @@ const Day = styled.div`
   }
 `;
 
-const DayContent = styled.div`
-  width: 40px;
+const DayToolTip = styled.div`
+  visibility: hidden;
+  background-color: #eef3fd;
+  border: black solid 1px;
+  border-radius: 5px;
+  color: black;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.25px;
+  padding: 5px 11px;
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  z-index: 100;
+  margin-top: 120px;
+
+  &::after{
+    border-color: white transparent;
+    border-style: solid;
+    border-width: 0 6px 8px 6.5px;
+    content: '';
+    display: block;
+    left: 50%;
+    margin-left: -6px;
+    position: absolute;
+    top: -7px;
+    width: 0;
+    z-index: 1;
+  }
+
+  &::before{
+    border-color: black transparent;
+    border-style: solid;
+    border-width: 0 6px 8px 6.5px;
+    content: '';
+    display: block;
+    left: 50%;
+    position: absolute;
+    margin-left: -6px;
+    top: -8.5px;
+    width: 0;
+    z-index: 0;
+  }
+`;
+
+const DayContent = styled.div<{ visibility: boolean }>`
+  visibility: ${props => (props.visibility ? 'hidden' : 'none')}
+  width: auto;
+  max-width: 40px;
+  min-width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
@@ -656,8 +712,12 @@ const DayContent = styled.div`
     font-weight: bold;
     color: #a9a9a9;
   }
-`;
 
+  &:hover + ${DayToolTip} {
+    visibility: visible;
+    background-color: #FFFFFF;
+  }
+`;
 const MemoWrapper = styled.div`
   width: 100%;
   height: 20%;
