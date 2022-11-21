@@ -635,10 +635,10 @@ const DayToolTip = styled.div`
   letter-spacing: -0.25px;
   padding: 5px 11px;
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 170px;
   z-index: 100;
-  margin-top: 120px;
+  margin-top: 220px;
 
   &::after{
     border-color: white transparent;
