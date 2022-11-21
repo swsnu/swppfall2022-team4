@@ -43,7 +43,7 @@ const GroupMembers = () => {
           id={me.id}
           image={me.image}
           username={me.username}
-          cert_days={7}
+          cert_days={me.cert_days}
           level={me.level}
           leader={member_status === 'group_leader' ? true : false}
           myself={user?.username === me.username ? true : false}

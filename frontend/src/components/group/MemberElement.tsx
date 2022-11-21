@@ -37,7 +37,7 @@ export const MemberElement = (props: IProps) => {
       <ProfileImage src={process.env.REACT_APP_API_IMAGE + props.image} alt="profile" />
       <MemberElementLineWrapper>
         <MemberElementLine style={{ fontWeight: '600' }}>{props.username}</MemberElementLine>
-        {/* <MemberElementLine>{props.cert_days}</MemberElementLine> */}
+        <MemberElementLine>Cert_days: {props.cert_days}</MemberElementLine>
         <MemberElementLine>Level: {props.level}</MemberElementLine>
       </MemberElementLineWrapper>
       {props.leader && !props.myself && (
