@@ -1,17 +1,13 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
-import { useNavigate } from 'react-router-dom';
-import { PostEditorLayout } from './PostEditorLayout';
-import { TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
+import { initialContent, PostContent, PostEditorLayout } from './PostEditorLayout';
 
 const PostCreate = () => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [selectedTags, setSelectedTags] = useState<TagVisual[]>([]);
-  const [primeTag, setPrimeTag] = useState<TagVisual | undefined>();
+  const [postContent, setPostContent] = useState<PostContent>(initialContent);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -33,27 +29,18 @@ const PostCreate = () => {
     if (user) {
       dispatch(
         postActions.createPost({
-          title: title,
-          content: content,
+          ...postContent,
           author_name: user.username,
-          tags: selectedTags,
-          prime_tag: primeTag,
         }),
       );
     }
   };
-  return PostEditorLayout(
-    title,
-    setTitle,
-    content,
-    setContent,
+  return PostEditorLayout({
+    postContent,
+    setPostContent,
     cancelOnClick,
     confirmOnClick,
-    selectedTags,
-    setSelectedTags,
-    primeTag,
-    setPrimeTag,
-  );
+  });
 };
 
 export default PostCreate;

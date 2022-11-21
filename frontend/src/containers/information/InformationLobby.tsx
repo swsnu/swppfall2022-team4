@@ -1,20 +1,53 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-// import { RootState } from 'index';
-import { postActions } from 'store/slices/post';
-import { rowCenterFlex } from 'components/post/layout';
+import { RowCenterFlex } from 'components/post/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { infoActions } from 'store/slices/information';
+import { RootState } from 'index';
+import NotFound from 'components/common/NotFound';
+import { TagBubbleCompact } from 'components/tag/tagbubble';
+import { ArticleItem } from 'containers/post/PostMain';
+import { useNavigate } from 'react-router-dom';
+import { Post } from 'store/apis/post';
+import { faImage } from '@fortawesome/free-regular-svg-icons';
+import { timeAgoFormat } from 'utils/datetime';
 // import { timeAgoFormat } from 'utils/datetime';
 
 interface IPropsSearchClear {
   isActive?: boolean;
 }
+interface InfoPageArticleIprops {
+  post: Post;
+}
 
 const InformationLobby = () => {
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { info } = useSelector(({ info }: RootState) => ({
+    info: info,
+  }));
+  useEffect(() => {
+    dispatch(infoActions.initializeInformation());
+  }, []);
+  const InfoPageArticleItem = ({ post }: InfoPageArticleIprops) => (
+    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
+      {post.prime_tag ? (
+        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
+      ) : (
+        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
+      )}
+      <span>
+        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
+        <span>[{post.comments_num}]</span>
+      </span>
+      <span>{post.author.username}</span>
+      <span>{post.like_num - post.dislike_num}</span>
+      <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
+    </ArticleItem>
+  );
   return (
     <PostPageWrapper>
       <PostContentWrapper>
@@ -22,11 +55,12 @@ const InformationLobby = () => {
           <SearchForm
             onSubmit={e => {
               e.preventDefault();
-              dispatch(
-                postActions.postSearch({
-                  search_keyword: search,
-                }),
-              );
+              if (info.contents?.basic.name !== search)
+                dispatch(
+                  infoActions.getInformation({
+                    information_name: search,
+                  }),
+                );
             }}
           >
             <SearchIcon>
@@ -41,31 +75,32 @@ const InformationLobby = () => {
               isActive={search !== ''}
               onClick={() => {
                 setSearch('');
-                dispatch(
-                  postActions.postSearch({
-                    search_keyword: '',
-                  }),
-                );
               }}
             >
               Clear
             </ClearSearchInput>
           </SearchForm>
         </TopElementWrapperWithoutPadding>
-        <SectionWrapper>
-          <SectionItemWrapper>
-            <span>1</span>
-          </SectionItemWrapper>
-          <SectionItemWrapper>
-            <span>2</span>
-          </SectionItemWrapper>
-          <SectionItemWrapper>
-            <span>3</span>
-          </SectionItemWrapper>
-          <SectionItemWrapper>
-            <span>4</span>
-          </SectionItemWrapper>
-        </SectionWrapper>
+
+        {info.error === 'NOTFOUND' && <NotFound />}
+        {info.error === 'NOTERROR' && (
+          <SectionWrapper>
+            <SectionItemWrapper>
+              <span>1</span>
+            </SectionItemWrapper>
+            <SectionItemWrapper>
+              <span>3</span>
+            </SectionItemWrapper>
+            <SectionItemWrapper>
+              {info.contents?.posts.map(post => (
+                <InfoPageArticleItem key={post.post_id} post={post} />
+              ))}
+            </SectionItemWrapper>
+            <SectionItemWrapper>
+              <span>4</span>
+            </SectionItemWrapper>
+          </SectionWrapper>
+        )}
       </PostContentWrapper>
     </PostPageWrapper>
   );
@@ -136,7 +171,7 @@ const ClearSearchInput = styled.span<IPropsSearchClear>`
     display: none;
   `}
 `;
-const SearchIcon = styled(rowCenterFlex)`
+const SearchIcon = styled(RowCenterFlex)`
   margin-left: 20px;
 `;
 

@@ -17,6 +17,7 @@ const simpleProfile = {
   exp: 0,
   level: 1,
   created: '2011-12-11',
+  login_method: 'email',
 };
 
 const mockNavigate = jest.fn();

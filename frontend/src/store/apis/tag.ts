@@ -13,6 +13,7 @@ export type Tag = {
 export type TagClass = {
   id: number;
   class_name: string;
+  class_type: string;
   color: string;
   tags: TagVisual[];
 };

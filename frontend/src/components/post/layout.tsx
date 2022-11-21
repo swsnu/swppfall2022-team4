@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import '../../styles/color.css';
 
 // Used in PostMain.tsx
-export const articleItemGrid = styled.div`
+export const ArticleItemGrid = styled.div`
   display: grid;
   grid-template-columns: 5fr 30fr 10fr 5fr 5fr;
   grid-template-rows: 1fr;
@@ -10,7 +9,7 @@ export const articleItemGrid = styled.div`
 `;
 
 // Used in PostEditorLayout.tsx, PostDetail.tsx
-export const rowCenterFlex = styled.div`
+export const RowCenterFlex = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -18,12 +17,12 @@ export const rowCenterFlex = styled.div`
 `;
 
 // Used in PostEditorLayout.tsx, PostMain.tsx, PostDetail.tsx
-export const columnFlex = styled.div`
+export const ColumnFlex = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-export const columnCenterFlex = styled.div`
+export const ColumnCenterFlex = styled.div`
   display: flex;
   flex-direction: column;
   /* justify-content: center; */

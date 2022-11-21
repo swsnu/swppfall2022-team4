@@ -9,6 +9,7 @@ class Post(AbstractTimeStampedModel):
 
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     title = models.CharField(max_length=60, null=False)
+
     content = models.TextField()
 
     liker = models.ManyToManyField(User, related_name="liked_posts", blank=True)
@@ -47,3 +48,10 @@ class Post(AbstractTimeStampedModel):
 
     class Meta:
         ordering = ("-created",)
+
+
+class PostImage(AbstractTimeStampedModel):
+    """Post Image Content Model definition"""
+
+    image = models.CharField(max_length=255, null=False)
+    post = models.ForeignKey(Post, related_name="images", on_delete=models.CASCADE)

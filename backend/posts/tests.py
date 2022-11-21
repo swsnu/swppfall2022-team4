@@ -94,6 +94,7 @@ class PostTestCase(TestCase):
                 'author_name': 'username',
                 'prime_tag': {'id': '1'},
                 'tags': [{'id': '1'}, {'id': '2'}],
+                'images': [],
                 'title': 'new by test',
                 'content': 'new by test..',
             },
@@ -134,6 +135,7 @@ class PostTestCase(TestCase):
                 'tags': [{'id': '1'}],
                 'title': 'mod by test22',
                 'content': 'mod by test22..',
+                'images': []
             },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken,
