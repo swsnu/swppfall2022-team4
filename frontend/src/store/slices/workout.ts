@@ -202,7 +202,6 @@ export const workoutLogSlice = createSlice({
     },
     getFitElementsType: state => {},
     getFitElementTypesSuccess: (state, { payload }) => {
-      console.log(payload);
       state.fitelement_types = payload;
     },
   },

@@ -4,6 +4,7 @@ from datetime import datetime, date
 from .models import FitElement, Routine, DailyLog, FitElementType
 import json
 from django.views.decorators.http import require_http_methods
+import calendar
 
 
 @require_http_methods(["POST"])
@@ -94,9 +95,7 @@ def get_calendar_info(request, year, month):
     GET: get fit elements for month calendar
     """
     if request.method == 'GET':
-        # req_data = json.loads(request.body.decode())
         user_id = request.GET.get('user_id')
-        # user_id = req_data['user_id']
 
         return_json = []
         this_month = datetime(year, month, 1).date()
@@ -106,7 +105,7 @@ def get_calendar_info(request, year, month):
             next_month = datetime(year, month + 1, 1).date()
         for i in range(1, 32):
             cal_dict = {"year": year, "month": month,
-                        "date": i, "workouts": []}
+                        "date": i, "workouts": [], "calories": 0}
             return_json.append(cal_dict)
         workouts_all = FitElement.objects.filter(
             date__gte=this_month, date__lt=next_month)
@@ -129,6 +128,16 @@ def get_calendar_info(request, year, month):
             }
             return_json[int(workout_dict['date'].day) -
                         1]['workouts'].append(workout_dict)
+
+        daily_logs = DailyLog.objects.filter(author_id=int(user_id))
+        
+        for i in range(1, calendar.monthrange(year, month)[1]):
+            daily_log_single = daily_logs.filter(date=datetime(year, month, i).date())
+            if len(daily_log_single) == 0:
+                return_json[i-1]['calories'] = 0
+            else:
+                return_json[i-1]['calories'] = daily_log_single[0].calories
+
         return JsonResponse(return_json, safe=False, status=200)
 
 

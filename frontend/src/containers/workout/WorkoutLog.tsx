@@ -13,6 +13,7 @@ import {
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
 } from 'store/apis/workout';
+import client from 'store/apis/client';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -226,6 +227,19 @@ const WorkoutLog = () => {
   }
 
   const days = isLeapYear(date.getFullYear()) ? DAYS_LEAP : DAYS;
+  const [image, setImage] = useState('profile_default.png');
+
+  const onChangeProfileImage = async (e: any) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+      const result = await client.post(process.env.REACT_APP_API_IMAGE_UPLOAD || '', formData);
+      setImage(result.data.title);
+    } catch (error) {
+      alert('이미지 업로드 오류');
+    }
+  };
 
   return (
     <Wrapper>
@@ -334,7 +348,7 @@ const WorkoutLog = () => {
                           {d > 0 ? (d <= days[month] ? d : '') : ''}
                         </DayContent>
                         <DayToolTip>
-                          <Hover workouts={calendarInfo[d - 1]?.workouts}/>
+                          <Hover workouts={calendarInfo[d - 1]?.workouts} />
                         </DayToolTip>
                       </Day>
                     );
@@ -475,7 +489,17 @@ const WorkoutLog = () => {
                   ))
                 )}
               </LogBody>
-              <LogFooter>{dailyLog.calories}</LogFooter>
+              <LogFooter>
+                {dailyLog.fit_element?.length}종목 / {dailyLog.calories} cal
+                <FileInput type="file" id="FileInput_Mypage" onChange={onChangeProfileImage} />
+                <WorkoutImage
+                  src={process.env.REACT_APP_API_IMAGE + image}
+                  alt="profile"
+                  onClick={() => {
+                    document.getElementById('FileInput_Mypage')?.click();
+                  }}
+                />
+              </LogFooter>
             </Frame>
           </LogWrapper>
         </RightWrapper>
@@ -496,6 +520,22 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: start;
   align-items: start;
+`;
+
+const WorkoutImage = styled.img`
+  width: 180px;
+  height: 180px;
+  border: 2px solid #727272;
+  border-radius: 30px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: border 0.15s linear;
+  &:hover {
+    border: 2px solid #000000;
+  }
+`;
+const FileInput = styled.input`
+  display: none;
 `;
 
 const InnerWrapper = styled.div`
@@ -640,7 +680,7 @@ const DayToolTip = styled.div`
   z-index: 100;
   margin-top: 220px;
 
-  &::after{
+  &::after {
     border-color: white transparent;
     border-style: solid;
     border-width: 0 6px 8px 6.5px;
@@ -654,7 +694,7 @@ const DayToolTip = styled.div`
     z-index: 1;
   }
 
-  &::before{
+  &::before {
     border-color: black transparent;
     border-style: solid;
     border-width: 0 6px 8px 6.5px;

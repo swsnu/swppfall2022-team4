@@ -93,6 +93,7 @@ export type calendarInfoResponse = {
   month: number;
   date: number;
   workouts: [];
+  calories: number;
 };
 
 export type getCalendarInfoResponseType = {
