@@ -2,6 +2,7 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 import 'styles/color.css';
+import { getContrastYIQ } from 'utils/color';
 
 interface IPropsTagBubble {
   color?: string;
@@ -43,6 +44,7 @@ export const TagBubbleWithFunc = styled.button<IPropsTagBubble>`
     color &&
     `
       background: ${color};
+      color: ${getContrastYIQ(color)}
     `}
 `;
 
@@ -58,6 +60,7 @@ export const TagBubble = styled.button<IPropsTagBubble>`
     color &&
     `
       background: ${color};
+      color: ${getContrastYIQ(color)}
     `}
   ${({ isPrime }) =>
     isPrime &&
@@ -79,5 +82,6 @@ export const TagBubbleCompact = styled.button<IPropsTagBubble>`
     color &&
     `
       background: ${color};
+      color: ${getContrastYIQ(color)}
     `}
 `;

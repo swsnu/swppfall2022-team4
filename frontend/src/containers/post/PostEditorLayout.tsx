@@ -11,6 +11,7 @@ import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn, RedSmallBtn } from 'component
 import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
 import { notificationSuccess } from 'utils/sendNotification';
 import { TagBubble, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
+import { getRandomHex } from 'utils/color';
 
 interface IPropsColorButton {
   color?: string;
@@ -28,11 +29,7 @@ const TITLE_CHAR_LIMIT = 60;
 const CONTENT_CHAR_LIMIT = 800;
 const CONTENT_IMAGE_LIMIT = 5;
 export const TAG_CLASS_LIMIT = 14;
-const TAG_NAME_LIMIT = 12;
-
-const getRandomColor = () => {
-  return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
-};
+export const TAG_NAME_LIMIT = 12;
 
 export interface PostContent {
   title: string;
@@ -81,7 +78,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     dispatch(tagActions.getTags());
   }, [tagUpdate]);
   useEffect(() => {
-    setTagRandColor(getRandomColor());
+    setTagRandColor(getRandomHex());
   }, []);
   useEffect(() => {
     if (tagCreate) {
@@ -183,7 +180,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
           <TagClassColorWrapper>
             <TagClassColorLabel>색상:</TagClassColorLabel>
             <ColorCircle color={tagRandColor}></ColorCircle>
-            <RandColorBtn data-testid="randColorDice" onClick={() => setTagRandColor(getRandomColor())}>
+            <RandColorBtn data-testid="randColorDice" onClick={() => setTagRandColor(getRandomHex())}>
               <FontAwesomeIcon size="xl" icon={faDice} />
             </RandColorBtn>
           </TagClassColorWrapper>

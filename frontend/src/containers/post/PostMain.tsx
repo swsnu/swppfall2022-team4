@@ -51,7 +51,7 @@ const PostMain = () => {
     }
   }, [tagModalOpen]);
 
-  const { postList, postSearch, maxPage, searchKeyword, recentCommentPost, popularTags, tagList } = useSelector(
+  const { postList, postSearch, maxPage, searchKeyword, recentCommentPost, popularTags } = useSelector(
     ({ post, tag }: RootState) => ({
       postList: post.postList.posts,
       postSearch: post.postSearch,
@@ -147,7 +147,9 @@ const PostMain = () => {
       <ArticleHeader />
       {postList ? (
         postList.map(post => {
-          return <ArticleItemDefault post={post} onClick={() => navigate(`/post/${post.post_id}`)} />;
+          return (
+            <ArticleItemDefault key={post.post_id} post={post} onClick={() => navigate(`/post/${post.post_id}`)} />
+          );
         })
       ) : (
         <LoadingWithoutMinHeight />
@@ -191,7 +193,6 @@ const PostMain = () => {
         onClose: TagDetailOnClose,
         modalRef,
         modalAnimRef,
-        tagList,
         selected,
         setSelected,
         dispatch,

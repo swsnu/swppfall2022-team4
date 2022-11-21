@@ -1,17 +1,7 @@
-import random
-
 from django.core.management import BaseCommand
 from tags.models import TagClass, Tag
 from informations.models import Information
-
-
-def get_random_color():
-    """
-    랜덤 색상 문자열을 생성합니다.
-    태그 색상을 임의로 생성하기 위한 함수입니다.
-    :return result: 생성된 색상 문자열
-    """
-    return f'hsl({360* random.random()},{25 + 70 * random.random()}%,{75 + 10 * random.random()}%)'
+from utils.get_random import get_random_color
 
 
 def get_tag_class_type(class_name):

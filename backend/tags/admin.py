@@ -10,6 +10,7 @@ class TagClassAdmin(admin.ModelAdmin):
         "pk",
         "class_name",
         "class_type",
+        "color",
         "created",
     )
 
