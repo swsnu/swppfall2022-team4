@@ -27,7 +27,7 @@ const GroupMembers = () => {
       dispatch(groupActions.stateRefresh());
     };
   }, []);
-  console.log(user);
+
   if (!memberList) return <Loading />;
   return (
     <Wrapper>
