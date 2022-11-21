@@ -19,6 +19,7 @@ export type getDailyLogResponseType = {
   memo: string;
   fitelements: List<getFitElementResponseType>;
   fit_elements: Array<any>;
+  image: string;
 };
 
 export type getFitElementRequestType = {
@@ -96,6 +97,14 @@ export type calendarInfoResponse = {
   calories: number;
 };
 
+export type editImageRequestType = {
+  year: number;
+  month: number;
+  specific_date: number;
+  user_id: number;
+  image: string;
+};
+
 export type getCalendarInfoResponseType = {
   fitelements: calendarInfoResponse[];
 };
@@ -149,6 +158,14 @@ export const getFitElement = async (payload: getFitElementRequestType) => {
 export const getDailyLog = async (payload: getDailyLogRequestType) => {
   const response = await client.get<getDailyLogResponseType>(
     `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`,
+  );
+  return response.data;
+};
+
+export const editImage = async (payload: editImageRequestType) => {
+  const response = await client.put<editImageRequestType>(
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`,
+    payload,
   );
   return response.data;
 };

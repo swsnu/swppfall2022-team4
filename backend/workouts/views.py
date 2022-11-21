@@ -223,6 +223,7 @@ def daily_log(request, year, month, specific_date):
                 'date': datetime(year, month, specific_date).date(),
                 'calories': 0,
                 'fitelements': [],
+                'image': ""
             }
             return JsonResponse(daily_log_dict_return, safe=False, status=200)
 
@@ -232,6 +233,7 @@ def daily_log(request, year, month, specific_date):
             'date': daily_log_single[0].date,
             'calories': daily_log_single[0].calories,
             'fitelements': list(daily_log_single[0].fit_element.values_list('id', flat=True)),
+            'image': daily_log_single[0].image
         }
 
         return JsonResponse(daily_log_dict_return, safe=False, status=200)
@@ -257,10 +259,27 @@ def daily_log(request, year, month, specific_date):
         user_id = request.GET.get('user_id')
         daily_logs = DailyLog.objects.filter(author_id=int(user_id))
         daily_log_single = daily_logs.filter(
-            date=datetime(year, month, specific_date).date())
-
+        date=datetime(year, month, specific_date).date())
+        
         req_data = json.loads(request.body.decode())
+        print(req_data)
         return_json = []
+        if "image" in req_data:
+            if len(daily_log_single) == 0:
+                new_daily_log = DailyLog(
+                    author_id=req_data["user_id"],
+                    image=req_data["image"],
+                    date=str(year) + '-' + str(month) +
+                    '-' + str(specific_date),
+                    calories=0
+                )
+                new_daily_log.save()
+                return HttpResponse(status=201)
+            image = req_data["image"]
+            daily_log_single[0].image = image
+            daily_log_single[0].save()
+            return HttpResponse(status=201)
+
         if "memo" in req_data:
             if len(daily_log_single) == 0:
                 new_daily_log = DailyLog(

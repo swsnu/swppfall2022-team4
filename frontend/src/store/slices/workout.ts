@@ -30,6 +30,7 @@ export interface WorkoutLogState {
     memo: string | null;
     fit_element: number[] | null;
     calories: number;
+    image: string | null;
   };
   daily_fit_elements: Array<any>;
   workoutCreate: {
@@ -77,6 +78,7 @@ export const initialState: WorkoutLogState = {
     memo: null,
     fit_element: null,
     calories: 0,
+    image: null
   },
   daily_fit_elements: [],
   workoutCreate: {
@@ -150,11 +152,15 @@ export const workoutLogSlice = createSlice({
       state.daily_log.fit_element = payload.fitelements;
       state.daily_log.date = payload.date;
       state.daily_log.calories = payload.calories;
+      state.daily_log.image = payload.image;
     },
     getDailyFitElements: (state, { payload }) => {
       // Empty function
     },
     editMemo: (state, action: PayloadAction<workoutLogAPI.editMemoRequestType>) => {
+      // Empty function
+    },
+    editImage: (state, action: PayloadAction<workoutLogAPI.editImageRequestType>) => {
       // Empty function
     },
     getCalendarInfo: (state, action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) => {
@@ -253,6 +259,13 @@ function* editMemoLogSaga(action: PayloadAction<workoutLogAPI.editMemoRequestTyp
   } catch (error) {}
 }
 
+function* editImageSaga(action: PayloadAction<workoutLogAPI.editImageRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.editImage, action.payload);
+  } catch (error) {}
+}
+
+
 function* getCalendarInfoSaga(action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getCalendarInfo, action.payload);
@@ -312,6 +325,7 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.createDailyLog, createDailyLogSaga);
   yield takeLatest(workoutLogActions.createWorkoutLog, createWorkoutLogSaga);
   yield takeLatest(workoutLogActions.editMemo, editMemoLogSaga);
+  yield takeLatest(workoutLogActions.editImage, editImageSaga);
   yield takeLatest(workoutLogActions.getCalendarInfo, getCalendarInfoSaga);
   yield takeLatest(workoutLogActions.getRoutine, getRoutineSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutine, getSpecificRoutineSaga);

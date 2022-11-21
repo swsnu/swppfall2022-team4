@@ -12,6 +12,7 @@ import {
   editMemoRequestType,
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
+  editImageRequestType
 } from 'store/apis/workout';
 import client from 'store/apis/client';
 
@@ -58,6 +59,7 @@ const WorkoutLog = () => {
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
   const [memo, setMemo] = useState('');
+  const [image, setImage] = useState('profile_default.png');
   const [isCopy, setIsCopy] = useState<boolean>(false);
   const [copy_date, setCopyDate] = useState<Date>(new Date());
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
@@ -186,12 +188,24 @@ const WorkoutLog = () => {
     }
   };
 
+  const imageOnClick = () => {
+    const editImageConfig: editImageRequestType = {
+      user_id: 1,
+      image: image,
+      year: year,
+      month: month + 1,
+      specific_date: day,
+    };
+    dispatch(workoutLogActions.editImage(editImageConfig));
+  }
+
   const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
   const calendarInfo = useSelector((rootState: RootState) => rootState.workout_log.calendar_info);
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
+  console.log(dailyLog)
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
@@ -200,6 +214,7 @@ const WorkoutLog = () => {
 
   useEffect(() => {
     setMemo(dailyLog.memo || '여기를 클릭 후 메모를 추가해 보세요.');
+    setImage(dailyLog.image || 'profile_default.png');
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
 
@@ -227,7 +242,6 @@ const WorkoutLog = () => {
   }
 
   const days = isLeapYear(date.getFullYear()) ? DAYS_LEAP : DAYS;
-  const [image, setImage] = useState('profile_default.png');
 
   const onChangeProfileImage = async (e: any) => {
     const file = e.target.files[0];
@@ -491,14 +505,15 @@ const WorkoutLog = () => {
               </LogBody>
               <LogFooter>
                 {dailyLog.fit_element?.length}종목 / {dailyLog.calories} cal
-                <FileInput type="file" id="FileInput_Mypage" onChange={onChangeProfileImage} />
+                <FileInput type="file" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
                 <WorkoutImage
                   src={process.env.REACT_APP_API_IMAGE + image}
-                  alt="profile"
+                  alt="workout_image"
                   onClick={() => {
-                    document.getElementById('FileInput_Mypage')?.click();
+                    document.getElementById('FileInput_DailyLog')?.click();
                   }}
                 />
+                <AnyButton onClick={() => imageOnClick()}>이미지저장</AnyButton>
               </LogFooter>
             </Frame>
           </LogWrapper>

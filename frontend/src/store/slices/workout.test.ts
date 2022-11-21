@@ -74,6 +74,7 @@ const getDailyLogResponse: workoutAPI.getDailyLogResponseType = {
       date: null,
     },
   ],
+  image: ""
 };
 
 const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {

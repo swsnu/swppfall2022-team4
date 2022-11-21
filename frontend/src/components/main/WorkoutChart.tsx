@@ -53,7 +53,7 @@ export const WorkoutChart = (props: IProps) => {
           size: 24,
           family: 'IBMPlexSansThaiLooped',
         },
-        text: `${props.info![0].date.substr(0,2)}월 칼로리 차트`
+        text: `이번달 칼로리 차트`
       },
     },
   };

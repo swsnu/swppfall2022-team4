@@ -30,6 +30,7 @@ class DailyLog(models.Model):
     memo = models.TextField(null=True)
     fit_element = models.ManyToManyField(FitElement, blank=True)
     calories = models.IntegerField(default=0, null=True)
+    image = models.CharField(max_length=255, null=True)
 
 
 class Routine(models.Model):
