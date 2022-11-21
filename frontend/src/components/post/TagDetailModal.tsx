@@ -6,7 +6,10 @@ import { CSSTransition } from 'react-transition-group';
 import { TagClass, TagVisual } from 'store/apis/tag';
 import { RowCenterFlex } from './layout';
 import { TagBubble } from 'components/tag/tagbubble';
-import React from 'react';
+import React, { Dispatch, useState } from 'react';
+import { TAG_CLASS_LIMIT } from 'containers/post/PostEditorLayout';
+import { AnyAction } from 'redux';
+import { tagActions } from 'store/slices/tag';
 
 export interface TagDetailModalIprops {
   isActive: boolean;
@@ -16,6 +19,11 @@ export interface TagDetailModalIprops {
   tagList: TagClass[] | null;
   selected: TagVisual[];
   setSelected: (value: React.SetStateAction<TagVisual[]>) => void;
+  dispatch: Dispatch<AnyAction>;
+}
+
+interface IPropsCharNum {
+  isFull: boolean;
 }
 
 const UNSELECTED = '#dbdbdb';
@@ -28,7 +36,10 @@ const TagDetailModal = ({
   tagList,
   selected,
   setSelected,
+  dispatch,
 }: TagDetailModalIprops) => {
+  const [createCategory, setCreateCategory] = useState<number>(-1);
+  const [newTagInput, setNewTagInput] = useState<string>('');
   const filterOnClick = (tag: TagVisual) => {
     if (selected.filter(item => item.id == tag.id).length === 0) {
       setSelected(state => {
@@ -81,10 +92,47 @@ const TagDetailModal = ({
                       {tag.name}
                     </TagBubble>
                   ))}
-                  {selected.length == 0 && <TagBubble color={tagClass.color}>눌러서 추가</TagBubble>}
+                  {selected.length == 0 && (
+                    <TagBubble color={tagClass.color} onClick={() => setCreateCategory(tagClass.id)}>
+                      {createCategory === tagClass.id ? (
+                        <NewTagForm
+                          onSubmit={e => {
+                            e.preventDefault();
+                            dispatch(
+                              tagActions.createTag({
+                                name: newTagInput,
+                                classId: tagClass.id,
+                              }),
+                            );
+                            dispatch(tagActions.getTags());
+                            setNewTagInput('');
+                          }}
+                        >
+                          <input
+                            value={newTagInput}
+                            onChange={e => {
+                              const charInput = e.target.value;
+                              if (charInput.length <= TAG_CLASS_LIMIT) setNewTagInput(charInput);
+                            }}
+                          />
+                          <TagCharNum isFull={newTagInput.length >= TAG_CLASS_LIMIT}>
+                            {newTagInput.length} / {TAG_CLASS_LIMIT}
+                          </TagCharNum>
+                        </NewTagForm>
+                      ) : (
+                        '눌러서 추가'
+                      )}
+                    </TagBubble>
+                  )}
                 </div>
               </TagClassSection>
             ))}
+            <TagClassSection>
+              <div>
+                <h1>새로운 카테고리</h1>
+                <div style={{ backgroundColor: '#000000' }}></div>
+              </div>
+            </TagClassSection>
           </Divdiv>
         </ModalContent>
       </ModalOverlay>
@@ -92,6 +140,30 @@ const TagDetailModal = ({
   );
   return Modal;
 };
+
+const NewTagForm = styled.form`
+  display: flex;
+  input {
+    font-size: 12px;
+    width: 150px;
+    overflow-x: visible;
+    background: none;
+    border: none;
+    margin-right: 0px;
+  }
+`;
+
+const TagCharNum = styled.span<IPropsCharNum>`
+  margin-left: 5px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
+`;
 
 export const ModalOverlay = styled.div`
   width: 100%;
@@ -150,6 +222,7 @@ const TagClassSection = styled.div`
     overflow-x: auto;
   }
 `;
+
 const ModalContent = styled.div`
   width: fit-content;
   height: fit-content;
@@ -182,6 +255,7 @@ const ModalTitleWrapper = styled(RowCenterFlex)`
 const ModalTitle = styled.span`
   font-size: 24px;
 `;
+
 const ModalExitWrapper = styled.div`
   position: absolute;
   top: 12px;

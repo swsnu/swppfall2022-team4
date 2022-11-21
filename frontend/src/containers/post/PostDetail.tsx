@@ -368,7 +368,6 @@ const PostDetail = () => {
                   modalRef: commentModalRef,
                   pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
                   userInfo: comment.author,
-                  // commentId: comment.comment_id,
                   navigate,
                 })}
               </CommentWritterAvatar>

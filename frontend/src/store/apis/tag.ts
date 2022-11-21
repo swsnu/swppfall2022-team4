@@ -46,7 +46,7 @@ export const createTag = async (payload: createTagRequestType) => {
 
 export type createTagRequestType = {
   name: string;
-  classId: string;
+  classId: number;
 };
 
 export const searchTag = async (payload: searchTagRequestType) => {

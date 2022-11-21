@@ -13,6 +13,7 @@ jest.mock('react-transition-group', () => ({
 beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
+const mockDispatch = jest.fn();
 const setup = () => {
   render(
     <TagDetailModal
@@ -23,6 +24,7 @@ const setup = () => {
       tagList={[]}
       selected={[]}
       setSelected={jest.fn()}
+      dispatch={mockDispatch}
     />,
   );
 };

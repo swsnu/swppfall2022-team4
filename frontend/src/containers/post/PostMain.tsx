@@ -194,6 +194,7 @@ const PostMain = () => {
         tagList,
         selected,
         setSelected,
+        dispatch,
       })}
     </PostPageWrapper>
   );

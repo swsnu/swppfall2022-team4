@@ -23,7 +23,7 @@ const createTagClassRequest: tagAPI.createTagClassRequestType = {
 };
 const createTagRequest: tagAPI.createTagRequestType = {
   name: 'new category',
-  classId: '1',
+  classId: 1,
 };
 const searchTagRequest: tagAPI.searchTagRequestType = {
   class_name: 'category1',

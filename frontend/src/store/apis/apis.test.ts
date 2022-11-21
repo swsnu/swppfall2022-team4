@@ -105,7 +105,7 @@ const createTagClassRequest: tagAPI.createTagClassRequestType = {
 };
 const createTagRequest: tagAPI.createTagRequestType = {
   name: 'class',
-  classId: '1',
+  classId: 1,
 };
 const searchTagRequest: tagAPI.searchTagRequestType = {
   class_name: 'class',

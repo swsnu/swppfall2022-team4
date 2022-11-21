@@ -253,4 +253,5 @@ const YoutubeTitle = styled.span`
   text-overflow: ellipsis;
   white-space: normal;
 `;
+
 export default InformationDetail;

@@ -27,7 +27,7 @@ const SEARCH_OPTION = '$SEARCH$';
 const TITLE_CHAR_LIMIT = 60;
 const CONTENT_CHAR_LIMIT = 800;
 const CONTENT_IMAGE_LIMIT = 5;
-const TAG_CLASS_LIMIT = 20;
+export const TAG_CLASS_LIMIT = 14;
 const TAG_NAME_LIMIT = 12;
 
 const getRandomColor = () => {
@@ -295,7 +295,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                   dispatch(
                     tagActions.createTag({
                       name: tagInput,
-                      classId: (currentTagClass as TagClass).id.toString(),
+                      classId: (currentTagClass as TagClass).id,
                     }),
                   );
 
