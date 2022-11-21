@@ -179,3 +179,4 @@ dump.rdb
 media/*.jpeg
 media/*.png
 !media/profile_default.png
+!media/default-upload-image.png

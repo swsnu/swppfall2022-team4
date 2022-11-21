@@ -59,7 +59,7 @@ const WorkoutLog = () => {
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
   const [memo, setMemo] = useState('');
-  const [image, setImage] = useState('profile_default.png');
+  const [image, setImage] = useState('default-upload-image.png');
   const [isCopy, setIsCopy] = useState<boolean>(false);
   const [copy_date, setCopyDate] = useState<Date>(new Date());
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
@@ -214,7 +214,7 @@ const WorkoutLog = () => {
 
   useEffect(() => {
     setMemo(dailyLog.memo || '여기를 클릭 후 메모를 추가해 보세요.');
-    setImage(dailyLog.image || 'profile_default.png');
+    setImage(dailyLog.image || 'default-upload-image.png');
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
 
