@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as infoAPI from 'store/apis/information';
 import { Post } from 'store/apis/post';
+import { notificationInfo } from 'utils/sendNotification';
 
 interface InformationState {
   contents: {
@@ -45,6 +46,7 @@ export const informationSlice = createSlice({
     getInformationFailure: (state, { payload }) => {
       if (payload?.response?.status === 404) {
         state.error = ERROR_STATE.NOT_FOUND;
+        notificationInfo('Info', '검색 결과가 없어요.');
       } else {
         state.error = ERROR_STATE.ETC;
       }

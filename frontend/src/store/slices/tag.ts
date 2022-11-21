@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as tagAPI from 'store/apis/tag';
+import { notificationInfo, notificationSuccess } from 'utils/sendNotification';
 
 interface TagState {
   tagList: tagAPI.TagClass[] | null;
@@ -41,6 +42,7 @@ export const tagSlice = createSlice({
     },
     createTagClassSuccess: (state, { payload }) => {
       //create success
+      notificationSuccess('Tag', '태그 카테고리 생성에 성공했어요!');
     },
     createTagClassFailure: (state, { payload }) => {
       //create failure
@@ -52,6 +54,7 @@ export const tagSlice = createSlice({
     createTagSuccess: (state, { payload }) => {
       //create success
       state.tagCreate = payload.tags;
+      notificationSuccess('Tag', '태그 생성에 성공했어요!');
     },
     createTagFailure: (state, { payload }) => {
       //create failure
@@ -61,6 +64,7 @@ export const tagSlice = createSlice({
     },
     searchTagSuccess: (state, { payload }) => {
       state.tagSearch = payload.tags;
+      if (state.tagSearch?.length == 0) notificationInfo('Tag', '검색 결과가 없어요.');
     },
     searchTagFailure: (state, { payload }) => {
       //search failure

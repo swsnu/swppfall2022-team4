@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as postAPI from 'store/apis/post';
 import * as commentAPI from 'store/apis/comment';
-import { notificationFailure, notificationSuccess } from 'utils/sendNotification';
+import { notificationFailure, notificationInfo, notificationSuccess } from 'utils/sendNotification';
 
 interface PostState {
   postList: {
@@ -92,6 +92,8 @@ export const postSlice = createSlice({
       state.postList.pageNum = payload.page;
       state.postList.pageSize = payload.page_size;
       state.postList.pageTotal = payload.page_total;
+      if (state.postSearch !== '' && state.postList.posts?.length === 0)
+        notificationInfo('Post', '검색 결과가 없어요.');
     },
     getPostsFailure: (state, { payload }) => {
       state.postList.error = payload;
@@ -177,6 +179,7 @@ export const postSlice = createSlice({
     createCommentFailure: (state, { payload }) => {
       notificationFailure('Comment', '댓글 작성에 실패했어요.');
     },
+    // editComment ------------------------------------------------------------------------
     editComment: (state, action: PayloadAction<commentAPI.editCommentRequestType>) => {
       //edit!
     },
@@ -186,6 +189,7 @@ export const postSlice = createSlice({
     editCommentFailure: (state, { payload }) => {
       notificationFailure('Comment', '댓글 수정에 실패했어요.');
     },
+    // deleteComment ------------------------------------------------------------------------
     deleteComment: (state, action: PayloadAction<commentAPI.commentIdentifyingRequestType>) => {
       //edit!
     },
@@ -195,11 +199,11 @@ export const postSlice = createSlice({
     deleteCommentFailure: (state, { payload }) => {
       notificationFailure('Comment', '댓글 삭제에 실패했어요.');
     },
-    // postSearch ------------------------------------------------------------------------
+    // postSearch ---------------------------------------------------------------------------
     postSearch: (state, action: PayloadAction<postAPI.postSearchRequestType>) => {
       state.postSearch = action.payload.search_keyword;
     },
-    // utils ------------------------------------------------------------------------
+    // utils --------------------------------------------------------------------------------
     stateRefresh: state => {
       state.postCreate.status = false;
       state.postEdit = false;
