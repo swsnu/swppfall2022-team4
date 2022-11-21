@@ -80,12 +80,28 @@ const GroupDetail = () => {
           <GroupNumber>{`인원수: ${group_detail.member_number}명`}</GroupNumber>
         )}
         {group_detail.address ? (
-          <GroupNumber>{`장소: ${group_detail.address}`}</GroupNumber>
+          <GroupPlace>{`장소: ${group_detail.address}`}</GroupPlace>
         ) : (
-          <GroupNumber>{`장소: 장소 없음`}</GroupNumber>
+          <GroupPlace>{`장소: 장소 없음`}</GroupPlace>
         )}
       </GroupDetailHeader>
-
+      <div style={{ display: 'flex', gap: '15px', paddingLeft: '60%', paddingTop: '15px' }}>
+        {member_status === 'group_leader' && (
+          <div style={{ display: 'flex', gap: '15px' }}>
+            <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <Button1 content="Delete" clicked={() => dispatch(groupActions.deleteGroup(group_id))} />
+          </div>
+        )}
+        {member_status === 'group_member' && (
+          <div style={{ display: 'flex', gap: '15px' }}>
+            <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <Button1 content="Leave" clicked={exitOnClick} />
+          </div>
+        )}
+        {member_status === 'not_member' && <Button1 content="Join" clicked={joinOnClick} />}
+      </div>
       <GroupAboutWrapper>
         <GroupAboutText>About</GroupAboutText>
         <ProfileImage src={process.env.REACT_APP_API_IMAGE + group_detail.group_leader.image} alt="profile" />
@@ -136,21 +152,6 @@ const GroupDetail = () => {
           />
         ))}
       </GroupDetailWrapper>
-
-      {/* TODO: Figma처럼 탭 분리 */}
-      {member_status === 'group_leader' && (
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
-          <Button1 content="Delete" clicked={() => dispatch(groupActions.deleteGroup(group_id))} />
-        </div>
-      )}
-      {member_status === 'group_member' && (
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
-          <Button1 content="Leave" clicked={exitOnClick} />
-        </div>
-      )}
-      {member_status === 'not_member' && <Button1 content="Join" clicked={joinOnClick} />}
     </Wrapper>
   );
 };
@@ -168,7 +169,7 @@ const Wrapper = styled.div`
 
 const GroupDetailHeader = styled.div`
   width: 100%;
-  height: 225px;
+  height: 245px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -189,6 +190,13 @@ const GroupDate = styled.div`
 const GroupNumber = styled.div`
   font-size: 20px;
   font-family: 'Noto Sans KR', sans-serif;
+  margin-bottom: 20px;
+`;
+
+const GroupPlace = styled.div`
+  font-size: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  margin-bottom: 20px;
 `;
 
 const GroupAboutWrapper = styled.div`
