@@ -2,10 +2,10 @@ import json
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from json.decoder import JSONDecodeError
-from .models import Group
+from .models import Group, GroupCert
 from users.models import User
 from workouts.models import FitElement
-
+from datetime import datetime, date
 
 @require_http_methods(['GET', 'POST'])
 def general_group(request):
@@ -132,8 +132,17 @@ def group_members(request, group_id):
             gr_obj = Group.objects.get(id=int(group_id))
             if not gr_obj.members.filter(username=request.user.username):
                 return HttpResponse(status=403)
-            member_list = list(gr_obj.members.values('id', 'username', 'image', 'level'))
-            return JsonResponse({"members": member_list}, safe=False)
+            result = []
+            for i in gr_obj.members.all():
+                cert_days = len(GroupCert.objects.filter(member=i.id));
+                result.append({
+                    "id": i.id,
+                    "username": i.username,
+                    "image": i.image,
+                    "level": i.level,
+                    "cert_days": cert_days,
+                })
+            return JsonResponse({"members": result}, safe=False)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
         except Exception:
@@ -215,3 +224,55 @@ def group_leader_change(request, group_id):
         return HttpResponseBadRequest()
     except Exception:
         return HttpResponseBadRequest()
+
+@require_http_methods(["GET", "POST", "DELETE"])
+def group_cert(request, group_id, year, month, specific_date):
+    """
+    GET : Get specific day's group certs
+    POST : Create specific day's group cert
+    DELETE : Delete specific day's group cert(a fitelement)
+    """
+    if request.method == "GET":
+        certs = GroupCert.objects.filter(group=group_id).filter(date=datetime(year, month, specific_date).date())
+        if len(certs) == 0:
+            return JsonResponse({"all_certs": []}, status=200)
+        else:
+            result = []
+            for c in certs:
+                result.append({
+                    "member": {
+                        "username": c.member.username,
+                        "nickname": c.member.nickname,
+                        "image": c.member.image
+                    },
+                    "certs": list(c.fit_element.values())
+                })
+            response_dict = {
+                "all_certs": result
+            }
+        return JsonResponse(response_dict, status=200)
+    elif request.method == "POST":
+        req_data = json.loads(request.body.decode())
+        gr_obj = Group.objects.get(id=int(group_id))
+        fit = gr_obj.goal.get(id=req_data["fitelement_id"])
+
+        cert1 = GroupCert.objects.filter(member=request.user.id)
+        cert2 = cert1.filter(date=datetime(year, month, specific_date).date())
+        cert3 = cert2.filter(group=group_id)
+
+        if len(cert3) != 0:
+            cert4 = GroupCert.objects.filter(member=request.user.id)
+            cert5 = cert4.filter(date=datetime(year, month, specific_date).date())
+            cert6 = cert5.get(group=group_id)
+            cert6.fit_element.add(fit)
+            cert6.save()
+        else:
+            cert = GroupCert(
+                group=gr_obj,
+                member=request.user,
+                date=datetime(year, month, specific_date).date()
+            )
+            cert.save()
+            cert.fit_element.add(fit)
+            cert.save()
+        return HttpResponse(status=204)

@@ -21,3 +21,10 @@ class Group(models.Model):
     address = models.CharField(max_length = 30, null = True)
     class Meta:
         ordering = ("-id",)
+
+class GroupCert(models.Model):
+    """ Group Certification definition """
+    member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='group_cert')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_cert')
+    date = models.DateField(null=False)
+    fit_element = models.ManyToManyField(FitElement, blank=True)

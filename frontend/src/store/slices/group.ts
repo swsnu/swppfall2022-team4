@@ -30,6 +30,10 @@ interface GroupState {
     members: groupAPI.Member[] | null;
     error: AxiosError | null;
   };
+  groupCerts: {
+    all_certs: groupAPI.MemberCert[] | null;
+    error: AxiosError | null;
+  };
 }
 
 export const initialState: GroupState = {
@@ -56,6 +60,10 @@ export const initialState: GroupState = {
   },
   groupMembers: {
     members: [],
+    error: null,
+  },
+  groupCerts: {
+    all_certs: [],
     error: null,
   },
 };
@@ -179,6 +187,26 @@ export const groupSlice = createSlice({
       state.groupAction.error = payload;
       alert(payload.response?.data.message);
     },
+    getCerts: (state, action: PayloadAction<groupAPI.getCertsRequestType>) => {
+      state.groupCerts.all_certs = null;
+      state.groupCerts.error = null;
+    },
+    getCertsSuccess: (state, { payload }) => {
+      state.groupCerts.all_certs = payload.all_certs;
+      state.groupCerts.error = null;
+    },
+    getCertsFailure: (state, { payload }) => {
+      state.groupCerts.error = payload;
+    },
+    createCert: (state, action: PayloadAction<groupAPI.createCertRequestType>) => {
+      console.log('createCert');
+    },
+    createCertSuccess: (state, { payload }) => {
+      console.log('cert success');
+    },
+    createCertFailure: (state, { payload }) => {
+      console.log('cert fail');
+    },
   },
 });
 export const groupActions = groupSlice.actions;
@@ -239,7 +267,6 @@ function* joinGroupSaga(action: PayloadAction<string>) {
     yield put(groupActions.joinGroupFailure(error));
   }
 }
-
 function* exitGroupSaga(action: PayloadAction<string>) {
   try {
     yield call(groupAPI.exitGroup, action.payload);
@@ -248,13 +275,28 @@ function* exitGroupSaga(action: PayloadAction<string>) {
     yield put(groupActions.exitGroupFailure(error));
   }
 }
-
 function* leaderChangeSaga(action: PayloadAction<groupAPI.leaderChangeRequestType>) {
   try {
     yield call(groupAPI.leaderChange, action.payload);
     yield put(groupActions.exitGroupSuccess());
   } catch (error) {
     yield put(groupActions.exitGroupFailure(error));
+  }
+}
+function* createCertSaga(action: PayloadAction<groupAPI.createCertRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(groupAPI.createCert, action.payload);
+    yield put(groupActions.createCertSuccess(response));
+  } catch (error) {
+    yield put(groupActions.createCertFailure(error));
+  }
+}
+function* getCertsSaga(action: PayloadAction<groupAPI.getCertsRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(groupAPI.getCerts, action.payload);
+    yield put(groupActions.getCertsSuccess(response));
+  } catch (error) {
+    yield put(groupActions.getCertsFailure(error));
   }
 }
 
@@ -268,4 +310,6 @@ export default function* groupSaga() {
   yield takeLatest(groupActions.joinGroup, joinGroupSaga);
   yield takeLatest(groupActions.exitGroup, exitGroupSaga);
   yield takeLatest(groupActions.leaderChange, leaderChangeSaga);
+  yield takeLatest(groupActions.createCert, createCertSaga);
+  yield takeLatest(groupActions.getCerts, getCertsSaga);
 }

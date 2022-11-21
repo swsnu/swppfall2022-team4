@@ -33,6 +33,7 @@ import GroupList from 'containers/group/GroupList';
 import GroupDetail from 'containers/group/GroupDetail';
 import GroupCreate from 'containers/group/GroupCreate';
 import GroupMembers from 'containers/group/GroupMembers';
+import GroupCert from 'containers/group/GroupCert';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -149,6 +150,7 @@ const InsideComponent = () => {
                 <Route path="detail/:group_id" element={<GroupDetail />} />
                 <Route path="detail/:group_id/member" element={<GroupMembers />} />
                 <Route path="create" element={<GroupCreate />} />
+                <Route path="detail/:group_id/cert" element={<GroupCert />} />
               </Route>
 
               <Route path="information" element={<InformationLobby />} />

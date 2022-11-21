@@ -39,6 +39,21 @@ export const leaderChange = async (payload: leaderChangeRequestType) => {
   return response.data;
 };
 
+export const getCerts = async (payload: getCertsRequestType) => {
+  const response = await client.get<getCertsResponseType>(`
+  /api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`);
+  return response.data;
+};
+
+export const createCert = async (payload: createCertRequestType) => {
+  const response = await client.post(
+    `
+    /api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`,
+    payload,
+  );
+  return response.data;
+};
+
 export type Group = {
   id: number;
   group_name: string;
@@ -52,6 +67,7 @@ export type Group = {
 };
 
 export type Fitelement = {
+  id: number;
   type: string;
   workout_type: string;
   category: string;
@@ -65,7 +81,17 @@ export type Member = {
   id: number;
   username: string;
   image: string;
+  cert_days: number;
   level: number;
+};
+
+export type MemberCert = {
+  member: {
+    username: string;
+    nickname: string;
+    image: string;
+  };
+  certs: Fitelement[];
 };
 
 export type getGroupsResponseType = {
@@ -117,4 +143,23 @@ export type getGroupMembersResponseType = {
 export type leaderChangeRequestType = {
   group_id: string;
   username: string;
+};
+
+export type createCertRequestType = {
+  group_id: string;
+  year: number;
+  month: number;
+  specific_date: number;
+  fitelement_id: number;
+};
+
+export type getCertsRequestType = {
+  group_id: string;
+  year: number;
+  month: number;
+  specific_date: number;
+};
+
+export type getCertsResponseType = {
+  all_certs: MemberCert[];
 };
