@@ -9,6 +9,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer } from 'store';
 
 import { Store } from 'react-notifications-component';
+
 beforeEach(() => {
   Store.addNotification = jest.fn();
 });
@@ -112,7 +113,7 @@ export const simpleComments: commentAPI.Comment[] = [
 const getPostsRequest: postAPI.getPostsRequestType = {
   pageNum: 1,
   pageSize: 15,
-  searchKeyword: '',
+  searchKeyword: 'search',
   tags: [],
 };
 const createPostRequest: postAPI.createPostRequestType = {
@@ -169,6 +170,12 @@ const getPostsResponse: postAPI.getPostsResponseType = {
   page_size: 15,
   page_total: 7,
 };
+const getPostsEmptyResponse: postAPI.getPostsResponseType = {
+  posts: [],
+  page: 2,
+  page_size: 15,
+  page_total: 7,
+};
 const getRecentCommentsResponse = {
   comments: simpleComments,
 };
@@ -216,6 +223,13 @@ describe('slices - posts', () => {
         { ...simpleComments[0], replyActive: false },
         { ...simpleComments[1], editActive: false },
       ]);
+    });
+    test('search - getPosts empty', () => {
+      const store = configureStore({
+        reducer: rootReducer,
+      });
+      store.dispatch(postActions.postSearch({ search_keyword: 'key' }));
+      store.dispatch(postActions.getPostsSuccess(getPostsEmptyResponse));
     });
     test('getPosts', () => {
       return expectSaga(postSaga)

@@ -24,6 +24,11 @@ const testTag: tagAPI.TagVisual = {
   name: 'workout',
   color: '#ffffff',
 };
+const testTag2: tagAPI.TagVisual = {
+  id: '2',
+  name: 'what!',
+  color: '#000000',
+};
 // User dummy.
 const signupRequest = {
   username: testUsername,
@@ -54,6 +59,12 @@ const searchPostsRequest: postAPI.getPostsRequestType = {
   pageSize: 15,
   searchKeyword: 'test',
   tags: [],
+};
+const filterPostsRequest: postAPI.getPostsRequestType = {
+  pageNum: 1,
+  pageSize: 15,
+  searchKeyword: 'test',
+  tags: [testTag, testTag2],
 };
 const createPostRequest: postAPI.createPostRequestType = {
   title: 'title',
@@ -303,6 +314,10 @@ describe('API TEST', () => {
     test('searchPosts', async () => {
       const result = await postAPI.getPosts(searchPostsRequest);
       expect(result).toBe(`/api/post/?page=1&pageSize=15&search=test`);
+    });
+    test('filterPosts', async () => {
+      const result = await postAPI.getPosts(filterPostsRequest);
+      expect(result).toBe(`/api/post/?page=1&pageSize=15&search=test&tag=1&tag=2`);
     });
     test('createPost', async () => {
       const result = await postAPI.createPost(createPostRequest);

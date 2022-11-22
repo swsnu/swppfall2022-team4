@@ -54,6 +54,9 @@ const createTagResponse: tagAPI.tagVisualsResponseType = {
 const searchTagResponse: tagAPI.tagVisualsResponseType = {
   tags: simpleTagVisuals,
 };
+const searchTagEmptyResponse: tagAPI.tagVisualsResponseType = {
+  tags: [],
+};
 
 describe('slices - tags', () => {
   describe('saga success', () => {
@@ -105,6 +108,15 @@ describe('slices - tags', () => {
         .put({ type: 'tag/searchTagSuccess', payload: searchTagResponse })
         .dispatch({ type: 'tag/searchTag', payload: searchTagRequest })
         .hasFinalState({ ...initialState, tagSearch: searchTagResponse.tags })
+        .silentRun();
+    });
+    test('searchTagEmpty', () => {
+      return expectSaga(tagSaga)
+        .withReducer(tagSlice.reducer)
+        .provide([[call(tagAPI.searchTag, searchTagRequest), searchTagEmptyResponse]])
+        .put({ type: 'tag/searchTagSuccess', payload: searchTagEmptyResponse })
+        .dispatch({ type: 'tag/searchTag', payload: searchTagRequest })
+        .hasFinalState({ ...initialState, tagSearch: [] })
         .silentRun();
     });
   });
