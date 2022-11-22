@@ -46,10 +46,10 @@ export const UserDetailModal = ({
             <UserAvatar src={process.env.REACT_APP_API_IMAGE + userInfo.avatar} alt="profile" />
           </UserAvatarWrapper>
 
-          <UserNameWrapper>
-            <UserName>{userInfo.username}</UserName>
-            <NickName>{userInfo.username}</NickName>
-          </UserNameWrapper>
+          <NameWrapper>
+            <Nickname>{userInfo.nickname}</Nickname>
+            <Username>{userInfo.username}</Username>
+          </NameWrapper>
 
           <UserLevelWrapper>
             <Level>{userInfo.level} 레벨</Level>
@@ -126,7 +126,7 @@ const UserAvatarWrapper = styled(ColumnCenterFlex)`
   width: 100%;
 `;
 
-const UserNameWrapper = styled(ColumnCenterFlex)`
+const NameWrapper = styled(ColumnCenterFlex)`
   width: 100%;
   padding: 15px 20px;
 `;
@@ -136,13 +136,13 @@ const UserLevelWrapper = styled(ColumnCenterFlex)`
   padding: 15px 20px;
 `;
 
-const UserName = styled.span`
-  font-size: 26px;
-  margin-bottom: 5px;
-`;
-const NickName = styled.span`
+const Username = styled.span`
   font-size: 18px;
   color: var(--fit-disabled-gray);
+`;
+const Nickname = styled.span`
+  font-size: 26px;
+  margin-bottom: 5px;
 `;
 
 const Level = styled.span`
@@ -151,6 +151,16 @@ const Level = styled.span`
 `;
 const Exp = styled.span`
   font-size: 16px;
+`;
+
+const UserAvatar = styled.img`
+  border: 4px solid black;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  cursor: pointer;
+
+  object-fit: cover;
 `;
 
 export const UserDetailHorizontalModal = ({
@@ -187,10 +197,10 @@ export const UserDetailHorizontalModal = ({
             <UserHorizontalAvatar src={process.env.REACT_APP_API_IMAGE + userInfo.avatar} alt="profile" />
           </UserAvatarHorizontalWrapper>
           <HorizontalRightWrapper>
-            <UserNameHorizontalWrapper>
+            <NameHorizontalWrapper>
+              <NickNameHorizontal>{userInfo.nickname}</NickNameHorizontal>
               <UserNameHorizontal>{userInfo.username}</UserNameHorizontal>
-              <NickNameHorizontal>{userInfo.username}</NickNameHorizontal>
-            </UserNameHorizontalWrapper>
+            </NameHorizontalWrapper>
             <UserLevelHorizontalWrapper>
               <LevelHorizontal>{userInfo.level} 레벨</LevelHorizontal>
               <ExpHorizontal>{userInfo.exp} / 100</ExpHorizontal>
@@ -244,7 +254,7 @@ const ModalHorizontalContent = styled.div<IProps>`
   `}
 `;
 
-const UserNameHorizontalWrapper = styled(ColumnCenterFlex)`
+const NameHorizontalWrapper = styled(ColumnCenterFlex)`
   width: 100%;
   padding: 10px 20px;
 `;
@@ -293,12 +303,12 @@ const HorizontalRightWrapper = styled(ColumnCenterFlex)`
 `;
 
 const UserNameHorizontal = styled.span`
-  font-size: 25px;
-  margin-bottom: 5px;
-`;
-const NickNameHorizontal = styled.span`
   font-size: 15px;
   color: var(--fit-disabled-gray);
+`;
+const NickNameHorizontal = styled.span`
+  font-size: 25px;
+  margin-bottom: 5px;
 `;
 
 const LevelHorizontal = styled.span`
@@ -307,14 +317,4 @@ const LevelHorizontal = styled.span`
 `;
 const ExpHorizontal = styled.span`
   font-size: 13px;
-`;
-// Shared -------------------------------------------------------------
-const UserAvatar = styled.img`
-  border: 4px solid black;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  cursor: pointer;
-
-  object-fit: cover;
 `;

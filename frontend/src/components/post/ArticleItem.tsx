@@ -30,7 +30,7 @@ export const ArticleItemDefault = ({ post, onClick }: IpropsArticleItem) => (
     <PostTitle>
       {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
     </PostTitle>
-    <span>{post.author.username}</span>
+    <span>{post.author.nickname}</span>
     <span>{post.like_num - post.dislike_num}</span>
     <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
   </ArticleItem>
@@ -46,7 +46,7 @@ export const ArticleItemCompact = ({ post, onClick }: IpropsArticleItem) => (
     <PostTitle>
       {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
     </PostTitle>
-    <span>{post.author.username}</span>
+    <span>{post.author.nickname}</span>
   </ArticleItemComp>
 );
 

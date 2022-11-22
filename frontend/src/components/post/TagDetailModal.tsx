@@ -43,14 +43,14 @@ const TagDetailModal = ({
   setSelected,
   dispatch,
 }: TagDetailModalIprops) => {
-  const { tagList, popularTags, weight, username, tagClassCreate, tagCreate } = useSelector(
+  const { tagList, popularTags, weight, nickname, tagClassCreate, tagCreate } = useSelector(
     ({ tag, user }: RootState) => ({
       tagList: tag.tagList,
       popularTags: tag.popularTags,
       tagClassCreate: tag.tagClassCreate,
       tagCreate: tag.tagCreate,
       weight: user.profile?.weight,
-      username: user.user?.username,
+      nickname: user.user?.nickname,
     }),
   );
   const [type, setType] = useState(0);
@@ -112,7 +112,7 @@ const TagDetailModal = ({
                         <div>
                           <span>
                             운동 태그에 표시된 수치는{' '}
-                            {caloriesOfUser ? `${username}님의 체중을 기준으로 계산된 kcal/min` : `kcal/min/kg`}
+                            {caloriesOfUser ? `${nickname}님의 체중을 기준으로 계산된 kcal/min` : `kcal/min/kg`}
                             입니다.
                           </span>
                           <GreenBigBtn
