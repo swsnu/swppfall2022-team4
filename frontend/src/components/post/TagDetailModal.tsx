@@ -33,6 +33,14 @@ interface IPropsCharNum {
 const UNSELECTED = '#dbdbdb';
 const CATEGORY = ['태그 목록', '인기있는 태그'];
 
+const getCaloriesInfoText = (forUser: boolean, nickname: string | undefined) => {
+  return (
+    `운동 태그에 표시된 수치는 ` +
+    (forUser ? `${nickname}님의 체중을 기준으로 계산된 kcal/min` : `kcal/min/kg`) +
+    `입니다.`
+  );
+};
+
 const TagDetailModal = ({
   isActive,
   onClose,
@@ -109,11 +117,7 @@ const TagDetailModal = ({
                       <ModalDescriptionSection>
                         <span>{`아래 태그를 클릭하여 태그로 필터링할 수 있습니다.`}</span>
                         <div>
-                          <span>
-                            운동 태그에 표시된 수치는{' '}
-                            {caloriesOfUser ? `${nickname}님의 체중을 기준으로 계산된 kcal/min` : `kcal/min/kg`}
-                            입니다.
-                          </span>
+                          <span>{getCaloriesInfoText(caloriesOfUser, nickname)}</span>
                           <GreenBigBtn
                             onClick={() => {
                               setCaloriesOfUser(state => !state);

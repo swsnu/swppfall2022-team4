@@ -6,7 +6,6 @@ from django.http import (
 from django.db.models import Count
 from django.views.decorators.http import require_http_methods
 from tags.models import Tag, TagClass
-from tags.management.commands.prepare_tags import get_tag_class_type
 from informations.models import Information
 
 
@@ -79,15 +78,15 @@ def tag_home(request):
             parent_class = TagClass.objects.get(pk=data["classId"])
 
             if parent_class.class_type == "workout":
-                tag_calories = data.get("calories", CALORIES_DEFAULT)
-            else:
-                tag_calories = None
-            created_tag = Tag.objects.create(
-                tag_name=tag_name, tag_class=parent_class, calories=tag_calories
-            )
-
-            if get_tag_class_type(parent_class.class_name) == 'workout':
+                created_tag = Tag.objects.create(
+                    tag_name=tag_name,
+                    tag_class=parent_class,
+                    calories=data.get("calories", CALORIES_DEFAULT),
+                )
                 Information.objects.create(name=tag_name, tag=created_tag)
+            else:
+                created_tag = Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
+
             return JsonResponse(
                 {
                     "tags": prepare_tag_response(
