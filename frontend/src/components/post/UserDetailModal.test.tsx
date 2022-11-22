@@ -30,6 +30,8 @@ const setup = () => {
       pivotRef={{ current: document.createElement('button') } as unknown as React.MutableRefObject<null>}
       userInfo={simpleUser}
       navigate={mockNavigate}
+      username="username"
+      clickedChat={jest.fn()}
     />,
   );
 };
@@ -52,6 +54,8 @@ const setupHorizontal = () => {
       pivotRef={document.createElement('img')}
       userInfo={simpleUser}
       navigate={mockNavigate}
+      username="username"
+      clickedChat={jest.fn()}
     />,
   );
 };
