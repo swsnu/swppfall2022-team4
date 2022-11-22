@@ -42,6 +42,22 @@ const groupDetailResponse: groupApi.getGroupDetailResponseType = {
   address: null,
 };
 
+const placeDetailResponse: groupApi.getGroupDetailResponseType = {
+  group_id: 1,
+  group_name: 'group_name',
+  number: 10,
+  start_date: '2019-01-01',
+  end_date: '2019-01-01',
+  free: true,
+  group_leader: user1,
+  member_number: 3,
+  description: 'test',
+  goal: [fitelement1],
+  lat: 31,
+  lng: 126,
+  address: '봉천동',
+};
+
 const nullResponse1: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'group_name',
@@ -141,6 +157,18 @@ describe('setup test', () => {
     fireEvent.click(back);
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group');
+  });
+  it('place response', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupDetailSuccess',
+        payload: placeDetailResponse,
+      });
+    });
+    screen.getByText('Place');
+    screen.getByText('장소 : 봉천동');
   });
   it('null init1', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
@@ -267,12 +295,13 @@ describe('setup test', () => {
   });
   // 이하부터 다시
   it('useEffect ', () => {
+    jest.spyOn(window, 'alert').mockImplementation();
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailFailure',
-        payload: {response: {status: 404}},
+        payload: {response: {data: {status: 404, message: 'error'}}},
       });
     });
     screen.debug();
