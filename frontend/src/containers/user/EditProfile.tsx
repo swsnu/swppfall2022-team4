@@ -46,11 +46,7 @@ const EditProfile = () => {
   useEffect(() => {
     if (user && editProfile) {
       navigate(`/profile/${user.username}`);
-      try {
-        localStorage.setItem('user', JSON.stringify(user));
-      } catch (e) {
-        console.log('localStorage is not working');
-      }
+      localStorage.setItem('user', JSON.stringify(user));
     }
   }, [navigate, user, editProfile]);
   useEffect(() => {

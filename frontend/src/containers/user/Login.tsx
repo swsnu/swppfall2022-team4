@@ -52,11 +52,7 @@ const Login = () => {
   useEffect(() => {
     if (user) {
       navigate('/');
-      try {
-        localStorage.setItem('user', JSON.stringify(user));
-      } catch (e) {
-        console.log('localStorage is not working');
-      }
+      localStorage.setItem('user', JSON.stringify(user));
     }
   }, [navigate, user]);
 
@@ -107,28 +103,11 @@ const Login = () => {
 
         <SocialLoginWrapper>
           <SocialLoginText>Social Login</SocialLoginText>
-          <SocialLoginIconWrapper>
-            <SocialLoginIcon
-              src={require('assets/images/main/social_login_icon/kakao.jpg')}
-              alt="kakao"
-              onClick={() => onSocialLogin('kakao')}
-            />
-            <SocialLoginIcon
-              src={require('assets/images/main/social_login_icon/google.png')}
-              alt="google"
-              onClick={() => onSocialLogin('google')}
-            />
-            <SocialLoginIcon
-              src={require('assets/images/main/social_login_icon/facebook.png')}
-              alt="facebook"
-              onClick={() => onSocialLogin('facebook')}
-            />
-            <SocialLoginIcon
-              src={require('assets/images/main/social_login_icon/github.png')}
-              alt="github"
-              onClick={() => onSocialLogin('github')}
-            />
-          </SocialLoginIconWrapper>
+          <SocialLoginIcon
+            src={require('assets/images/main/social_login_icon/kakao.jpg')}
+            alt="kakao"
+            onClick={() => onSocialLogin('kakao')}
+          />
         </SocialLoginWrapper>
       </ContentWrapper>
     </Wrapper>
@@ -232,19 +211,11 @@ const SocialLoginText = styled.div`
   font-size: 20px;
   font-weight: 600;
 `;
-const SocialLoginIconWrapper = styled.div`
-  display: flex;
-  background-color: #f1f1f1;
-  border: 1px solid #e1e1e1;
-  border-radius: 10px;
-  padding: 8px;
-  margin-top: 8px;
-`;
 const SocialLoginIcon = styled.img`
   width: 55px;
   height: 55px;
   border-radius: 50px;
-  margin: 0 15px;
+  margin: 20px 15px 0 15px;
   cursor: pointer;
   transition: box-shadow 0.25s linear;
   &:hover {
