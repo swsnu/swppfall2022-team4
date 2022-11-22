@@ -60,7 +60,6 @@ const setup = () => {
 
 describe('[SocialLoginCallback Page]', () => {
   test('status 201', async () => {
-    const mockAlert = jest.spyOn(global, 'alert').mockImplementation(msg => msg);
     client.get = mockClientGet.mockImplementation(() =>
       Promise.resolve({ data: { access_token: 'kakao', username: 'un', nickname: 'nn', image: 'im' }, status: 201 }),
     );
