@@ -13,6 +13,7 @@ const mem1: groupApi.Member = {
   username: 'test1',
   image: 'image',
   level: 1,
+  cert_days: 6,
 };
 
 const mem2: groupApi.Member = {
@@ -20,10 +21,19 @@ const mem2: groupApi.Member = {
   username: 'test2',
   image: 'image',
   level: 1,
+  cert_days: 6,
 };
 
 const membersResponse: groupApi.getGroupMembersResponseType = {
   members: [mem1, mem2],
+};
+
+const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {
+  member_status: 'group_leader',
+};
+
+const memberStatusResponse: groupApi.checkGroupMemberResponseType = {
+  member_status: 'group_member',
 };
 
 const mockNavigate = jest.fn();
@@ -64,6 +74,7 @@ describe('setup test', () => {
       });
     });
     screen.getByText('그룹 멤버');
+    screen.getByText('test1');
   });
   it('btn', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
@@ -78,5 +89,54 @@ describe('setup test', () => {
     fireEvent.click(btn);
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group/detail/1/');
+  });
+  it('init useEffect', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    setup();
+    expect(mockDispatch).toBeCalledTimes(2);
+  });
+  it('no group_id', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: undefined });
+    setup();
+  });
+  //Here!
+  it('no memberList', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupMemberFailure',
+        payload: null,
+      });
+    });
+  });
+  it('group leader', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupMembersSuccess',
+        payload: membersResponse,
+      });
+      store.dispatch({
+        type: 'group/checkMemberStatusSuccess',
+        payload: leaderStatusResponse,
+      });
+    });
+    screen.getAllByText('그룹장 위임');
+  });
+  it('group member', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupMembersSuccess',
+        payload: membersResponse,
+      });
+      store.dispatch({
+        type: 'group/checkMemberStatusSuccess',
+        payload: memberStatusResponse,
+      });
+    });
   });
 });
