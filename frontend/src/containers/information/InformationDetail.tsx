@@ -9,6 +9,7 @@ import { timeAgoFormat } from 'utils/datetime';
 import { Youtube } from 'store/apis/information';
 import SearchBar from 'components/common/SearchBar';
 import { ArticleItemCompact } from 'components/post/ArticleItem';
+import { ScrollShadow } from 'components/common/ScrollShadow';
 
 interface InfoPageYoutubeIprops {
   youtube: Youtube;
@@ -159,7 +160,7 @@ const ArticleItemWrapper = styled.div`
   background-color: #ffffff;
 `;
 
-const YoutubeItemWrapper = styled.div`
+const YoutubeItemWrapper = styled(ScrollShadow)`
   display: grid;
   grid-template-columns: 1fr 1fr;
   row-gap: 10px;

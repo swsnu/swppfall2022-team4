@@ -15,7 +15,6 @@ import { GreenBigBtn, GreenBigSpanBtn } from './button';
 import { getRandomHex } from 'utils/color';
 import { useSelector } from 'react-redux';
 import { RootState } from 'index';
-import { ScrollShadow } from 'components/common/ScrollShadow';
 
 export interface TagDetailModalIprops {
   isActive: boolean;
@@ -508,7 +507,7 @@ const Category = styled.div<{ active: boolean }>`
     font-family: 'Noto Sans KR', sans-serif;
   }
 `;
-const TagModalContent = styled(ScrollShadow)`
+const TagModalContent = styled.div`
   margin-top: 40px;
   width: 1000px;
   display: flex;

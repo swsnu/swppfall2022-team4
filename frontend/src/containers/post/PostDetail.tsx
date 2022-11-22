@@ -377,7 +377,7 @@ const PostDetail = () => {
                   navigate,
                 })}
               </CommentWritterAvatar>
-              <CommentWritterText> {comment.author.username} </CommentWritterText>
+              <CommentWritterText> {comment.author.nickname} </CommentWritterText>
             </CommentWritterWrapper>
           </CommentWritterWrapperO1>
           <CommentRightWrapper>
@@ -492,7 +492,7 @@ const PostDetail = () => {
                     <ArticleTitle>{post.title}</ArticleTitle>
                     <PostWritterWrapper>
                       <PostWritterLeftWrapper>
-                        <PostWritterText> {post.author.username} </PostWritterText>
+                        <PostWritterText> {post.author.nickname} </PostWritterText>
                         <PostTimeText>{timeAgoFormat(new Date(), new Date(post.created))}</PostTimeText>
                       </PostWritterLeftWrapper>
                       <PostWritterAvatar>
@@ -749,7 +749,7 @@ const CommentItem = styled.div<IPropsComment>`
 
 const CommentWritterWrapperO1 = styled.div`
   text-align: center;
-  width: 40px;
+  width: fit-content;
   margin-right: 20px;
 `;
 
@@ -776,6 +776,8 @@ const UserAvatar = styled.img`
 
 const CommentWritterText = styled.span`
   font-size: 12px;
+  width: fit-content;
+  white-space: nowrap;
 `;
 
 const CommentRightWrapper = styled(ColumnFlex)`
