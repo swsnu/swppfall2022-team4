@@ -1,10 +1,9 @@
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse, HttpResponseBadRequest
-
+from django.views.decorators.http import require_http_methods
 from datetime import datetime, date
 from .models import FitElement, Routine, DailyLog, FitElementType
 from users.models import User
 import json
-from django.views.decorators.http import require_http_methods
 import calendar
 
 
@@ -131,9 +130,7 @@ def get_calendar_info(request, year, month):
             }
             return_json[int(workout_dict['date'].day) -
                         1]['workouts'].append(workout_dict)
-
         daily_logs = DailyLog.objects.filter(author=user)
-        
         for i in range(1, calendar.monthrange(year, month)[1]):
             daily_log_single = daily_logs.filter(date=datetime(year, month, i).date())
             if len(daily_log_single) == 0:
@@ -269,7 +266,6 @@ def daily_log(request, year, month, specific_date):
         daily_logs = DailyLog.objects.filter(author=user)
         daily_log_single = daily_logs.filter(
         date=datetime(year, month, specific_date).date())
-        
         req_data = json.loads(request.body.decode())
         return_json = []
         if "image" in req_data:
@@ -342,7 +338,7 @@ def daily_log(request, year, month, specific_date):
 
 
 @require_http_methods(["GET"])
-def get_fitelement_types(request):
+def get_fitelement_types():
     types = FitElementType.objects.all()
     return_json = []
     for fitelement_type in types:
@@ -354,8 +350,3 @@ def get_fitelement_types(request):
         }
         return_json.append(type_json)
     return JsonResponse(return_json, safe=False, status=200)
-
-
-@require_http_methods(["GET"])
-def get_fitelement_type(request, name):
-    pass

@@ -1,9 +1,9 @@
 import bcrypt
 import time
 from django.test import TestCase, Client
+from django.core import management
 from users.models import User
 from .models import FitElement, Routine, DailyLog
-from django.core import management
 
 
 class WorkoutTestCase(TestCase):
@@ -137,10 +137,12 @@ class WorkoutTestCase(TestCase):
 
     def test_get_daily_log(self):
         client, _ = self.ready()
-        res = client.get('/api/fitelement/dailylog/2022/10/1/?&username=username')
+        res = client.get(
+            '/api/fitelement/dailylog/2022/10/1/?&username=username')
         self.assertEqual(res.status_code, 200)
 
-        res = client.get('/api/fitelement/dailylog/2022/10/5/?&username=username')
+        res = client.get(
+            '/api/fitelement/dailylog/2022/10/5/?&username=username')
         self.assertEqual(res.status_code, 200)
 
     def test_create_routine(self):

@@ -8,6 +8,4 @@ urlpatterns = [
     path('routine/', views.routines, name='routines'),
     path('routine/<int:routine_id>/', views.routine, name='routine'),
     path('dailylog/<int:year>/<int:month>/<int:specific_date>/', views.daily_log, name='daily_log'),
-    path('type/', views.get_fitelement_types, name='fitelement_types'),
-    path('type/<str:name>/', views.get_fitelement_type, name='fitelement_type')
 ]
