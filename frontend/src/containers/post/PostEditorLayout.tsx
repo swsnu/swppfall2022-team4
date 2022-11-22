@@ -89,6 +89,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     }
   }, [tagCreate]);
 
+  // Setters ------------------------------------------------------------------
   const setContent = (content: string) =>
     setPostContent(state => ({
       ...state,
@@ -126,16 +127,20 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     }));
     notificationSuccess('Image', '이미지 삭제에 성공했어요!');
   };
+
+  // Event Handlers ------------------------------------------------------------------
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tagId = e.target.options[e.target.selectedIndex].value;
     const tagName = e.target.options[e.target.selectedIndex].text;
     setTagSelect(tagId);
-    if (tagId !== NEW_OPTION) {
+    if (tagId !== NEW_OPTION && currentTagClass) {
+      if (postContent.tags.length === 0) setPrimeTag({ id: tagId, name: tagName, color: currentTagClass.color });
       setSelectedTags(s => {
-        if (currentTagClass && s.filter(item => item.id == tagId).length === 0)
+        if (s.filter(item => item.id == tagId).length === 0)
           return [...s, { id: tagId, name: tagName, color: currentTagClass.color }];
         else return s;
       });
+
       setTagSelect(DEFAULT_OPTION);
     }
   };
