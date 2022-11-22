@@ -179,6 +179,7 @@ def routines(request):
         for fitelement_id in fitelements:
             if FitElement.objects.filter(id=fitelement_id).exists():
                 fitelement = FitElement.objects.get(id=fitelement_id)
+                fitelement.date = None
                 fitelement.pk = None
                 fitelement.save()
                 new_routine.fit_element.add(fitelement)

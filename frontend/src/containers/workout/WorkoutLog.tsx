@@ -235,6 +235,7 @@ const WorkoutLog = () => {
     setYear(date.getFullYear());
     setStartDay(getStartDayOfMonth(date));
     dispatch(workoutLogActions.getFitElementsType());
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [date, calendarInfo]);
 
   function isLeapYear(year: number) {
