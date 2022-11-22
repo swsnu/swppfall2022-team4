@@ -102,10 +102,11 @@ const GroupCreate = () => {
     } else if (set_date && start_date > end_date) {
       alert('기간이 올바르지 않습니다.');
       return;
-    } else if (description === '') {
-      alert('그룹에 대한 설명을 작성해야 합니다.');
     } else if (goal_list.length === 0) {
       alert('목표는 하나 이상이어야 합니다.');
+      return;
+    } else if (description === '') {
+      alert('그룹에 대한 설명을 작성해야 합니다.');
       return;
     }
 
@@ -226,7 +227,12 @@ const GroupCreate = () => {
         <CreateText>최대 인원</CreateText>
         <div style={{ display: 'flex' }}>
           <CreateSmallText>최대 인원 설정</CreateSmallText>
-          <CreateCheck type="checkbox" checked={max_num} onChange={() => setMaxNum(!max_num)} />
+          <CreateCheck
+            data-testid="maxNumCheck"
+            type="checkbox"
+            checked={max_num}
+            onChange={() => setMaxNum(!max_num)}
+          />
           <CreateInput
             type="number"
             disabled={!max_num}
@@ -240,7 +246,12 @@ const GroupCreate = () => {
         <CreateText>기간</CreateText>
         <div style={{ display: 'flex' }}>
           <CreateSmallText>기간 설정</CreateSmallText>
-          <CreateCheck type="checkbox" checked={set_date} onChange={() => setSetDate(!set_date)} />
+          <CreateCheck
+            data-testid="setDate"
+            type="checkbox"
+            checked={set_date}
+            onChange={() => setSetDate(!set_date)}
+          />
           <DateWrapper>
             <input
               data-testid="start_date"
@@ -268,8 +279,14 @@ const GroupCreate = () => {
           <div style={{ paddingLeft: '13%' }}>Time</div>
         </div>
         <LogInputBody>
-          <WorkoutTypeInput type="text" value={workout_type || ''} onChange={e => setWorkoutType(e.target.value)} />
           <WorkoutTypeInput
+            data-testid="workoutType"
+            type="text"
+            value={workout_type || ''}
+            onChange={e => setWorkoutType(e.target.value)}
+          />
+          <WorkoutTypeInput
+            data-testid="weight"
             className="type2"
             type="number"
             min="0"
@@ -277,6 +294,7 @@ const GroupCreate = () => {
             onChange={e => setWeight(Number(e.target.value))}
           />
           <WorkoutTypeInput
+            data-testid="rep"
             className="type2"
             type="number"
             min="0"
@@ -284,6 +302,7 @@ const GroupCreate = () => {
             onChange={e => setRep(Number(e.target.value))}
           />
           <WorkoutTypeInput
+            data-testid="set"
             className="type2"
             type="number"
             min="0"
@@ -291,6 +310,7 @@ const GroupCreate = () => {
             onChange={e => setSet(Number(e.target.value))}
           />
           <WorkoutTypeInput
+            data-testid="time"
             className="type2"
             type="number"
             min="0"
@@ -313,6 +333,7 @@ const GroupCreate = () => {
               time={go_obj.time}
             />
             <div
+              data-testid="removeGoal"
               onClick={() => removeGoal(goal_list.indexOf(go_obj))}
               style={{ paddingTop: '33px', fontSize: '18px', cursor: 'pointer', color: 'gray' }}
             >
