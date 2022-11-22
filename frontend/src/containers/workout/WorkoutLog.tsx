@@ -15,7 +15,6 @@ import {
   editImageRequestType,
 } from 'store/apis/workout';
 import client from 'store/apis/client';
-import Footer from 'components/sections/Footer';
 
 const WorkoutLog = () => {
   const dispatch = useDispatch();
@@ -207,7 +206,6 @@ const WorkoutLog = () => {
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
-  console.log(user);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
@@ -329,7 +327,7 @@ const WorkoutLog = () => {
                   .fill(null)
                   .map((_, index) => {
                     const d = index - (startDay - 2);
-                    const opacity_value = d > 0 ? (d <= days[month] ? false : true) : true;
+                    const visibility_value = d > 0 ? (d <= days[month] ? false : true) : true;
                     // {year}.{selected_month + 1}.{day}
                     let day_type = 'future_day';
                     if (year === selected_year && month === selected_month && d === selected_date) {
@@ -360,11 +358,11 @@ const WorkoutLog = () => {
                           clickDate(year, month, d);
                         }}
                       >
-                        <DayContent visibility={opacity_value} className={day_type}>
+                        <DayContent visibility_boolean={visibility_value} className={day_type}>
                           {d > 0 ? (d <= days[month] ? d : '') : ''}
                         </DayContent>
                         <DayToolTip>
-                          <Hover workouts={calendarInfo[d - 1]?.workouts} />
+                          <Hover key={0} workouts={calendarInfo[d - 1]?.workouts} />
                         </DayToolTip>
                       </Day>
                     );
@@ -450,23 +448,22 @@ const WorkoutLog = () => {
               <LogInputBody>
                 <LogInputBodyInput>
                   <WorkoutTypeSelect
+                    defaultValue="선택"
                     className="type2"
                     onChange={e => setWorkoutCategory(category_enum[e.target.value])}
                   >
-                    <option disabled selected value="">
-                      선택
-                    </option>
-                    {WORKOUT_CATEGORY.map(fitelement_category => (
-                      <option>{fitelement_category}</option>
+                    <option disabled>선택</option>
+                    {WORKOUT_CATEGORY.map((fitelement_category, index) => (
+                      <option key={index}>{fitelement_category}</option>
                     ))}
                   </WorkoutTypeSelect>
-                  <WorkoutTypeSelect onChange={e => setWorkoutType(e.target.value)}>
-                    <option disabled selected value="">
-                      종류 선택
-                    </option>
-                    {fitElementTypes.map(fitelement_type =>
+                  <WorkoutTypeSelect defaultValue="종류 선택" onChange={e => setWorkoutType(e.target.value)}>
+                    <option disabled>종류 선택</option>
+                    {fitElementTypes.map((fitelement_type, index) =>
                       fitelement_type.category === workout_category ? (
-                        <option>{fitelement_type.korean_name}</option>
+                        <option key={index}>
+                          {fitelement_type.korean_name}
+                        </option>
                       ) : null,
                     )}
                   </WorkoutTypeSelect>
@@ -738,8 +735,8 @@ const DayToolTip = styled.div`
   }
 `;
 
-const DayContent = styled.div<{ visibility: boolean }>`
-  visibility: ${props => (props.visibility ? 'hidden' : 'none')}
+const DayContent = styled.div<{ visibility_boolean: boolean }>`
+  visibility: ${props => (props.visibility_boolean ? 'hidden' : 'none')}
   width: auto;
   max-width: 40px;
   min-width: 40px;
@@ -1072,7 +1069,7 @@ const MemoFooter = styled.div`
   width: 100%;
   padding: 10px 10px;
   flex-direction: row;
-`
+`;
 
 const ImageWrapper = styled.div`
   width: 50%;
@@ -1080,4 +1077,4 @@ const ImageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: end;
-`
+`;

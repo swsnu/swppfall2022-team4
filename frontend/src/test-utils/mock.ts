@@ -99,6 +99,7 @@ export const initialState: PreloadedState<RootState> = {
     error: null,
   },
   workout_log: {
+    error: null,
     workout_log: {
       type: 'log',
       workout_type: '데드리프트',
@@ -112,14 +113,17 @@ export const initialState: PreloadedState<RootState> = {
     },
     routine: [
       {
+        id: 0,
         name: 'test_routine',
         fitelements: [],
       },
       {
+        id: 1,
         name: 'test_routine2',
         fitelements: [
           {
             data: {
+              id: 0,
               type: 'log',
               workout_type: '데드리프트',
               period: null,
@@ -140,11 +144,12 @@ export const initialState: PreloadedState<RootState> = {
       memo: null,
       fit_element: null,
       calories: 0,
-      image: null
+      image: null,
     },
     daily_fit_elements: [
       {
         data: {
+          id: 0,
           type: 'log',
           workout_type: '데드리프트',
           period: null,
@@ -178,10 +183,9 @@ export const initialState: PreloadedState<RootState> = {
       name: '',
       korean_name: '',
       calories: 0,
-      category: ''
-
+      category: '',
     },
-    fitelement_types: []
+    fitelement_types: [],
   },
 };
 

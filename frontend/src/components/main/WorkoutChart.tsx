@@ -13,13 +13,12 @@ import {
 import { getElementAtEvent, Line } from 'react-chartjs-2';
 import { chartData } from 'containers/Main';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
 export interface IProps {
   info: chartData[];
 }
 
 export const WorkoutChart = (props: IProps) => {
+  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
   const chartRef = useRef<ChartJS<'line'>>(null);
   const [index, setIndex] = useState(0);
   const data = {

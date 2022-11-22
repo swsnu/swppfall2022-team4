@@ -104,4 +104,8 @@ describe('workout_log', () => {
     fireEvent.click(button!);
     expect(mockDispatch).toHaveBeenCalled();
   });
+
+  it('confirm', () => {
+    
+  })
 });

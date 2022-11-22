@@ -13,13 +13,14 @@ type fitElementType = {
 };
 
 export interface IProps {
+  key: number;
   workouts: [];
 }
 
 const types = ['leg', 'back', 'chest', 'arm', 'deltoid', 'abs', 'etc'];
 
 export const Hover = (props: IProps) => {
-  let workouts_list = new Map<String, fitElementType[]>();
+  const workouts_list = new Map<string, fitElementType[]>();
   if (typeof props.workouts !== 'undefined' && props.workouts?.length > 0) {
     props.workouts?.map((workout: fitElementType) => {
       if (workouts_list.get(workout['category']) !== undefined) {
@@ -32,19 +33,25 @@ export const Hover = (props: IProps) => {
   }
 
   const workout_type_list = (category: string, key: number) => (
-    <WorkoutSingle>
+    <WorkoutSingle key={key}>
       <WorkoutColor className={category} />
       {workouts_list.get(category) !== undefined && workouts_list.get(category)!.length > 1
         ? workouts_list.get(category)![0]['workout_type'] + ` 외 ${workouts_list.get(category)!.length - 1}개`
-        : (workouts_list.get(category) !== undefined && workouts_list.get(category)!.length > 0)
+        : workouts_list.get(category) !== undefined && workouts_list.get(category)!.length > 0
         ? workouts_list.get(category)![0]['workout_type']
         : ''}
     </WorkoutSingle>
   );
   return (
     <HoverWrapper>
-      <WorkoutList>{types.map((type_single, index) => workout_type_list(type_single, index))}</WorkoutList>
-      <br /><hr /><br />
+      {typeof props.workouts !== 'undefined' && props.workouts?.length === 0 ? (
+        <Content>운동하자!</Content>
+      ) : (
+        <WorkoutList key={0}>{types.map((type_single, index) => workout_type_list(type_single, index))}</WorkoutList>
+      )}
+      <br />
+      <hr />
+      <br />
       {props.workouts?.length} 종류
     </HoverWrapper>
   );
@@ -58,6 +65,13 @@ const HoverWrapper = styled.div`
 
 const WorkoutList = styled.div`
   flex-direction: column;
+`;
+
+const Content = styled.div`
+  height: 100px;
+  width: 100px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const WorkoutSingle = styled.div`
