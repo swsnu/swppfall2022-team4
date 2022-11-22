@@ -14,6 +14,15 @@ from tags.models import Tag, TagClass
 from comments.views import prepare_comment_response
 
 
+def add_exp(username, exp):
+    if User.objects.filter(username=username).exists():
+        user = User.objects.get(username=username)
+        temp = user.exp + exp
+        user.exp = temp % 100
+        user.level = user.level + (temp // 100)
+        user.save()
+
+
 def prepare_post_response(post, is_detail, username):
     response = {
         "post_id": post.pk,
@@ -127,6 +136,8 @@ def post_home(request):
                 created_post.tags.add(tag)
             for image in data["images"]:  # image would be string type
                 PostImage.objects.create(image=image, post=created_post)
+
+            add_exp(request.user.username, 20)
 
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
