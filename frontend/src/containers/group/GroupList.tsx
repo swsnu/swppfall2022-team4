@@ -12,7 +12,6 @@ import Button1 from 'components/common/buttons/Button1';
 import Loading from 'components/common/Loading';
 import { GroupElement } from 'components/group/GroupElement';
 import { geolocationResponseType, co2regionResponseType } from 'assets/types/group';
-import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const distance = (lat1: number | null, lng1: number | null, lat2: number | null, lng2: number | null) => {
   return (((lat1 || 0) - (lat2 || 0)) ^ 2) + (((lng1 || 0) - (lng2 || 0)) ^ 2);
