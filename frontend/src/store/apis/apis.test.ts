@@ -165,7 +165,7 @@ const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
   rep: 0,
   set: 0,
   time: 0,
-  date: new Date(2022, 10, 1),
+  date: '2022-10-01'
 };
 
 const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {

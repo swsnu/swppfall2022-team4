@@ -122,7 +122,7 @@ const WorkoutLog = () => {
         rep: rep,
         set: set,
         time: workout_time,
-        date: new Date(year, month, day + 1),
+        date: String(year)+"-"+String(month).padStart(1,'0')+"-"+String(day).padStart(1,'0'),
       };
       dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
       setWorkoutType('');

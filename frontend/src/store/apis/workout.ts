@@ -15,11 +15,13 @@ export type getFitElementResponseType = {
 };
 
 export type getDailyLogResponseType = {
-  date: Date | null;
+  author: number;
+  date: string | null;
   memo: string;
   fitelements: List<getFitElementResponseType>;
   fit_elements: Array<any>;
   image: string;
+  calories: number;
 };
 
 export type getFitElementRequestType = {
@@ -54,7 +56,7 @@ export type createWorkoutLogRequestType = {
   rep: number | null;
   set: number | null;
   time: number | null;
-  date: Date | null;
+  date: string | null;
 };
 
 export type createWorkoutLogResponseType = {
