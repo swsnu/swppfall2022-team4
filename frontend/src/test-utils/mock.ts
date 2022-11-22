@@ -84,6 +84,7 @@ export const initialState: PreloadedState<RootState> = {
     popularTags: null,
     tagSearch: null,
     tagCreate: null,
+    tagClassCreate: null,
     error: null,
   },
   chat: {

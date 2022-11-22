@@ -10,11 +10,22 @@ from tags.management.commands.prepare_tags import get_tag_class_type
 from informations.models import Information
 
 
-def prepare_tag_response(tag_id, name, color, post_num=None):
+# tag_visual : [ id, name, color ]
+def prepare_tag_response(tag_visual, calories, tag_type, post_num=None):
+    base_structure = {
+        "id": tag_visual[0],
+        "name": tag_visual[1],
+        "color": tag_visual[2],
+        "type": tag_type,
+    }
+    if calories is not None:
+        base_structure["calories"] = calories
     if post_num is not None:
-        return {"id": tag_id, "name": name, "color": color, "posts": post_num}
-    else:
-        return {"id": tag_id, "name": name, "color": color}
+        base_structure["posts"] = post_num
+    return base_structure
+
+
+CALORIES_DEFAULT = 0.073529412
 
 
 @require_http_methods(["GET", "POST"])
@@ -31,12 +42,11 @@ def tag_home(request):
             tag_visual_list = []
             for tag in tag_classes[index].tags.all():
                 tag_visual_list.append(
-                    {
-                        "id": tag.pk,
-                        "name": tag.tag_name,
-                        "color": tag_classes[index].color,
-                        "type": tag_classes[index].class_type,
-                    }
+                    prepare_tag_response(
+                        [tag.pk, tag.tag_name, tag_classes[index].color],
+                        tag.calories,
+                        tag_classes[index].class_type,
+                    )
                 )
             tag_classes_serializable[index]["tags"] = tag_visual_list
 
@@ -44,7 +54,10 @@ def tag_home(request):
         for tag in Tag.objects.annotate(p_count=Count('tagged_posts')).order_by('-p_count')[:10]:
             popular_tags.append(
                 prepare_tag_response(
-                    tag.pk, tag.tag_name, tag.tag_class.color, tag.tagged_posts.count()
+                    [tag.pk, tag.tag_name, tag.tag_class.color],
+                    tag.calories,
+                    tag.tag_class.class_type,
+                    tag.tagged_posts.count(),
                 )
             )
 
@@ -68,7 +81,11 @@ def tag_home(request):
                 Information.objects.create(name=tag_name, tag=created_tag)
             return JsonResponse(
                 {
-                    "tags": prepare_tag_response(created_tag.pk, tag_name, parent_class.color),
+                    "tags": prepare_tag_response(
+                        [created_tag.pk, tag_name, parent_class.color],
+                        CALORIES_DEFAULT,
+                        parent_class.class_type,
+                    ),
                 },
                 status=201,
             )
@@ -86,9 +103,20 @@ def tag_class(request):
 
         class_name = data["name"]
         class_color = data["color"]
-        TagClass.objects.create(class_name=class_name, color=class_color)
+        new_class = TagClass.objects.create(class_name=class_name, color=class_color)
 
-        return JsonResponse({"message": "Success!"}, status=201)
+        return JsonResponse(
+            {
+                "tag_class": {
+                    "id": new_class.pk,
+                    "class_name": new_class.class_name,
+                    "class_type": new_class.class_type,  # All classes are GENERAL.
+                    "color": new_class.color,
+                    "tags": [],
+                }
+            },
+            status=201,
+        )
     except (KeyError, json.JSONDecodeError):
         return HttpResponseBadRequest()
 

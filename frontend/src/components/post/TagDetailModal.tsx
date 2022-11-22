@@ -1,4 +1,4 @@
-import React, { Dispatch, useState } from 'react';
+import React, { Dispatch, useEffect, useState } from 'react';
 import { AnyAction } from 'redux';
 import { ChromePicker } from 'react-color';
 import { CSSTransition } from 'react-transition-group';
@@ -13,7 +13,6 @@ import { TAG_CLASS_LIMIT, TAG_NAME_LIMIT } from 'containers/post/PostEditorLayou
 import { tagActions } from 'store/slices/tag';
 import { GreenBigBtn, GreenBigSpanBtn } from './button';
 import { getRandomHex } from 'utils/color';
-import { ColorReactiveInput } from 'components/common/ColorReactiveInput';
 import { useSelector } from 'react-redux';
 import { RootState } from 'index';
 import { ScrollShadow } from 'components/common/ScrollShadow';
@@ -44,13 +43,21 @@ const TagDetailModal = ({
   setSelected,
   dispatch,
 }: TagDetailModalIprops) => {
-  const { tagList, popularTags } = useSelector(({ tag }: RootState) => ({
-    tagList: tag.tagList,
-    popularTags: tag.popularTags,
-  }));
+  const { tagList, popularTags, weight, username, tagClassCreate, tagCreate } = useSelector(
+    ({ tag, user }: RootState) => ({
+      tagList: tag.tagList,
+      popularTags: tag.popularTags,
+      tagClassCreate: tag.tagClassCreate,
+      tagCreate: tag.tagCreate,
+      weight: user.profile?.weight,
+      username: user.user?.username,
+    }),
+  );
   const [type, setType] = useState(0);
   const [createCategory, setCreateCategory] = useState<number>(-1);
   const [newTagInput, setNewTagInput] = useState<string>('');
+  const [newTagCalories, setNewTagCalories] = useState<number>(0);
+  const [caloriesOfUser, setCaloriesOfUser] = useState<boolean>(true);
 
   const [newCategoryColor, setNewCategoryColor] = useState<string>('#000000');
   const [colorPicker, setColorPicker] = useState<boolean>(false);
@@ -67,6 +74,10 @@ const TagDetailModal = ({
       });
     }
   };
+
+  useEffect(() => {
+    dispatch(tagActions.getTags());
+  }, [tagClassCreate, tagCreate]);
 
   const closeHandler = () => {
     setCreateCategory(-1);
@@ -96,7 +107,21 @@ const TagDetailModal = ({
                   0: (
                     <ColumnCenterFlex>
                       <ModalDescriptionSection>
-                        <span>아래 태그를 클릭하여 태그로 필터링할 수 있습니다.</span>
+                        <span>{`아래 태그를 클릭하여 태그로 필터링할 수 있습니다.`}</span>
+                        <div>
+                          <span>
+                            운동 태그에 표시된 수치는{' '}
+                            {caloriesOfUser ? `${username}님의 체중을 기준으로 계산된 kcal/min` : `kcal/min/kg`}
+                            입니다.
+                          </span>
+                          <GreenBigBtn
+                            onClick={() => {
+                              setCaloriesOfUser(state => !state);
+                            }}
+                          >
+                            모드 전환
+                          </GreenBigBtn>
+                        </div>
                       </ModalDescriptionSection>
                       {tagList?.map(tagClass => (
                         <TagClassSection key={tagClass.id}>
@@ -116,9 +141,15 @@ const TagDetailModal = ({
                                 onClick={() => filterOnClick(tag)}
                               >
                                 {tag.name}
+                                {tagClass.class_type === 'workout' &&
+                                  weight &&
+                                  tag.calories &&
+                                  (caloriesOfUser
+                                    ? ` | ${(tag.calories * weight).toFixed(2)}`
+                                    : ` | ${tag.calories.toFixed(4)}`)}
                               </TagBubble>
                             ))}
-                            {selected.length == 0 && tagClass.class_type !== 'place' && (
+                            {selected.length == 0 && tagClass.class_type !== 'place' && createCategory !== tagClass.id && (
                               <TagBubble
                                 color={tagClass.color}
                                 onClick={() => {
@@ -126,39 +157,50 @@ const TagDetailModal = ({
                                   setCreateCategory(tagClass.id);
                                 }}
                               >
-                                {createCategory === tagClass.id ? (
-                                  <NewTagForm
-                                    onSubmit={e => {
-                                      e.preventDefault();
-                                      dispatch(
-                                        tagActions.createTag({
-                                          name: newTagInput,
-                                          classId: tagClass.id,
-                                        }),
-                                      );
-                                      dispatch(tagActions.getTags());
-                                      setNewTagInput('');
-                                    }}
-                                  >
-                                    <ColorReactiveInput
-                                      value={newTagInput}
-                                      placeholder="태그 이름"
-                                      onChange={e => {
-                                        const charInput = e.target.value;
-                                        if (charInput.length <= TAG_NAME_LIMIT) setNewTagInput(charInput);
-                                      }}
-                                      colorProp={tagClass.color}
-                                    />
-                                    <TagCharNum isFull={newTagInput.length >= TAG_NAME_LIMIT}>
-                                      {newTagInput.length} / {TAG_NAME_LIMIT}
-                                    </TagCharNum>
-                                  </NewTagForm>
-                                ) : (
-                                  '눌러서 추가'
-                                )}
+                                눌러서 추가
                               </TagBubble>
                             )}
                           </div>
+                          {createCategory === tagClass.id && (
+                            <NewTagFormDiv>
+                              <div>
+                                <input
+                                  placeholder="새로운 태그 이름"
+                                  value={newTagInput}
+                                  onChange={e => {
+                                    const charInput = e.target.value;
+                                    if (charInput.length <= TAG_NAME_LIMIT) setNewTagInput(charInput);
+                                  }}
+                                />
+                                <TagCharNum isFull={newTagInput.length >= TAG_NAME_LIMIT}>
+                                  {newTagInput.length} / {TAG_NAME_LIMIT}
+                                </TagCharNum>
+                              </div>
+                              <input
+                                placeholder="운동 칼로리(kcal/min/kg)"
+                                value={newTagCalories}
+                                type="number"
+                                onChange={e => {
+                                  setNewTagCalories(Number.parseFloat(e.target.value));
+                                }}
+                              />
+                              <GreenBigBtn
+                                onClick={() => {
+                                  dispatch(
+                                    tagActions.createTag({
+                                      name: newTagInput,
+                                      classId: tagClass.id,
+                                      calories: newTagCalories,
+                                    }),
+                                  );
+                                  // dispatch(tagActions.getTags());
+                                  setNewTagInput('');
+                                }}
+                              >
+                                생성
+                              </GreenBigBtn>
+                            </NewTagFormDiv>
+                          )}
                         </TagClassSection>
                       ))}
                       <TagClassSection>
@@ -167,7 +209,7 @@ const TagDetailModal = ({
                           <div style={{ backgroundColor: newCategoryColor }}></div>
                         </div>
                         <NewCategoryForm
-                          onSubmit={e => {
+                          onSubmit={async e => {
                             e.preventDefault();
                             dispatch(
                               tagActions.createTagClass({
@@ -175,7 +217,7 @@ const TagDetailModal = ({
                                 color: newCategoryColor,
                               }),
                             );
-                            dispatch(tagActions.getTags());
+                            // dispatch(tagActions.getTags());
                             setNewCategoryInput('');
                           }}
                         >
@@ -271,15 +313,27 @@ const NewCategoryForm = styled.form`
     }
   }
 `;
-const NewTagForm = styled.form`
+
+const NewTagFormDiv = styled.div`
   display: flex;
+  align-items: flex-start;
   input {
     font-size: 12px;
     width: 150px;
     overflow-x: visible;
     background: none;
-    border: none;
+    padding: 5px 6px;
+    border: 1px solid green;
+    border-radius: 10px;
     margin-right: 0px;
+  }
+  > div {
+    display: flex;
+    flex-direction: column;
+    > span {
+      width: 100%;
+      text-align: right;
+    }
   }
 `;
 
@@ -323,7 +377,8 @@ const ModalDescriptionSection = styled.div`
 
 const TagClassSection = styled.div`
   display: flex;
-  width: 100%;
+  width: 1000px;
+  overflow-x: auto;
   flex-direction: column;
 
   padding: 10px 20px;
@@ -348,6 +403,7 @@ const TagClassSection = styled.div`
   > div:nth-child(2) {
     display: flex;
     width: 100%;
+    min-height: 40px;
     flex-direction: row;
     overflow-x: auto;
   }
@@ -442,11 +498,11 @@ const Category = styled.div<{ active: boolean }>`
 `;
 const TagModalContent = styled(ScrollShadow)`
   margin-top: 40px;
-  width: 100%;
+  width: 1000px;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  overflow-y: auto;
+  overflow: auto;
   &::-webkit-scrollbar {
     display: none;
   }

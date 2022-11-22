@@ -105,7 +105,7 @@ describe('[PostMain Page]', () => {
         payload: getTagsResponse,
       });
     });
-    expect(mockDispatch).toBeCalledTimes(3); // getTags, getPosts, getRecentComments
+    expect(mockDispatch).toBeCalledTimes(4); // getTags, getPosts, getRecentComments, getProfile
     expect(mockDispatch).toBeCalledWith({ payload: defaultPageConfig, type: 'post/getPosts' });
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'post/getRecentComments' });
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });

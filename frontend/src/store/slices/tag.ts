@@ -9,6 +9,7 @@ interface TagState {
   popularTags: tagAPI.TagVisual[] | null;
   tagSearch: tagAPI.TagVisual[] | null;
   tagCreate: tagAPI.TagVisual | null;
+  tagClassCreate: tagAPI.TagClass | null;
   error: string | null;
 }
 export const initialState: TagState = {
@@ -16,6 +17,7 @@ export const initialState: TagState = {
   popularTags: null,
   tagSearch: null,
   tagCreate: null,
+  tagClassCreate: null,
   error: null,
 };
 
@@ -26,7 +28,6 @@ export const tagSlice = createSlice({
     /* eslint-disable @typescript-eslint/no-unused-vars */
     // getTags ------------------------------------------------------------------------
     getTags: state => {
-      state.tagList = null;
       state.error = null;
     },
     getTagsSuccess: (state, { payload }) => {
@@ -38,10 +39,10 @@ export const tagSlice = createSlice({
       alert(payload.response?.data.message);
     },
     createTagClass: (state, action: PayloadAction<tagAPI.createTagClassRequestType>) => {
-      //create!
+      state.tagClassCreate = null;
     },
     createTagClassSuccess: (state, { payload }) => {
-      //create success
+      state.tagClassCreate = payload.tag_class;
       notificationSuccess('Tag', '태그 카테고리 생성에 성공했어요!');
     },
     createTagClassFailure: (state, { payload }) => {

@@ -23,6 +23,7 @@ export type TagVisual = {
   name: string;
   color: string;
   posts?: number;
+  calories?: number;
 };
 
 export type getTagListResponseType = {
@@ -48,6 +49,7 @@ export const createTag = async (payload: createTagRequestType) => {
 export type createTagRequestType = {
   name: string;
   classId: number;
+  calories?: number;
 };
 
 export const searchTag = async (payload: searchTagRequestType) => {

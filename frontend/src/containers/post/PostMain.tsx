@@ -17,6 +17,7 @@ import TagDetailModal from 'components/post/TagDetailModal';
 import { TagVisual } from 'store/apis/tag';
 import SearchBar from 'components/common/SearchBar';
 import { ArticleHeader, ArticleItemDefault } from 'components/post/ArticleItem';
+import { userActions } from 'store/slices/user';
 
 const PostMain = () => {
   const dispatch = useDispatch();
@@ -51,8 +52,8 @@ const PostMain = () => {
     }
   }, [tagModalOpen]);
 
-  const { postList, postSearch, maxPage, searchKeyword, recentCommentPost, popularTags } = useSelector(
-    ({ post, tag }: RootState) => ({
+  const { postList, postSearch, maxPage, searchKeyword, recentCommentPost, popularTags, user } = useSelector(
+    ({ post, tag, user }: RootState) => ({
       postList: post.postList.posts,
       postSearch: post.postSearch,
       maxPage: post.postList.pageTotal,
@@ -60,11 +61,13 @@ const PostMain = () => {
       recentCommentPost: post.recentComments.comments,
       popularTags: tag.popularTags,
       tagList: tag.tagList,
+      user: user.user,
     }),
   );
   const [search, setSearch] = useState(postSearch);
   useEffect(() => {
     setSearch(postSearch);
+    dispatch(userActions.getProfile(user?.username || ''));
   }, []);
   useEffect(() => {
     if (!tagModalOpen) {
