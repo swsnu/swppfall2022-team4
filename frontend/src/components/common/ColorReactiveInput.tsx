@@ -5,7 +5,7 @@ interface IPropsReactiveInput {
   colorProp: string;
 }
 
-export const ColorReactiveInput = styled.input<IPropsReactiveInput>`
+const ColorReactiveInput = styled.input<IPropsReactiveInput>`
   ${({ colorProp }) =>
     colorProp &&
     `
@@ -16,3 +16,5 @@ export const ColorReactiveInput = styled.input<IPropsReactiveInput>`
       }
     `}
 `;
+
+export default ColorReactiveInput;

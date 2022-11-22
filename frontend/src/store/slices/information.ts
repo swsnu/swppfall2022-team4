@@ -5,13 +5,12 @@ import * as infoAPI from 'store/apis/information';
 import { Post } from 'store/apis/post';
 import { notificationInfo } from 'utils/sendNotification';
 
-interface InformationState {
+export interface InformationState {
   contents: {
     basic: {
       name: string;
     };
     posts: Post[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     youtubes: infoAPI.Youtube[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     articles: any;
