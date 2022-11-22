@@ -88,16 +88,6 @@ const GroupCreate = () => {
     setGoalList(new_list);
   };
 
-  const example_fit = {
-    type: 'goal',
-    workout_type: 'TEST TEST',
-    category: 'TEST TEST',
-    weight: 20,
-    rep: 20,
-    set: 3,
-    time: 2,
-  };
-
   const saveOnClick = () => {
     if (!user) return;
     if (group_name === '') {
