@@ -51,7 +51,9 @@ def tag_home(request):
             tag_classes_serializable[index]["tags"] = tag_visual_list
 
         popular_tags = []
-        for tag in Tag.objects.annotate(p_count=Count('tagged_posts')).order_by('-p_count')[:10]:
+        for tag in Tag.objects.annotate(p_count=Count('tagged_posts')).order_by('-p_count', '?')[
+            :10
+        ]:
             popular_tags.append(
                 prepare_tag_response(
                     [tag.pk, tag.tag_name, tag.tag_class.color],
