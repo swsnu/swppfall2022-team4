@@ -118,7 +118,7 @@ const TagDetailModal = ({
                                 {tag.name}
                               </TagBubble>
                             ))}
-                            {selected.length == 0 && (
+                            {selected.length == 0 && tagClass.class_type !== 'place' && (
                               <TagBubble
                                 color={tagClass.color}
                                 onClick={() => {
