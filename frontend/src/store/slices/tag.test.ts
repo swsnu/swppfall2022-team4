@@ -51,6 +51,15 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
 const createTagResponse: tagAPI.tagVisualsResponseType = {
   tags: simpleTagVisuals,
 };
+const createTagClassResponse = {
+  tag_class: {
+    id: 1,
+    class_name: 'class',
+    class_type: 'type',
+    color: '#111',
+    tags: [],
+  },
+};
 const searchTagResponse: tagAPI.tagVisualsResponseType = {
   tags: simpleTagVisuals,
 };
@@ -86,10 +95,10 @@ describe('slices - tags', () => {
     test('createTagClass', () => {
       return expectSaga(tagSaga)
         .withReducer(tagSlice.reducer)
-        .provide([[call(tagAPI.createTagClass, createTagClassRequest), undefined]])
-        .put({ type: 'tag/createTagClassSuccess', payload: undefined })
+        .provide([[call(tagAPI.createTagClass, createTagClassRequest), createTagClassResponse]])
+        .put({ type: 'tag/createTagClassSuccess', payload: createTagClassResponse })
         .dispatch({ type: 'tag/createTagClass', payload: createTagClassRequest })
-        .hasFinalState(initialState)
+        .hasFinalState({ ...initialState, tagClassCreate: createTagClassResponse.tag_class })
         .silentRun();
     });
     test('createTag', () => {
