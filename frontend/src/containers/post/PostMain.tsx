@@ -10,7 +10,7 @@ import { tagActions } from 'store/slices/tag';
 import { timeAgoFormat } from 'utils/datetime';
 import { BlueBigBtn } from 'components/post/button';
 import { TagBubble, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
-import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
+import { ColumnFlex, PostContentWrapper, PostPageWrapper, RowCenterFlex } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 import TagDetailModal from 'components/post/TagDetailModal';
@@ -270,15 +270,6 @@ const SideBarItem = styled(ColumnFlex)`
 const PostPanelWrapper = styled(ColumnFlex)`
   width: 100%;
   align-items: center;
-`;
-
-export const PostPageWrapper = styled(ColumnCenterFlex)`
-  background-color: var(--fit-green-back);
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
 `;
 
 export default PostMain;

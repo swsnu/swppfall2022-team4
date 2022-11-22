@@ -13,7 +13,13 @@ import { Comment } from 'store/apis/comment';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { BlueBigBtn, CommentGreenBtn, RedSmallBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
-import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
+import {
+  ColumnCenterFlex,
+  ColumnFlex,
+  PostContentWrapper,
+  PostPageWrapper,
+  RowCenterFlex,
+} from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
 import ImageDetailModal from 'components/post/ImageDetailModal';
 import SearchBar from 'components/common/SearchBar';
@@ -219,9 +225,8 @@ const PostDetail = () => {
     }
   };
 
-  const commentCreateOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const commentCreateOnClick = (parent_comment: string | null) => {
     if (user && id) {
-      const parent_comment = e.currentTarget.getAttribute('data-parent_comment');
       dispatch(
         postActions.createComment({
           content: parent_comment ? commentReplyInput : commentInput,
@@ -384,10 +389,7 @@ const PostDetail = () => {
                   onChange={e => setCommentEditInput(e.target.value)}
                 ></CommentEditInput>
               ) : (
-                <CommentContent>
-                  {/* [My ID : {comment.id} / Parent : {comment.parent_comment}] */}
-                  {comment.content}
-                </CommentContent>
+                <CommentContent>{comment.content}</CommentContent>
               )}
             </CommentContentWrapper>
             <CommentFuncWrapper>
@@ -425,8 +427,7 @@ const PostDetail = () => {
               <GreenCommentSubmitBtn
                 data-testid="commentReplySubmitBtn"
                 disabled={commentReplyInput === ''}
-                onClick={commentCreateOnClick}
-                data-parent_comment={comment.comment_id}
+                onClick={() => commentCreateOnClick(comment.comment_id)}
               >
                 작성
               </GreenCommentSubmitBtn>
@@ -575,11 +576,7 @@ const PostDetail = () => {
                       value={commentInput}
                       onChange={e => setCommentInput(e.target.value)}
                     ></CommentInput>
-                    <GreenCommentSubmitBtn
-                      disabled={commentInput === ''}
-                      onClick={commentCreateOnClick}
-                      data-parent_comment={null}
-                    >
+                    <GreenCommentSubmitBtn disabled={commentInput === ''} onClick={() => commentCreateOnClick(null)}>
                       작성
                     </GreenCommentSubmitBtn>
                   </CommentForm>
@@ -911,15 +908,6 @@ const PostUploadedImage = styled.img`
   border-radius: 15px;
   object-fit: cover;
   cursor: pointer;
-`;
-
-export const PostPageWrapper = styled(ColumnCenterFlex)`
-  background-color: var(--fit-green-back);
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
 `;
 
 export default PostDetail;

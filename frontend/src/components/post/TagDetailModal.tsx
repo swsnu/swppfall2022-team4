@@ -451,4 +451,5 @@ const TagModalContent = styled(ScrollShadow)`
     display: none;
   }
 `;
+
 export default TagDetailModal;

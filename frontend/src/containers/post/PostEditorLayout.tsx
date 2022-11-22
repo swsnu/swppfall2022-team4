@@ -8,7 +8,13 @@ import { TagClass, TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
 import client from 'store/apis/client';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
-import { ColumnCenterFlex, ColumnFlex, PostContentWrapper, RowCenterFlex } from 'components/post/layout';
+import {
+  ColumnCenterFlex,
+  ColumnFlex,
+  PostContentWrapper,
+  PostPageWrapper,
+  RowCenterFlex,
+} from 'components/post/layout';
 import { notificationSuccess } from 'utils/sendNotification';
 import { TagBubble, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
 import { getRandomHex } from 'utils/color';
@@ -144,14 +150,9 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
       setTagSelect(DEFAULT_OPTION);
     }
   };
-  const searchedTagOnClick = (e: React.MouseEvent) => {
-    const tagId = e.currentTarget.getAttribute('data-id');
-    const tagName = e.currentTarget.getAttribute('data-name');
-    const tagColor = e.currentTarget.getAttribute('data-color');
-
+  const searchedTagOnClick = (tag: TagVisual) => {
     setSelectedTags(s => {
-      if (s.filter(item => item.id == tagId).length === 0)
-        return [...s, { id: tagId as string, name: tagName as string, color: tagColor as string }];
+      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
       else return s;
     });
   };
@@ -242,10 +243,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                     data-testid={`searchedTag-${tag.id}`}
                     key={tag.id}
                     color={tag.color}
-                    onClick={searchedTagOnClick}
-                    data-id={tag.id}
-                    data-color={tag.color}
-                    data-name={tag.name}
+                    onClick={() => searchedTagOnClick(tag)}
                   >
                     {tag.name}
                   </TagBubble>
@@ -770,13 +768,4 @@ const ContentGroupSection = styled.div`
   position: relative;
   background-color: var(--fit-white);
   padding: 8px 10px;
-`;
-
-export const PostPageWrapper = styled(ColumnCenterFlex)`
-  background-color: var(--fit-green-back);
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
 `;

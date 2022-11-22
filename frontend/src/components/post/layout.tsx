@@ -21,6 +21,15 @@ export const ColumnCenterFlex = styled.div`
   align-items: center;
 `;
 
+export const PostPageWrapper = styled(ColumnCenterFlex)`
+  background-color: var(--fit-green-back);
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+`;
+
 // Used in PostMain.tsx, PostDetail.tsx
 export const PostContentWrapper = styled(ColumnCenterFlex)`
   width: 100%;
