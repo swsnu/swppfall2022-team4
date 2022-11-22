@@ -23,5 +23,6 @@ class TagAdmin(admin.ModelAdmin):
         "pk",
         "tag_class",
         "tag_name",
+        "calories",
         "created",
     )
