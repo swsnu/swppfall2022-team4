@@ -75,7 +75,14 @@ def tag_home(request):
 
             tag_name = data["name"]
             parent_class = TagClass.objects.get(pk=data["classId"])
-            created_tag = Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
+
+            if parent_class.class_type == "workout":
+                tag_calories = data.get("calories", CALORIES_DEFAULT)
+            else:
+                tag_calories = None
+            created_tag = Tag.objects.create(
+                tag_name=tag_name, tag_class=parent_class, calories=tag_calories
+            )
 
             if get_tag_class_type(parent_class.class_name) == 'workout':
                 Information.objects.create(name=tag_name, tag=created_tag)

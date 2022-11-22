@@ -56,7 +56,7 @@ const TagDetailModal = ({
   const [type, setType] = useState(0);
   const [createCategory, setCreateCategory] = useState<number>(-1);
   const [newTagInput, setNewTagInput] = useState<string>('');
-  const [newTagCalories, setNewTagCalories] = useState<number>(0);
+  const [newTagCalories, setNewTagCalories] = useState<number>();
   const [caloriesOfUser, setCaloriesOfUser] = useState<boolean>(true);
 
   const [newCategoryColor, setNewCategoryColor] = useState<string>('#000000');
@@ -78,9 +78,10 @@ const TagDetailModal = ({
   useEffect(() => {
     dispatch(tagActions.getTags());
   }, [tagClassCreate, tagCreate]);
-
-  const closeHandler = () => {
+  useEffect(() => {
     setCreateCategory(-1);
+  }, [isActive]);
+  const closeHandler = () => {
     onClose?.();
   };
 
@@ -161,7 +162,7 @@ const TagDetailModal = ({
                               </TagBubble>
                             )}
                           </div>
-                          {createCategory === tagClass.id && (
+                          {selected.length == 0 && createCategory === tagClass.id && (
                             <NewTagFormDiv>
                               <div>
                                 <input
@@ -176,15 +177,25 @@ const TagDetailModal = ({
                                   {newTagInput.length} / {TAG_NAME_LIMIT}
                                 </TagCharNum>
                               </div>
-                              <input
-                                placeholder="운동 칼로리(kcal/min/kg)"
-                                value={newTagCalories}
-                                type="number"
-                                onChange={e => {
-                                  setNewTagCalories(Number.parseFloat(e.target.value));
-                                }}
-                              />
+                              {tagClass.class_type === 'workout' && (
+                                <input
+                                  placeholder="운동 칼로리(kcal/min/kg)"
+                                  value={newTagCalories ? newTagCalories : ''}
+                                  type="number"
+                                  onChange={e => {
+                                    setNewTagCalories(Number.parseFloat(e.target.value));
+                                  }}
+                                />
+                              )}
                               <GreenBigBtn
+                                onClick={() => {
+                                  setCreateCategory(-1);
+                                }}
+                              >
+                                취소
+                              </GreenBigBtn>
+                              <GreenBigBtn
+                                disabled={newTagInput === ''}
                                 onClick={() => {
                                   dispatch(
                                     tagActions.createTag({
@@ -193,8 +204,8 @@ const TagDetailModal = ({
                                       calories: newTagCalories,
                                     }),
                                   );
-                                  // dispatch(tagActions.getTags());
                                   setNewTagInput('');
+                                  setNewTagCalories(undefined);
                                 }}
                               >
                                 생성
@@ -217,7 +228,6 @@ const TagDetailModal = ({
                                 color: newCategoryColor,
                               }),
                             );
-                            // dispatch(tagActions.getTags());
                             setNewCategoryInput('');
                           }}
                         >
@@ -319,13 +329,13 @@ const NewTagFormDiv = styled.div`
   align-items: flex-start;
   input {
     font-size: 12px;
-    width: 150px;
+    width: 170px;
     overflow-x: visible;
     background: none;
     padding: 5px 6px;
     border: 1px solid green;
     border-radius: 10px;
-    margin-right: 0px;
+    margin-right: 5px;
   }
   > div {
     display: flex;
@@ -333,6 +343,8 @@ const NewTagFormDiv = styled.div`
     > span {
       width: 100%;
       text-align: right;
+      padding-top: 3px;
+      padding-right: 8px;
     }
   }
 `;
