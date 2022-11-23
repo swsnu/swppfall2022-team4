@@ -21,7 +21,13 @@ beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
 const setup = () => {
-  const store = configureStore({ reducer: rootReducer });
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
+  });
   store.dispatch({
     type: 'user/setUser',
     payload: { username: 'username', nickname: 'nickname', image: 'image' },
@@ -39,10 +45,30 @@ describe('[Chat Page]', () => {
     test('init', () => {
       setup();
       expect(mockDispatch).toBeCalledTimes(4);
-      expect(mockDispatch).toHaveBeenCalledWith({ payload: '1234', type: 'chat/setWhere' });
       expect(mockDispatch).toHaveBeenCalledWith({ type: 'chat/getChatroomList' });
       expect(mockDispatch).toHaveBeenCalledWith({ payload: '1234', type: 'chat/getMessageList' });
+      expect(mockDispatch).toHaveBeenCalledWith({ payload: '1234', type: 'chat/readChatroom' });
     });
+  });
+
+  test('sendMessage', () => {
+    const store = setup();
+    const mockSend = jest.fn();
+    act(() => {
+      store.dispatch({
+        type: 'chat/setSocket',
+        payload: { send: mockSend },
+      });
+    });
+
+    const input = screen.getByPlaceholderText('채팅을 입력하세요.');
+    fireEvent.change(input, { target: { value: '1234' } });
+    fireEvent.keyPress(input, { key: 'Enter', code: 13, charCode: 13 });
+    expect(mockSend).toBeCalledTimes(1);
+
+    fireEvent.change(input, { target: { value: '1234' } });
+    fireEvent.click(screen.getByTestId('sendIcon'));
+    expect(mockSend).toBeCalledTimes(2);
   });
 
   test('Chatroom', () => {

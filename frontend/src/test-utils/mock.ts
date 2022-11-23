@@ -6,6 +6,7 @@ import { tagSlice } from 'store/slices/tag';
 import { userSlice } from 'store/slices/user';
 import { workoutLogSlice } from 'store/slices/workout';
 import { chatSlice } from 'store/slices/chat';
+import { notificationSlice } from 'store/slices/notification';
 
 export const initialState: PreloadedState<RootState> = {
   user: {
@@ -13,17 +14,14 @@ export const initialState: PreloadedState<RootState> = {
     error: null,
 
     profile: null,
-    profileContent: {
-      post: null,
-      comment: null,
-      scrap: null,
-    },
+
     loading: false,
     editProfile: false,
     deleteProfile: false,
     profileError: null,
-
-    notice: [],
+  },
+  notification: {
+    notificationList: [],
   },
   post: {
     postList: {
@@ -93,7 +91,7 @@ export const initialState: PreloadedState<RootState> = {
   },
   chat: {
     socket: null,
-    where: null,
+    where: '/',
 
     create: {
       id: null,
@@ -190,6 +188,7 @@ export const getMockStore = (preloadedState?: PreloadedState<RootState>) => {
       group: groupSlice.reducer,
       tag: tagSlice.reducer,
       chat: chatSlice.reducer,
+      notification: notificationSlice.reducer,
     },
     preloadedState,
   });

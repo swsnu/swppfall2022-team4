@@ -3,7 +3,18 @@ from utils.models import AbstractTimeStampedModel
 
 
 class TagClass(AbstractTimeStampedModel):
+    TAG_TYPE_GENERAL = "general"
+    TAG_TYPE_WORKOUT = "workout"
+    TAG_TYPE_PLACE = "place"
+
+    TAG_TYPE_CHOICES = (
+        (TAG_TYPE_GENERAL, "General"),
+        (TAG_TYPE_WORKOUT, "Workout"),
+        (TAG_TYPE_PLACE, "Place"),
+    )
+
     class_name = models.CharField(max_length=10)
+    class_type = models.CharField(max_length=20, choices=TAG_TYPE_CHOICES, default=TAG_TYPE_GENERAL)
     color = models.CharField(max_length=7)
 
     def __str__(self):

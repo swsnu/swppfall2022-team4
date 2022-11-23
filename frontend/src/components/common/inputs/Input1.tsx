@@ -5,12 +5,13 @@ interface IProps {
   placeholder: string;
   name: string;
   value: string;
-  changed: React.ChangeEventHandler<HTMLInputElement>;
+  changed?: React.ChangeEventHandler<HTMLInputElement>;
   keyPressed?: React.KeyboardEventHandler<HTMLInputElement>;
   style?: React.CSSProperties;
+  disabled?: boolean;
 }
 
-const Input1 = ({ type, placeholder, name, value, changed, keyPressed, style }: IProps) => {
+const Input1 = ({ type, placeholder, name, value, changed, keyPressed, style, disabled }: IProps) => {
   return (
     <Wrapper
       type={type}
@@ -20,6 +21,7 @@ const Input1 = ({ type, placeholder, name, value, changed, keyPressed, style }: 
       onChange={changed}
       onKeyDown={keyPressed}
       style={style}
+      disabled={disabled}
     />
   );
 };

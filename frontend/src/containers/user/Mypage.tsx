@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineEdit } from 'react-icons/ai';
+import { BsChatDots } from 'react-icons/bs';
+import { FaHeart, FaHeartBroken } from 'react-icons/fa';
 import styled from 'styled-components';
-import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import { faImage, faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -12,7 +14,7 @@ import { userActions } from 'store/slices/user';
 import { chatActions } from 'store/slices/chat';
 import { dateDiff, timeAgoFormat } from 'utils/datetime';
 
-import Loading, { LoadingWithoutMinHeight } from 'components/common/Loading';
+import Loading from 'components/common/Loading';
 import Button3 from 'components/common/buttons/Button3';
 import { TagBubbleCompact } from 'components/tag/tagbubble';
 import { ArticleItem } from 'containers/post/PostMain';
@@ -26,6 +28,18 @@ import {
   FuncType,
   IPropsComment,
 } from 'containers/post/PostDetail';
+import UserItem from 'components/user/UserItem';
+import { Post } from 'store/apis/post';
+import { Comment } from 'store/apis/comment';
+
+interface MyPageArticleIprops {
+  post: Post;
+}
+interface MyPageCommentIprops {
+  comment: Comment;
+}
+
+const CATEGORY = ['게시글', '댓글', '스크랩', '팔로잉'];
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -33,25 +47,22 @@ const Mypage = () => {
 
   const { username } = useParams();
   const [type, setType] = useState(0);
-  const { user, profile, loading, profileError, profileContent, chatroomId } = useSelector(
-    ({ user, chat }: RootState) => ({
-      user: user.user,
-      profile: user.profile,
-      loading: user.loading,
-      profileError: user.profileError,
-      profileContent: user.profileContent,
-      chatroomId: chat.create.id,
-    }),
-  );
+  const { socket, user, loading, profile, profileError, chatroomId } = useSelector(({ user, chat }: RootState) => ({
+    socket: chat.socket,
+    user: user.user,
+    loading: user.loading,
+    profile: user.profile,
+    profileError: user.profileError,
+    chatroomId: chat.create.id,
+  }));
 
   useEffect(() => {
     dispatch(userActions.getProfile(username || ''));
-    dispatch(userActions.getProfileContent(username || ''));
     return () => {
       dispatch(userActions.resetProfile());
       dispatch(chatActions.resetCreate());
     };
-  }, []);
+  }, [dispatch, username]);
   useEffect(() => {
     if (profileError && profileError.response?.status === 404) {
       navigate('/not_found');
@@ -61,14 +72,73 @@ const Mypage = () => {
     if (chatroomId) {
       navigate(`/chat/${chatroomId}`);
     }
-  }, [chatroomId]);
+  }, [navigate, chatroomId]);
 
-  const changeType = (num: number) => {
-    setType(num);
+  const onFollow = () => {
+    if (username) {
+      dispatch(userActions.follow(username));
+      if (user && profile && socket) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'follow',
+              info: username,
+              content: `${user.nickname}님이 나를 ${profile.is_follow ? '언팔로우' : '팔로우'}했습니다.`,
+              image: user.image,
+              link: `/profile/${user.username}`,
+            },
+          }),
+        );
+      }
+    }
   };
 
-  if (!user) return <div>no user</div>;
-  if (!username) return <div>empty page</div>;
+  const MyPageArticleItem = ({ post }: MyPageArticleIprops) => (
+    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
+      {post.prime_tag ? (
+        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
+      ) : (
+        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
+      )}
+      <span>
+        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
+        <span>[{post.comments_num}]</span>
+      </span>
+      <span>{post.author.username}</span>
+      <span>{post.like_num - post.dislike_num}</span>
+      <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
+    </ArticleItem>
+  );
+  const MyPageCommentItem = ({ comment }: MyPageCommentIprops) => (
+    <CommentItem
+      key={comment.comment_id}
+      isChild={comment.parent_comment !== null}
+      onClick={() => navigate(`/post/${comment.post_id}`)}
+    >
+      {comment.parent_comment !== null && (
+        <CommentChildIndicator>
+          <FontAwesomeIcon icon={faArrowRight} />
+        </CommentChildIndicator>
+      )}
+      <CommentContentWrapper>
+        <CommentContent>{comment.content}</CommentContent>
+      </CommentContentWrapper>
+      <CommentFuncWrapper>
+        <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
+          <FontAwesomeIcon icon={faThumbsUp} />
+        </FuncBtn>
+        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
+        <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
+          <FontAwesomeIcon icon={faThumbsDown} />
+        </FuncBtn>
+        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
+        <CommentFuncTimeIndicator> {timeAgoFormat(new Date(), new Date(comment.created))} </CommentFuncTimeIndicator>
+      </CommentFuncWrapper>
+    </CommentItem>
+  );
+
+  if (!user || !username) return <div>no user</div>;
   if (loading || !profile) return <Loading />;
   return (
     <Wrapper>
@@ -76,13 +146,31 @@ const Mypage = () => {
         <LeftWrapper>
           <ProfileImage src={process.env.REACT_APP_API_IMAGE + profile.image} alt="profile" />
           <ProfileInfoWrapper>
-            <Nickname>{profile.nickname}</Nickname>
+            <NicknameWrapper>
+              <Nickname>{profile.nickname}</Nickname>
+              {profile.login_method == 'kakao' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/kakao.jpg')} alt="kakao" />
+              )}
+              {profile.login_method == 'google' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/google.png')} alt="google" />
+              )}
+              {profile.login_method == 'facebook' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/facebook.png')} alt="facebook" />
+              )}
+              {profile.login_method == 'github' && (
+                <SocialLoginIcon src={require('assets/images/main/social_login_icon/github.png')} alt="github" />
+              )}
+            </NicknameWrapper>
             <Username>{profile.username}</Username>
             <Gender>{profile.gender === 'male' ? '남성' : '여성'}</Gender>
             <BodyWrapper>
               <div>{`${profile.height}cm`}</div>
               <div>{`${profile.weight}kg`}</div>
             </BodyWrapper>
+            <LevelWrapper>
+              <div>{`${profile.level} Level`}</div>
+              <div>{`${profile.exp} point`}</div>
+            </LevelWrapper>
           </ProfileInfoWrapper>
         </LeftWrapper>
 
@@ -90,135 +178,91 @@ const Mypage = () => {
           <DateDiff>{dateDiff(profile.created)}</DateDiff>
           <DateDiffText>일 째</DateDiffText>
           {user.username === profile.username ? (
-            <Button3
-              content="프로필 수정"
-              clicked={() => navigate('/edit_profile')}
-              style={{
-                marginTop: '20px',
-              }}
-            />
+            <>
+              <Button3 content="프로필 수정" clicked={() => navigate('/edit_profile')} style={{ marginTop: '20px' }} />
+              <EditIcon onClick={() => navigate('/edit_profile')} data-testid="editProfileIcon" />
+            </>
           ) : (
-            <Button3
-              content="메시지 전송"
-              clicked={() => dispatch(chatActions.createChatroom({ username: username }))}
-              style={{
-                marginTop: '20px',
-              }}
-            />
+            <ButtonWrapper>
+              <>
+                <ChatButton onClick={() => dispatch(chatActions.createChatroom({ username: username }))}>
+                  Chat
+                </ChatButton>
+                <ChatIcon
+                  onClick={() => dispatch(chatActions.createChatroom({ username: username }))}
+                  data-testid="chatButton"
+                />
+              </>
+              {profile.is_follow ? (
+                <>
+                  <UnfollowButton onClick={onFollow}>UnFollow</UnfollowButton>
+                  <UnfollowIcon onClick={onFollow} data-testid="followButton" />
+                </>
+              ) : (
+                <>
+                  <FollowButton onClick={onFollow}>Follow</FollowButton>
+                  <FollowIcon onClick={onFollow} data-testid="unfollowButton" />
+                </>
+              )}
+            </ButtonWrapper>
           )}
         </ProfileEtcWrapper>
-        <EditIcon onClick={() => navigate('/edit_profile')} data-testid="editProfileIcon" />
       </ProfileWrapper>
 
       <ContentWrapper>
         <CategoryWrapper>
-          <Category active={type === 0} onClick={() => changeType(0)}>
-            요약
-          </Category>
-          <Category active={type === 1} onClick={() => changeType(1)}>
-            내 글
-          </Category>
-          <Category active={type === 2} onClick={() => changeType(2)}>
-            내 댓글
-          </Category>
-          <Category active={type === 3} onClick={() => changeType(3)}>
-            팔로잉
-          </Category>
-          <Category active={type === 4} onClick={() => changeType(4)}>
-            스크랩
-          </Category>
+          {CATEGORY.map((x, idx) => (
+            <Category key={idx} active={type === idx} onClick={() => setType(idx)}>
+              {x}
+            </Category>
+          ))}
         </CategoryWrapper>
         <ProfileContentLayout>
           {
             {
-              0: <span>0</span>,
+              0: (
+                <ProfileContentWrapper>
+                  {profile.information.post.map(post => (
+                    <MyPageArticleItem key={post.post_id} post={post} />
+                  ))}
+                </ProfileContentWrapper>
+              ),
               1: (
                 <ProfileContentWrapper>
-                  {profileContent.post ? (
-                    profileContent.post.map((post, id) => {
-                      return (
-                        <ArticleItem key={id} onClick={() => navigate(`/post/${post.id}`)}>
-                          {post.prime_tag ? (
-                            <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-                          ) : (
-                            <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-                          )}
-                          <span>
-                            {post.title} <span>[{post.comments_num}]</span>
-                          </span>
-                          <span>{post.author_name}</span>
-                          <span>{post.like_num - post.dislike_num}</span>
-                          <span>{timeAgoFormat(post.created)}</span>
-                        </ArticleItem>
-                      );
-                    })
-                  ) : (
-                    <LoadingWithoutMinHeight />
-                  )}
+                  {profile.information.comment.map(comment => (
+                    <MyPageCommentItem key={comment.comment_id} comment={comment} />
+                  ))}
                 </ProfileContentWrapper>
               ),
               2: (
                 <ProfileContentWrapper>
-                  {profileContent.comment ? (
-                    profileContent.comment.map(comment => (
-                      <CommentItem
-                        key={comment.id}
-                        isChild={comment.parent_comment !== null}
-                        onClick={() => navigate(`/post/${comment.post_id}`)}
-                      >
-                        {comment.parent_comment !== null && (
-                          <CommentChildIndicator>
-                            <FontAwesomeIcon icon={faArrowRight} />
-                          </CommentChildIndicator>
-                        )}
-                        <CommentContentWrapper>
-                          <CommentContent>{comment.content}</CommentContent>
-                        </CommentContentWrapper>
-                        <CommentFuncWrapper>
-                          <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
-                            <FontAwesomeIcon icon={faThumbsUp} />
-                          </FuncBtn>
-                          <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-                          <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
-                            <FontAwesomeIcon icon={faThumbsDown} />
-                          </FuncBtn>
-                          <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-                          <CommentFuncTimeIndicator> {timeAgoFormat(comment.created)} </CommentFuncTimeIndicator>
-                        </CommentFuncWrapper>
-                      </CommentItem>
-                    ))
-                  ) : (
-                    <LoadingWithoutMinHeight />
-                  )}
+                  {profile.information.scrap.map(post => (
+                    <MyPageArticleItem key={post.post_id} post={post} />
+                  ))}
                 </ProfileContentWrapper>
               ),
-              3: <span>3</span>,
-              4: (
-                <ProfileContentWrapper>
-                  {profileContent.scrap ? (
-                    profileContent.scrap.map((post, id) => {
-                      return (
-                        <ArticleItem key={id} onClick={() => navigate(`/post/${post.id}`)}>
-                          {post.prime_tag ? (
-                            <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-                          ) : (
-                            <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-                          )}
-                          <span>
-                            {post.title} <span>[{post.comments_num}]</span>
-                          </span>
-                          <span>{post.author_name}</span>
-                          <span>{post.like_num - post.dislike_num}</span>
-                          <span>{timeAgoFormat(post.created)}</span>
-                        </ArticleItem>
-                      );
-                    })
-                  ) : (
-                    <LoadingWithoutMinHeight />
-                  )}
-                </ProfileContentWrapper>
+              3: (
+                <FollowContentWrapper>
+                  <FollowCountWrapper>
+                    <FollowCountText>Follower</FollowCountText>
+                    <FollowCountNumber>{profile.information.follower.length}</FollowCountNumber>
+                  </FollowCountWrapper>
+                  <FollowUserWrapper>
+                    {profile.information.follower.map(user => (
+                      <UserItem key={user.username} user={user} clicked={() => navigate(`/profile/${user.username}`)} />
+                    ))}
+                  </FollowUserWrapper>
+                  <FollowCountWrapper>
+                    <FollowCountText>Following</FollowCountText>
+                    <FollowCountNumber>{profile.information.following.length}</FollowCountNumber>
+                  </FollowCountWrapper>
+                  <FollowUserWrapper>
+                    {profile.information.following.map(user => (
+                      <UserItem key={user.username} user={user} clicked={() => navigate(`/profile/${user.username}`)} />
+                    ))}
+                  </FollowUserWrapper>
+                </FollowContentWrapper>
               ),
-              5: <span>5</span>,
             }[type]
           }
         </ProfileContentLayout>
@@ -239,7 +283,6 @@ const Wrapper = styled.div`
   align-items: center;
   padding-bottom: 50px;
 `;
-
 const ProfileWrapper = styled.div`
   width: 100%;
   height: 250px;
@@ -262,11 +305,9 @@ const ProfileWrapper = styled.div`
     padding: 20px 15px 15px 15px;
   }
   @media all and (max-width: 480px) {
-    height: 160px;
     padding: 20px 15px 15px 15px;
   }
 `;
-
 const LeftWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -298,6 +339,11 @@ const ProfileInfoWrapper = styled.div`
   justify-content: center;
   font-family: NanumSquareR;
 `;
+const NicknameWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
 const Nickname = styled.div`
   font-size: 32px;
   font-weight: 600;
@@ -307,6 +353,13 @@ const Nickname = styled.div`
     font-size: 24px;
   }
 `;
+const SocialLoginIcon = styled.img`
+  width: 25px;
+  height: 25px;
+  border-radius: 10px;
+  margin-left: 10px;
+`;
+
 const Username = styled.div`
   color: #464646;
   font-size: 21px;
@@ -337,24 +390,80 @@ const BodyWrapper = styled.div`
     font-family: 'Noto Sans KR', sans-serif;
   }
 `;
+const LevelWrapper = styled.div`
+  margin-top: 12px;
+  display: flex;
+  font-family: sans-serif;
+  gap: 5px;
+  font-size: 17px;
+  color: #303030;
+
+  @media all and (max-width: 480px) {
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+`;
 const ProfileEtcWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  @media all and (max-width: 600px) {
-    display: none;
-  }
 `;
 const DateDiff = styled.div`
   color: #3a8d4d;
   font-size: 84px;
   font-family: 'Rubik', sans-serif;
+  @media all and (max-width: 600px) {
+    display: none;
+  }
 `;
 const DateDiffText = styled.div`
   font-size: 25px;
   font-family: NanumSqaureR;
+  @media all and (max-width: 600px) {
+    display: none;
+  }
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+`;
+const MypageButton = styled.div`
+  height: 40px;
+  border: 0;
+  border-radius: 5px;
+  padding: 12px 10px 0 10px;
+  color: white;
+  font-size: 18px;
+  font-family: FugazOne;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  @media all and (max-width: 600px) {
+    display: none;
+  }
+`;
+const ChatButton = styled(MypageButton)`
+  background-color: #3f6cd1;
+  &:hover {
+    background-color: #5b84df;
+  }
+`;
+const FollowButton = styled(MypageButton)`
+  width: 92px;
+  background-color: #6aa112;
+  &:hover {
+    background-color: #7ebd18;
+  }
+`;
+const UnfollowButton = styled(MypageButton)`
+  width: 92px;
+  font-size: 16px;
+  background-color: #9c3434;
+  &:hover {
+    background-color: #c74e4e;
+  }
 `;
 const EditIcon = styled(AiOutlineEdit)`
   width: 40px;
@@ -367,6 +476,63 @@ const EditIcon = styled(AiOutlineEdit)`
   transition: background-color 0.15s linear;
   &:hover {
     background-color: #aae5c7;
+  }
+  align-self: flex-end;
+  display: none;
+
+  @media all and (max-width: 600px) {
+    display: block;
+  }
+`;
+const ChatIcon = styled(BsChatDots)`
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 40px;
+  padding: 5px;
+  background-color: #dde6ff;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  &:hover {
+    background-color: #c1d1ff;
+  }
+  align-self: flex-end;
+  display: none;
+
+  @media all and (max-width: 600px) {
+    display: block;
+  }
+`;
+const FollowIcon = styled(FaHeart)`
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 40px;
+  padding: 5px;
+  background-color: #d7efe3;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  &:hover {
+    background-color: #aae5c7;
+  }
+  align-self: flex-end;
+  display: none;
+
+  @media all and (max-width: 600px) {
+    display: block;
+  }
+`;
+const UnfollowIcon = styled(FaHeartBroken)`
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 40px;
+  padding: 5px;
+  background-color: #efd7d7;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  &:hover {
+    background-color: #e5aaaa;
   }
   align-self: flex-end;
   display: none;
@@ -442,7 +608,6 @@ const ProfileContentLayout = styled.div`
   background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
   background-attachment: local, local, scroll, scroll;
 `;
-
 const ProfileContentWrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -455,7 +620,6 @@ const ProfileContentWrapper = styled.div`
     display: none;
   }
 `;
-
 const CommentItem = styled.div<IPropsComment>`
   padding: 5px 30px;
   font-size: 14px;
@@ -471,7 +635,42 @@ const CommentItem = styled.div<IPropsComment>`
     padding-left: 30px;
   `}
 `;
-
 const CommentChildIndicator = styled.div`
   margin-right: 12px;
+`;
+const FollowContentWrapper = styled.div`
+  width: 100%;
+  min-height: 551.3px;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+`;
+const FollowCountWrapper = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #d1d1d1;
+`;
+const FollowCountText = styled.div`
+  font-size: 20px;
+  font-weight: 600;
+  font-family: NanumSquareR;
+  margin-right: 8px;
+`;
+const FollowCountNumber = styled.div`
+  font-size: 24px;
+  font-weight: 600;
+  font-family: NanumSquareR;
+  color: #257a39;
+`;
+const FollowUserWrapper = styled.div`
+  width: 100%;
+  padding: 15px 10px;
+  gap: 5px 15px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 `;

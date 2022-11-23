@@ -1,20 +1,20 @@
 from django.contrib import admin
-from . import models
+from tags.models import TagClass, Tag
 
 
-@admin.register(models.TagClass)
+@admin.register(TagClass)
 class TagClassAdmin(admin.ModelAdmin):
     """TagClass admin definition"""
 
     list_display = (
         "pk",
         "class_name",
-        "color",
+        "class_type",
         "created",
     )
 
 
-@admin.register(models.Tag)
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """Tag admin definition"""
 

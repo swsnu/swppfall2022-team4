@@ -1,5 +1,4 @@
 import json
-import copy
 from django.http import (
     HttpResponseBadRequest,
     HttpResponseNotFound,
@@ -10,6 +9,37 @@ from posts.models import Post
 from comments.models import Comment
 from users.models import User
 
+
+def prepare_comment_response(comment, is_detail=False, username=''):
+    response = {
+        "post_id": comment.post.pk,
+        "comment_id": comment.pk,
+        "author": {
+            "username": comment.author.username,
+            "nickname": comment.author.nickname,
+            "avatar": comment.author.image,
+            "level": comment.author.level,
+            "exp": comment.author.exp,
+        },
+        "content": comment.content,
+        "created": comment.created,
+        "updated": comment.updated,
+        "like_num": comment.get_like_num(),
+        "dislike_num": comment.get_dislike_num(),
+        "parent_comment": comment.parent_comment.pk if comment.parent_comment else None,
+    }
+
+    if is_detail:
+        response["liked"] = comment.liker.all().filter(username=username).exists()
+        response["disliked"] = comment.disliker.all().filter(username=username).exists()
+    return response
+
+
+def prepare_comments_response(comments, is_detail=False, username=''):
+    comments_serial = []
+    for comment in comments:
+        comments_serial.append(prepare_comment_response(comment, is_detail, username))
+    return comments_serial
 
 @require_http_methods(["POST"])
 def comment_home(request):
@@ -101,7 +131,7 @@ def comment_func(request, query_id):
                 comm_obj.disliker.add(user)
         else:
             return HttpResponseBadRequest()
-        return JsonResponse({"message": "success"}, status=200)
+        return JsonResponse({"type": type_of_work}, status=200)
     except (Comment.DoesNotExist, User.DoesNotExist):
         return HttpResponseNotFound()
 
@@ -114,17 +144,5 @@ def recent_comment(request):
     comments = Comment.objects.order_by("-created")[0:10]
     proc_comm = list(comments.values())
     for index, _ in enumerate(proc_comm):
-        proc_comm[index]["like_num"] = comments[index].get_like_num()
-        proc_comm[index]["dislike_num"] = comments[index].get_dislike_num()
-        proc_comm[index]["liked"] = (
-            comments[index].liker.all().filter(username=request.user.username).exists()
-        )
-        proc_comm[index]["disliked"] = (
-            comments[index].disliker.all().filter(username=request.user.username).exists()
-        )
-        proc_comm[index]["author_name"] = comments[index].author.username
-        proc_comm[index]["parent_comment"] = proc_comm[index]["parent_comment_id"]
-        del proc_comm[index]["author_id"]
-        del proc_comm[index]["parent_comment_id"]
-
+        proc_comm[index] = prepare_comment_response(comments[index])
     return JsonResponse({"comments": proc_comm}, status=200)

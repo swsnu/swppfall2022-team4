@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import '../../styles/color.css';
 
 export const BtnBlueprint = styled.button`
   padding: 0px;
@@ -102,7 +101,7 @@ export const CommentGreenBtn = styled(CommentBtn)`
     background-color: var(--fit-green-btn-active);
   }
 `;
-export const CommentRedBtn = styled(CommentBtn)`
+export const RedSmallBtn = styled(CommentBtn)`
   background-color: var(--fit-red-neg);
   &:hover {
     background-color: var(--fit-red-neg-hover);

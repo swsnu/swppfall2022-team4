@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ReactNotifications } from 'react-notifications-component';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
@@ -6,6 +7,9 @@ import FugazOne from 'assets/fonts/FugazOne.ttf';
 import IBMPlexSansThaiLooped from 'assets/fonts/IBMPlexSansThaiLooped.ttf';
 import NanumSquareR from 'assets/fonts/NanumSquareR.ttf';
 import Acme from 'assets/fonts/Acme.ttf';
+import 'styles/react-notification-custom.css';
+import 'styles/color.css';
+import 'styles/modalTransition.css';
 
 import Header from 'components/sections/Header';
 import Footer from 'components/sections/Footer';
@@ -17,6 +21,7 @@ import Signup from 'containers/user/Signup';
 import Mypage from 'containers/user/Mypage';
 import EditProfile from 'containers/user/EditProfile';
 import EditPassword from 'containers/user/EditPassword';
+import Notification from 'containers/user/Notification';
 
 import Chat from 'containers/chat/Chat';
 
@@ -34,6 +39,8 @@ import GroupDetail from 'containers/group/GroupDetail';
 import GroupCreate from 'containers/group/GroupCreate';
 import GroupMembers from 'containers/group/GroupMembers';
 import GroupCert from 'containers/group/GroupCert';
+import { KakaoLoginCallback } from 'containers/user/SocialLoginCallback';
+import GroupChat from 'containers/group/GroupChat';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -106,7 +113,15 @@ function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          <Route path="*" element={<InsideComponent />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <ReactNotifications />
+                <InsideComponent />
+              </>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
@@ -119,18 +134,21 @@ const InsideComponent = () => {
     <Routes>
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
+      <Route path="oauth/*">
+        <Route path="kakao" element={<KakaoLoginCallback />} />
+      </Route>
       <Route
         path="*"
         element={
           <Wrapper>
             <Header />
-
             <Routes>
               <Route path="" element={<Main />} />
 
               <Route path="profile/:username" element={<Mypage />} />
               <Route path="edit_profile" element={<EditProfile />} />
               <Route path="edit_password" element={<EditPassword />} />
+              <Route path="notification" element={<Notification />} />
 
               <Route path="chat" element={<Chat />} />
               <Route path="chat/:id" element={<Chat />} />
@@ -151,6 +169,7 @@ const InsideComponent = () => {
                 <Route path="detail/:group_id/member" element={<GroupMembers />} />
                 <Route path="create" element={<GroupCreate />} />
                 <Route path="detail/:group_id/cert" element={<GroupCert />} />
+                <Route path="chat/:group_id" element={<GroupChat />} />
               </Route>
 
               <Route path="information" element={<InformationLobby />} />

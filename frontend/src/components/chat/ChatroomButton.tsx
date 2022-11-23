@@ -1,20 +1,23 @@
 import styled from 'styled-components';
+import { userType } from 'store/apis/user';
 
 interface IProps {
-  user: {
-    username: string;
-    nickname: string;
-    image: string;
-  } | null;
+  user: userType | null;
+  newChat: boolean;
+  recentMessage: string;
   clicked: React.MouseEventHandler<HTMLDivElement>;
   active: boolean;
 }
 
-const ChatroomButton = ({ user, clicked, active }: IProps) => {
+const ChatroomButton = ({ user, newChat, recentMessage, clicked, active }: IProps) => {
   return (
     <Wrapper onClick={clicked} active={active}>
+      {newChat && <New />}
       <ProfileImage src={process.env.REACT_APP_API_IMAGE + (user ? user.image : 'profile_default.png')} />
-      <Nickname>{user ? user.nickname : '(알수없음)'}</Nickname>
+      <ContentWrapper>
+        <Nickname>{user ? user.nickname : '(알수없음)'}</Nickname>
+        <RecentMessage>{recentMessage}</RecentMessage>
+      </ContentWrapper>
     </Wrapper>
   );
 };
@@ -25,13 +28,13 @@ const Wrapper = styled.div<{ active: boolean }>`
   width: 250px;
   height: 80px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   position: relative;
-  margin: 5px 0;
   background-color: #ffffff;
   border-radius: 10px;
-  padding: 12px 10px;
+  margin: 8px 0;
+  padding: 7.5px 10px;
   font-size: 18px;
   font-weight: 600;
   font-family: NanumSquareR;
@@ -47,6 +50,20 @@ const Wrapper = styled.div<{ active: boolean }>`
   -khtml-user-select: none;
   user-select: none;
 `;
+const New = styled.div`
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  background-color: #db5353;
+  top: -6px;
+  right: -6px;
+`;
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 const ProfileImage = styled.img`
   width: 60px;
   height: 60px;
@@ -57,4 +74,16 @@ const ProfileImage = styled.img`
 const Nickname = styled.div`
   width: 150px;
   text-align: center;
+`;
+const RecentMessage = styled.div`
+  width: 150px;
+  font-size: 15px;
+  font-weight: 400;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #777777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  margin-top: 7.5px;
 `;

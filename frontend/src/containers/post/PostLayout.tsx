@@ -1,18 +1,18 @@
-import 'styles/color.css';
-import { RootState } from 'index';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postActions } from 'store/slices/post';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { columnCenterFlex, rowCenterFlex } from 'components/post/layout';
+import { RootState } from 'index';
+import { postActions } from 'store/slices/post';
+import { ColumnCenterFlex, RowCenterFlex } from 'components/post/layout';
+import { useNavigate } from 'react-router-dom';
 
 interface IPropsSearchClear {
   isActive?: boolean;
 }
 
-export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX.Element) => {
+export const PostMainLayout = (mainElement: JSX.Element, sideElement: JSX.Element) => {
   const postSearch = useSelector(({ post }: RootState) => post.postSearch);
   const [search, setSearch] = useState(postSearch);
   const dispatch = useDispatch();
@@ -22,7 +22,7 @@ export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <TopElementWrapperWithoutPadding>
+        <TopWrapper>
           <SearchForm
             onSubmit={e => {
               e.preventDefault();
@@ -55,7 +55,62 @@ export const PostPageWithSearchBar = (mainElement: JSX.Element, sideElement: JSX
               Clear
             </ClearSearchInput>
           </SearchForm>
-        </TopElementWrapperWithoutPadding>
+        </TopWrapper>
+        <Main_SideWrapper>
+          {mainElement}
+          {sideElement}
+        </Main_SideWrapper>
+      </PostContentWrapper>
+    </PostPageWrapper>
+  );
+};
+
+export const PostDetailLayout = (mainElement: JSX.Element, sideElement: JSX.Element) => {
+  const postSearch = useSelector(({ post }: RootState) => post.postSearch);
+  const [search, setSearch] = useState(postSearch);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  useEffect(() => {
+    setSearch(postSearch);
+  }, []);
+  return (
+    <PostPageWrapper>
+      <PostContentWrapper>
+        <TopWrapper>
+          <SearchForm
+            onSubmit={e => {
+              e.preventDefault();
+              navigate(`/post`);
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: search,
+                }),
+              );
+            }}
+          >
+            <SearchIcon>
+              <FontAwesomeIcon icon={faSearch} />
+            </SearchIcon>
+            <SearchInput
+              placeholder="Search keyword"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            ></SearchInput>
+            <ClearSearchInput
+              isActive={search !== ''}
+              onClick={() => {
+                setSearch('');
+                dispatch(
+                  postActions.postSearch({
+                    search_keyword: '',
+                  }),
+                );
+              }}
+            >
+              Clear
+            </ClearSearchInput>
+          </SearchForm>
+        </TopWrapper>
         <Main_SideWrapper>
           {mainElement}
           {sideElement}
@@ -78,6 +133,7 @@ const SearchInput = styled.input`
   font-size: 15px;
   border: none;
 `;
+
 const ClearSearchInput = styled.span<IPropsSearchClear>`
   width: 5%;
   text-align: center;
@@ -88,19 +144,21 @@ const ClearSearchInput = styled.span<IPropsSearchClear>`
     display: none;
   `}
 `;
-const SearchIcon = styled(rowCenterFlex)`
+
+const SearchIcon = styled(RowCenterFlex)`
   margin-left: 20px;
 `;
 
-export const PostPageWrapper = styled(columnCenterFlex)`
+export const PostPageWrapper = styled(ColumnCenterFlex)`
   background-color: var(--fit-green-back);
   width: 100%;
   height: 100%;
   min-height: 100vh;
   overflow-x: hidden;
+  position: relative;
 `;
 
-export const PostContentWrapper = styled(columnCenterFlex)`
+export const PostContentWrapper = styled(ColumnCenterFlex)`
   width: 100%;
   height: 100%;
   min-height: 100vh;
@@ -111,7 +169,7 @@ export const PostContentWrapper = styled(columnCenterFlex)`
   }
 `;
 
-export const TopElementWrapperWithoutPadding = styled.div`
+export const TopWrapper = styled.div`
   margin: 40px 0px 15px 0px;
   width: 100%;
   background-color: var(--fit-white);

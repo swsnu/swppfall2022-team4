@@ -20,6 +20,7 @@ class JsonWebTokenMiddleWare:
                 request.path
                 not in (
                     "/api/user/login/",
+                    "/api/user/login/kakao/callback/",
                     "/api/user/social_login/",
                     "/api/user/signup/",
                     "/api/user/token/",
