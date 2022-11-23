@@ -120,7 +120,11 @@ describe('[PostEdit Page]', () => {
     const confirmBtn = screen.getByText('완료');
     const titleInput = screen.getByPlaceholderText('제목');
     const contentInput = screen.getByPlaceholderText('내용');
+    userEvent.type(titleInput, 'RulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRullu');
+    userEvent.clear(titleInput);
     userEvent.type(titleInput, 'Rullu');
+    userEvent.type(contentInput, 'Ralla'.repeat(200));
+    userEvent.clear(contentInput);
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
     expect(mockDispatch).toBeCalledTimes(3);
