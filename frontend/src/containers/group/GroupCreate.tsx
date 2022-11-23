@@ -234,6 +234,7 @@ const GroupCreate = () => {
             onChange={() => setMaxNum(!max_num)}
           />
           <CreateInput
+            data-testid="maxNum"
             type="number"
             disabled={!max_num}
             value={group_num}
@@ -350,10 +351,10 @@ const GroupCreate = () => {
         />
 
         <CreateText>그룹 공개 설정</CreateText>
-        <CreateCheck type="checkbox" checked={free} onChange={() => setFree(!free)} />
+        <CreateCheck data-testid="freeCheck" type="checkbox" checked={free} onChange={() => setFree(!free)} />
 
         <CreateText>그룹 장소 설정</CreateText>
-        <CreateCheck type="checkbox" checked={place} onChange={() => setPlace(!place)} />
+        <CreateCheck data-testid="placeCheck" type="checkbox" checked={place} onChange={() => setPlace(!place)} />
         <CreateInput type="text" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="장소 검색" />
         {clickedAddress && <div>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>}
         <Map // 로드뷰를 표시할 Container

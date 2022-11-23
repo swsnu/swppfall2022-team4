@@ -88,11 +88,11 @@ describe('setup test', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
-    const maxNumCheck = screen.getByTestId('maxNumCheck');
+    const maxNum = screen.getByTestId('maxNum');
     const startInput = screen.getByTestId('start_date');
     const endInput = screen.getByTestId('end_date');
     userEvent.type(nameInput, 'group test');
-    fireEvent.click(maxNumCheck);
+    userEvent.type(maxNum, '10');
     userEvent.type(startInput, '2019-01-01');
     userEvent.type(endInput, '2019-01-02');
     const saveBtn = screen.getByText('Create');
@@ -214,9 +214,13 @@ describe('setup test', () => {
     const maxNumCheck = screen.getByTestId('maxNumCheck');
     const setDate = screen.getByTestId('setDate');
     const descriptionInput = screen.getByPlaceholderText('그룹의 설명');
+    const freeCheck = screen.getByTestId('freeCheck');
+    const placeCheck = screen.getByTestId('placeCheck');
     userEvent.type(nameInput, 'group test');
     fireEvent.click(maxNumCheck);
     fireEvent.click(setDate);
+    fireEvent.click(freeCheck);
+    fireEvent.click(placeCheck);
     userEvent.type(descriptionInput, 'group test');
 
     const workoutType = screen.getByTestId('workoutType');
@@ -235,5 +239,20 @@ describe('setup test', () => {
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
     expect(mockDispatch).toBeCalledTimes(1);
+  });
+  it('save & navigate', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/createGroupSuccess',
+        payload: {id: '1'},
+      });
+    });
+    expect(mockNavigate).toBeCalledTimes(1);
+  });
+  it('keyword', () => {
+    setup();
+    const placeInput = screen.getByPlaceholderText('장소 검색');
+    userEvent.type(placeInput, '봉천동');
   });
 });
