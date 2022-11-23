@@ -39,9 +39,9 @@ const GroupList = () => {
   const [currentAddressName, setCurrentAddressName] = useState<string | null>(null);
   const displayCenterInfo = (result: co2regionResponseType[], status: kakao.maps.services.Status) => {
     if (status === kakao.maps.services.Status.OK) {
-      for (let i = 0; i < result.length; i++) {
-        if (result[i].region_type === 'H') {
-          setCurrentAddressName(result[i].address_name);
+      for (const item of result) {
+        if (item.region_type === 'H') {
+          setCurrentAddressName(item.address_name);
           break;
         }
       }

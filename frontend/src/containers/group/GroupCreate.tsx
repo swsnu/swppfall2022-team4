@@ -191,15 +191,15 @@ const GroupCreate = () => {
       if (status === kakao.maps.services.Status.OK) {
         const bounds = new kakao.maps.LatLngBounds();
         const psResults = [];
-        for (let i = 0; i < data.length; i++) {
+        for (const item of data) {
           psResults.push({
             position: {
-              lat: +data[i].y,
-              lng: +data[i].x,
+              lat: +item.y,
+              lng: +item.x,
             },
-            content: data[i].place_name,
+            content: item.place_name,
           });
-          bounds.extend(new kakao.maps.LatLng(+data[i].y, +data[i].x));
+          bounds.extend(new kakao.maps.LatLng(+item.y, +item.x));
         }
         setSearchResult(psResults);
         map.setBounds(bounds);
