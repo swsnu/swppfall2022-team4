@@ -3,9 +3,7 @@ import { MemberElement } from './MemberElement';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
-import * as groupApi from '../../store/apis/group';
 import Router from 'react-router-dom';
 
 const mockNavigate = jest.fn();
