@@ -35,7 +35,7 @@ const Main = () => {
 
   let calories_map: chartData[] = [];
 
-  calendarInfo.map(single_date_info => {
+  calendarInfo.forEach(single_date_info => {
     console.log(single_date_info);
     let sMonth = String(single_date_info.month);
     let sDate = String(single_date_info.date);
