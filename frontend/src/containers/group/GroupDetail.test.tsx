@@ -304,6 +304,5 @@ describe('setup test', () => {
         payload: {response: {data: {status: 404, message: 'error'}}},
       });
     });
-    screen.debug();
   });
 });
