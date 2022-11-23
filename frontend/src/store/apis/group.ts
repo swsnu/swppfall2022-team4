@@ -77,6 +77,16 @@ export type Fitelement = {
   time: number;
 };
 
+export type FitelementRequestType = {
+  type: string;
+  workout_type: string;
+  category: string;
+  weight: number;
+  rep: number;
+  set: number;
+  time: number;
+};
+
 export type Member = {
   id: number;
   username: string;
@@ -109,7 +119,7 @@ export type postGroupRequestType = {
   lat: number | null;
   lng: number | null;
   address: string | null;
-  goal: Fitelement[];
+  goal: FitelementRequestType[];
 };
 
 export type postGroupResponseType = {

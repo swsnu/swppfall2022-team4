@@ -14,7 +14,7 @@ import {
 } from 'assets/types/group';
 import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
-import { Fitelement } from 'store/apis/group';
+import { FitelementRequestType } from 'store/apis/group';
 import { FitElement } from 'components/fitelement/FitElement';
 
 const GroupCreate = () => {
@@ -38,7 +38,7 @@ const GroupCreate = () => {
   const [rep, setRep] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
   const [wtime, setWTime] = useState<number | null>(null);
-  const [goal_list, setGoalList] = useState<Fitelement[]>([]);
+  const [goal_list, setGoalList] = useState<FitelementRequestType[]>([]);
   // place
   const [place, setPlace] = useState(true);
   const [currentLocation, setCurrentLocation] = useState<geolocationResponseType>({
@@ -64,7 +64,7 @@ const GroupCreate = () => {
 
   const createGoal = () => {
     if (workout_type && weight && rep && set && wtime) {
-      const goal: Fitelement = {
+      const goal: FitelementRequestType = {
         type: 'goal',
         category: 'body',
         workout_type: workout_type,

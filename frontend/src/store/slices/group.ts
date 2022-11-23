@@ -146,7 +146,6 @@ export const groupSlice = createSlice({
     },
     getGroupMembersFailure: (state, { payload }) => {
       state.groupMembers.error = payload;
-      alert(payload.response?.data.message);
     },
     joinGroup: (state, action: PayloadAction<string>) => {
       state.groupAction.status = false;
