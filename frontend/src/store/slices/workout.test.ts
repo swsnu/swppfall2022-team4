@@ -5,10 +5,8 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { rootReducer } from '../index';
 import * as workoutAPI from '../apis/workout';
 import workoutLogSaga, { initialState, workoutLogSlice, workoutLogActions } from './workout';
-import { AxiosError } from 'axios';
 
 const simpleError = new Error('error!');
-const axiosError = new AxiosError('Network Error');
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {
   fitelement_id: 0,
 };
@@ -47,6 +45,7 @@ const getFitElementsRequest: workoutAPI.getFitElementsRequestType = {
   fitelements: [0],
 };
 
+// eslint-disable-next-line no-unused-vars
 const getSpecificRoutineFitElementsRequest: workoutAPI.getSpecificRoutineFitElementsRequestType = {
   fitelements: [0],
 };
@@ -61,6 +60,7 @@ const getDailyLogRequest: workoutAPI.getDailyLogRequestType = {
   },
 };
 
+// eslint-disable-next-line no-unused-vars
 const getDailyLogResponse: workoutAPI.getDailyLogResponseType = {
   author: 0,
   date: '2022-10-01',
@@ -110,6 +110,7 @@ const createDailyLogResponse: workoutAPI.createDailyLogResponseType = {
   dailylog_date: '2022-10-01',
 };
 
+// eslint-disable-next-line no-unused-vars
 const getDailyFitElementsRequest: workoutAPI.getDailyFitElementsRequestType = {
   fitelements: [],
 };
@@ -145,6 +146,7 @@ const getSpecificRoutineRequest: workoutAPI.getSpecificRoutineRequestType = {
   routine_id: 0,
 };
 
+// eslint-disable-next-line no-unused-vars
 const addFitElementsRequest: workoutAPI.addFitElementsRequestType = {
   // paste
   username: 'user',
@@ -154,6 +156,7 @@ const addFitElementsRequest: workoutAPI.addFitElementsRequestType = {
   specific_date: 2,
 };
 
+// eslint-disable-next-line no-unused-vars
 const addFitElementsResponse: workoutAPI.addFitElementsResponseType = {
   fitelements: [0],
 };

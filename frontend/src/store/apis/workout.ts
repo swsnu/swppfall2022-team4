@@ -1,4 +1,3 @@
-import { ClientRequest } from 'http';
 import { List } from 'reselect/es/types';
 import client from './client';
 

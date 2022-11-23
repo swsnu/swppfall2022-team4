@@ -1,4 +1,3 @@
-import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import { MemoryRouter, Route, Routes } from 'react-router';
@@ -15,6 +14,7 @@ jest.mock('react-redux', () => ({
 }));
 
 describe('main', () => {
+  // eslint-disable-next-line no-unused-vars
   let component: JSX.Element;
 
   beforeEach(() => {
@@ -29,6 +29,5 @@ describe('main', () => {
       </Provider>
     );
   });
-  test('render without errors', () => {
-  });
+  test('render without errors', () => {});
 });

@@ -352,7 +352,7 @@ def get_fitelement_types():
 
 
 @require_http_methods(["GET"])
-def get_fitelement_types(request):
+def get_fitelement_types():
     types = FitElementType.objects.all()
     return_json = []
     for fitelement_type in types:

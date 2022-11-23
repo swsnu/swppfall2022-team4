@@ -22,7 +22,7 @@ const types = ['leg', 'back', 'chest', 'arm', 'deltoid', 'abs', 'etc'];
 export const Hover = (props: IProps) => {
   const workouts_list = new Map<string, fitElementType[]>();
   if (typeof props.workouts !== 'undefined' && props.workouts?.length > 0) {
-    props.workouts?.map((workout: fitElementType) => {
+    props.workouts?.forEach((workout: fitElementType) => {
       if (workouts_list.get(workout['category']) !== undefined) {
         workouts_list.get(workout['category'])!.push(workout);
       } else {

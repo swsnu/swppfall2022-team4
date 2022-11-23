@@ -14,9 +14,10 @@ const Main = () => {
   const dispatch = useDispatch();
 
   const today = new Date();
-  const [date, setDate] = useState(today);
-  const [month, setMonth] = useState(date.getMonth());
-  const [year, setYear] = useState(date.getFullYear());
+  // eslint-disable-next-line no-unused-vars
+  const date = today;
+  const month = date.getMonth();
+  const year = date.getFullYear();
   const user = useSelector(({ user }: RootState) => user.user);
 
   useEffect(() => {

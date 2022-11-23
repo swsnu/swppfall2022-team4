@@ -20,6 +20,7 @@ export interface IProps {
 export const WorkoutChart = (props: IProps) => {
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
   const chartRef = useRef<ChartJS<'line'>>(null);
+  // eslint-disable-next-line no-unused-vars
   const [index, setIndex] = useState(0);
   const data = {
     labels: props.info!.map(data => data.date.substr(3, 5)),
