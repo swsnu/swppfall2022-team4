@@ -111,7 +111,7 @@ const searchTagRequest: tagAPI.searchTagRequestType = {
 };
 
 //Group dummy.
-const fitelement1: groupApi.Fitelement = {
+const fitelement1: groupAPI.Fitelement = {
   id: 1,
   type: 'goal',
   workout_type: 'test',
@@ -136,19 +136,19 @@ const postGroupRequest: groupAPI.postGroupRequestType = {
   address: 'jeju',
 };
 
-const leaderChangeRequest: groupApi.leaderChangeRequestType = {
+const leaderChangeRequest: groupAPI.leaderChangeRequestType = {
   group_id: '1',
   username: 'test',
 }
 
-const getCertsRequest: groupApi.getCertsRequestType = {
+const getCertsRequest: groupAPI.getCertsRequestType = {
   group_id: '1',
   year: 2022,
   month: 12,
   specific_date: 12,
 }
 
-const createCertRequest: groupApi.createCertRequestType = {
+const createCertRequest: groupAPI.createCertRequestType = {
   group_id: '1',
   year: 2022,
   month: 12,
@@ -498,17 +498,17 @@ describe('Group API TEST', () => {
       expect(res).toBe(`/api/group/1/member/`);
     });
     it('leaderChange', async () => {
-      const res = await groupApi.leaderChange(leaderChangeRequest);
+      const res = await groupAPI.leaderChange(leaderChangeRequest);
       expect(res).toBe(`/api/group/1/leader_change/`);
     });
   });
   describe('Group Cert', () => {
     it('getCerts', async () => {
-      const res = await groupApi.getCerts(getCertsRequest);
+      const res = await groupAPI.getCerts(getCertsRequest);
       expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
     });
     it('createCert', async () => {
-      const res = await groupApi.createCert(createCertRequest);
+      const res = await groupAPI.createCert(createCertRequest);
       expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
     });
   })
