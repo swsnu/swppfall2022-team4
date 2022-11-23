@@ -134,7 +134,7 @@ def group_members(request, group_id):
                 return HttpResponse(status=403)
             result = []
             for i in gr_obj.members.all():
-                cert_days = len(GroupCert.objects.filter(member=i.id));
+                cert_days = len(GroupCert.objects.filter(member=i.id))
                 result.append({
                     "id": i.id,
                     "username": i.username,
@@ -238,14 +238,14 @@ def group_cert(request, group_id, year, month, specific_date):
             return JsonResponse({"all_certs": []}, status=200)
         else:
             result = []
-            for c in certs:
+            for single_cert in certs:
                 result.append({
                     "member": {
-                        "username": c.member.username,
-                        "nickname": c.member.nickname,
-                        "image": c.member.image
+                        "username": single_cert.member.username,
+                        "nickname": single_cert.member.nickname,
+                        "image": single_cert.member.image
                     },
-                    "certs": list(c.fit_element.values())
+                    "certs": list(single_cert.fit_element.values())
                 })
             response_dict = {
                 "all_certs": result
@@ -273,14 +273,14 @@ def group_cert(request, group_id, year, month, specific_date):
             new_cert.save()
         certs = GroupCert.objects.filter(group=group_id).filter(date=datetime(year, month, specific_date).date())
         result = []
-        for c in certs:
+        for single_cert in certs:
             result.append({
                 "member": {
-                    "username": c.member.username,
-                    "nickname": c.member.nickname,
-                    "image": c.member.image
+                    "username": single_cert.member.username,
+                    "nickname": single_cert.member.nickname,
+                    "image": single_cert.member.image
                 },
-                "certs": list(c.fit_element.values())
+                "certs": list(single_cert.fit_element.values())
             })
         response_dict = {
             "all_certs": result

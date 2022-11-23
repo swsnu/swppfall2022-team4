@@ -41,15 +41,6 @@ class GroupTestCase(TestCase):
             set=10,
             time=10,
         )
-        fit2 = FitElement.objects.create(
-            author=user1,
-            type='goal',
-            workout_type='test',
-            weight=20,
-            rep=20,
-            set=20,
-            time=20,
-        )
         gr1 = Group.objects.create(
             group_name='group1',
             group_leader=user1,
@@ -90,7 +81,7 @@ class GroupTestCase(TestCase):
             group=gr1,
             member=user1,
             date=datetime(2019, 12, 12).date()
-        )   
+        )
         cert1.fit_element.add(fit1)
 
     def ready(self):
