@@ -277,12 +277,10 @@ describe('[PostEditor Page - Tag]', () => {
     const file = new File([blob], 'image.jpg');
     const input = screen.getByTestId('postImageUpload');
 
-    act(() => {
-      userEvent.upload(input, file);
-    });
+    userEvent.upload(input, file);
 
-    await waitFor(() => expect(screen.queryByText('삭제')).toBeInTheDocument());
-    const deleteImageBtn = screen.getByText('삭제');
+    const deleteImageBtn = await screen.findByText('삭제');
+    expect(deleteImageBtn).toBeInTheDocument();
     fireEvent.click(deleteImageBtn);
   });
   test('image upload error', async () => {
@@ -299,12 +297,9 @@ describe('[PostEditor Page - Tag]', () => {
     const file = new File([blob], 'image.jpg');
     const input = screen.getByTestId('postImageUpload');
 
-    act(() => {
-      userEvent.upload(input, file);
-    });
+    userEvent.upload(input, file);
 
-    await waitFor(() => expect(screen.queryByText('삭제')).not.toBeInTheDocument());
-    expect(alertMock).toBeCalledWith('이미지 업로드 오류');
+    waitFor(() => expect(alertMock).toBeCalledWith('이미지 업로드 오류'));
   });
   test('image upload error ENV', async () => {
     process.env = {
@@ -324,11 +319,10 @@ describe('[PostEditor Page - Tag]', () => {
     const file = new File([blob], 'image.jpg');
     const input = screen.getByTestId('postImageUpload');
 
-    act(() => {
-      userEvent.upload(input, file);
-    });
+    userEvent.upload(input, file);
 
-    await waitFor(() => expect(screen.queryByText('삭제')).toBeInTheDocument());
+    const deleteImageBtn = await screen.findByText('삭제');
+    expect(deleteImageBtn).toBeInTheDocument();
   });
   test('create tag class', () => {
     const store = setup();

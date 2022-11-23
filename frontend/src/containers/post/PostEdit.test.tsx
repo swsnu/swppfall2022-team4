@@ -79,7 +79,7 @@ describe('[PostEdit Page]', () => {
 
     screen.getByDisplayValue('First Post');
   });
-  test('basic rendering', () => {
+  test('basic rendering with images', () => {
     // Second post for has image
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '2' });
     const store = setup();
