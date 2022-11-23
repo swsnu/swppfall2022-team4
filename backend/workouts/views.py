@@ -349,17 +349,3 @@ def get_fitelement_types():
         }
         return_json.append(type_json)
     return JsonResponse(return_json, safe=False, status=200)
-
-
-@require_http_methods(["GET"])
-def get_fitelement_types():
-    types = FitElementType.objects.all()
-    return_json = []
-    for fitelement_type in types:
-        type_json = {
-            'name': fitelement_type.name,
-            'calories': fitelement_type.calories,
-            'category': fitelement_type.category
-        }
-        return_json.append(type_json)
-    return JsonResponse(return_json, safe=False, status=200)
