@@ -321,7 +321,7 @@ const GroupCreate = () => {
           <Button1 content="추가" clicked={createGoal} />
         </LogInputBody>
         {goal_list.map((go_obj, index) => (
-          <div style={{ display: 'flex', width: '80%', height: '10%' }}>
+          <div key={index} style={{ display: 'flex', width: '80%', height: '10%' }}>
             <FitElement
               key={index}
               id={index + 1}
