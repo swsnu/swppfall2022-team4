@@ -68,6 +68,7 @@ const PostDetail = () => {
   const imageModalRef = useRef(null);
   const imageModalAnimRef = useRef(null);
 
+  const imageModalOnClose = () => setImageModalOpen(false);
   // Disable modal when OnClickOutside
   useOnClickOutside(
     postModalRef,
@@ -84,7 +85,7 @@ const PostDetail = () => {
     },
     'mousedown',
   );
-  useOnClickOutside(imageModalRef, () => setImageModalOpen(false), 'mousedown');
+  useOnClickOutside(imageModalRef, imageModalOnClose, 'mousedown');
 
   // Disable scroll when modal is active
   useEffect(() => {
@@ -522,6 +523,7 @@ const PostDetail = () => {
                             setActiveImage(img);
                             setImageModalOpen(true);
                           }}
+                          data-testid="postImage"
                         />
                       </PostUploadedImageWrapper>
                     ))}
@@ -591,7 +593,7 @@ const PostDetail = () => {
       </PostContentWrapper>
       {ImageDetailModal({
         isActive: imageModalOpen,
-        onClose: () => setImageModalOpen(false),
+        onClose: imageModalOnClose,
         modalRef: imageModalRef,
         modalAnimRef: imageModalAnimRef,
         activeImage,

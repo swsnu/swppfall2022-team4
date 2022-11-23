@@ -505,7 +505,23 @@ describe('[PostDetail Page]', () => {
     const commentAvatar = screen.getByAltText(`commentAvatar${simpleComments[1].comment_id}`);
     fireEvent.click(commentAvatar);
   });
+  test('image modal test', async () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    const store = await setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: simplePosts[0],
+      });
+      store.dispatch({
+        type: 'post/getPostCommentSuccess',
+        payload: { comments: [simpleComments[1], simpleComments[3]] },
+      });
+    });
 
+    const postImage = screen.getByTestId('postImage');
+    fireEvent.click(postImage);
+  });
   test('socket', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
     const store = await setup();
