@@ -110,3 +110,37 @@ export const RedSmallBtn = styled(CommentBtn)`
     background-color: var(--fit-red-neg-active);
   }
 `;
+
+const SpanBtnBlueprint = styled.span`
+  padding: 0px;
+  margin: 0px;
+  width: auto;
+  height: auto;
+
+  border: none;
+
+  font-size: 15px;
+
+  cursor: pointer;
+  :disabled {
+    background-color: var(--fit-disabled-gray);
+    cursor: default;
+    &:hover {
+      background-color: var(--fit-disabled-gray);
+    }
+  }
+`;
+const GreenSpanBtnBlueprint = styled(SpanBtnBlueprint)`
+  background-color: var(--fit-green-btn);
+  &:hover {
+    background-color: var(--fit-green-btn-hover);
+  }
+  &:active {
+    background-color: var(--fit-green-btn-active);
+  }
+`;
+export const GreenBigSpanBtn = styled(GreenSpanBtnBlueprint)`
+  padding: 5px 8px;
+  font-size: 14px;
+  border-radius: 4px;
+`;

@@ -2,15 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDice, faImage, faX } from '@fortawesome/free-solid-svg-icons';
+import { faDice, faImage } from '@fortawesome/free-solid-svg-icons';
 import { RootState } from 'index';
 import { TagClass, TagVisual } from 'store/apis/tag';
 import { tagActions } from 'store/slices/tag';
 import client from 'store/apis/client';
 import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
-import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
-import { PostContentWrapper, PostPageWrapper, SideBarWrapper } from './PostLayout';
+import {
+  ColumnCenterFlex,
+  ColumnFlex,
+  PostContentWrapper,
+  PostPageWrapper,
+  RowCenterFlex,
+} from 'components/post/layout';
 import { notificationSuccess } from 'utils/sendNotification';
+import { TagBubble, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
+import { getRandomHex } from 'utils/color';
 
 interface IPropsColorButton {
   color?: string;
@@ -27,10 +34,8 @@ const SEARCH_OPTION = '$SEARCH$';
 const TITLE_CHAR_LIMIT = 60;
 const CONTENT_CHAR_LIMIT = 800;
 const CONTENT_IMAGE_LIMIT = 5;
-
-const getRandomColor = () => {
-  return 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (75 + 10 * Math.random()) + '%)';
-};
+export const TAG_CLASS_LIMIT = 14;
+export const TAG_NAME_LIMIT = 12;
 
 export interface PostContent {
   title: string;
@@ -79,7 +84,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     dispatch(tagActions.getTags());
   }, [tagUpdate]);
   useEffect(() => {
-    setTagRandColor(getRandomColor());
+    setTagRandColor(getRandomHex());
   }, []);
   useEffect(() => {
     if (tagCreate) {
@@ -90,6 +95,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     }
   }, [tagCreate]);
 
+  // Setters ------------------------------------------------------------------
   const setContent = (content: string) =>
     setPostContent(state => ({
       ...state,
@@ -127,32 +133,30 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     }));
     notificationSuccess('Image', '이미지 삭제에 성공했어요!');
   };
+
+  // Event Handlers ------------------------------------------------------------------
   const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tagId = e.target.options[e.target.selectedIndex].value;
     const tagName = e.target.options[e.target.selectedIndex].text;
     setTagSelect(tagId);
-    if (tagId !== NEW_OPTION) {
+    if (tagId !== NEW_OPTION && currentTagClass) {
+      if (postContent.tags.length === 0) setPrimeTag({ id: tagId, name: tagName, color: currentTagClass.color });
       setSelectedTags(s => {
-        if (currentTagClass && s.filter(item => item.id == tagId).length === 0)
+        if (s.filter(item => item.id == tagId).length === 0)
           return [...s, { id: tagId, name: tagName, color: currentTagClass.color }];
         else return s;
       });
+
       setTagSelect(DEFAULT_OPTION);
     }
   };
-  const searchedTagOnClick = (e: React.MouseEvent) => {
-    const tagId = e.currentTarget.getAttribute('data-id');
-    const tagName = e.currentTarget.getAttribute('data-name');
-    const tagColor = e.currentTarget.getAttribute('data-color');
-
+  const searchedTagOnClick = (tag: TagVisual) => {
     setSelectedTags(s => {
-      if (s.filter(item => item.id == tagId).length === 0)
-        return [...s, { id: tagId as string, name: tagName as string, color: tagColor as string }];
+      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
       else return s;
     });
   };
-  const tagOnRemove = (e: React.MouseEvent) => {
-    const tagId = e.currentTarget.getAttribute('data-value');
+  const tagOnRemove = (tagId: string) => {
     setSelectedTags(s => s.filter(item => item.id != tagId));
     if (postContent.prime_tag && postContent.prime_tag.id == tagId) {
       setPrimeTag(undefined);
@@ -166,15 +170,23 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     if (tagClassSelect === NEW_OPTION) {
       return (
         <TagClassFuncWrapper>
-          <TagInput
-            placeholder="카테고리 이름"
-            value={tagClassInput}
-            onChange={e => setTagClassInput(e.target.value)}
-          ></TagInput>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <TagInput
+              placeholder="카테고리 이름"
+              value={tagClassInput}
+              onChange={e => {
+                const charInput = e.target.value;
+                if (charInput.length <= TAG_CLASS_LIMIT) setTagClassInput(charInput);
+              }}
+            ></TagInput>
+            <TagCharNum isFull={tagClassInput.length >= TAG_CLASS_LIMIT}>
+              {tagClassInput.length} / {TAG_CLASS_LIMIT}
+            </TagCharNum>
+          </div>
           <TagClassColorWrapper>
             <TagClassColorLabel>색상:</TagClassColorLabel>
             <ColorCircle color={tagRandColor}></ColorCircle>
-            <RandColorBtn data-testid="randColorDice" onClick={() => setTagRandColor(getRandomColor())}>
+            <RandColorBtn data-testid="randColorDice" onClick={() => setTagRandColor(getRandomHex())}>
               <FontAwesomeIcon size="xl" icon={faDice} />
             </RandColorBtn>
           </TagClassColorWrapper>
@@ -200,16 +212,9 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     if (tagClassSelect === SEARCH_OPTION) {
       return (
         <TagClassFuncWrapper>
-          <TagInput placeholder="카테고리" disabled></TagInput>
-          <TagInput
-            placeholder="태그 이름"
-            value={tagSearchInput}
-            onChange={e => setTagSearchInput(e.target.value)}
-          ></TagInput>
-          <GreenBigBtn
-            data-testid="tagSearchBtn"
-            disabled={tagSearchInput === ''}
-            onClick={() => {
+          <form
+            onSubmit={e => {
+              e.preventDefault();
               dispatch(
                 tagActions.searchTag({
                   class_name: '',
@@ -218,8 +223,18 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               );
             }}
           >
-            검색
-          </GreenBigBtn>
+            <TagInput
+              placeholder="태그 이름"
+              value={tagSearchInput}
+              onChange={e => {
+                dispatch(tagActions.searchTagClear());
+                setTagSearchInput(e.target.value);
+              }}
+            ></TagInput>
+            <GreenBigBtn data-testid="tagSearchBtn" disabled={tagSearchInput === ''}>
+              검색
+            </GreenBigBtn>
+          </form>
           {tagSearchInput !== '' && tagSearch && (
             <TagBubbleWrapper>
               {tagSearch.map(tag => {
@@ -228,10 +243,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                     data-testid={`searchedTag-${tag.id}`}
                     key={tag.id}
                     color={tag.color}
-                    onClick={searchedTagOnClick}
-                    data-id={tag.id}
-                    data-color={tag.color}
-                    data-name={tag.name}
+                    onClick={() => searchedTagOnClick(tag)}
                   >
                     {tag.name}
                   </TagBubble>
@@ -260,22 +272,32 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                 );
               })}
             {currentTagClass?.class_type === 'general' && <option value={NEW_OPTION}> - 태그 만들기 - </option>}
+            {currentTagClass?.class_type === 'workout' && <option disabled>[운동] 메인 페이지에서만 생성 가능</option>}
+            {currentTagClass?.class_type === 'place' && <option disabled>[장소] 장소 탭에서만 생성 가능</option>}
           </TagSelect>
           {tagSelect === NEW_OPTION && (
             <TagClassFuncWrapper>
               {/* 태그 만들기 */}
-              <TagInput
-                placeholder="생성할 태그 이름"
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
-              ></TagInput>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <TagInput
+                  placeholder="생성할 태그 이름"
+                  value={tagInput}
+                  onChange={e => {
+                    const charInput = e.target.value;
+                    if (charInput.length <= TAG_NAME_LIMIT) setTagInput(charInput);
+                  }}
+                ></TagInput>
+                <TagCharNum isFull={tagInput.length >= TAG_NAME_LIMIT}>
+                  {tagInput.length} / {TAG_NAME_LIMIT}
+                </TagCharNum>
+              </div>
               <GreenBigBtn
                 disabled={tagInput === ''}
                 onClick={() => {
                   dispatch(
                     tagActions.createTag({
                       name: tagInput,
-                      classId: (currentTagClass as TagClass).id.toString(),
+                      classId: (currentTagClass as TagClass).id,
                     }),
                   );
 
@@ -296,14 +318,12 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     <TagBubbleWrapper>
       {postContent.tags.map(tag => {
         return (
-          <TagBubble key={tag.id} color={tag.color}>
+          <TagBubbleWithFunc key={tag.id} color={tag.color}>
             <ClickableSpan data-testid={`selectedTag-${tag.id}`} onClick={() => setPrimeTag(tag)}>
               {tag.name}
             </ClickableSpan>
-            <TagBubbleFunc data-testid={`selectedTagRemove`} onClick={tagOnRemove} data-value={tag.id}>
-              <FontAwesomeIcon icon={faX} />
-            </TagBubbleFunc>
-          </TagBubble>
+            <TagBubbleX testId="tagBubbleXBtn" onClick={() => tagOnRemove(tag.id)} />
+          </TagBubbleWithFunc>
         );
       })}
     </TagBubbleWrapper>
@@ -311,16 +331,10 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
   const primeTagComponent = (
     <PrimeTagDivWrapper>
       {postContent.prime_tag ? (
-        <TagBubble color={postContent.prime_tag.color}>
+        <TagBubbleWithFunc color={postContent.prime_tag.color}>
           {postContent.prime_tag.name}
-          <TagBubbleFunc
-            data-testid={`selectedPrimeTagRemove`}
-            onClick={primeTagOnRemove}
-            data-value={postContent.prime_tag.id}
-          >
-            <FontAwesomeIcon icon={faX} />
-          </TagBubbleFunc>
-        </TagBubble>
+          <TagBubbleX testId="selectedPrimeTagRemove" onClick={primeTagOnRemove} />
+        </TagBubbleWithFunc>
       ) : (
         <PrimeTagNotSpecified>Not specified</PrimeTagNotSpecified>
       )}
@@ -410,7 +424,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             value={postContent.title}
             onChange={e => {
               const charInput = e.target.value;
-              if (charInput.length <= TITLE_CHAR_LIMIT) setTitle(e.target.value);
+              if (charInput.length <= TITLE_CHAR_LIMIT) setTitle(charInput);
             }}
           />
           <CharNumIndicator isFull={postContent.title.length >= TITLE_CHAR_LIMIT}>
@@ -425,7 +439,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                 value={postContent.content}
                 onChange={e => {
                   const charInput = e.target.value;
-                  if (charInput.length <= CONTENT_CHAR_LIMIT) setContent(e.target.value);
+                  if (charInput.length <= CONTENT_CHAR_LIMIT) setContent(charInput);
                 }}
               />
               <ContentCharNum isFull={postContent.content.length >= CONTENT_CHAR_LIMIT}>
@@ -443,7 +457,12 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               <ContentCharNum isFull={postContent.images.length >= CONTENT_IMAGE_LIMIT}>
                 {postContent.images.length} / {CONTENT_IMAGE_LIMIT}
               </ContentCharNum>
-              <FileInput type="file" id="FileInput_PostContent" onChange={uploadPostImage} />
+              <FileInput
+                type="file"
+                id="FileInput_PostContent"
+                data-testid="postImageUpload"
+                onChange={uploadPostImage}
+              />
             </ContentImageSection>
             <ContentRoutineSection>
               <SectionTitle>루틴</SectionTitle>
@@ -461,10 +480,10 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               </BlueBigActiveBtn>
             </CreateBtnWrapper>
           </ContentWrapper>
-          <SideBarWrapper>
+          <div>
             {TagPanel}
             {PrimeTagPanel}
-          </SideBarWrapper>
+          </div>
         </Main_SideWrapper>
       </PostContentWrapper>
     </PostPageWrapper>
@@ -491,6 +510,16 @@ const TagClassColorLabel = styled.span`
 
 const TagClassFuncWrapper = styled(ColumnFlex)`
   width: 100%;
+  > form {
+    display: flex;
+    flex-direction: column;
+    > input {
+      width: auto;
+    }
+    > button {
+      width: auto;
+    }
+  }
 `;
 
 const TagBubbleWrapper = styled.div`
@@ -502,33 +531,6 @@ const TagBubbleWrapper = styled.div`
   padding: 8px 5px;
 `;
 
-const TagBubbleFunc = styled.div`
-  margin-left: 5px;
-  font-size: 10px;
-  color: red;
-  width: fit-content;
-  height: fit-content;
-  display: block;
-  cursor: pointer;
-`;
-
-const TagBubble = styled.button<IPropsColorButton>`
-  height: 25px;
-  border-radius: 30px;
-  padding: 1px 10px;
-  border: none;
-  margin: 1px 2px;
-  width: fit-content;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  ${({ color }) =>
-    color &&
-    `
-      background: ${color};
-    `}
-`;
-
 const TagTitle = styled.span`
   margin: 10px 0px;
   font-size: 18px;
@@ -537,6 +539,7 @@ const TagTitle = styled.span`
 `;
 
 const TagWrapperIn = styled(ColumnFlex)`
+  width: 100%;
   justify-content: flex-start;
   background-color: var(--fit-white);
 `;
@@ -544,7 +547,9 @@ const TagWrapperIn = styled(ColumnFlex)`
 const TagWrapper = styled(ColumnFlex)`
   justify-content: space-between;
   background-color: var(--fit-white);
+  width: 100%;
   height: 60%;
+  overflow-y: auto;
 `;
 
 const PrimeTagDivWrapper = styled.div`
@@ -636,6 +641,19 @@ const ContentCharNum = styled.span<IPropsCharNum>`
   position: absolute;
   right: 10px;
   bottom: 3px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
+`;
+
+const TagCharNum = styled.span<IPropsCharNum>`
+  width: 100%;
+  text-align: right;
+  padding-right: 10px;
+  font-size: 12px;
   color: var(--fit-support-gray);
   ${({ isFull }) =>
     isFull &&

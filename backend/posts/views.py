@@ -95,15 +95,25 @@ def post_home(request):
         query_args["page_num"] = max(int(request.GET.get("page", 1)), 1)
         query_args["page_size"] = max(int(request.GET.get("pageSize", 15)), 15)
         query_args["keyword"] = request.GET.get("search", None)
+        query_args["filter_tag"] = request.GET.getlist("tag", None)
 
         offset = (query_args["page_num"] - 1) * query_args["page_size"]
         limit = query_args["page_num"] * query_args["page_size"]
 
         posts = Post.objects.all()
+
         if query_args["keyword"]:
             filter_args = {}
             filter_args["title__icontains"] = query_args["keyword"]
             posts = posts.filter(**filter_args)
+
+        if query_args["filter_tag"]:
+            for tag_id in query_args["filter_tag"]:
+                try:
+                    tag = Tag.objects.get(pk=tag_id)
+                    posts = posts.filter(tags=tag)
+                except Tag.DoesNotExist:  # Invalid Tag, Just Pass.
+                    pass
 
         posts_serial = prepare_posts_response(posts[offset:limit])
 

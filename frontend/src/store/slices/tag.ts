@@ -2,17 +2,22 @@ import { AxiosResponse } from 'axios';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as tagAPI from 'store/apis/tag';
+import { notificationInfo, notificationSuccess } from 'utils/sendNotification';
 
 interface TagState {
   tagList: tagAPI.TagClass[] | null;
+  popularTags: tagAPI.TagVisual[] | null;
   tagSearch: tagAPI.TagVisual[] | null;
   tagCreate: tagAPI.TagVisual | null;
+  tagClassCreate: tagAPI.TagClass | null;
   error: string | null;
 }
 export const initialState: TagState = {
   tagList: null,
+  popularTags: null,
   tagSearch: null,
   tagCreate: null,
+  tagClassCreate: null,
   error: null,
 };
 
@@ -23,21 +28,22 @@ export const tagSlice = createSlice({
     /* eslint-disable @typescript-eslint/no-unused-vars */
     // getTags ------------------------------------------------------------------------
     getTags: state => {
-      state.tagList = null;
       state.error = null;
     },
     getTagsSuccess: (state, { payload }) => {
       state.tagList = payload.tags;
+      state.popularTags = payload.popularTags;
     },
     getTagsFailure: (state, { payload }) => {
       state.error = payload;
       alert(payload.response?.data.message);
     },
     createTagClass: (state, action: PayloadAction<tagAPI.createTagClassRequestType>) => {
-      //create!
+      state.tagClassCreate = null;
     },
     createTagClassSuccess: (state, { payload }) => {
-      //create success
+      state.tagClassCreate = payload.tag_class;
+      notificationSuccess('Tag', '태그 카테고리 생성에 성공했어요!');
     },
     createTagClassFailure: (state, { payload }) => {
       //create failure
@@ -49,6 +55,7 @@ export const tagSlice = createSlice({
     createTagSuccess: (state, { payload }) => {
       //create success
       state.tagCreate = payload.tags;
+      notificationSuccess('Tag', '태그 생성에 성공했어요!');
     },
     createTagFailure: (state, { payload }) => {
       //create failure
@@ -58,6 +65,7 @@ export const tagSlice = createSlice({
     },
     searchTagSuccess: (state, { payload }) => {
       state.tagSearch = payload.tags;
+      if (state.tagSearch?.length == 0) notificationInfo('Tag', '검색 결과가 없어요.');
     },
     searchTagFailure: (state, { payload }) => {
       //search failure
