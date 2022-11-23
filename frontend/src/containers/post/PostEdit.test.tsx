@@ -20,6 +20,13 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
       tags: simpleTagVisuals,
     },
   ],
+  popularTags: [
+    {
+      id: '1',
+      name: '1',
+      color: '#111111',
+    },
+  ],
 };
 
 const mockNavigate = jest.fn();
@@ -72,6 +79,19 @@ describe('[PostEdit Page]', () => {
 
     screen.getByDisplayValue('First Post');
   });
+  test('basic rendering with images', () => {
+    // Second post for has image
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '2' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: simplePosts[1],
+      });
+    });
+
+    screen.getByDisplayValue('Second Post');
+  });
   test('basic rendering with invalid id', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: undefined });
     setup();
@@ -100,7 +120,11 @@ describe('[PostEdit Page]', () => {
     const confirmBtn = screen.getByText('완료');
     const titleInput = screen.getByPlaceholderText('제목');
     const contentInput = screen.getByPlaceholderText('내용');
+    userEvent.type(titleInput, 'RulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRullu');
+    userEvent.clear(titleInput);
     userEvent.type(titleInput, 'Rullu');
+    userEvent.type(contentInput, 'Ralla'.repeat(200));
+    userEvent.clear(contentInput);
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
     expect(mockDispatch).toBeCalledTimes(3);

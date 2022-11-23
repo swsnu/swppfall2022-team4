@@ -1,33 +1,58 @@
-import random
-
 from django.core.management import BaseCommand
 from tags.models import TagClass, Tag
 from informations.models import Information
-
-
-def get_random_color():
-    """
-    랜덤 색상 문자열을 생성합니다.
-    태그 색상을 임의로 생성하기 위한 함수입니다.
-    :return result: 생성된 색상 문자열
-    """
-    return f'hsl({360* random.random()},{25 + 70 * random.random()}%,{75 + 10 * random.random()}%)'
+from utils.get_random import get_random_color
 
 
 def get_tag_class_type(class_name):
-    if class_name in [
-        "등운동",
-        "가슴운동",
-        "어깨운동",
-        "하체운동",
-        "복근운동",
-        "팔운동",
-        "유산소",
-    ]:
+    if class_name in ["등운동", "가슴운동", "어깨운동", "하체운동", "복근운동", "팔운동", "유산소", "기타운동"]:
         return "workout"
     elif class_name in ["장소"]:
         return "place"
     return "general"
+
+
+calories = [
+    0.125,
+    0.108333333,
+    0.1,
+    0.1,
+    0.091666667,
+    0.1125,
+    0.1125,
+    0.104166667,
+    0.091666667,
+    0.083333333,
+    0.1,
+    0.1125,
+    0.066666667,
+    0.091666667,
+    0.116666667,
+    0.1,
+    0.05,
+    0.05,
+    0.1,
+    0.083333333,
+    0.114215686,
+    0.0625,
+    0.065686275,
+    0.066666667,
+    0.0875,
+    0.079166667,
+    0.116666667,
+    0.041666667,
+    0.041666667,
+    0.041666667,
+    0.107843137,
+    0.159313725,
+    0.134803922,
+    0.171568627,
+    0.080392157,
+    0.162745098,
+    0.15,
+    0.123529412,
+    0.073529412,
+]
 
 
 class Command(BaseCommand):
@@ -115,11 +140,16 @@ class Command(BaseCommand):
                 class_type=get_tag_class_type(class_name),
                 color=get_random_color(),
             )
+            workout_ind = 0
             for tag_name in tag_names:
-                tag = Tag.objects.create(tag_name=tag_name, tag_class=tag_class)
-
                 if get_tag_class_type(class_name) == 'workout':
+                    tag = Tag.objects.create(
+                        tag_name=tag_name, tag_class=tag_class, calories=calories[workout_ind]
+                    )
                     Information.objects.create(name=tag_name, tag=tag)
+                    workout_ind += 1
+                else:
+                    Tag.objects.create(tag_name=tag_name, tag_class=tag_class)
 
         self.stdout.write(
             self.style.SUCCESS(

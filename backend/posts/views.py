@@ -14,6 +14,15 @@ from tags.models import Tag, TagClass
 from comments.views import prepare_comment_response
 
 
+def add_exp(username, exp):
+    if User.objects.filter(username=username).exists():
+        user = User.objects.get(username=username)
+        temp = user.exp + exp
+        user.exp = temp % 100
+        user.level = user.level + (temp // 100)
+        user.save()
+
+
 def prepare_post_response(post, is_detail, username):
     response = {
         "post_id": post.pk,
@@ -86,15 +95,25 @@ def post_home(request):
         query_args["page_num"] = max(int(request.GET.get("page", 1)), 1)
         query_args["page_size"] = max(int(request.GET.get("pageSize", 15)), 15)
         query_args["keyword"] = request.GET.get("search", None)
+        query_args["filter_tag"] = request.GET.getlist("tag", None)
 
         offset = (query_args["page_num"] - 1) * query_args["page_size"]
         limit = query_args["page_num"] * query_args["page_size"]
 
         posts = Post.objects.all()
+
         if query_args["keyword"]:
             filter_args = {}
             filter_args["title__icontains"] = query_args["keyword"]
             posts = posts.filter(**filter_args)
+
+        if query_args["filter_tag"]:
+            for tag_id in query_args["filter_tag"]:
+                try:
+                    tag = Tag.objects.get(pk=tag_id)
+                    posts = posts.filter(tags=tag)
+                except Tag.DoesNotExist:  # Invalid Tag, Just Pass.
+                    pass
 
         posts_serial = prepare_posts_response(posts[offset:limit])
 
@@ -127,6 +146,8 @@ def post_home(request):
                 created_post.tags.add(tag)
             for image in data["images"]:  # image would be string type
                 PostImage.objects.create(image=image, post=created_post)
+
+            add_exp(request.user.username, 20)
 
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.

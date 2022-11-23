@@ -3,8 +3,28 @@ from django.http import (
     HttpResponseBadRequest,
     JsonResponse,
 )
+from django.db.models import Count
 from django.views.decorators.http import require_http_methods
 from tags.models import Tag, TagClass
+from informations.models import Information
+
+
+# tag_visual : [ id, name, color ]
+def prepare_tag_response(tag_visual, calories, tag_type, post_num=None):
+    base_structure = {
+        "id": tag_visual[0],
+        "name": tag_visual[1],
+        "color": tag_visual[2],
+        "type": tag_type,
+    }
+    if calories is not None:
+        base_structure["calories"] = calories
+    if post_num is not None:
+        base_structure["posts"] = post_num
+    return base_structure
+
+
+CALORIES_DEFAULT = 0.073529412
 
 
 @require_http_methods(["GET", "POST"])
@@ -21,17 +41,31 @@ def tag_home(request):
             tag_visual_list = []
             for tag in tag_classes[index].tags.all():
                 tag_visual_list.append(
-                    {
-                        "id": tag.pk,
-                        "name": tag.tag_name,
-                        "color": tag_classes[index].color,
-                        "type": tag_classes[index].class_type,
-                    }
+                    prepare_tag_response(
+                        [tag.pk, tag.tag_name, tag_classes[index].color],
+                        tag.calories,
+                        tag_classes[index].class_type,
+                    )
                 )
             tag_classes_serializable[index]["tags"] = tag_visual_list
+
+        popular_tags = []
+        for tag in Tag.objects.annotate(p_count=Count('tagged_posts')).order_by('-p_count', '?')[
+            :10
+        ]:
+            popular_tags.append(
+                prepare_tag_response(
+                    [tag.pk, tag.tag_name, tag.tag_class.color],
+                    tag.calories,
+                    tag.tag_class.class_type,
+                    tag.tagged_posts.count(),
+                )
+            )
+
         response = JsonResponse(
             {
                 "tags": tag_classes_serializable,
+                "popularTags": popular_tags,
             },
             status=200,
         )
@@ -41,12 +75,25 @@ def tag_home(request):
             data = json.loads(request.body.decode())
 
             tag_name = data["name"]
-            class_id = data["classId"]
-            parent_class = TagClass.objects.get(pk=class_id)
-            created_tag = Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
+            parent_class = TagClass.objects.get(pk=data["classId"])
+
+            if parent_class.class_type == "workout":
+                created_tag = Tag.objects.create(
+                    tag_name=tag_name,
+                    tag_class=parent_class,
+                    calories=data.get("calories", CALORIES_DEFAULT),
+                )
+                Information.objects.create(name=tag_name, tag=created_tag)
+            else:
+                created_tag = Tag.objects.create(tag_name=tag_name, tag_class=parent_class)
+
             return JsonResponse(
                 {
-                    "tags": {"id": created_tag.pk, "name": tag_name, "color": parent_class.color},
+                    "tags": prepare_tag_response(
+                        [created_tag.pk, tag_name, parent_class.color],
+                        CALORIES_DEFAULT,
+                        parent_class.class_type,
+                    ),
                 },
                 status=201,
             )
@@ -64,8 +111,20 @@ def tag_class(request):
 
         class_name = data["name"]
         class_color = data["color"]
-        TagClass.objects.create(class_name=class_name, color=class_color)
-        return JsonResponse({"message": "Success!"}, status=201)
+        new_class = TagClass.objects.create(class_name=class_name, color=class_color)
+
+        return JsonResponse(
+            {
+                "tag_class": {
+                    "id": new_class.pk,
+                    "class_name": new_class.class_name,
+                    "class_type": new_class.class_type,  # All classes are GENERAL.
+                    "color": new_class.color,
+                    "tags": [],
+                }
+            },
+            status=201,
+        )
     except (KeyError, json.JSONDecodeError):
         return HttpResponseBadRequest()
 

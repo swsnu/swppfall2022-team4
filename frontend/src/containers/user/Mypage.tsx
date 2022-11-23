@@ -5,7 +5,7 @@ import { AiOutlineEdit } from 'react-icons/ai';
 import { BsChatDots } from 'react-icons/bs';
 import { FaHeart, FaHeartBroken } from 'react-icons/fa';
 import styled from 'styled-components';
-import { faImage, faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -16,8 +16,6 @@ import { dateDiff, timeAgoFormat } from 'utils/datetime';
 
 import Loading from 'components/common/Loading';
 import Button3 from 'components/common/buttons/Button3';
-import { TagBubbleCompact } from 'components/tag/tagbubble';
-import { ArticleItem } from 'containers/post/PostMain';
 import {
   CommentContent,
   CommentContentWrapper,
@@ -29,12 +27,10 @@ import {
   IPropsComment,
 } from 'containers/post/PostDetail';
 import UserItem from 'components/user/UserItem';
-import { Post } from 'store/apis/post';
 import { Comment } from 'store/apis/comment';
+import { ArticleItemDefault } from 'components/post/ArticleItem';
+import { ScrollShadow } from 'components/common/ScrollShadow';
 
-interface MyPageArticleIprops {
-  post: Post;
-}
 interface MyPageCommentIprops {
   comment: Comment;
 }
@@ -94,22 +90,6 @@ const Mypage = () => {
     }
   };
 
-  const MyPageArticleItem = ({ post }: MyPageArticleIprops) => (
-    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
-      {post.prime_tag ? (
-        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-      ) : (
-        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-      )}
-      <span>
-        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
-        <span>[{post.comments_num}]</span>
-      </span>
-      <span>{post.author.username}</span>
-      <span>{post.like_num - post.dislike_num}</span>
-      <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
-    </ArticleItem>
-  );
   const MyPageCommentItem = ({ comment }: MyPageCommentIprops) => (
     <CommentItem
       key={comment.comment_id}
@@ -223,7 +203,11 @@ const Mypage = () => {
               0: (
                 <ProfileContentWrapper>
                   {profile.information.post.map(post => (
-                    <MyPageArticleItem key={post.post_id} post={post} />
+                    <ArticleItemDefault
+                      key={post.post_id}
+                      post={post}
+                      onClick={() => navigate(`/post/${post.post_id}`)}
+                    />
                   ))}
                 </ProfileContentWrapper>
               ),
@@ -237,7 +221,11 @@ const Mypage = () => {
               2: (
                 <ProfileContentWrapper>
                   {profile.information.scrap.map(post => (
-                    <MyPageArticleItem key={post.post_id} post={post} />
+                    <ArticleItemDefault
+                      key={post.post_id}
+                      post={post}
+                      onClick={() => navigate(`/post/${post.post_id}`)}
+                    />
                   ))}
                 </ProfileContentWrapper>
               ),
@@ -588,7 +576,7 @@ const Category = styled.div<{ active: boolean }>`
   }
 `;
 
-const ProfileContentLayout = styled.div`
+const ProfileContentLayout = styled(ScrollShadow)`
   width: 100%;
   height: 555px;
   display: flex;
@@ -598,15 +586,6 @@ const ProfileContentLayout = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-  /* Scroll Shadow */
-  background-image: linear-gradient(to top, white, white), linear-gradient(to top, white, white),
-    linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));
-  background-position: bottom center, top center, bottom center, top center;
-  background-color: white;
-  background-repeat: no-repeat;
-  background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
-  background-attachment: local, local, scroll, scroll;
 `;
 const ProfileContentWrapper = styled.div`
   width: 100%;

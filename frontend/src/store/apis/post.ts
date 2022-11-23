@@ -7,16 +7,17 @@ export type postIdentifyingType = {
 };
 
 export const getPosts = async (payload: getPostsRequestType) => {
-  let response;
+  let link = `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`;
+
   if (payload.searchKeyword) {
-    response = await client.get<getPostsResponseType>(
-      `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}&search=${payload.searchKeyword}`,
-    );
-  } else {
-    response = await client.get<getPostsResponseType>(
-      `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`,
-    );
+    link += `&search=${payload.searchKeyword}`;
   }
+  if (payload.tags.length > 0) {
+    for (const tag of payload.tags) {
+      link += `&tag=${tag.id}`;
+    }
+  }
+  const response = await client.get<getPostsResponseType>(link);
   return response.data;
 };
 
@@ -58,6 +59,7 @@ export type getPostsRequestType = {
   pageNum: number;
   pageSize: number;
   searchKeyword?: string;
+  tags: TagVisual[];
 };
 
 export type getPostsResponseType = {
@@ -118,3 +120,6 @@ export type postFuncRequestType = {
 export type postSearchRequestType = {
   search_keyword: string;
 };
+
+export type filterTagRequestType = TagVisual;
+export type removeTagRequestType = string; // id of target tag

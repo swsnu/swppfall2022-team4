@@ -51,6 +51,7 @@ export const initialState: PreloadedState<RootState> = {
     postDelete: false,
     postFunc: false,
     postSearch: '',
+    filterTag: [],
   },
   group: {
     groupList: {
@@ -81,8 +82,10 @@ export const initialState: PreloadedState<RootState> = {
   },
   tag: {
     tagList: null,
+    popularTags: null,
     tagSearch: null,
     tagCreate: null,
+    tagClassCreate: null,
     error: null,
   },
   chat: {

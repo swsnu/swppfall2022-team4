@@ -1,58 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RowCenterFlex } from 'components/post/layout';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { infoActions } from 'store/slices/information';
 import { RootState } from 'index';
-import NotFound from 'components/common/NotFound';
-import { TagBubbleCompact } from 'components/tag/tagbubble';
-import { ArticleItem } from 'containers/post/PostMain';
 import { useNavigate } from 'react-router-dom';
-import { Post } from 'store/apis/post';
-import { faImage } from '@fortawesome/free-regular-svg-icons';
-import { timeAgoFormat } from 'utils/datetime';
-// import { timeAgoFormat } from 'utils/datetime';
-
-interface IPropsSearchClear {
-  isActive?: boolean;
-}
-interface InfoPageArticleIprops {
-  post: Post;
-}
+import { tagActions } from 'store/slices/tag';
+import { TagBubble } from 'components/tag/tagbubble';
+import SearchBar from 'components/common/SearchBar';
 
 const InformationLobby = () => {
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { info } = useSelector(({ info }: RootState) => ({
+  const { info, tagList } = useSelector(({ info, tag }: RootState) => ({
     info: info,
+    tagList: tag.tagList,
   }));
   useEffect(() => {
     dispatch(infoActions.initializeInformation());
+    dispatch(tagActions.getTags());
   }, []);
-  const InfoPageArticleItem = ({ post }: InfoPageArticleIprops) => (
-    <ArticleItem key={post.post_id} onClick={() => navigate(`/post/${post.post_id}`)}>
-      {post.prime_tag ? (
-        <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-      ) : (
-        <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-      )}
-      <span>
-        {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}
-        <span>[{post.comments_num}]</span>
-      </span>
-      <span>{post.author.username}</span>
-      <span>{post.like_num - post.dislike_num}</span>
-      <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
-    </ArticleItem>
-  );
+
   return (
     <PostPageWrapper>
       <PostContentWrapper>
         <TopElementWrapperWithoutPadding>
-          <SearchForm
+          <SearchBar
             onSubmit={e => {
               e.preventDefault();
               if (info.contents?.basic.name !== search)
@@ -61,46 +34,44 @@ const InformationLobby = () => {
                     information_name: search,
                   }),
                 );
+              navigate(`/information/${search}`);
             }}
-          >
-            <SearchIcon>
-              <FontAwesomeIcon icon={faSearch} />
-            </SearchIcon>
-            <SearchInput
-              placeholder="Search keyword"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            ></SearchInput>
-            <ClearSearchInput
-              isActive={search !== ''}
-              onClick={() => {
-                setSearch('');
-              }}
-            >
-              Clear
-            </ClearSearchInput>
-          </SearchForm>
+            onClear={() => {
+              setSearch('');
+            }}
+            search={search}
+            setSearch={setSearch}
+          />
         </TopElementWrapperWithoutPadding>
 
-        {info.error === 'NOTFOUND' && <NotFound />}
-        {info.error === 'NOTERROR' && (
-          <SectionWrapper>
-            <SectionItemWrapper>
-              <span>1</span>
-            </SectionItemWrapper>
-            <SectionItemWrapper>
-              <span>3</span>
-            </SectionItemWrapper>
-            <SectionItemWrapper>
-              {info.contents?.posts.map(post => (
-                <InfoPageArticleItem key={post.post_id} post={post} />
-              ))}
-            </SectionItemWrapper>
-            <SectionItemWrapper>
-              <span>4</span>
-            </SectionItemWrapper>
-          </SectionWrapper>
-        )}
+        <SectionWrapper>
+          <SectionItemWrapper>
+            <span>즐겨찾기</span>
+            <br />
+            <span>검색기록</span>
+          </SectionItemWrapper>
+          <SectionItemWrapper>
+            <span>운동 태그 목록</span>
+            <br />
+            {tagList?.map(tagClass => {
+              return (
+                tagClass.class_type === 'workout' &&
+                tagClass.tags.map(tag => {
+                  return (
+                    <TagBubble
+                      style={{ cursor: 'pointer' }}
+                      key={tag.id}
+                      color={tag.color}
+                      onClick={() => navigate(`/information/${tag.name}`)}
+                    >
+                      {tag.name}
+                    </TagBubble>
+                  );
+                })
+              );
+            })}
+          </SectionItemWrapper>
+        </SectionWrapper>
       </PostContentWrapper>
     </PostPageWrapper>
   );
@@ -140,39 +111,12 @@ const TopElementWrapperWithoutPadding = styled.div`
 const SectionWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr;
   row-gap: 10px;
   column-gap: 10px;
   width: 100%;
   min-height: 600px;
   height: 70vh;
-`;
-
-const SearchForm = styled.form`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const SearchInput = styled.input`
-  width: 95%;
-  padding: 15px 20px;
-  font-size: 15px;
-  border: none;
-`;
-const ClearSearchInput = styled.span<IPropsSearchClear>`
-  width: 5%;
-  text-align: center;
-  cursor: pointer;
-  ${({ isActive }) =>
-    !isActive &&
-    `
-    display: none;
-  `}
-`;
-const SearchIcon = styled(RowCenterFlex)`
-  margin-left: 20px;
 `;
 
 const SectionItemWrapper = styled.div`
