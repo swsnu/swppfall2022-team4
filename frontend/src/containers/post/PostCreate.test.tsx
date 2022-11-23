@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
@@ -297,9 +297,8 @@ describe('[PostEditor Page - Tag]', () => {
     const file = new File([blob], 'image.jpg');
     const input = screen.getByTestId('postImageUpload');
 
-    userEvent.upload(input, file);
-
-    waitFor(() => expect(alertMock).toBeCalledWith('이미지 업로드 오류'));
+    await userEvent.upload(input, file);
+    expect(alertMock).toBeCalledWith('이미지 업로드 오류');
   });
   test('image upload error ENV', async () => {
     process.env = {
