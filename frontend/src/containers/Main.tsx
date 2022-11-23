@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'index';
 
 export type chartData = {
-  date: String;
-  calories: Number;
+  date: string;
+  calories: number;
 };
 
 const Main = () => {

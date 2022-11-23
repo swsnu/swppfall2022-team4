@@ -9,7 +9,7 @@ type fitElementType = {
   rep: number;
   set: number;
   time: number;
-  date: String | null;
+  date: string | null;
 };
 
 export interface IProps {
