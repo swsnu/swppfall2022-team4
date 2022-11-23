@@ -123,13 +123,12 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                                 }
                                 onClick={() => dispatch(postActions.toggleFilterTag(tag))}
                               >
-                                {tag.name}
                                 {tagClass.class_type === 'workout' &&
                                   weight &&
                                   tag.calories &&
                                   (caloriesOfUser
-                                    ? ` | ${(tag.calories * weight).toFixed(2)}`
-                                    : ` | ${tag.calories.toFixed(4)}`)}
+                                    ? `${tag.name} | ${(tag.calories * weight).toFixed(2)}`
+                                    : `${tag.name} | ${tag.calories.toFixed(4)}`)}
                               </TagBubble>
                             ))}
                             {selected.length == 0 && tagClass.class_type !== 'place' && createCategory !== tagClass.id && (
@@ -189,6 +188,7 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                                   setNewTagInput('');
                                   setNewTagCalories(undefined);
                                 }}
+                                data-testid="tagModalTagCreate"
                               >
                                 생성
                               </GreenBigBtn>
@@ -233,7 +233,9 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                                 {newCategoryInput.length} / {TAG_CLASS_LIMIT}
                               </TagCharNum>
                             </div>
-                            <GreenBigBtn disabled={newCategoryInput == ''}>생성</GreenBigBtn>
+                            <GreenBigBtn disabled={newCategoryInput == ''} data-testid="tagModalCategoryCreate">
+                              생성
+                            </GreenBigBtn>
                           </div>
                           {colorPicker && (
                             <ChromePicker color={newCategoryColor} onChange={color => setNewCategoryColor(color.hex)} />
