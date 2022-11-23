@@ -11,7 +11,7 @@ import { Group } from 'store/apis/group';
 import Button1 from 'components/common/buttons/Button1';
 import Loading from 'components/common/Loading';
 import { GroupElement } from 'components/group/GroupElement';
-import { geolocationResponseType, co2regionResponseType } from 'assets/types/group';
+import { listGeoStateType, co2regionResponseType } from 'assets/types/group';
 
 const distance = (lat1: number | null, lng1: number | null, lat2: number | null, lng2: number | null) => {
   return (((lat1 || 0) - (lat2 || 0)) ^ 2) + (((lng1 || 0) - (lng2 || 0)) ^ 2);
@@ -28,10 +28,10 @@ const GroupList = () => {
   const [old, setOld] = useState<boolean>(false);
   const [close, setClose] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentLocation, setCurrentLocation] = useState<geolocationResponseType>({
+  const [currentLocation, setCurrentLocation] = useState<listGeoStateType>({
     center: {
-      lat: 37.480966,
-      lng: 126.952317,
+      lat: null,
+      lng: null,
     },
     errMsg: null,
     isLoading: true,

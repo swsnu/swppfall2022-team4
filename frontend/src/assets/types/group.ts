@@ -5,7 +5,16 @@ export type geolocationResponseType = {
   };
   errMsg: string | null;
   isLoading: boolean;
+};
+
+export type listGeoStateType = {
+  center: {
+    lat: number | null;
+    lng: number | null;
   };
+  errMsg: string | null;
+  isLoading: boolean;
+};
   
 export type co2regionResponseType = {
   region_type: string;
