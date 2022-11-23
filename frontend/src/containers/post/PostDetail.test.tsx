@@ -101,7 +101,13 @@ beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
 const setup = async () => {
-  const store = configureStore({ reducer: rootReducer });
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
+  });
   store.dispatch({
     type: 'user/setUser',
     payload: { username: 'KJY', nickname: 'nickname', image: 'image' },
@@ -525,16 +531,57 @@ describe('[PostDetail Page]', () => {
   test('socket', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
     const store = await setup();
+    const mockSend = jest.fn();
 
     act(() => {
       store.dispatch({
         type: 'post/updatePostDetailSuccess',
-        payload: simplePosts[0],
+        payload: simplePosts[1],
       });
       store.dispatch({
         type: 'post/getPostCommentSuccess',
-        payload: { comments: [simpleComments[1], simpleComments[3]] },
+        payload: { comments: [simpleComments[1]] },
+      });
+      store.dispatch({
+        type: 'chat/setSocket',
+        payload: { send: mockSend },
       });
     });
+
+    fireEvent.click(screen.getByTestId('postFuncLike'));
+    expect(mockSend).toBeCalledTimes(1);
+    fireEvent.click(screen.getByTestId('postFuncDislike'));
+    expect(mockSend).toBeCalledTimes(2);
+    fireEvent.click(screen.getByTestId('postFuncScrap'));
+    expect(mockSend).toBeCalledTimes(3);
+    fireEvent.click(screen.getByTestId('commentFuncLike'));
+    expect(mockSend).toBeCalledTimes(4);
+    fireEvent.click(screen.getByTestId('commentFuncDislike'));
+    expect(mockSend).toBeCalledTimes(5);
+
+    fireEvent.click(screen.getByText('답글'));
+    act(() => {
+      store.dispatch({
+        type: 'post/toggleCommentReply',
+        payload: { parent_comment: '2' },
+      });
+    });
+    userEvent.type(screen.getByPlaceholderText('답글 입력'), 'REPLREPL');
+    fireEvent.click(screen.getByTestId('commentReplySubmitBtn'));
+    expect(mockSend).toBeCalledTimes(6);
+  });
+
+  test('chat navigate', async () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    const store = await setup();
+
+    act(() => {
+      store.dispatch({
+        type: 'chat/createChatroomSuccess',
+        payload: { id: 123 },
+      });
+    });
+
+    expect(mockNavigate).toBeCalledTimes(1);
   });
 });

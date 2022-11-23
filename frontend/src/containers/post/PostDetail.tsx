@@ -22,6 +22,7 @@ import {
 } from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
 import ImageDetailModal from 'components/post/ImageDetailModal';
+import { chatActions } from 'store/slices/chat';
 import SearchBar from 'components/common/SearchBar';
 import { ScrollShadow } from 'components/common/ScrollShadow';
 
@@ -104,7 +105,7 @@ const PostDetail = () => {
   // --- Modal Configurations End --------------------------------------------------------
 
   const user = useSelector(({ user }: RootState) => user.user);
-  const { socket, post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus } = useSelector(
+  const { socket, post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus, chatroomId } = useSelector(
     ({ chat, post }: RootState) => ({
       socket: chat.socket,
       post: post.postDetail.post,
@@ -112,14 +113,21 @@ const PostDetail = () => {
       postDeleteStatus: post.postDelete,
       postFuncStatus: post.postFunc,
       commentFuncStatus: post.postComment.commentFunc,
+      chatroomId: chat.create.id,
     }),
   );
 
   useEffect(() => {
     return () => {
       dispatch(postActions.resetPost());
+      dispatch(chatActions.resetCreate());
     };
   }, []);
+  useEffect(() => {
+    if (chatroomId) {
+      navigate(`/chat/${chatroomId}`);
+    }
+  }, [navigate, chatroomId]);
   useEffect(() => {
     if (id) {
       dispatch(
@@ -376,6 +384,8 @@ const PostDetail = () => {
                   pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
                   userInfo: comment.author,
                   navigate,
+                  username: user ? user.username : '',
+                  clickedChat: () => dispatch(chatActions.createChatroom({ username: comment.author.username })),
                 })}
               </CommentWritterAvatar>
               <CommentWritterText> {comment.author.nickname} </CommentWritterText>
@@ -509,6 +519,8 @@ const PostDetail = () => {
                           pivotRef: postModalPivot,
                           userInfo: post.author,
                           navigate,
+                          username: user ? user.username : '',
+                          clickedChat: () => dispatch(chatActions.createChatroom({ username: post.author.username })),
                         })}
                       </PostWritterAvatar>
                     </PostWritterWrapper>

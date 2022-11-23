@@ -18,12 +18,16 @@ export const UserDetailModal = ({
   pivotRef,
   userInfo,
   navigate,
+  username,
+  clickedChat,
 }: {
   isActive: boolean;
   modalRef: React.MutableRefObject<null>;
   pivotRef: React.RefObject<HTMLImageElement>;
   userInfo: UserInfo;
   navigate: NavigateFunction;
+  username: string;
+  clickedChat: React.MouseEventHandler<HTMLButtonElement>;
 }) => {
   const pivotInfo = pivotRef.current?.getBoundingClientRect();
   let left, top, width, height;
@@ -59,7 +63,7 @@ export const UserDetailModal = ({
             <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)} data-testid="profileBtn">
               프로필
             </GreenBigBtn>
-            <GreenBigBtn>채팅</GreenBigBtn>
+            {userInfo.username !== username && <GreenBigBtn onClick={clickedChat}>채팅</GreenBigBtn>}
           </RowCenterFlex>
         </Divdiv>
       </ModalContent>
@@ -169,12 +173,16 @@ export const UserDetailHorizontalModal = ({
   pivotRef,
   userInfo,
   navigate,
+  username,
+  clickedChat,
 }: {
   isActive: boolean;
   modalRef: React.MutableRefObject<null>;
   pivotRef: HTMLImageElement;
   userInfo: UserInfo;
   navigate: NavigateFunction;
+  username: string;
+  clickedChat: React.MouseEventHandler<HTMLButtonElement>;
 }) => {
   const pivotInfo = pivotRef?.getBoundingClientRect();
   let left, top, width, height;
@@ -209,7 +217,7 @@ export const UserDetailHorizontalModal = ({
               <GreenBigBtn onClick={() => navigate(`/profile/${userInfo.username}`)} data-testid="profileBtn">
                 프로필
               </GreenBigBtn>
-              <GreenBigBtn>채팅</GreenBigBtn>
+              {userInfo.username !== username && <GreenBigBtn onClick={clickedChat}>채팅</GreenBigBtn>}
             </RowCenterFlex>
           </HorizontalRightWrapper>
         </DivdivHorizontal>

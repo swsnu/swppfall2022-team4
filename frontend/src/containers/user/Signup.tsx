@@ -24,11 +24,7 @@ const Signup = () => {
   useEffect(() => {
     if (user) {
       navigate('/');
-      try {
-        localStorage.setItem('user', JSON.stringify(user));
-      } catch (e) {
-        console.log('localStorage is not working');
-      }
+      localStorage.setItem('user', JSON.stringify(user));
     }
   }, [navigate, user]);
 
