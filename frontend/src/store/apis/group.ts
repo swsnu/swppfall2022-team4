@@ -46,7 +46,7 @@ export const getCerts = async (payload: getCertsRequestType) => {
 };
 
 export const createCert = async (payload: createCertRequestType) => {
-  const response = await client.post(
+  const response = await client.post<getCertsResponseType>(
     `
     /api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`,
     payload,

@@ -198,13 +198,15 @@ export const groupSlice = createSlice({
       state.groupCerts.error = payload;
     },
     createCert: (state, action: PayloadAction<groupAPI.createCertRequestType>) => {
-      console.log('createCert');
+      state.groupCerts.all_certs = null;
+      state.groupCerts.error = null;
     },
     createCertSuccess: (state, { payload }) => {
-      console.log('cert success');
+      state.groupCerts.all_certs = payload.all_certs;
+      state.groupCerts.error = null;
     },
     createCertFailure: (state, { payload }) => {
-      console.log('cert fail');
+      state.groupCerts.error = payload;
     },
   },
 });

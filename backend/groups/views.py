@@ -256,23 +256,33 @@ def group_cert(request, group_id, year, month, specific_date):
         gr_obj = Group.objects.get(id=int(group_id))
         fit = gr_obj.goal.get(id=req_data["fitelement_id"])
 
-        cert1 = GroupCert.objects.filter(member=request.user.id)
-        cert2 = cert1.filter(date=datetime(year, month, specific_date).date())
-        cert3 = cert2.filter(group=group_id)
+        cert = GroupCert.objects.filter(member=request.user.id).filter(date=datetime(year, month, specific_date).date()).filter(group=group_id)
 
-        if len(cert3) != 0:
-            cert4 = GroupCert.objects.filter(member=request.user.id)
-            cert5 = cert4.filter(date=datetime(year, month, specific_date).date())
-            cert6 = cert5.get(group=group_id)
-            cert6.fit_element.add(fit)
-            cert6.save()
+        if len(cert) != 0:
+            updated_cert = GroupCert.objects.filter(member=request.user.id).filter(date=datetime(year, month, specific_date).date()).get(group=group_id)
+            updated_cert.fit_element.add(fit)
+            updated_cert.save()
         else:
-            cert = GroupCert(
+            new_cert = GroupCert(
                 group=gr_obj,
                 member=request.user,
                 date=datetime(year, month, specific_date).date()
             )
-            cert.save()
-            cert.fit_element.add(fit)
-            cert.save()
-        return HttpResponse(status=204)
+            new_cert.save()
+            new_cert.fit_element.add(fit)
+            new_cert.save()
+        certs = GroupCert.objects.filter(group=group_id).filter(date=datetime(year, month, specific_date).date())
+        result = []
+        for c in certs:
+            result.append({
+                "member": {
+                    "username": c.member.username,
+                    "nickname": c.member.nickname,
+                    "image": c.member.image
+                },
+                "certs": list(c.fit_element.values())
+            })
+        response_dict = {
+            "all_certs": result
+        }
+        return JsonResponse(response_dict, status=200)
