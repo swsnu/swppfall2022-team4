@@ -97,7 +97,9 @@ const PostMain = () => {
           <SideBarTitleWrapper>
             <SideBarTitle>태그 필터링</SideBarTitle>
             {selected.length > 0 && (
-              <SideBarSubtitle onClick={() => dispatch(postActions.clearFilterTag())}>Clear</SideBarSubtitle>
+              <SideBarSubtitle data-testid="filterTagClear" onClick={() => dispatch(postActions.clearFilterTag())}>
+                Clear
+              </SideBarSubtitle>
             )}
           </SideBarTitleWrapper>
 
@@ -105,7 +107,7 @@ const PostMain = () => {
             {selected.map(tag => (
               <TagBubbleWithFunc key={tag.id} color={tag.color}>
                 {tag.name}
-                <TagBubbleX testId={'selectedTagRemove'} onClick={() => tagOnRemove(tag.id)} />
+                <TagBubbleX testId="selectedTagRemove" onClick={() => tagOnRemove(tag.id)} />
               </TagBubbleWithFunc>
             ))}
           </TagBubbleWrapper>

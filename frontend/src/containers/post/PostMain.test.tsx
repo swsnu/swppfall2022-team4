@@ -208,12 +208,91 @@ describe('[PostMain Page]', () => {
         type: 'post/getPostsSuccess',
         payload: getPostsResponse,
       });
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
     });
 
     const tagModal = screen.getByText('자세히보기');
     fireEvent.click(tagModal);
 
+    act(() => {
+      store.dispatch({
+        type: 'post/toggleFilterTag',
+        payload: getTagsResponse.tags[0],
+      });
+    });
+
+    // Clear
+    const filterTagClearBtn = screen.getByTestId('filterTagClear');
+    fireEvent.click(filterTagClearBtn);
+
+    // Remove
+    const filterTagRemoveBt = screen.getByTestId('selectedTagRemove');
+    fireEvent.click(filterTagRemoveBt);
+
+    // Modal Close
     const tagModalClose = screen.getByTestId('spyTagModalDelete');
     fireEvent.click(tagModalClose);
+  });
+
+  test('modal close with selected with search', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/getPostsSuccess',
+        payload: getPostsResponse,
+      });
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+      store.dispatch({
+        type: 'post/postSearch',
+        payload: { search_keyword: 'hi' },
+      });
+      store.dispatch({
+        type: 'post/toggleFilterTag',
+        payload: getTagsResponse.tags[0],
+      });
+    });
+
+    const tagModal = screen.getByText('자세히보기');
+    fireEvent.click(tagModal);
+
+    // Modal Close
+    const tagModalClose = screen.getByTestId('spyTagModalDelete');
+    fireEvent.click(tagModalClose);
+  });
+
+  test('modal close without selected', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/getPostsSuccess',
+        payload: getPostsResponse,
+      });
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+    });
+
+    const tagModal = screen.getByText('자세히보기');
+    fireEvent.click(tagModal);
+
+    // Modal Close
+    const tagModalClose = screen.getByTestId('spyTagModalDelete');
+    fireEvent.click(tagModalClose);
+  });
+
+  test('without user', () => {
+    const store = configureStore({ reducer: rootReducer });
+    render(
+      <Provider store={store}>
+        <PostMain />
+      </Provider>,
+    );
   });
 });
