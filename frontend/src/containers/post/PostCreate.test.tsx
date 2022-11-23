@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
@@ -11,6 +11,7 @@ import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
 
 import { Store } from 'react-notifications-component';
+import client from 'store/apis/client';
 beforeEach(() => {
   Store.addNotification = jest.fn();
 });
@@ -197,6 +198,74 @@ describe('[PostEditor Page - Tag]', () => {
     const tagClassOption2 = screen.getByRole('option', { name: 'place' }); // Tag Class
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption2);
     expect((tagClassOption2 as HTMLOptionElement).selected).toBeTruthy();
+  });
+  test('remove prime tag', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+    });
+
+    const tagClassOption = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class
+    expect((tagClassOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
+    expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+
+    const tagOption = screen.getByRole('option', { name: 'interesting' }); // Tag
+    expect((tagOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption);
+    expect((tagOption as HTMLOptionElement).selected).not.toBeTruthy(); // Tag Select would be cleared right after selection
+
+    const selectedTag = screen.getByTestId(`selectedTag-${getTagsResponse.tags[0].id}`);
+    expect(selectedTag).toBeValid();
+
+    fireEvent.click(selectedTag); // Prime tag
+
+    const primeTag = screen.getByTestId('selectedPrimeTagRemove');
+    fireEvent.click(primeTag);
+  });
+  test('image upload', async () => {
+    setup();
+    const mockClientGet = jest.fn();
+    client.post = mockClientGet.mockImplementation(() => Promise.resolve({ data: { title: 'image' } }));
+
+    const imageUploadBtn = screen.getByText('이미지 추가');
+    fireEvent.click(imageUploadBtn);
+
+    const blob = new Blob(['hahaha']);
+    const file = new File([blob], 'image.jpg');
+    const input = screen.getByTestId('postImageUpload');
+
+    act(() => {
+      userEvent.upload(input, file);
+    });
+
+    await waitFor(() => expect(screen.queryByText('삭제')).toBeInTheDocument());
+    const deleteImageBtn = screen.getByText('삭제');
+    fireEvent.click(deleteImageBtn);
+  });
+  test('image upload error', async () => {
+    const alertMock = jest.fn();
+    global.alert = alertMock.mockImplementation(() => null);
+    setup();
+    const mockClientGet = jest.fn();
+    client.post = mockClientGet.mockImplementation(() => Promise.reject({}));
+
+    const imageUploadBtn = screen.getByText('이미지 추가');
+    fireEvent.click(imageUploadBtn);
+
+    const blob = new Blob(['hahaha']);
+    const file = new File([blob], 'image.jpg');
+    const input = screen.getByTestId('postImageUpload');
+
+    act(() => {
+      userEvent.upload(input, file);
+    });
+
+    await waitFor(() => expect(screen.queryByText('삭제')).not.toBeInTheDocument());
+    expect(alertMock).toBeCalledWith('이미지 업로드 오류');
   });
   test('create tag class', () => {
     const store = setup();

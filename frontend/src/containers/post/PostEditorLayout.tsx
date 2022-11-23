@@ -457,7 +457,12 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               <ContentCharNum isFull={postContent.images.length >= CONTENT_IMAGE_LIMIT}>
                 {postContent.images.length} / {CONTENT_IMAGE_LIMIT}
               </ContentCharNum>
-              <FileInput type="file" id="FileInput_PostContent" onChange={uploadPostImage} />
+              <FileInput
+                type="file"
+                id="FileInput_PostContent"
+                data-testid="postImageUpload"
+                onChange={uploadPostImage}
+              />
             </ContentImageSection>
             <ContentRoutineSection>
               <SectionTitle>루틴</SectionTitle>
