@@ -9,6 +9,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer } from 'store';
 
 import { Store } from 'react-notifications-component';
+
 beforeEach(() => {
   Store.addNotification = jest.fn();
 });
@@ -47,7 +48,8 @@ export const simplePosts: postAPI.Post[] = [
     comments_num: 1,
     tags: simpleTagVisuals,
     prime_tag: simpleTagVisuals[0],
-    has_image: false,
+    has_image: true,
+    images: ['1.png'],
     liked: true,
     disliked: true,
     scraped: true,
@@ -112,7 +114,8 @@ export const simpleComments: commentAPI.Comment[] = [
 const getPostsRequest: postAPI.getPostsRequestType = {
   pageNum: 1,
   pageSize: 15,
-  searchKeyword: '',
+  searchKeyword: 'search',
+  tags: [],
 };
 const createPostRequest: postAPI.createPostRequestType = {
   title: 'post title',
@@ -168,6 +171,12 @@ const getPostsResponse: postAPI.getPostsResponseType = {
   page_size: 15,
   page_total: 7,
 };
+const getPostsEmptyResponse: postAPI.getPostsResponseType = {
+  posts: [],
+  page: 2,
+  page_size: 15,
+  page_total: 7,
+};
 const getRecentCommentsResponse = {
   comments: simpleComments,
 };
@@ -215,6 +224,27 @@ describe('slices - posts', () => {
         { ...simpleComments[0], replyActive: false },
         { ...simpleComments[1], editActive: false },
       ]);
+    });
+    test('toggle, remove, clear tags', () => {
+      const store = configureStore({
+        reducer: rootReducer,
+      });
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      expect(store.getState().post.filterTag).toEqual(simpleTagVisuals);
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      expect(store.getState().post.filterTag).toEqual([]);
+      store.dispatch(postActions.removeFilterTag(simpleTagVisuals[0].id));
+      expect(store.getState().post.filterTag).toEqual([]);
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      store.dispatch(postActions.clearFilterTag());
+      expect(store.getState().post.filterTag).toEqual([]);
+    });
+    test('search - getPosts empty', () => {
+      const store = configureStore({
+        reducer: rootReducer,
+      });
+      store.dispatch(postActions.postSearch({ search_keyword: 'key' }));
+      store.dispatch(postActions.getPostsSuccess(getPostsEmptyResponse));
     });
     test('getPosts', () => {
       return expectSaga(postSaga)

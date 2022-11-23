@@ -13,10 +13,17 @@ import { Comment } from 'store/apis/comment';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { BlueBigBtn, CommentGreenBtn, RedSmallBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
-import { ColumnCenterFlex, ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import {
+  ColumnCenterFlex,
+  ColumnFlex,
+  PostContentWrapper,
+  PostPageWrapper,
+  RowCenterFlex,
+} from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
-import { PostDetailLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
 import ImageDetailModal from 'components/post/ImageDetailModal';
+import SearchBar from 'components/common/SearchBar';
+import { ScrollShadow } from 'components/common/ScrollShadow';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -61,6 +68,7 @@ const PostDetail = () => {
   const imageModalRef = useRef(null);
   const imageModalAnimRef = useRef(null);
 
+  const imageModalOnClose = () => setImageModalOpen(false);
   // Disable modal when OnClickOutside
   useOnClickOutside(
     postModalRef,
@@ -77,7 +85,7 @@ const PostDetail = () => {
     },
     'mousedown',
   );
-  useOnClickOutside(imageModalRef, () => setImageModalOpen(false), 'mousedown');
+  useOnClickOutside(imageModalRef, imageModalOnClose, 'mousedown');
 
   // Disable scroll when modal is active
   useEffect(() => {
@@ -218,9 +226,8 @@ const PostDetail = () => {
     }
   };
 
-  const commentCreateOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const commentCreateOnClick = (parent_comment: string | null) => {
     if (user && id) {
-      const parent_comment = e.currentTarget.getAttribute('data-parent_comment');
       dispatch(
         postActions.createComment({
           content: parent_comment ? commentReplyInput : commentInput,
@@ -293,8 +300,7 @@ const PostDetail = () => {
     setEditActivated(false);
   };
 
-  const commentDeleteOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const target_id = e.currentTarget.getAttribute('data-comment_id');
+  const commentDeleteOnClick = (target_id: string) => {
     if (target_id && id) {
       dispatch(
         postActions.deleteComment({
@@ -336,9 +342,7 @@ const PostDetail = () => {
               <CommentGreenBtn disabled={editActivated} onClick={() => commentEditOpenOnClick(comment)}>
                 수정
               </CommentGreenBtn>
-              <RedSmallBtn onClick={commentDeleteOnClick} data-comment_id={comment.comment_id}>
-                삭제
-              </RedSmallBtn>
+              <RedSmallBtn onClick={() => commentDeleteOnClick(comment.comment_id)}>삭제</RedSmallBtn>
             </>
           )}
         </FuncBtnWrapper>
@@ -371,11 +375,10 @@ const PostDetail = () => {
                   modalRef: commentModalRef,
                   pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
                   userInfo: comment.author,
-                  // commentId: comment.comment_id,
                   navigate,
                 })}
               </CommentWritterAvatar>
-              <CommentWritterText> {comment.author.username} </CommentWritterText>
+              <CommentWritterText> {comment.author.nickname} </CommentWritterText>
             </CommentWritterWrapper>
           </CommentWritterWrapperO1>
           <CommentRightWrapper>
@@ -387,10 +390,7 @@ const PostDetail = () => {
                   onChange={e => setCommentEditInput(e.target.value)}
                 ></CommentEditInput>
               ) : (
-                <CommentContent>
-                  {/* [My ID : {comment.id} / Parent : {comment.parent_comment}] */}
-                  {comment.content}
-                </CommentContent>
+                <CommentContent>{comment.content}</CommentContent>
               )}
             </CommentContentWrapper>
             <CommentFuncWrapper>
@@ -428,8 +428,7 @@ const PostDetail = () => {
               <GreenCommentSubmitBtn
                 data-testid="commentReplySubmitBtn"
                 disabled={commentReplyInput === ''}
-                onClick={commentCreateOnClick}
-                data-parent_comment={comment.comment_id}
+                onClick={() => commentCreateOnClick(comment.comment_id)}
               >
                 작성
               </GreenCommentSubmitBtn>
@@ -440,115 +439,6 @@ const PostDetail = () => {
     );
   };
 
-  const PostDetailContent = (
-    <ArticleDetailWrapper id="articleDetailWrapper">
-      {post ? (
-        <ArticleItem>
-          <ArticleBody>
-            <ArticleTitleWrapper>
-              <ArticleBackBtn onClick={() => navigate('/post')}>◀︎</ArticleBackBtn>
-              <ArticleTitle>{post.title}</ArticleTitle>
-              <PostWritterWrapper>
-                <PostWritterLeftWrapper>
-                  <PostWritterText> {post.author.username} </PostWritterText>
-                  <PostTimeText>{timeAgoFormat(new Date(), new Date(post.created))}</PostTimeText>
-                </PostWritterLeftWrapper>
-                <PostWritterAvatar>
-                  <UserAvatar
-                    ref={postModalPivot}
-                    src={process.env.REACT_APP_API_IMAGE + post.author.avatar}
-                    onClick={() => setPostModalOpen(true)}
-                    alt="postAvatar"
-                  />
-                  {UserDetailModal({
-                    isActive: postModalOpen,
-                    modalRef: postModalRef,
-                    pivotRef: postModalPivot,
-                    userInfo: post.author,
-                    navigate,
-                  })}
-                </PostWritterAvatar>
-              </PostWritterWrapper>
-            </ArticleTitleWrapper>
-            <ArticleBodyContent>{post.content}</ArticleBodyContent>
-            <ContentImageSection>
-              {post.images?.map((img, index) => (
-                <PostUploadedImageWrapper key={index}>
-                  <PostUploadedImage
-                    src={process.env.REACT_APP_API_IMAGE + img}
-                    onClick={() => {
-                      setActiveImage(img);
-                      setImageModalOpen(true);
-                    }}
-                  />
-                </PostUploadedImageWrapper>
-              ))}
-            </ContentImageSection>
-            <ArticleBodyFooter>
-              <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
-              <FuncBtn
-                data-testid="postFuncLike"
-                onClick={() => postFuncOnClick(FuncType.Like)}
-                color={post.liked ? FuncType.Like : FuncType.None}
-              >
-                <FontAwesomeIcon icon={faThumbsUp} />
-              </FuncBtn>
-              <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
-              <FuncBtn
-                data-testid="postFuncDislike"
-                onClick={() => postFuncOnClick(FuncType.Dislike)}
-                color={post.disliked ? FuncType.Dislike : FuncType.None}
-              >
-                <FontAwesomeIcon icon={faThumbsDown} />
-              </FuncBtn>
-              <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
-              <FuncBtn
-                data-testid="postFuncScrap"
-                onClick={() => postFuncOnClick(FuncType.Scrap)}
-                color={post.scraped ? FuncType.Scrap : FuncType.None}
-              >
-                <FontAwesomeIcon icon={faStar} />
-              </FuncBtn>
-              <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
-
-              <TagBubbleWrapper>
-                {post.tags.map(tags => {
-                  return (
-                    <TagBubble
-                      key={tags.id}
-                      color={tags.color}
-                      isPrime={post.prime_tag && tags.id === post.prime_tag.id}
-                    >
-                      {tags.name}
-                    </TagBubble>
-                  );
-                })}
-              </TagBubbleWrapper>
-            </ArticleBodyFooter>
-          </ArticleBody>
-          <ArticleCommentWrapper>
-            <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
-            <CommentForm>
-              <CommentInput
-                placeholder="댓글 입력"
-                value={commentInput}
-                onChange={e => setCommentInput(e.target.value)}
-              ></CommentInput>
-              <GreenCommentSubmitBtn
-                disabled={commentInput === ''}
-                onClick={commentCreateOnClick}
-                data-parent_comment={null}
-              >
-                작성
-              </GreenCommentSubmitBtn>
-            </CommentForm>
-          </ArticleCommentWrapper>
-        </ArticleItem>
-      ) : (
-        <LoadingWithoutMinHeight />
-      )}
-    </ArticleDetailWrapper>
-  );
   const CreateBtn = <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
     user?.username == post?.author.username ? (
@@ -560,18 +450,150 @@ const PostDetail = () => {
     ) : (
       <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
     );
-  const SideBar = (
-    <SideBarWrapper>
-      {PostAuthorPanel}
-      <SideBarItem>사이드바 공간2</SideBarItem>
-    </SideBarWrapper>
-  );
+
+  const postSearch = useSelector(({ post }: RootState) => post.postSearch);
+  const [search, setSearch] = useState(postSearch);
+
+  useEffect(() => {
+    setSearch(postSearch);
+  }, []);
   return (
     <PostPageWrapper>
-      {PostDetailLayout(PostDetailContent, SideBar)}
+      <PostContentWrapper>
+        <div>
+          <SearchBar
+            onSubmit={e => {
+              e.preventDefault();
+              navigate(`/post`);
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: search,
+                }),
+              );
+            }}
+            onClear={() => {
+              setSearch('');
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: '',
+                }),
+              );
+            }}
+            search={search}
+            setSearch={setSearch}
+          />
+        </div>
+        <div>
+          <ArticleDetailWrapper id="articleDetailWrapper">
+            {post ? (
+              <ArticleItem>
+                <ArticleBody>
+                  <ArticleTitleWrapper>
+                    <ArticleBackBtn onClick={() => navigate('/post')}>◀︎</ArticleBackBtn>
+                    <ArticleTitle>{post.title}</ArticleTitle>
+                    <PostWritterWrapper>
+                      <PostWritterLeftWrapper>
+                        <PostWritterText> {post.author.nickname} </PostWritterText>
+                        <PostTimeText>{timeAgoFormat(new Date(), new Date(post.created))}</PostTimeText>
+                      </PostWritterLeftWrapper>
+                      <PostWritterAvatar>
+                        <UserAvatar
+                          ref={postModalPivot}
+                          src={process.env.REACT_APP_API_IMAGE + post.author.avatar}
+                          onClick={() => setPostModalOpen(true)}
+                          alt="postAvatar"
+                        />
+                        {UserDetailModal({
+                          isActive: postModalOpen,
+                          modalRef: postModalRef,
+                          pivotRef: postModalPivot,
+                          userInfo: post.author,
+                          navigate,
+                        })}
+                      </PostWritterAvatar>
+                    </PostWritterWrapper>
+                  </ArticleTitleWrapper>
+                  <ArticleBodyContent>{post.content}</ArticleBodyContent>
+                  <ContentImageSection>
+                    {post.images?.map((img, index) => (
+                      <PostUploadedImageWrapper key={index}>
+                        <PostUploadedImage
+                          src={process.env.REACT_APP_API_IMAGE + img}
+                          onClick={() => {
+                            setActiveImage(img);
+                            setImageModalOpen(true);
+                          }}
+                          data-testid="postImage"
+                        />
+                      </PostUploadedImageWrapper>
+                    ))}
+                  </ContentImageSection>
+                  <ArticleBodyFooter>
+                    <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
+                    <FuncBtn
+                      data-testid="postFuncLike"
+                      onClick={() => postFuncOnClick(FuncType.Like)}
+                      color={post.liked ? FuncType.Like : FuncType.None}
+                    >
+                      <FontAwesomeIcon icon={faThumbsUp} />
+                    </FuncBtn>
+                    <CommentFuncNumIndicator>{post.like_num}</CommentFuncNumIndicator>
+                    <FuncBtn
+                      data-testid="postFuncDislike"
+                      onClick={() => postFuncOnClick(FuncType.Dislike)}
+                      color={post.disliked ? FuncType.Dislike : FuncType.None}
+                    >
+                      <FontAwesomeIcon icon={faThumbsDown} />
+                    </FuncBtn>
+                    <CommentFuncNumIndicator>{post.dislike_num}</CommentFuncNumIndicator>
+                    <FuncBtn
+                      data-testid="postFuncScrap"
+                      onClick={() => postFuncOnClick(FuncType.Scrap)}
+                      color={post.scraped ? FuncType.Scrap : FuncType.None}
+                    >
+                      <FontAwesomeIcon icon={faStar} />
+                    </FuncBtn>
+                    <CommentFuncNumIndicator>{post.scrap_num}</CommentFuncNumIndicator>
+
+                    <TagBubbleWrapper>
+                      {post.tags.map(tags => {
+                        return (
+                          <TagBubble
+                            key={tags.id}
+                            color={tags.color}
+                            isPrime={post.prime_tag && tags.id === post.prime_tag.id}
+                          >
+                            {tags.name}
+                          </TagBubble>
+                        );
+                      })}
+                    </TagBubbleWrapper>
+                  </ArticleBodyFooter>
+                </ArticleBody>
+                <ArticleCommentWrapper>
+                  <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
+                  <CommentForm>
+                    <CommentInput
+                      placeholder="댓글 입력"
+                      value={commentInput}
+                      onChange={e => setCommentInput(e.target.value)}
+                    ></CommentInput>
+                    <GreenCommentSubmitBtn disabled={commentInput === ''} onClick={() => commentCreateOnClick(null)}>
+                      작성
+                    </GreenCommentSubmitBtn>
+                  </CommentForm>
+                </ArticleCommentWrapper>
+              </ArticleItem>
+            ) : (
+              <LoadingWithoutMinHeight />
+            )}
+          </ArticleDetailWrapper>
+          <div>{PostAuthorPanel}</div>
+        </div>
+      </PostContentWrapper>
       {ImageDetailModal({
         isActive: imageModalOpen,
-        onClose: () => setImageModalOpen(false),
+        onClose: imageModalOnClose,
         modalRef: imageModalRef,
         modalAnimRef: imageModalAnimRef,
         activeImage,
@@ -595,7 +617,7 @@ const ArticleBodyFooter = styled.div`
   width: 100%;
   align-items: center;
 `;
-const ArticleDetailWrapper = styled.div`
+const ArticleDetailWrapper = styled(ScrollShadow)`
   border: 1px solid black;
   width: 100%;
   height: 100%;
@@ -604,22 +626,6 @@ const ArticleDetailWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-
-  /* Scroll Shadow */
-  background-image: linear-gradient(to top, white, white), linear-gradient(to top, white, white),
-    linear-gradient(to top, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0)),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0));
-  background-position: bottom center, top center, bottom center, top center;
-  background-color: white;
-  background-repeat: no-repeat;
-  background-size: 100% 30px, 100% 30px, 100% 30px, 100% 30px;
-  background-attachment: local, local, scroll, scroll;
-`;
-
-const SideBarItem = styled.div`
-  margin-top: 15px;
-  width: 100%;
-  height: 40%;
 `;
 
 const ArticleBody = styled.div`
@@ -745,7 +751,7 @@ const CommentItem = styled.div<IPropsComment>`
 
 const CommentWritterWrapperO1 = styled.div`
   text-align: center;
-  width: 40px;
+  width: fit-content;
   margin-right: 20px;
 `;
 
@@ -772,6 +778,8 @@ const UserAvatar = styled.img`
 
 const CommentWritterText = styled.span`
   font-size: 12px;
+  width: fit-content;
+  white-space: nowrap;
 `;
 
 const CommentRightWrapper = styled(ColumnFlex)`

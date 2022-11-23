@@ -40,6 +40,7 @@ import GroupCreate from 'containers/group/GroupCreate';
 import GroupMembers from 'containers/group/GroupMembers';
 import { KakaoLoginCallback } from 'containers/user/SocialLoginCallback';
 import GroupChat from 'containers/group/GroupChat';
+import InformationDetail from 'containers/information/InformationDetail';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -171,6 +172,7 @@ const InsideComponent = () => {
               </Route>
 
               <Route path="information" element={<InformationLobby />} />
+              <Route path="information/:name" element={<InformationDetail />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

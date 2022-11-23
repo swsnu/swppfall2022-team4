@@ -10,6 +10,7 @@ class TagClassAdmin(admin.ModelAdmin):
         "pk",
         "class_name",
         "class_type",
+        "color",
         "created",
     )
 
@@ -22,5 +23,6 @@ class TagAdmin(admin.ModelAdmin):
         "pk",
         "tag_class",
         "tag_name",
+        "calories",
         "created",
     )

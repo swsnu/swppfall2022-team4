@@ -96,6 +96,7 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
 }));
+
 beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
@@ -188,6 +189,15 @@ describe('[PostDetail Page]', () => {
     const backToMainBtn = screen.getByText('◀︎');
     fireEvent.click(backToMainBtn);
     expect(mockNavigate).toBeCalledWith('/post');
+  });
+  test('useOnclickOutside', async () => {
+    // Failed to cover callback function
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.mock('usehooks-ts', () => ({
+      ...jest.requireActual('usehooks-ts'),
+      useOnClickOutside: (ref: any, callback: any) => callback(),
+    }));
+    await setup();
   });
 
   test('basic rendering not my comment', async () => {
@@ -495,7 +505,23 @@ describe('[PostDetail Page]', () => {
     const commentAvatar = screen.getByAltText(`commentAvatar${simpleComments[1].comment_id}`);
     fireEvent.click(commentAvatar);
   });
+  test('image modal test', async () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    const store = await setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: simplePosts[0],
+      });
+      store.dispatch({
+        type: 'post/getPostCommentSuccess',
+        payload: { comments: [simpleComments[1], simpleComments[3]] },
+      });
+    });
 
+    const postImage = screen.getByTestId('postImage');
+    fireEvent.click(postImage);
+  });
   test('socket', async () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
     const store = await setup();
