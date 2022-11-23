@@ -49,6 +49,7 @@ export const simplePosts: postAPI.Post[] = [
     tags: simpleTagVisuals,
     prime_tag: simpleTagVisuals[0],
     has_image: false,
+    images: ['1.png', '2.jpg'],
     liked: true,
     disliked: true,
     scraped: true,
@@ -66,7 +67,7 @@ export const simplePosts: postAPI.Post[] = [
     comments_num: 11,
     tags: [],
     prime_tag: undefined,
-    has_image: false,
+    has_image: true,
     liked: false,
     disliked: false,
     scraped: false,
@@ -223,6 +224,20 @@ describe('slices - posts', () => {
         { ...simpleComments[0], replyActive: false },
         { ...simpleComments[1], editActive: false },
       ]);
+    });
+    test('toggle, remove, clear tags', () => {
+      const store = configureStore({
+        reducer: rootReducer,
+      });
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      expect(store.getState().post.filterTag).toEqual(simpleTagVisuals);
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      expect(store.getState().post.filterTag).toEqual([]);
+      store.dispatch(postActions.removeFilterTag(simpleTagVisuals[0].id));
+      expect(store.getState().post.filterTag).toEqual([]);
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      store.dispatch(postActions.clearFilterTag());
+      expect(store.getState().post.filterTag).toEqual([]);
     });
     test('search - getPosts empty', () => {
       const store = configureStore({

@@ -4,6 +4,7 @@ import { put, call, takeLatest } from 'redux-saga/effects';
 import * as postAPI from 'store/apis/post';
 import * as commentAPI from 'store/apis/comment';
 import { notificationFailure, notificationInfo, notificationSuccess } from 'utils/sendNotification';
+import { TagVisual } from 'store/apis/tag';
 
 interface PostState {
   postList: {
@@ -33,6 +34,7 @@ interface PostState {
   postDelete: boolean;
   postFunc: boolean;
   postSearch: string;
+  filterTag: TagVisual[];
 }
 export const initialState: PostState = {
   postList: {
@@ -62,6 +64,7 @@ export const initialState: PostState = {
   postDelete: false,
   postFunc: false,
   postSearch: '',
+  filterTag: [],
 };
 
 export const funcTypeToStr = (type: string) => {
@@ -202,6 +205,21 @@ export const postSlice = createSlice({
     // postSearch ---------------------------------------------------------------------------
     postSearch: (state, action: PayloadAction<postAPI.postSearchRequestType>) => {
       state.postSearch = action.payload.search_keyword;
+    },
+    // filterTag ---------------------------------------------------------------------------
+    toggleFilterTag: (state, action: PayloadAction<postAPI.filterTagRequestType>) => {
+      const target = action.payload;
+      if (state.filterTag.filter(item => item.id == target.id).length === 0) {
+        state.filterTag = [...state.filterTag, target];
+      } else {
+        state.filterTag = state.filterTag.filter(item => item.id !== target.id);
+      }
+    },
+    removeFilterTag: (state, action: PayloadAction<postAPI.removeTagRequestType>) => {
+      state.filterTag = state.filterTag.filter(item => item.id !== action.payload);
+    },
+    clearFilterTag: state => {
+      state.filterTag = [];
     },
     // utils --------------------------------------------------------------------------------
     stateRefresh: state => {

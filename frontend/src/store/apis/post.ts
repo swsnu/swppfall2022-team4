@@ -120,3 +120,6 @@ export type postFuncRequestType = {
 export type postSearchRequestType = {
   search_keyword: string;
 };
+
+export type filterTagRequestType = TagVisual;
+export type removeTagRequestType = string; // id of target tag

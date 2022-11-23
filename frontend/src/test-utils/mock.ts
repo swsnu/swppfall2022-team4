@@ -51,6 +51,7 @@ export const initialState: PreloadedState<RootState> = {
     postDelete: false,
     postFunc: false,
     postSearch: '',
+    filterTag: [],
   },
   group: {
     groupList: {

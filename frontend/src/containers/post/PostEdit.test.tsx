@@ -79,6 +79,19 @@ describe('[PostEdit Page]', () => {
 
     screen.getByDisplayValue('First Post');
   });
+  test('basic rendering', () => {
+    // Second post for has image
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '2' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: simplePosts[1],
+      });
+    });
+
+    screen.getByDisplayValue('Second Post');
+  });
   test('basic rendering with invalid id', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: undefined });
     setup();

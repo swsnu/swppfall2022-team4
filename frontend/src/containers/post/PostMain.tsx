@@ -14,7 +14,6 @@ import { ColumnFlex, PostContentWrapper, PostPageWrapper, RowCenterFlex } from '
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 import TagDetailModal from 'components/post/TagDetailModal';
-import { TagVisual } from 'store/apis/tag';
 import SearchBar from 'components/common/SearchBar';
 import { ArticleHeader, ArticleItemDefault } from 'components/post/ArticleItem';
 import { userActions } from 'store/slices/user';
@@ -24,10 +23,23 @@ const PostMain = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [tagModalOpen, setTagModalOpen] = useState(false);
-  const [selected, setSelected] = useState<TagVisual[]>([]);
 
   const modalRef = useRef(null);
   const modalAnimRef = useRef(null);
+
+  const { postList, postSearch, maxPage, searchKeyword, selected, recentCommentPost, popularTags, user } = useSelector(
+    ({ post, tag, user }: RootState) => ({
+      postList: post.postList.posts,
+      postSearch: post.postSearch,
+      maxPage: post.postList.pageTotal,
+      searchKeyword: post.postSearch,
+      selected: post.filterTag,
+      recentCommentPost: post.recentComments.comments,
+      popularTags: tag.popularTags,
+      tagList: tag.tagList,
+      user: user.user,
+    }),
+  );
 
   // Disable modal when OnClickOutside
   const TagDetailOnClose = () => {
@@ -52,18 +64,6 @@ const PostMain = () => {
     }
   }, [tagModalOpen]);
 
-  const { postList, postSearch, maxPage, searchKeyword, recentCommentPost, popularTags, user } = useSelector(
-    ({ post, tag, user }: RootState) => ({
-      postList: post.postList.posts,
-      postSearch: post.postSearch,
-      maxPage: post.postList.pageTotal,
-      searchKeyword: post.postSearch,
-      recentCommentPost: post.recentComments.comments,
-      popularTags: tag.popularTags,
-      tagList: tag.tagList,
-      user: user.user,
-    }),
-  );
   const [search, setSearch] = useState(postSearch);
   useEffect(() => {
     setSearch(postSearch);
@@ -85,7 +85,7 @@ const PostMain = () => {
     dispatch(postActions.getRecentComments());
   }, []);
   const tagOnRemove = (id: string) => {
-    setSelected(s => s.filter(item => item.id != id));
+    dispatch(postActions.removeFilterTag(id));
   };
   const SideBar = (
     <div>
@@ -96,7 +96,9 @@ const PostMain = () => {
         <SideBarItem>
           <SideBarTitleWrapper>
             <SideBarTitle>태그 필터링</SideBarTitle>
-            {selected.length > 0 && <SideBarSubtitle onClick={() => setSelected([])}>Clear</SideBarSubtitle>}
+            {selected.length > 0 && (
+              <SideBarSubtitle onClick={() => dispatch(postActions.clearFilterTag())}>Clear</SideBarSubtitle>
+            )}
           </SideBarTitleWrapper>
 
           <TagBubbleWrapper>
@@ -196,8 +198,6 @@ const PostMain = () => {
         onClose: TagDetailOnClose,
         modalRef,
         modalAnimRef,
-        selected,
-        setSelected,
         dispatch,
       })}
     </PostPageWrapper>

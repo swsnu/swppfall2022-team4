@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { faDice, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { TagVisual } from 'store/apis/tag';
 import { ColumnCenterFlex } from './layout';
 import { TagBubble } from 'components/tag/tagbubble';
 import { TAG_CLASS_LIMIT, TAG_NAME_LIMIT } from 'containers/post/PostEditorLayout';
@@ -15,14 +14,13 @@ import { GreenBigBtn, GreenBigSpanBtn } from './button';
 import { getRandomHex } from 'utils/color';
 import { useSelector } from 'react-redux';
 import { RootState } from 'index';
+import { postActions } from 'store/slices/post';
 
 export interface TagDetailModalIprops {
   isActive: boolean;
   onClose: () => void;
   modalRef: React.MutableRefObject<null>;
   modalAnimRef: React.MutableRefObject<null>;
-  selected: TagVisual[];
-  setSelected: (value: React.SetStateAction<TagVisual[]>) => void;
   dispatch: Dispatch<AnyAction>;
 }
 
@@ -41,23 +39,16 @@ const getCaloriesInfoText = (forUser: boolean, nickname: string | undefined) => 
   );
 };
 
-const TagDetailModal = ({
-  isActive,
-  onClose,
-  modalRef,
-  modalAnimRef,
-  selected,
-  setSelected,
-  dispatch,
-}: TagDetailModalIprops) => {
-  const { tagList, popularTags, weight, nickname, tagClassCreate, tagCreate } = useSelector(
-    ({ tag, user }: RootState) => ({
+const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }: TagDetailModalIprops) => {
+  const { tagList, popularTags, weight, nickname, tagClassCreate, tagCreate, selected } = useSelector(
+    ({ tag, user, post }: RootState) => ({
       tagList: tag.tagList,
       popularTags: tag.popularTags,
       tagClassCreate: tag.tagClassCreate,
       tagCreate: tag.tagCreate,
       weight: user.profile?.weight,
       nickname: user.user?.nickname,
+      selected: post.filterTag,
     }),
   );
   const [type, setType] = useState(0);
@@ -69,18 +60,6 @@ const TagDetailModal = ({
   const [newCategoryColor, setNewCategoryColor] = useState<string>('#000000');
   const [colorPicker, setColorPicker] = useState<boolean>(false);
   const [newCategoryInput, setNewCategoryInput] = useState<string>('');
-
-  const filterOnClick = (tag: TagVisual) => {
-    if (selected.filter(item => item.id == tag.id).length === 0) {
-      setSelected(state => {
-        return [...state, tag];
-      });
-    } else {
-      setSelected(state => {
-        return state.filter(item => item.id !== tag.id);
-      });
-    }
-  };
 
   useEffect(() => {
     dispatch(tagActions.getTags());
@@ -142,7 +121,7 @@ const TagDetailModal = ({
                                     ? UNSELECTED
                                     : tag.color
                                 }
-                                onClick={() => filterOnClick(tag)}
+                                onClick={() => dispatch(postActions.toggleFilterTag(tag))}
                               >
                                 {tag.name}
                                 {tagClass.class_type === 'workout' &&
@@ -270,7 +249,7 @@ const TagDetailModal = ({
                       </ModalDescriptionSection>
                       <TagClassSection>
                         {popularTags?.map((tag, index) => (
-                          <TagRankingItem>
+                          <TagRankingItem key={index}>
                             <span>{index + 1} 위</span>
                             <TagBubble key={tag.id} color={tag.color}>
                               {tag.name} | 글 {tag.posts} 개
