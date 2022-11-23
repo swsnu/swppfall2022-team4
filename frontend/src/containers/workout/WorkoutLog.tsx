@@ -123,7 +123,7 @@ const WorkoutLog = () => {
         rep: rep,
         set: set,
         time: workout_time,
-        date: String(year)+"-"+String(month).padStart(1,'0')+"-"+String(day).padStart(1,'0'),
+        date: String(year)+"-"+String(month+1).padStart(2,'0')+"-"+String(day).padStart(2,'0'),
       };
       dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
       setWorkoutType('');
@@ -464,7 +464,7 @@ const WorkoutLog = () => {
                     {fitElementTypes.map((fitelement_type, index) =>
                       fitelement_type.category === workout_category ? (
                         <option key={index}>
-                          {fitelement_type.korean_name}
+                          {fitelement_type.name}
                         </option>
                       ) : null,
                     )}

@@ -6,7 +6,6 @@ import * as workoutLogAPI from 'store/apis/workout';
 
 export type FitelementType = {
   name: string;
-  korean_name: string;
   calories: number;
   category: string;
 };
@@ -74,7 +73,6 @@ export interface WorkoutLogState {
   };
   fitelement_type: {
     name: string;
-    korean_name: string;
     calories: number;
     category: string;
   };
@@ -123,7 +121,6 @@ export const initialState: WorkoutLogState = {
   },
   fitelement_type: {
     name: '',
-    korean_name: '',
     category: '',
     calories: 0,
   },

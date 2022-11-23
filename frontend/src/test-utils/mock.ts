@@ -170,7 +170,22 @@ export const initialState: PreloadedState<RootState> = {
       status: false,
       dailylog_date: null,
     },
-    calendar_info: [],
+    calendar_info: [
+      {
+        year: 2022,
+        month: 10,
+        date: 1,
+        workouts: [],
+        calories: 0
+      },
+      {
+        year: 2022,
+        month: 10,
+        date: 2,
+        workouts: [],
+        calories: 0
+      }
+    ],
     selected_routine: {
       name: 'test_routine2',
       fitelements: [],
@@ -181,7 +196,6 @@ export const initialState: PreloadedState<RootState> = {
     },
     fitelement_type: {
       name: '',
-      korean_name: '',
       calories: 0,
       category: '',
     },

@@ -9,12 +9,12 @@ type fitElementType = {
   rep: number;
   set: number;
   time: number;
-  date: Date | null;
+  date: String | null;
 };
 
 export interface IProps {
   key: number;
-  workouts: [];
+  workouts: fitElementType[];
 }
 
 const types = ['leg', 'back', 'chest', 'arm', 'deltoid', 'abs', 'etc'];
@@ -45,7 +45,7 @@ export const Hover = (props: IProps) => {
   return (
     <HoverWrapper>
       {typeof props.workouts !== 'undefined' && props.workouts?.length === 0 ? (
-        <Content>운동하자!</Content>
+        <Content>기록된 운동이 없습니다!</Content>
       ) : (
         <WorkoutList key={0}>{types.map((type_single, index) => workout_type_list(type_single, index))}</WorkoutList>
       )}

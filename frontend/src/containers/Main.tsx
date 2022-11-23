@@ -15,7 +15,6 @@ const Main = () => {
 
   const today = new Date();
   const [date, setDate] = useState(today);
-  const [day, setDay] = useState(date.getDate());
   const [month, setMonth] = useState(date.getMonth());
   const [year, setYear] = useState(date.getFullYear());
   const user = useSelector(({ user }: RootState) => user.user);
@@ -35,19 +34,17 @@ const Main = () => {
 
   let calories_map: chartData[] = [];
 
-  calendarInfo.forEach(single_date_info => {
-    console.log(single_date_info);
-    let sMonth = String(single_date_info.month);
-    let sDate = String(single_date_info.date);
-    //let sYear = String(single_date_info.year)
-    sMonth = Number(sMonth) > 9 ? sMonth : '0' + sMonth;
-    sDate = Number(sDate) > 9 ? sDate : '0' + sDate;
+  for (const child of calendarInfo) {
+    let sMonth = String(child.month);
+    let sDate = String(child.date);
+    sMonth = sMonth.padStart(2, '0');
+    sDate = sDate.padStart(2, '0')
     const dateStringFormat = sMonth + '-' + sDate;
     calories_map.push({
       date: dateStringFormat,
-      calories: single_date_info.calories,
+      calories: child.calories,
     });
-  });
+  }
 
   return (
     <Wrapper>
