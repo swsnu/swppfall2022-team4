@@ -184,7 +184,6 @@ export const groupSlice = createSlice({
     leaderChangeFailure: (state, { payload }) => {
       state.groupAction.status = false;
       state.groupAction.error = payload;
-      alert(payload.response?.data.message);
     },
     getCerts: (state, action: PayloadAction<groupAPI.getCertsRequestType>) => {
       state.groupCerts.all_certs = null;
@@ -279,9 +278,9 @@ function* exitGroupSaga(action: PayloadAction<string>) {
 function* leaderChangeSaga(action: PayloadAction<groupAPI.leaderChangeRequestType>) {
   try {
     yield call(groupAPI.leaderChange, action.payload);
-    yield put(groupActions.exitGroupSuccess());
+    yield put(groupActions.leaderChangeSuccess());
   } catch (error) {
-    yield put(groupActions.exitGroupFailure(error));
+    yield put(groupActions.leaderChangeFailure(error));
   }
 }
 function* createCertSaga(action: PayloadAction<groupAPI.createCertRequestType>) {

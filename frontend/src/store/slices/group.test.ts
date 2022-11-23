@@ -10,6 +10,7 @@ const simpleError = new Error('error!');
 jest.spyOn(global, 'alert').mockImplementation(msg => msg);
 
 const fitelement1: groupApi.Fitelement = {
+  id: 1,
   type: 'goal',
   workout_type: 'test',
   category: 'test',
@@ -20,6 +21,17 @@ const fitelement1: groupApi.Fitelement = {
 };
 
 const fitelement2: groupApi.Fitelement = {
+  id: 2,
+  type: 'goal',
+  workout_type: 'test',
+  category: 'test',
+  weight: 20,
+  rep: 20,
+  set: 20,
+  time: 20,
+};
+
+const fitelementRequest: groupApi.FitelementRequestType = {
   type: 'goal',
   workout_type: 'test',
   category: 'test',
@@ -34,6 +46,7 @@ const member1: groupApi.Member = {
   username: 'user12',
   image: 'image',
   level: 1,
+  cert_days: 6,
 }
 
 const member2: groupApi.Member = {
@@ -41,6 +54,7 @@ const member2: groupApi.Member = {
   username: 'user34',
   image: 'image',
   level: 1,
+  cert_days: 6,
 }
 
 const group1: groupApi.Group = {
@@ -50,6 +64,9 @@ const group1: groupApi.Group = {
   start_date: '2019-01-01',
   end_date: '2019-12-31',
   member_number: 3,
+  lat: 31,
+  lng: 126,
+  address: 'jeju',
 }
 
 const group2: groupApi.Group = {
@@ -59,6 +76,18 @@ const group2: groupApi.Group = {
   start_date: '2019-01-01',
   end_date: '2019-12-31',
   member_number: 3,
+  lat: 31,
+  lng: 126,
+  address: 'jeju',
+}
+
+const memcert1: groupApi.MemberCert = {
+  member : {
+    username: 'test',
+    nickname: 'test',
+    image: 'image'
+  },
+  certs : [fitelement1]
 }
 
 //request
@@ -70,8 +99,31 @@ const postGroupRequest: groupApi.postGroupRequestType = {
   description: 'test',
   free: true,
   group_leader: 'test',
-  goal: [fitelement1],
+  goal: [fitelementRequest],
+  lat: 30,
+  lng: 127,
+  address: 'jeju',
 };
+
+const leaderChangeRequest: groupApi.leaderChangeRequestType = {
+  group_id: '1',
+  username: 'junho',
+}
+
+const getCertsRequest: groupApi.getCertsRequestType = {
+  group_id: '1',
+  year: 2022,
+  month: 9,
+  specific_date: 12,
+}
+
+const createCertRequest: groupApi.createCertRequestType = {
+  group_id: '1',
+  year: 2022,
+  month: 9,
+  specific_date: 12,
+  fitelement_id: 1,
+}
 
 //response
 const getGroupsResponse: groupApi.getGroupsResponseType = {
@@ -101,7 +153,14 @@ const getGroupDetailResponse: groupApi.getGroupDetailResponseType = {
   group_leader: { username: 'test', nickname: 'test', image: 'image' },
   goal: [fitelement1, fitelement2],
   member_number: 3,
+  lat: 30,
+  lng: 127,
+  address: 'jeju',
 };
+
+const getCertsResponse: groupApi.getCertsResponseType = {
+  all_certs: [memcert1]
+}
 
 //test
 describe('Group', () => {
@@ -239,6 +298,57 @@ describe('Group', () => {
       })
       .silentRun();
   });
+  it('leaderChange', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.leaderChange, leaderChangeRequest), undefined]])
+      .put({ type: 'group/leaderChangeSuccess', payload: undefined })
+      .dispatch({ type: 'group/leaderChange', payload: leaderChangeRequest })
+      .hasFinalState({
+        ...initialState,
+        groupAction: {
+          status: true,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
+  it('getCerts', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.getCerts, getCertsRequest), getCertsResponse]])
+      .put({
+        type: 'group/getCertsSuccess',
+        payload: getCertsResponse
+      })
+      .dispatch({ type: 'group/getCerts', payload: getCertsRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: getCertsResponse.all_certs,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
+  it('createCert', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.createCert, createCertRequest), getCertsResponse]])
+      .put({
+        type: 'group/createCertSuccess',
+        payload: getCertsResponse
+      })
+      .dispatch({ type: 'group/createCert', payload: createCertRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: getCertsResponse.all_certs,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
 });
 //----------------------------------------------------------------
 describe('saga failure', () => {
@@ -354,6 +464,51 @@ describe('saga failure', () => {
         ...initialState,
         groupAction: {
           status: false,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('leaderChange', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.leaderChange, leaderChangeRequest), throwError(simpleError)]])
+      .put({ type: 'group/leaderChangeFailure', payload: simpleError })
+      .dispatch({ type: 'group/leaderChange', payload: leaderChangeRequest })
+      .hasFinalState({
+        ...initialState,
+        groupAction: {
+          status: false,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('getCerts', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.getCerts, getCertsRequest), throwError(simpleError)]])
+      .put({ type: 'group/getCertsFailure', payload: simpleError })
+      .dispatch({ type: 'group/getCerts', payload: getCertsRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: null,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('createCert', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.createCert, createCertRequest), throwError(simpleError)]])
+      .put({ type: 'group/createCertFailure', payload: simpleError })
+      .dispatch({ type: 'group/createCert', payload: createCertRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: null,
           error: simpleError,
         },
       })
