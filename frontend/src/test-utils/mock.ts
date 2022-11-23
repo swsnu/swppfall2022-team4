@@ -80,6 +80,10 @@ export const initialState: PreloadedState<RootState> = {
       members: [],
       error: null,
     },
+    groupCerts: {
+      all_certs: [],
+      error: null,
+    }
   },
   tag: {
     tagList: null,
