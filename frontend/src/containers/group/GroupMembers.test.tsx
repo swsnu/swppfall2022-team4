@@ -24,8 +24,16 @@ const mem2: groupApi.Member = {
   cert_days: 6,
 };
 
+const mem3: groupApi.Member = {
+  id: 2,
+  username: 'username',
+  image: 'image',
+  level: 1,
+  cert_days: 6,
+};
+
 const membersResponse: groupApi.getGroupMembersResponseType = {
-  members: [mem1, mem2],
+  members: [mem1, mem2, mem3],
 };
 
 const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {
@@ -138,5 +146,16 @@ describe('setup test', () => {
         payload: memberStatusResponse,
       });
     });
+  });
+  it('myself', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupMembersSuccess',
+        payload: membersResponse,
+      });
+    });
+    screen.getByText('username');
   });
 });
