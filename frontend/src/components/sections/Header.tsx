@@ -154,10 +154,13 @@ const Header = () => {
         <IconWrapper>
           <NotificationWrapper ref={notificationRef}>
             {notificationList.length > 0 ? (
-              <IoIosNotifications
-                onClick={() => setNotificationOpen(!notificationOpen)}
-                data-testid="notificationIcon"
-              />
+              <>
+                <IoIosNotifications
+                  onClick={() => setNotificationOpen(!notificationOpen)}
+                  data-testid="notificationIcon"
+                />
+                <New>{Math.min(notificationList.length, 99)}</New>
+              </>
             ) : (
               <IoIosNotificationsOutline
                 onClick={() => setNotificationOpen(!notificationOpen)}
@@ -359,6 +362,19 @@ const NotificationWrapper = styled.div`
     height: 32px;
     cursor: pointer;
   }
+`;
+const New = styled.div`
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 20px;
+  background-color: #db5353;
+  color: white;
+  text-align: center;
+  font-size: 11px;
+  padding-top: 2px;
+  top: -5px;
+  right: -3px;
 `;
 const Notification = styled.div<{ open: boolean }>`
   position: absolute;

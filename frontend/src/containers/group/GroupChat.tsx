@@ -74,7 +74,7 @@ const GroupChat = () => {
             }}
             placeholder="채팅을 입력하세요."
           />
-          <InputWriteButton onClick={onSendMessage}>
+          <InputWriteButton onClick={onSendMessage} data-testid="sendIcon">
             <BsFillPencilFill />
           </InputWriteButton>
         </InputWrapper>

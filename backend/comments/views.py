@@ -10,6 +10,15 @@ from comments.models import Comment
 from users.models import User
 
 
+def add_exp(username, exp):
+    if User.objects.filter(username=username).exists():
+        user = User.objects.get(username=username)
+        temp = user.exp + exp
+        user.exp = temp % 100
+        user.level = user.level + (temp // 100)
+        user.save()
+
+
 def prepare_comment_response(comment, is_detail=False, username=''):
     response = {
         "post_id": comment.post.pk,
@@ -64,6 +73,9 @@ def comment_home(request):
             Comment.objects.create(
                 author=author, post=post, content=content, parent_comment=parent_comment
             )
+
+        add_exp(request.user.username, 15)
+
         return JsonResponse({"message": "Success!"}, status=201)
     except (
         KeyError,

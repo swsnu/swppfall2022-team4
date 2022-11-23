@@ -27,7 +27,7 @@ class Tag(AbstractTimeStampedModel):
     tag_class = models.ForeignKey(
         TagClass, blank=True, null=True, on_delete=models.CASCADE, related_name="tags"
     )
-
+    calories = models.FloatField(null=True)
     # Related_name : tagged_posts <- posts.Post
 
     def __str__(self):

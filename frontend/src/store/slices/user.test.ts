@@ -17,6 +17,14 @@ const signupRequest = {
   weight: 88.8,
   age: 36,
 };
+const socialSignupRequest = {
+  username: '11111111',
+  nickname: 'abcd',
+  gender: 'male',
+  height: 160.5,
+  weight: 88.8,
+  age: 36,
+};
 const loginRequest = {
   username: '11111111',
   password: '11111111',
@@ -48,6 +56,22 @@ describe('slices - user', () => {
     ],
     [
       userActions.signupFailure('error'),
+      {
+        ...initialState,
+        error: 'error',
+      },
+    ],
+
+    [userActions.socialSignup(socialSignupRequest), initialState],
+    [
+      userActions.socialSignupSuccess(simpleUser),
+      {
+        ...initialState,
+        user: simpleUser,
+      },
+    ],
+    [
+      userActions.socialSignupFailure('error'),
       {
         ...initialState,
         error: 'error',
@@ -153,6 +177,18 @@ describe('slices - user', () => {
         .hasFinalState(initialState)
         .silentRun();
     });
+    test('socialSignup', () => {
+      return expectSaga(userSaga)
+        .withReducer(userSlice.reducer)
+        .provide([[call(userAPI.socialSignup, socialSignupRequest), simpleUser]])
+        .put({ type: 'user/socialSignupSuccess', payload: simpleUser })
+        .dispatch({ type: 'user/socialSignup', payload: socialSignupRequest })
+        .hasFinalState({
+          ...initialState,
+          user: simpleUser,
+        })
+        .silentRun();
+    });
     test('signup', () => {
       return expectSaga(userSaga)
         .withReducer(userSlice.reducer)
@@ -250,6 +286,18 @@ describe('slices - user', () => {
         .provide([[call(userAPI.signup, signupRequest), throwError(simpleError)]])
         .put({ type: 'user/signupFailure', payload: simpleError })
         .dispatch({ type: 'user/signup', payload: signupRequest })
+        .hasFinalState({
+          ...initialState,
+          error: simpleError,
+        })
+        .silentRun();
+    });
+    test('socialSignup', () => {
+      return expectSaga(userSaga)
+        .withReducer(userSlice.reducer)
+        .provide([[call(userAPI.socialSignup, socialSignupRequest), throwError(simpleError)]])
+        .put({ type: 'user/socialSignupFailure', payload: simpleError })
+        .dispatch({ type: 'user/socialSignup', payload: socialSignupRequest })
         .hasFinalState({
           ...initialState,
           error: simpleError,

@@ -46,11 +46,7 @@ const EditProfile = () => {
   useEffect(() => {
     if (user && editProfile) {
       navigate(`/profile/${user.username}`);
-      try {
-        localStorage.setItem('user', JSON.stringify(user));
-      } catch (e) {
-        console.log('localStorage is not working');
-      }
+      localStorage.setItem('user', JSON.stringify(user));
     }
   }, [navigate, user, editProfile]);
   useEffect(() => {
@@ -95,6 +91,10 @@ const EditProfile = () => {
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const onChangeProfileImage = async (e: any) => {
     const file = e.target.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert('5MB 이하의 파일만 업로드가 가능합니다.');
+      return;
+    }
     const formData = new FormData();
     formData.append('image', file);
     try {
@@ -129,7 +129,7 @@ const EditProfile = () => {
           document.getElementById('FileInput_Mypage')?.click();
         }}
       />
-      <FileInput type="file" id="FileInput_Mypage" onChange={onChangeProfileImage} />
+      <FileInput type="file" accept="image/*" id="FileInput_Mypage" onChange={onChangeProfileImage} />
 
       <InputWrapper>
         <OtherInfos

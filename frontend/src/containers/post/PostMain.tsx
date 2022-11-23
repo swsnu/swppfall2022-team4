@@ -9,14 +9,14 @@ import { getPostsRequestType } from 'store/apis/post';
 import { tagActions } from 'store/slices/tag';
 import { timeAgoFormat } from 'utils/datetime';
 import { BlueBigBtn } from 'components/post/button';
-import { TagBubble, TagBubbleCompact } from 'components/tag/tagbubble';
-import { ArticleItemGrid, ColumnFlex, RowCenterFlex } from 'components/post/layout';
+import { TagBubble, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
+import { ColumnFlex, PostContentWrapper, PostPageWrapper, RowCenterFlex } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { postPaginator } from 'components/post/paginator';
 import TagDetailModal from 'components/post/TagDetailModal';
-import { PostMainLayout, PostPageWrapper, SideBarWrapper } from './PostLayout';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage } from '@fortawesome/free-regular-svg-icons';
+import SearchBar from 'components/common/SearchBar';
+import { ArticleHeader, ArticleItemDefault } from 'components/post/ArticleItem';
+import { userActions } from 'store/slices/user';
 
 const PostMain = () => {
   const dispatch = useDispatch();
@@ -27,8 +27,34 @@ const PostMain = () => {
   const modalRef = useRef(null);
   const modalAnimRef = useRef(null);
 
+  const { postList, postSearch, maxPage, searchKeyword, selected, recentCommentPost, popularTags, user } = useSelector(
+    ({ post, tag, user }: RootState) => ({
+      postList: post.postList.posts,
+      postSearch: post.postSearch,
+      maxPage: post.postList.pageTotal,
+      searchKeyword: post.postSearch,
+      selected: post.filterTag,
+      recentCommentPost: post.recentComments.comments,
+      popularTags: tag.popularTags,
+      tagList: tag.tagList,
+      user: user.user,
+    }),
+  );
+
   // Disable modal when OnClickOutside
-  useOnClickOutside(modalRef, () => setTagModalOpen(false), 'mousedown');
+  const TagDetailOnClose = () => {
+    if (selected.length > 0) {
+      const defaultPageConfig: getPostsRequestType = {
+        pageNum: page,
+        pageSize: 15,
+        searchKeyword: searchKeyword ? searchKeyword : undefined,
+        tags: selected,
+      };
+      dispatch(postActions.getPosts(defaultPageConfig));
+    }
+    setTagModalOpen(false);
+  };
+  useOnClickOutside(modalRef, TagDetailOnClose, 'mousedown');
   // Disable scroll when modal is active
   useEffect(() => {
     if (tagModalOpen) {
@@ -38,31 +64,55 @@ const PostMain = () => {
     }
   }, [tagModalOpen]);
 
-  const { postList, maxPage, searchKeyword, recentCommentPost, tagList } = useSelector(({ post, tag }: RootState) => ({
-    postList: post.postList.posts,
-    maxPage: post.postList.pageTotal,
-    searchKeyword: post.postSearch,
-    recentCommentPost: post.recentComments.comments,
-    tagList: tag.tagList,
-  }));
+  const [search, setSearch] = useState(postSearch);
   useEffect(() => {
-    const defaultPageConfig: getPostsRequestType = {
-      pageNum: page,
-      pageSize: 15,
-      searchKeyword: searchKeyword ? searchKeyword : undefined,
-    };
-    dispatch(postActions.getPosts(defaultPageConfig));
-    dispatch(postActions.getRecentComments());
-  }, [page, searchKeyword]);
+    setSearch(postSearch);
+    dispatch(userActions.getProfile(user?.username || ''));
+  }, []);
+  useEffect(() => {
+    if (!tagModalOpen) {
+      const defaultPageConfig: getPostsRequestType = {
+        pageNum: page,
+        pageSize: 15,
+        searchKeyword: searchKeyword ? searchKeyword : undefined,
+        tags: selected,
+      };
+      dispatch(postActions.getPosts(defaultPageConfig));
+    }
+  }, [page, searchKeyword, selected]);
   useEffect(() => {
     dispatch(tagActions.getTags());
+    dispatch(postActions.getRecentComments());
   }, []);
-
+  const tagOnRemove = (id: string) => {
+    dispatch(postActions.removeFilterTag(id));
+  };
   const SideBar = (
-    <SideBarWrapper>
+    <div>
       <PostPanelWrapper>
         <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
       </PostPanelWrapper>
+      {selected.length > 0 && (
+        <SideBarItem>
+          <SideBarTitleWrapper>
+            <SideBarTitle>태그 필터링</SideBarTitle>
+            {selected.length > 0 && (
+              <SideBarSubtitle data-testid="filterTagClear" onClick={() => dispatch(postActions.clearFilterTag())}>
+                Clear
+              </SideBarSubtitle>
+            )}
+          </SideBarTitleWrapper>
+
+          <TagBubbleWrapper>
+            {selected.map(tag => (
+              <TagBubbleWithFunc key={tag.id} color={tag.color}>
+                {tag.name}
+                <TagBubbleX testId="selectedTagRemove" onClick={() => tagOnRemove(tag.id)} />
+              </TagBubbleWithFunc>
+            ))}
+          </TagBubbleWrapper>
+        </SideBarItem>
+      )}
       <SideBarItem>
         <SideBarTitleWrapper>
           <SideBarTitle>태그 목록</SideBarTitle>
@@ -70,15 +120,12 @@ const PostMain = () => {
         </SideBarTitleWrapper>
 
         <TagBubbleWrapper>
-          {tagList &&
-            tagList.map(
-              tagCategory =>
-                tagCategory.tags &&
-                tagCategory.tags.map(
-                  (tag, index) =>
-                    index <= 5 && <div key={tag.id}>{<TagBubble color={tag.color}>{tag.name}</TagBubble>}</div>,
-                ),
-            )}
+          {popularTags &&
+            popularTags.map(tag => (
+              <TagBubble key={tag.id} color={tag.color}>
+                {tag.name}
+              </TagBubble>
+            ))}
           ...
         </TagBubbleWrapper>
       </SideBarItem>
@@ -99,34 +146,16 @@ const PostMain = () => {
             ))}
         </SideBarContentWrapper>
       </SideBarItem>
-    </SideBarWrapper>
+    </div>
   );
 
   const MainContent = (
     <ArticleListWrapper>
-      <ArticleHeader>
-        <span>대표태그</span>
-        <span>제목</span>
-        <span>작성자</span>
-        <span>추천수</span>
-        <span>작성시간</span>
-      </ArticleHeader>
+      <ArticleHeader />
       {postList ? (
-        postList.map((post, id) => {
+        postList.map(post => {
           return (
-            <ArticleItem data-testid="ArticleItem" key={id} onClick={() => navigate(`/post/${post.post_id}`)}>
-              {post.prime_tag ? (
-                <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
-              ) : (
-                <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
-              )}
-              <PostTitle>
-                {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
-              </PostTitle>
-              <span>{post.author.username}</span>
-              <span>{post.like_num - post.dislike_num}</span>
-              <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
-            </ArticleItem>
+            <ArticleItemDefault key={post.post_id} post={post} onClick={() => navigate(`/post/${post.post_id}`)} />
           );
         })
       ) : (
@@ -138,16 +167,44 @@ const PostMain = () => {
 
   return (
     <PostPageWrapper>
-      {PostMainLayout(MainContent, SideBar)}
-      {TagDetailModal({ isActive: tagModalOpen, onClose: () => setTagModalOpen(false), modalRef, modalAnimRef })}
+      <PostContentWrapper>
+        <div>
+          <SearchBar
+            onSubmit={e => {
+              e.preventDefault();
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: search,
+                }),
+              );
+            }}
+            onClear={() => {
+              setSearch('');
+              dispatch(
+                postActions.postSearch({
+                  search_keyword: '',
+                }),
+              );
+            }}
+            search={search}
+            setSearch={setSearch}
+          />
+        </div>
+        <div>
+          {MainContent}
+          {SideBar}
+        </div>
+      </PostContentWrapper>
+      {TagDetailModal({
+        isActive: tagModalOpen,
+        onClose: TagDetailOnClose,
+        modalRef,
+        modalAnimRef,
+        dispatch,
+      })}
     </PostPageWrapper>
   );
 };
-
-const PostTitle = styled.span`
-  word-wrap: break-word;
-  word-break: break-all;
-`;
 
 const SideBarTitleWrapper = styled(RowCenterFlex)`
   width: 100%;
@@ -170,6 +227,7 @@ const SideBarSubtitle = styled.span`
   cursor: pointer;
   color: var(--fit-green-text);
 `;
+
 const SideBarCommentItem = styled.div`
   width: 100%;
   padding: 3px 8px 3px 6px;
@@ -202,21 +260,6 @@ const ArticleListWrapper = styled.div`
   min-height: 100%;
   background-color: #ffffff;
   position: relative;
-`;
-
-const ArticleHeader = styled(ArticleItemGrid)`
-  padding: 10px 10px 10px 10px;
-  font-size: 14px;
-  width: 100%;
-  border-bottom: 1px solid black;
-`;
-
-export const ArticleItem = styled(ArticleItemGrid)`
-  padding: 8px 10px 8px 10px;
-  font-size: 14px;
-  width: 100%;
-  border-bottom: 1px solid black;
-  cursor: pointer;
 `;
 
 const SideBarItem = styled(ColumnFlex)`
