@@ -22,7 +22,20 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
 }));
-beforeEach(() => jest.clearAllMocks());
+
+// window.location.href mock
+global.window = Object.create(window);
+const url = 'http://dummy.com';
+Object.defineProperty(window, 'location', {
+  value: {
+    href: url,
+  },
+  writable: true,
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 afterAll(() => jest.restoreAllMocks());
 
 const simpleYoutubes: Youtube[] = [
@@ -34,6 +47,7 @@ const simpleYoutubes: Youtube[] = [
     published: 'yesterday',
   },
 ];
+
 const getInfoSuccessResponse = {
   basic: {
     name: 'Deadlift',
@@ -59,7 +73,7 @@ const setup = () => {
 
 describe('[InformationDetail Page]', () => {
   test('basic rendering', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ name: 'Deadlift' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -67,12 +81,36 @@ describe('[InformationDetail Page]', () => {
         payload: getInfoSuccessResponse,
       });
     });
+
+    // Search
     const searchInput = screen.getByPlaceholderText('Search keyword');
-    userEvent.type(searchInput, 'sssss');
+    fireEvent.submit(searchInput);
     const searchClearBtn = screen.getByText('Clear');
     fireEvent.click(searchClearBtn);
     expect(searchInput).toHaveValue('');
     userEvent.type(searchInput, 'sssss');
     fireEvent.submit(searchInput);
+
+    const youtubeItem = screen.getByText('wha!');
+    fireEvent.click(youtubeItem);
+
+    const postItem = screen.getByText('First Post');
+    fireEvent.click(postItem);
+  });
+  test('basic rendering when params undefined & Info error', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ name: undefined });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'info/getInformationFailure',
+        payload: { ...new Error('hi'), response: { status: 404 } } as Error,
+      });
+    });
+    act(() => {
+      store.dispatch({
+        type: 'info/getInformationFailure',
+        payload: { ...new Error('hi'), response: { status: 403 } } as Error, //ETC
+      });
+    });
   });
 });

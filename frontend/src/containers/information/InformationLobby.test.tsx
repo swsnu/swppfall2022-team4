@@ -2,7 +2,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import Router from 'react-router-dom';
 import { rootReducer } from 'store';
 import InformationLobby from './InformationLobby';
 import userEvent from '@testing-library/user-event';
@@ -68,7 +67,6 @@ const setup = () => {
 
 describe('[InformationLobby Page]', () => {
   test('basic rendering', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -93,7 +91,5 @@ describe('[InformationLobby Page]', () => {
     const tagBubble = screen.getByText('interesting');
     fireEvent.click(tagBubble);
     expect(mockNavigate).toBeCalledWith(`/information/interesting`);
-
-    fireEvent.submit(searchInput);
   });
 });
