@@ -51,9 +51,9 @@ class FitElementType(models.Model):
         ('chest', 'chest'),
         ('deltoid', 'deltoid'),
         ('abs', 'abs'),
+        ('cardio','cardio'),
         ('etc', 'etc')
     )
     name = models.CharField(max_length=120, null=True)
-    korean_name = models.CharField(max_length=120, null=True)
     calories = models.IntegerField(null=True)
     category = models.CharField(max_length=10, choices=TYPE_CHOICE, null=False)

@@ -103,6 +103,9 @@ const WorkoutColor = styled.div`
   &&.abs {
     background: #9fd6cd;
   }
+  &&.cardio {
+    background: #d3b7d8;
+  }
   &&.etc {
     background: #d3b7d8;
   }

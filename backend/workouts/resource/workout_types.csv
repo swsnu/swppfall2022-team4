@@ -1,39 +1,39 @@
-No,english_type,korean_type,category,calories(½Ã°£ ´ç 68kg ±âÁØ. °è»ê¹ı: calories/68/60*»ç¿ëÀÚ¸ö¹«°Ô*ÇÒ´ç½Ã°£(min))
-1,deadlift,µ¥µå¸®ÇÁÆ®,back,510
-2,lat pull down,·§ Ç® ´Ù¿î,back,442
-3,pull up,ÅÎ°ÉÀÌ,back,408
-4,barbell row,¹Ùº§ ·Î¿ì,back,408
-5,cable row,ÄÉÀÌºí ·Î¿ì,back,374
-6,barbell pull over,¹Ùº§ Ç®¿À¹ö,back,459
-7,bench press,º¥Ä¡ ÇÁ·¹½º,chest,459
-8,dips,µö½º,chest,425
-9,pac deck fly,ÆÑ µ¦ ÇÃ¶óÀÌ,chest,374
-10,push up,ÆÈ±ÁÇôÆì±â,chest,340
-11,dumbbell pull over,´ıº§ Ç®¿À¹ö,chest,408
-12,military press,¹Ğ¸®ÅÍ¸® ÇÁ·¹½º,deltoid,459
-13,lateral raise,·¡ÅÍ·² ·¹ÀÌÁî,deltoid,272
-14,upright row,¾÷¶óÀÌÆ® ·Î¿ì,deltoid,374
-15,squat,½ºÄõÆ®,leg,476
-16,leg press,·¹±× ÇÁ·¹½º,leg,408
-17,calf raise,Ä«ÇÁ·¹ÀÌÁî,leg,204
-18,crunch,Å©·±Ä¡,abs,204
-19,AB roll out,AB ·Ñ¾Æ¿ô,abs,408
-20,sit up,À­¸ö ÀÏÀ¸Å°±â,abs,340
-21,mountain climber,¸¶¿îÆ¾ Å¬¶óÀÌ¸Ó,abs,466
-22,bicycle crunch,¹ÙÀÌ½ÃÅ¬ Å©·±Ä¡,abs,255
-23,skull crusher,½ºÄÃ Å©·¯¼Å,arm,268
-24,triceps push down,Æ®¶óÀÌ¼Á½º Çª½Ã ´Ù¿î,arm,272
-25,barbell curl,¹Ùº§ ÄÃ,arm,357
-26,dumbbel curl,´ıº§ ÄÃ,arm,323
-27,swimming,¼ö¿µ,etc,476
-28,indoor walking,½Ç³» °È±â,etc,170
-29,outdoor walking,½Ç¿Ü °È±â,etc,170
-30,stretching,½ºÆ®·¹Äª,etc,170
-31,climbing,°è´Ü ¿À¸£±â,etc,440
-32,bicycle,ÀÚÀü°Å,etc,650
-33,cycle machine,»çÀÌÅ¬ ¸Ó½Å,etc,550
-34,jump rope,ÁÙ³Ñ±â,etc,700
-35,pilates,ÇÊ¶óÅ×½º,etc,328
-36,aerobic,¿¡¾î·Îºò,etc,664
-37,boxing,º¹½Ì,etc,612
-38,hiking,µî»ê,etc,504
+ï»¿No,english_type,korean_type,category,calories(ì‹œê°„ ë‹¹ 68kg ê¸°ì¤€. ê³„ì‚°ë²•: calories/68/60*ì‚¬ìš©ìëª¸ë¬´ê²Œ*í• ë‹¹ì‹œê°„(min))
+1,deadlift,ë°ë“œë¦¬í”„íŠ¸,back,510
+2,lat pull down,ë« í’€ ë‹¤ìš´,back,442
+3,pull up,í„±ê±¸ì´,back,408
+4,barbell row,ë°”ë²¨ ë¡œìš°,back,408
+5,cable row,ì¼€ì´ë¸” ë¡œìš°,back,374
+6,barbell pull over,ë°”ë²¨ í’€ì˜¤ë²„,back,459
+7,bench press,ë²¤ì¹˜ í”„ë ˆìŠ¤,chest,459
+8,dips,ë”¥ìŠ¤,chest,425
+9,pac deck fly,íŒ© ë± í”Œë¼ì´,chest,374
+10,push up,íŒ”êµ½í˜€í´ê¸°,chest,340
+11,dumbbell pull over,ë¤ë²¨ í’€ì˜¤ë²„,chest,408
+12,military press,ë°€ë¦¬í„°ë¦¬ í”„ë ˆìŠ¤,deltoid,459
+13,lateral raise,ë˜í„°ëŸ´ ë ˆì´ì¦ˆ,deltoid,272
+14,upright row,ì—…ë¼ì´íŠ¸ ë¡œìš°,deltoid,374
+15,squat,ìŠ¤ì¿¼íŠ¸,leg,476
+16,leg press,ë ˆê·¸ í”„ë ˆìŠ¤,leg,408
+17,calf raise,ì¹´í”„ë ˆì´ì¦ˆ,leg,204
+18,crunch,í¬ëŸ°ì¹˜,abs,204
+19,AB roll out,AB ë¡¤ì•„ì›ƒ,abs,408
+20,sit up,ìœ—ëª¸ ì¼ìœ¼í‚¤ê¸°,abs,340
+21,mountain climber,ë§ˆìš´í‹´ í´ë¼ì´ë¨¸,abs,466
+22,bicycle crunch,ë°”ì´ì‹œí´ í¬ëŸ°ì¹˜,abs,255
+23,skull crusher,ìŠ¤ì»¬ í¬ëŸ¬ì…”,arm,268
+24,triceps push down,íŠ¸ë¼ì´ì…‰ìŠ¤ í‘¸ì‹œ ë‹¤ìš´,arm,272
+25,barbell curl,ë°”ë²¨ ì»¬,arm,357
+26,dumbbel curl,ë¤ë²¨ ì»¬,arm,323
+27,swimming,ìˆ˜ì˜,etc,476
+28,indoor walking,ì‹¤ë‚´ ê±·ê¸°,cardio,170
+29,outdoor walking,ì‹¤ì™¸ ê±·ê¸°,cardio,170
+30,stretching,ìŠ¤íŠ¸ë ˆì¹­,etc,170
+31,climbing,ê³„ë‹¨ ì˜¤ë¥´ê¸°,etc,440
+32,bicycle,ìì „ê±°,etc,650
+33,cycle machine,ì‚¬ì´í´ ë¨¸ì‹ ,etc,550
+34,jump rope,ì¤„ë„˜ê¸°,etc,700
+35,pilates,í•„ë¼í…ŒìŠ¤,etc,328
+36,aerobic,ì—ì–´ë¡œë¹…,etc,664
+37,boxing,ë³µì‹±,etc,612
+38,hiking,ë“±ì‚°,etc,504

@@ -44,7 +44,7 @@ def create_fit_element(request):
                 new_daily_log.save()
                 new_daily_log.fit_element.add(new_fit_element)
                 new_daily_log.calories = 0
-                fitelement_type = FitElementType.objects.get(korean_name=new_fit_element.workout_type)
+                fitelement_type = FitElementType.objects.get(name=new_fit_element.workout_type)
                 new_daily_log.calories += fitelement_type.calories/68*60/60*new_fit_element.time
                 new_daily_log.save()
 
@@ -53,7 +53,7 @@ def create_fit_element(request):
                     date=datetime.strptime(req_data["date"][0:10], '%Y-%m-%d')
                 )[0]
                 daily_log_single.fit_element.add(new_fit_element)
-                fitelement_type = FitElementType.objects.get(korean_name=new_fit_element.workout_type)
+                fitelement_type = FitElementType.objects.get(name=new_fit_element.workout_type)
                 daily_log_single.calories += fitelement_type.calories/68*60/60*new_fit_element.time
                 daily_log_single.save()
 
@@ -317,7 +317,7 @@ def daily_log(request, year, month, specific_date):
                     fitelement.save()
                     return_json.append(fitelement.pk)
                     new_daily_log.fit_element.add(fitelement)
-                    fitelement_type = FitElementType.objects.get(korean_name=fitelement.workout_type)
+                    fitelement_type = FitElementType.objects.get(name=fitelement.workout_type)
                     new_daily_log.calories += fitelement_type.calories/68*60/60*fitelement.time
             new_daily_log.save()
             return JsonResponse(return_json, safe=False, status=200)
@@ -331,7 +331,7 @@ def daily_log(request, year, month, specific_date):
                 fitelement.save()
                 return_json.append(fitelement.pk)
                 daily_log_single[0].fit_element.add(fitelement)
-                fitelement_type = FitElementType.objects.get(korean_name=fitelement.workout_type)
+                fitelement_type = FitElementType.objects.get(name=fitelement.workout_type)
                 daily_log_single[0].calories += fitelement_type.calories/68*60/60*fitelement.time
         daily_log_single[0].save()
         return JsonResponse(return_json, safe=False, status=200)
@@ -344,7 +344,6 @@ def get_fitelement_types():
     for fitelement_type in types:
         type_json = {
             'name': fitelement_type.name,
-            'korean_name': fitelement_type.korean_name,
             'calories': fitelement_type.calories,
             'category': fitelement_type.category
         }

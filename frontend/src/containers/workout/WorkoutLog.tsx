@@ -24,7 +24,7 @@ const WorkoutLog = () => {
   const DAYS_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   const DAYS_OF_THE_WEEK = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-  const WORKOUT_CATEGORY = ['등', '가슴', '하체', '팔(이두,삼두 등)', '어깨', '기타(유산소 포함)', '복근'];
+  const WORKOUT_CATEGORY = ['등', '가슴', '하체', '팔(이두,삼두 등)', '어깨', '기타', '유산소', '복근'];
 
   type categoryOption = {
     [key: string]: string;
@@ -37,7 +37,8 @@ const WorkoutLog = () => {
     '팔(이두,삼두 등)': 'arm',
     어깨: 'deltoid',
     복근: 'abs',
-    '기타(유산소 포함)': 'etc',
+    유산소: 'cardio',
+    기타: 'etc',
   };
 
   const today = new Date();
