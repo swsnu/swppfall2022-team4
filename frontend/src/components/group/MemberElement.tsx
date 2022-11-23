@@ -19,9 +19,7 @@ export const MemberElement = (props: IProps) => {
   const { group_id } = useParams<{ group_id: string }>();
 
   const leaderChangeClick = () => {
-    if (!props.leader) {
-      alert('그룹장만 위임을 할 수 있습니다.');
-    } else if (group_id) {
+    if (group_id) {
       dispatch(
         groupActions.leaderChange({
           group_id: group_id,
