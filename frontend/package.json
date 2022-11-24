@@ -22,7 +22,9 @@
     "@types/react-transition-group": "^4.4.5",
     "@types/styled-components": "^5.1.26",
     "axios": "^1.1.2",
+    "chart.js": "4.0.1",
     "react": "^18.2.0",
+    "react-chartjs-2": "5.0.1",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
@@ -68,17 +70,19 @@
   },
   "devDependencies": {
     "@types/jest": "29.2.2",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
+    "@typescript-eslint/eslint-plugin": "5.44.0",
+    "@typescript-eslint/parser": "5.44.0",
+    "canvas": "2.10.2",
     "coveralls": "^3.1.1",
     "dotenv": "^16.0.3",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "^4.6.0",
     "invariant": "2.2.4",
     "jest": "29.3.1",
+    "jest-canvas-mock": "2.4.0",
     "kakao.maps.d.ts": "^0.1.33",
     "prettier": "^2.7.1",
     "redux-devtools-extension": "^2.13.9",
@@ -86,7 +90,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!axios)"
+      "node_modules/(?!(chart.js|react-chartjs-2)/)"
     ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
@@ -96,7 +100,10 @@
       "!src/assets/types/*"
     ],
     "moduleNameMapper": {
-      "\\.(css|less)$": "<rootDir>/src/test-utils/styleMock.ts"
+      "\\.(css|less)$": "<rootDir>/src/test-utils/styleMock.ts",
+      "axios": "axios/dist/node/axios.cjs",
+      "react-chartjs-2": "<rootDir>/node_modules/react-chartjs-2/dist/index.js"
     }
-  }
+  },
+  "type": "module"
 }

@@ -14,10 +14,13 @@ export type getFitElementResponseType = {
 };
 
 export type getDailyLogResponseType = {
-  date: Date | null;
+  author: number;
+  date: string | null;
   memo: string;
   fitelements: List<getFitElementResponseType>;
   fit_elements: Array<any>;
+  image: string;
+  calories: number;
 };
 
 export type getFitElementRequestType = {
@@ -32,9 +35,9 @@ export type getDailyLogRequestType = {
   year: number;
   month: number;
   specific_date: number;
-  user_id: number;
+  username: string;
   data: {
-    user_id: number;
+    username: string;
   };
 };
 
@@ -43,7 +46,7 @@ export type getDailyFitElementsRequestType = {
 };
 
 export type createWorkoutLogRequestType = {
-  user_id: number;
+  username: string;
   type: string;
   workout_type: string;
   period: number | null;
@@ -52,7 +55,7 @@ export type createWorkoutLogRequestType = {
   rep: number | null;
   set: number | null;
   time: number | null;
-  date: Date | null;
+  date: string | null;
 };
 
 export type createWorkoutLogResponseType = {
@@ -60,7 +63,7 @@ export type createWorkoutLogResponseType = {
 };
 
 export type createDailyLogRequestType = {
-  user_id: number;
+  username: string;
   date: string;
   memo: string | null;
   fitelements: List;
@@ -69,8 +72,12 @@ export type createDailyLogRequestType = {
   specific_date: number;
 };
 
+export type createDailyLogResponseType = {
+  dailylog_date: string | null;
+};
+
 export type editMemoRequestType = {
-  user_id: number;
+  username: string;
   memo: string | null;
   year: number;
   month: number;
@@ -78,7 +85,7 @@ export type editMemoRequestType = {
 };
 
 export type getCalendarInfoRequestType = {
-  user_id: number;
+  username: string;
   year: number;
   month: number;
 };
@@ -88,6 +95,15 @@ export type calendarInfoResponse = {
   month: number;
   date: number;
   workouts: [];
+  calories: number;
+};
+
+export type editImageRequestType = {
+  year: number;
+  month: number;
+  specific_date: number;
+  username: string;
+  image: string;
 };
 
 export type getCalendarInfoResponseType = {
@@ -95,7 +111,7 @@ export type getCalendarInfoResponseType = {
 };
 
 export type getRoutineRequestType = {
-  user_id: number;
+  username: string;
 };
 
 export type getRoutineResponseType = {
@@ -105,7 +121,7 @@ export type getRoutineResponseType = {
 };
 
 export type getSpecificRoutineRequestType = {
-  user_id: number;
+  username: string;
   routine_id: number;
 };
 
@@ -115,7 +131,7 @@ export type getSpecificRoutineResponseType = {
 };
 
 export type addFitElementsRequestType = {
-  user_id: number;
+  username: string;
   fitelements: number[];
   year: number;
   month: number;
@@ -127,7 +143,7 @@ export type addFitElementsResponseType = {
 };
 
 export type createRoutineWithFitElementsRequestType = {
-  user_id: number;
+  username: string;
   fitelements: number[];
 };
 
@@ -142,7 +158,15 @@ export const getFitElement = async (payload: getFitElementRequestType) => {
 
 export const getDailyLog = async (payload: getDailyLogRequestType) => {
   const response = await client.get<getDailyLogResponseType>(
-    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`,
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
+  );
+  return response.data;
+};
+
+export const editImage = async (payload: editImageRequestType) => {
+  const response = await client.put<editImageRequestType>(
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
+    payload,
   );
   return response.data;
 };
@@ -168,7 +192,7 @@ export const createWorkoutLog = async (payload: createWorkoutLogRequestType) => 
 
 export const createDailyLog = async (payload: createDailyLogRequestType) => {
   const response = await client.post<createDailyLogRequestType>(
-    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`,
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
     payload,
   );
   return response.data;
@@ -176,7 +200,7 @@ export const createDailyLog = async (payload: createDailyLogRequestType) => {
 
 export const editMemo = async (payload: editMemoRequestType) => {
   const response = await client.put<editMemoRequestType>(
-    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`,
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
     payload,
   );
   return response.data;
@@ -184,19 +208,19 @@ export const editMemo = async (payload: editMemoRequestType) => {
 
 export const getCalendarInfo = async (payload: getCalendarInfoRequestType) => {
   const response = await client.get<getCalendarInfoResponseType>(
-    `/api/fitelement/${payload.year}/${payload.month}/?&user_id=${payload.user_id}`,
+    `/api/fitelement/${payload.year}/${payload.month}/?&username=${payload.username}`,
   );
   return response.data;
 };
 
 export const getRoutine = async (payload: getRoutineRequestType) => {
-  const response = await client.get<getRoutineResponseType>(`/api/fitelement/routine/?&user_id=${payload.user_id}`);
+  const response = await client.get<getRoutineResponseType>(`/api/fitelement/routine/?&username=${payload.username}`);
   return response.data;
 };
 
 export const addFitElements = async (payload: addFitElementsRequestType) => {
   const response = await client.put<addFitElementsResponseType>(
-    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&user_id=${payload.user_id}`,
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
     payload,
   );
   return response.data;
@@ -204,7 +228,7 @@ export const addFitElements = async (payload: addFitElementsRequestType) => {
 
 export const createRoutineWithFitElements = async (payload: createRoutineWithFitElementsRequestType) => {
   const response = await client.post<createRoutineWithFitElementsRequestType>(
-    `/api/fitelement/routine/?&user_id=${payload.user_id}`,
+    `/api/fitelement/routine/?&username=${payload.username}`,
     payload,
   );
   return response.data;
@@ -212,7 +236,7 @@ export const createRoutineWithFitElements = async (payload: createRoutineWithFit
 
 export const getSpecificRoutine = async (payload: getSpecificRoutineRequestType) => {
   const response = await client.get<getSpecificRoutineResponseType>(
-    `/api/fitelement/routine/${payload.routine_id}/?&user_id=${payload.user_id}`,
+    `/api/fitelement/routine/${payload.routine_id}/?&username=${payload.username}`,
   );
   return response.data;
 };
@@ -229,4 +253,9 @@ export const getSpecificRoutineFitElements = async (payload: getSpecificRoutineF
   });
 
   return response;
+};
+
+export const getFitelementTypes = async () => {
+  const response = await client.get(`/api/fitelement/type/`);
+  return response.data;
 };

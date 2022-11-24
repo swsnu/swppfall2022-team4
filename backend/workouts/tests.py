@@ -1,6 +1,7 @@
 import bcrypt
 import time
 from django.test import TestCase, Client
+from django.core import management
 from users.models import User
 from .models import FitElement, Routine, DailyLog
 
@@ -23,13 +24,13 @@ class WorkoutTestCase(TestCase):
         fit_element = FitElement.objects.create(
             author_id=1,
             type="log",
-            workout_type="leg",
+            workout_type="데드리프트",
             period=0,
-            category="category",
+            category="back",
             weight=0,
             rep=0,
             set=0,
-            time=0,
+            time=20,
             date='2022-10-01'
         )
         routine = Routine.objects.create(
@@ -43,6 +44,7 @@ class WorkoutTestCase(TestCase):
             memo='memo',
         )
         daily_log.fit_element.add(fit_element)
+        management.call_command('add_types')
 
     def ready(self):
         client = Client()
@@ -62,15 +64,15 @@ class WorkoutTestCase(TestCase):
     def test_create_fit_element(self):
         client, csrftoken = self.ready()
         res = client.post('/api/fitelement/', {
-            'user_id': 1,
+            'username': 'username',
             'type': 'log',
-            'workout_type': 'test',
+            'workout_type': '데드리프트',
             'period': 0,
-            'category': 'test',
+            'category': 'back',
             'weight': 0,
             'rep': 0,
             'set': 0,
-            'time': 0,
+            'time': 20,
             'date': '2022-10-1'
         },
             content_type='application/json',
@@ -79,15 +81,15 @@ class WorkoutTestCase(TestCase):
         self.assertEqual(res.status_code, 201)
 
         res = client.post('/api/fitelement/', {
-            'user_id': 1,
+            'username': 'username',
             'type': 'log',
-            'workout_type': 'test',
+            'workout_type': '데드리프트',
             'period': 0,
-            'category': 'test',
+            'category': 'back',
             'weight': 0,
             'rep': 0,
             'set': 0,
-            'time': 0,
+            'time': 20,
             'date': '2022-10-2'
         },
             content_type='application/json',
@@ -96,7 +98,7 @@ class WorkoutTestCase(TestCase):
         self.assertEqual(res.status_code, 201)
 
         res = client.post('/api/fitelement/', {
-            'user_id': 1,
+            'username': 'username',
             'type': 'log',
         },
             content_type='application/json',
@@ -114,15 +116,15 @@ class WorkoutTestCase(TestCase):
 
     def test_get_calendar_info(self):
         client, _ = self.ready()
-        res = client.get('/api/fitelement/2022/10/?&user_id=1')
+        res = client.get('/api/fitelement/2022/10/?&username=username')
         self.assertEqual(res.status_code, 200)
 
-        res = client.get('/api/fitelement/2022/12/')
+        res = client.get('/api/fitelement/2022/12/?&username=username')
         self.assertEqual(res.status_code, 200)
 
     def test_get_routines(self):
         client, _ = self.ready()
-        res = client.get('/api/fitelement/routine/?&user_id=1')
+        res = client.get('/api/fitelement/routine/?&username=username')
         self.assertEqual(res.status_code, 200)
 
     def test_get_routine(self):
@@ -135,16 +137,18 @@ class WorkoutTestCase(TestCase):
 
     def test_get_daily_log(self):
         client, _ = self.ready()
-        res = client.get('/api/fitelement/dailylog/2022/10/1/?&user_id=1')
+        res = client.get(
+            '/api/fitelement/dailylog/2022/10/1/?&username=username')
         self.assertEqual(res.status_code, 200)
 
-        res = client.get('/api/fitelement/dailylog/2022/10/5/?&user_id=1')
+        res = client.get(
+            '/api/fitelement/dailylog/2022/10/5/?&username=username')
         self.assertEqual(res.status_code, 200)
 
     def test_create_routine(self):
         client, csrftoken = self.ready()
-        res = client.post('/api/fitelement/routine/?&user_id=1', {
-            'user_id': 1,
+        res = client.post('/api/fitelement/routine/?&username=username', {
+            'username': 'username',
             'fitelements': [1]
         }, content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken)
@@ -152,8 +156,8 @@ class WorkoutTestCase(TestCase):
 
     def test_create_daily_log(self):
         client, csrftoken = self.ready()
-        res = client.post('/api/fitelement/dailylog/2022/10/5/?&user_id=1', {
-            'user_id': 1,
+        res = client.post('/api/fitelement/dailylog/2022/10/5/?&username=username', {
+            'username': 'username',
             'memo': 'test',
             'date': '2022-10-05'
 
@@ -163,29 +167,29 @@ class WorkoutTestCase(TestCase):
 
     def test_edit_daily_log(self):
         client, csrftoken = self.ready()
-        res = client.put('/api/fitelement/dailylog/2022/10/5/?&user_id=1', {
-            'user_id': 1,
+        res = client.put('/api/fitelement/dailylog/2022/10/5/?&username=username', {
+            'username': 'username',
             'memo': 'test',
         }, content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(res.status_code, 201)
 
-        res = client.put('/api/fitelement/dailylog/2022/10/6/?&user_id=1', {
-            'user_id': 1,
+        res = client.put('/api/fitelement/dailylog/2022/10/6/?&username=username', {
+            'username': 'username',
             'fitelements': [1]
         }, content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(res.status_code, 200)
 
-        res = client.put('/api/fitelement/dailylog/2022/10/1/?&user_id=1', {
-            'user_id': 1,
+        res = client.put('/api/fitelement/dailylog/2022/10/1/?&username=username', {
+            'username': 'username',
             'memo': 'test',
         }, content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(res.status_code, 201)
 
-        res = client.put('/api/fitelement/dailylog/2022/10/1/?&user_id=1', {
-            'user_id': 1,
+        res = client.put('/api/fitelement/dailylog/2022/10/1/?&username=username', {
+            'username': 'username',
             'fitelements': [1]
         }, content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken)

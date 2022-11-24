@@ -3,20 +3,20 @@ import styled from 'styled-components';
 export interface IProps {
   key: number;
   id: number;
-  type: string;
-  workout_type: string;
-  category: string;
-  weight: number;
-  rep: number;
-  set: number;
-  time: number;
+  type: string | null;
+  workout_type: string | null;
+  category: string | null;
+  weight: number | null;
+  rep: number | null;
+  set: number | null;
+  time: number | null;
 }
 
 export const FitElement = (props: IProps) => {
   return (
     <FitElementLog>
       <LogCategory className="type3">{props.id}</LogCategory>
-      <LogImage src={require('assets/images/workout_log/fitelement_category/example.png')} />
+      <LogImage src={require(`assets/images/workout_log/fitelement_category/${props.category || 'example'}.png`)} />
       <LogCategory className="type">{props.workout_type}</LogCategory>
       <LogCategory className="type2">{props.weight}</LogCategory>
       <LogCategory>{props.rep}</LogCategory>

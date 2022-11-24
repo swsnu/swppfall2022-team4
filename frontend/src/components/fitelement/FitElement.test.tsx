@@ -6,14 +6,14 @@ test('FitElement', () => {
     <FitElement
       key={0}
       id={0}
-      type={''}
-      workout_type={'workout_type_test'}
-      category={''}
+      type={'log'}
+      workout_type={'데드리프트'}
+      category={'back'}
       weight={0}
       rep={0}
       set={0}
-      time={0}
+      time={20}
     />,
   );
-  expect(screen.getByText('workout_type_test')).toBeInTheDocument();
+  expect(screen.getByText('데드리프트')).toBeInTheDocument();
 });

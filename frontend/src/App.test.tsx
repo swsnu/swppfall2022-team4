@@ -1,3 +1,4 @@
+import 'jest-canvas-mock';
 import { render, screen } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
@@ -16,6 +17,16 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
 }));
+
+jest.mock('react-chartjs-2', () => {
+  const { forwardRef } = require('react');
+  const Line = forwardRef((props: any, ref: any)=> <div ref={ref} {...props}></div>);
+  const Bar = forwardRef((props: any, ref: any)=> <div ref={ref} {...props}></div>);
+  return {
+    Line,
+    Bar,
+  };
+});
 
 const setup = () => {
   const store = configureStore({ reducer: rootReducer });
