@@ -16,3 +16,15 @@ class Group(models.Model):
     description = models.TextField(blank = False)
     free = models.BooleanField(null = False)
     goal = models.ManyToManyField(FitElement, related_name = 'group_goal')
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
+    address = models.CharField(max_length = 30, null = True)
+    class Meta:
+        ordering = ("-id",)
+
+class GroupCert(models.Model):
+    """ Group Certification definition """
+    member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='group_cert')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_cert')
+    date = models.DateField(null=False)
+    fit_element = models.ManyToManyField(FitElement, blank=True)

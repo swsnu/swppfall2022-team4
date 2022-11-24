@@ -16,6 +16,7 @@ const user1: userType = {
 };
 
 const fitelement1: groupApi.Fitelement = {
+  id: 1,
   type: 'goal',
   workout_type: '실외 걷기',
   category: 'etc',
@@ -25,7 +26,7 @@ const fitelement1: groupApi.Fitelement = {
   time: 10,
 };
 
-const groupDetailResponse: groupApi.GroupDetail = {
+const groupDetailResponse: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'group_name',
   number: 10,
@@ -36,12 +37,31 @@ const groupDetailResponse: groupApi.GroupDetail = {
   member_number: 3,
   description: 'test',
   goal: [fitelement1],
+  lat: null,
+  lng: null,
+  address: null,
 };
 
-const nullResponse1: groupApi.GroupDetail = {
+const placeDetailResponse: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'group_name',
   number: 10,
+  start_date: '2019-01-01',
+  end_date: '2019-01-01',
+  free: true,
+  group_leader: user1,
+  member_number: 3,
+  description: 'test',
+  goal: [fitelement1],
+  lat: 31,
+  lng: 126,
+  address: '봉천동',
+};
+
+const nullResponse1: groupApi.getGroupDetailResponseType = {
+  group_id: 1,
+  group_name: 'group_name',
+  number: 3,
   start_date: null,
   end_date: null,
   free: true,
@@ -49,9 +69,12 @@ const nullResponse1: groupApi.GroupDetail = {
   member_number: 3,
   description: 'test',
   goal: [fitelement1],
+  lat: null,
+  lng: null,
+  address: null,
 };
 
-const nullResponse2: groupApi.GroupDetail = {
+const nullResponse2: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'group_name',
   number: null,
@@ -62,6 +85,9 @@ const nullResponse2: groupApi.GroupDetail = {
   member_number: 3,
   description: 'test',
   goal: [fitelement1],
+  lat: null,
+  lng: null,
+  address: null,
 };
 
 const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {
@@ -104,7 +130,7 @@ const setup = () => {
 };
 
 describe('setup test', () => {
-  it('init', () => {
+  it('all response', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
@@ -114,6 +140,35 @@ describe('setup test', () => {
       });
     });
     screen.getByText('group_name');
+    screen.getByText('2019-01-01 ~ 2019-01-01');
+    screen.getByText('인원수: 3명 / 10명');
+    screen.getByText('장소: 장소 없음');
+  });
+  it('back button', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupDetailSuccess',
+        payload: groupDetailResponse,
+      });
+    });
+    const back = screen.getByText('Back');
+    fireEvent.click(back);
+    expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledWith('/group');
+  });
+  it('place response', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupDetailSuccess',
+        payload: placeDetailResponse,
+      });
+    });
+    screen.getByText('Place');
+    screen.getByText('장소 : 봉천동');
   });
   it('null init1', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
@@ -139,8 +194,7 @@ describe('setup test', () => {
     });
     screen.getByText('인원수: 3명');
   });
-
-  it('member_status1', () => {
+  it('leader status', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     expect(mockDispatch).toBeCalledWith({ payload: '1', type: 'group/getGroupDetail' });
@@ -154,6 +208,7 @@ describe('setup test', () => {
         payload: leaderStatusResponse,
       });
     });
+    const CertBtn = screen.getByText('Cert');
     const memberBtn = screen.getByText('Member');
     const deleteBtn = screen.getByText('Delete');
 
@@ -163,10 +218,13 @@ describe('setup test', () => {
 
     fireEvent.click(deleteBtn);
     expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith('/group/detail/1/member');
+
+    fireEvent.click(CertBtn);
+    expect(mockNavigate).toBeCalledWith('/group/detail/1/cert');
+    expect(mockNavigate).toBeCalledTimes(2);
   });
 
-  it('member_status2', () => {
+  it('member status', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     expect(mockDispatch).toBeCalledWith({ payload: '1', type: 'group/getGroupDetail' });
@@ -180,6 +238,7 @@ describe('setup test', () => {
         payload: memberStatusResponse,
       });
     });
+    const CertBtn = screen.getByText('Cert');
     const memberBtn = screen.getByText('Member');
     const leaveBtn = screen.getByText('Leave');
 
@@ -189,10 +248,34 @@ describe('setup test', () => {
 
     fireEvent.click(leaveBtn);
     expect(mockNavigate).toBeCalledTimes(1);
+
+    fireEvent.click(CertBtn);
+    expect(mockNavigate).toBeCalledWith('/group/detail/1/cert');
+    expect(mockNavigate).toBeCalledTimes(2);
   });
 
-  it('member_status3', () => {
+  it('not member status', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    expect(mockDispatch).toBeCalledWith({ payload: '1', type: 'group/getGroupDetail' });
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupDetailSuccess',
+        payload: nullResponse2,
+      });
+      store.dispatch({
+        type: 'group/checkMemberStatusSuccess',
+        payload: notmemberStatusResponse,
+      });
+    });
+    const joinBtn = screen.getByText('Join');
+
+    fireEvent.click(joinBtn);
+  });
+
+  it('not member status & can not join', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     const store = setup();
     expect(mockDispatch).toBeCalledWith({ payload: '1', type: 'group/getGroupDetail' });
     act(() => {
@@ -208,20 +291,17 @@ describe('setup test', () => {
     const joinBtn = screen.getByText('Join');
 
     fireEvent.click(joinBtn);
+    expect(alertMock).toHaveBeenCalledTimes(1);
   });
-
-  it('member_status4', () => {
+  // 이하부터 다시
+  it('useEffect ', () => {
+    jest.spyOn(window, 'alert').mockImplementation();
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
-    expect(mockDispatch).toBeCalledWith({ payload: '1', type: 'group/getGroupDetail' });
     act(() => {
       store.dispatch({
-        type: 'group/getGroupDetailSuccess',
-        payload: nullResponse1,
-      });
-      store.dispatch({
-        type: 'group/deleteGroup',
-        payload: undefined,
+        type: 'group/getGroupDetailFailure',
+        payload: {response: {data: {status: 404, message: 'error'}}},
       });
     });
   });

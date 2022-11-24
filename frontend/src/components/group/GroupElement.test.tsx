@@ -12,6 +12,7 @@ describe('<GroupElement />', () => {
         member_number={10}
         start_date={'2019-01-01'}
         end_date={'2019-12-31'}
+        address={'봉천동'}
       />,
     );
     screen.getByText('test');
@@ -30,6 +31,7 @@ describe('<GroupElement />', () => {
         member_number={10}
         start_date={null}
         end_date={null}
+        address={'청룡동'}
       />,
     );
     screen.getByText('test');
@@ -48,6 +50,7 @@ describe('<GroupElement />', () => {
         member_number={10}
         start_date={'2019-01-01'}
         end_date={'2019-12-31'}
+        address={'서울특별시 관악구 봉천동 875-4 대천에이스빌 505호'}
       />,
     );
     screen.getByText('test');
