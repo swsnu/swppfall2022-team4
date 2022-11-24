@@ -123,7 +123,7 @@ const WorkoutLog = () => {
         rep: rep,
         set: set,
         time: workout_time,
-        date: String(year)+"-"+String(month+1).padStart(2,'0')+"-"+String(day).padStart(2,'0'),
+        date: String(year) + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0'),
       };
       dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
       setWorkoutType('');
@@ -463,9 +463,7 @@ const WorkoutLog = () => {
                     <option disabled>종류 선택</option>
                     {fitElementTypes.map((fitelement_type, index) =>
                       fitelement_type.category === workout_category ? (
-                        <option key={index}>
-                          {fitelement_type.name}
-                        </option>
+                        <option key={index}>{fitelement_type.name}</option>
                       ) : null,
                     )}
                   </WorkoutTypeSelect>
@@ -738,7 +736,7 @@ const DayToolTip = styled.div`
 `;
 
 const DayContent = styled.div<{ visibility_boolean: boolean }>`
-  visibility: ${props => (props.visibility_boolean ? 'hidden' : 'none')}
+  visibility: ${props => (props.visibility_boolean ? 'hidden' : 'none')};
   width: auto;
   max-width: 40px;
   min-width: 40px;
@@ -783,7 +781,7 @@ const DayContent = styled.div<{ visibility_boolean: boolean }>`
 
   &:hover + ${DayToolTip} {
     visibility: visible;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
   }
 `;
 const MemoWrapper = styled.div`
