@@ -93,9 +93,6 @@ const GroupCreate = () => {
     if (group_name === '') {
       alert('그룹명을 입력해 주세요.');
       return;
-    } else if (max_num && group_num < 2) {
-      alert('최대 인원은 2 이상이어야 합니다.');
-      return;
     } else if (set_date && (start_date === '' || end_date === '')) {
       alert('기간을 설정해 주세요.');
       return;
