@@ -138,19 +138,22 @@ const GroupDetail = () => {
         <GroupAboutText>Specification</GroupAboutText>
         <GroupDetailDate>시작일 : {group_detail.start_date ?? '기한없음'}</GroupDetailDate>
         <GroupDetailDate>마감일 : {group_detail.end_date ?? '기한없음'}</GroupDetailDate>
-        {group_detail.goal.map((goal, index) => (
-          <FitElement
-            key={index}
-            id={index + 1}
-            type={goal.type}
-            workout_type={goal.workout_type}
-            category={goal.category}
-            weight={goal.weight}
-            rep={goal.rep}
-            set={goal.set}
-            time={goal.time}
-          />
-        ))}
+        {group_detail.goal.map((goal, index) => {
+          console.log(goal);
+          return (
+            <FitElement
+              key={index}
+              id={index + 1}
+              type={goal.type}
+              workout_type={goal.workout_type}
+              category={goal.category}
+              weight={goal.weight}
+              rep={goal.rep}
+              set={goal.set}
+              time={goal.time}
+            />
+          );
+        })}
       </GroupDetailWrapper>
     </Wrapper>
   );

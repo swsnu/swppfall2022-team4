@@ -16,6 +16,7 @@ import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
 import { FitelementRequestType } from 'store/apis/group';
 import { FitElement } from 'components/fitelement/FitElement';
+import { workoutLogActions } from 'store/slices/workout';
 
 const GroupCreate = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const GroupCreate = () => {
 
   const user = useSelector(({ user }: RootState) => user.user);
   const groupCreateStatus = useSelector(({ group }: RootState) => group.groupCreate);
+  const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
 
   const [group_name, setGroupName] = useState('');
   const [max_num, setMaxNum] = useState(true);
@@ -33,6 +35,7 @@ const GroupCreate = () => {
   const [description, setDescription] = useState('');
   const [free, setFree] = useState(true);
   // goal
+  const [workout_category, setWorkoutCategory] = useState('back');
   const [workout_type, setWorkoutType] = useState<string | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
   const [rep, setRep] = useState<number | null>(null);
@@ -66,7 +69,7 @@ const GroupCreate = () => {
     if (workout_type && weight && rep && set && wtime) {
       const goal: FitelementRequestType = {
         type: 'goal',
-        category: 'body',
+        category: workout_category,
         workout_type: workout_type,
         weight: weight,
         rep: rep,
@@ -132,6 +135,7 @@ const GroupCreate = () => {
   };
 
   useEffect(() => {
+    dispatch(workoutLogActions.getFitElementsType());
     return () => {
       dispatch(groupActions.stateRefresh());
     };
@@ -204,6 +208,7 @@ const GroupCreate = () => {
     });
   }, [map, keyword]);
 
+  const fitElementTarget = fitElementTypes.filter(item => item.class_name === workout_category);
   return (
     <Wrapper>
       <TitleWrapper>
@@ -277,12 +282,17 @@ const GroupCreate = () => {
           <div style={{ paddingLeft: '13%' }}>Time</div>
         </div>
         <LogInputBody>
-          <WorkoutTypeInput
-            data-testid="workoutType"
-            type="text"
-            value={workout_type || ''}
-            onChange={e => setWorkoutType(e.target.value)}
-          />
+          <WorkoutTypeSelect defaultValue="선택" className="type2" onChange={e => setWorkoutCategory(e.target.value)}>
+            <option disabled>선택</option>
+            {fitElementTypes.map((fitelement_category, index) => (
+              <option key={index}>{fitelement_category.class_name}</option>
+            ))}
+          </WorkoutTypeSelect>
+          <WorkoutTypeSelect defaultValue="종류 선택" onChange={e => setWorkoutType(e.target.value)}>
+            <option disabled>종류 선택</option>
+            {fitElementTarget.length === 1 &&
+              fitElementTarget[0].tags.map((fitelement, index) => <option key={index}>{fitelement.name}</option>)}
+          </WorkoutTypeSelect>
           <WorkoutTypeInput
             data-testid="weight"
             className="type2"
@@ -525,6 +535,19 @@ const LogInputBody = styled.div`
 const deleteGoal = styled.div`
   padding-top: 33px;
   font-size: 20px;
+`;
+
+const WorkoutTypeSelect = styled.select`
+  width: 20%;
+  height: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  margin: 5px;
+  margin-top: 7px;
+
+  &&.type2 {
+    width: 15%;
+  }
 `;
 
 export default GroupCreate;

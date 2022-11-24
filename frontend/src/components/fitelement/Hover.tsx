@@ -1,3 +1,4 @@
+import { TagClass } from 'store/apis/tag';
 import styled from 'styled-components';
 
 type fitElementType = {
@@ -5,6 +6,7 @@ type fitElementType = {
   workout_type: string;
   period: number;
   category: string;
+  color: string;
   weight: number;
   rep: number;
   set: number;
@@ -15,9 +17,12 @@ type fitElementType = {
 export interface IProps {
   key: number;
   workouts: fitElementType[];
+  types: TagClass[];
 }
 
-const types = ['leg', 'back', 'chest', 'arm', 'deltoid', 'abs', 'etc'];
+interface IPropsColor {
+  color: string;
+}
 
 export const Hover = (props: IProps) => {
   const workouts_list = new Map<string, fitElementType[]>();
@@ -32,9 +37,9 @@ export const Hover = (props: IProps) => {
     });
   }
 
-  const workout_type_list = (category: string, key: number) => (
+  const workout_type_list = (category: string, color: string, key: number) => (
     <WorkoutSingle key={key}>
-      <WorkoutColor className={category} />
+      <WorkoutColor color={color} />
       {workouts_list.get(category) !== undefined && workouts_list.get(category)!.length > 1
         ? workouts_list.get(category)![0]['workout_type'] + ` 외 ${workouts_list.get(category)!.length - 1}개`
         : workouts_list.get(category) !== undefined && workouts_list.get(category)!.length > 0
@@ -47,7 +52,9 @@ export const Hover = (props: IProps) => {
       {typeof props.workouts !== 'undefined' && props.workouts?.length === 0 ? (
         <Content>기록된 운동이 없습니다!</Content>
       ) : (
-        <WorkoutList key={0}>{types.map((type_single, index) => workout_type_list(type_single, index))}</WorkoutList>
+        <WorkoutList key={0}>
+          {props.types.map((eachType, index) => workout_type_list(eachType.class_name, eachType.color, index))}
+        </WorkoutList>
       )}
       <br />
       <hr />
@@ -82,34 +89,15 @@ const WorkoutSingle = styled.div`
   margin-left: 0px;
 `;
 
-const WorkoutColor = styled.div`
+const WorkoutColor = styled.div<IPropsColor>`
   width: 12px;
   height: 12px;
   margin-right: 6px;
   border-radius: 50%;
   background: #a2cff9;
-  &&.leg {
-    background: #a2cff9;
-  }
-  &&.back {
-    background: #f4d284;
-  }
-  &&.chest {
-    background: #f9b6a2;
-  }
-  &&.deltoid {
-    background: #f9a2b6;
-  }
-  &&.abs {
-    background: #9fd6cd;
-  }
-  &&.cardio {
-    background: #d3b7d8;
-  }
-  &&.etc {
-    background: #d3b7d8;
-  }
-  &&.arm {
-    background: #a9f9a2;
-  }
+  ${({ color }) =>
+    color &&
+    `
+      background: ${color};
+    `}
 `;

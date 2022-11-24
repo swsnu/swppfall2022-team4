@@ -23,6 +23,7 @@ const Main = () => {
   useEffect(() => {
     dispatch(
       workoutLogActions.getCalendarInfo({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         username: user?.username!,
         year: year,
         month: month + 1,
@@ -33,13 +34,13 @@ const Main = () => {
 
   const calendarInfo = useSelector((rootState: RootState) => rootState.workout_log.calendar_info);
 
-  let calories_map: chartData[] = [];
+  const calories_map: chartData[] = [];
 
   for (const child of calendarInfo) {
     let sMonth = String(child.month);
     let sDate = String(child.date);
     sMonth = sMonth.padStart(2, '0');
-    sDate = sDate.padStart(2, '0')
+    sDate = sDate.padStart(2, '0');
     const dateStringFormat = sMonth + '-' + sDate;
     calories_map.push({
       date: dateStringFormat,
