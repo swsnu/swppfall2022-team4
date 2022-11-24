@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import FitElement, Routine, DailyLog, FitElementType
+from workouts.models import FitElement, Routine, DailyLog
 
 admin.site.register(FitElement)
 admin.site.register(Routine)
 admin.site.register(DailyLog)
-admin.site.register(FitElementType)

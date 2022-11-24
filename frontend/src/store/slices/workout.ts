@@ -2,13 +2,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
+import { TagClass } from 'store/apis/tag';
 import * as workoutLogAPI from 'store/apis/workout';
-
-export type FitelementType = {
-  name: string;
-  calories: number;
-  category: string;
-};
 
 export type Fitelement = {
   data: {
@@ -76,7 +71,7 @@ export interface WorkoutLogState {
     calories: number;
     category: string;
   };
-  fitelement_types: FitelementType[];
+  fitelement_types: TagClass[];
 }
 
 export const initialState: WorkoutLogState = {

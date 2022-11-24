@@ -54,6 +54,8 @@ calories = [
     0.073529412,
 ]
 
+colors = ['#f4d284', '#f9b6a2', '#f9a2b6', '#a2cff9', '#9fd6cd', '#a9f9a2', '#d3b7d8', '#d3b7d8']
+
 
 class Command(BaseCommand):
     help = "This command prepares some tag classes & basic tags."
@@ -133,23 +135,38 @@ class Command(BaseCommand):
             [],  # "잡담"
         ]
 
+        class_ind = 0
         for class_name, tag_names in zip(class_list, tag_preset):
-
-            tag_class = TagClass.objects.create(
-                class_name=class_name,
-                class_type=get_tag_class_type(class_name),
-                color=get_random_color(),
-            )
+            if get_tag_class_type(class_name) == 'workout':
+                tag_class = TagClass.objects.create(
+                    class_name=class_name,
+                    class_type=get_tag_class_type(class_name),
+                    color=colors[class_ind],
+                )
+                class_ind += 1
+            else:
+                tag_class = TagClass.objects.create(
+                    class_name=class_name,
+                    class_type=get_tag_class_type(class_name),
+                    color=get_random_color(),
+                )
             workout_ind = 0
             for tag_name in tag_names:
                 if get_tag_class_type(class_name) == 'workout':
                     tag = Tag.objects.create(
-                        tag_name=tag_name, tag_class=tag_class, calories=calories[workout_ind]
+                        tag_name=tag_name,
+                        tag_class=tag_class,
+                        calories=calories[workout_ind],
+                        tag_type=get_tag_class_type(class_name),
                     )
                     Information.objects.create(name=tag_name, tag=tag)
                     workout_ind += 1
                 else:
-                    Tag.objects.create(tag_name=tag_name, tag_class=tag_class)
+                    Tag.objects.create(
+                        tag_name=tag_name,
+                        tag_class=tag_class,
+                        tag_type=get_tag_class_type(class_name),
+                    )
 
         self.stdout.write(
             self.style.SUCCESS(

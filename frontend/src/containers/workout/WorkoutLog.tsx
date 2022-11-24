@@ -24,22 +24,6 @@ const WorkoutLog = () => {
   const DAYS_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   const DAYS_OF_THE_WEEK = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-  const WORKOUT_CATEGORY = ['등', '가슴', '하체', '팔(이두,삼두 등)', '어깨', '기타', '유산소', '복근'];
-
-  type categoryOption = {
-    [key: string]: string;
-  };
-
-  const category_enum: categoryOption = {
-    등: 'back',
-    가슴: 'chest',
-    하체: 'leg',
-    '팔(이두,삼두 등)': 'arm',
-    어깨: 'deltoid',
-    복근: 'abs',
-    유산소: 'cardio',
-    기타: 'etc',
-  };
 
   const today = new Date();
   const [date, setDate] = useState(today);
@@ -256,7 +240,7 @@ const WorkoutLog = () => {
       alert('이미지 업로드 오류');
     }
   };
-
+  const fitElementTarget = fitElementTypes.filter(item => item.class_name === workout_category);
   return (
     <Wrapper>
       <InnerWrapper>
@@ -364,7 +348,7 @@ const WorkoutLog = () => {
                           {d > 0 ? (d <= days[month] ? d : '') : ''}
                         </DayContent>
                         <DayToolTip>
-                          <Hover key={0} workouts={calendarInfo[d - 1]?.workouts} />
+                          <Hover key={0} workouts={calendarInfo[d - 1]?.workouts} types={fitElementTypes} />
                         </DayToolTip>
                       </Day>
                     );
@@ -452,20 +436,19 @@ const WorkoutLog = () => {
                   <WorkoutTypeSelect
                     defaultValue="선택"
                     className="type2"
-                    onChange={e => setWorkoutCategory(category_enum[e.target.value])}
+                    onChange={e => setWorkoutCategory(e.target.value)}
                   >
                     <option disabled>선택</option>
-                    {WORKOUT_CATEGORY.map((fitelement_category, index) => (
-                      <option key={index}>{fitelement_category}</option>
+                    {fitElementTypes.map((fitelement_category, index) => (
+                      <option key={index}>{fitelement_category.class_name}</option>
                     ))}
                   </WorkoutTypeSelect>
                   <WorkoutTypeSelect defaultValue="종류 선택" onChange={e => setWorkoutType(e.target.value)}>
                     <option disabled>종류 선택</option>
-                    {fitElementTypes.map((fitelement_type, index) =>
-                      fitelement_type.category === workout_category ? (
-                        <option key={index}>{fitelement_type.name}</option>
-                      ) : null,
-                    )}
+                    {fitElementTarget.length === 1 &&
+                      fitElementTarget[0].tags.map((fitelement, index) => (
+                        <option key={index}>{fitelement.name}</option>
+                      ))}
                   </WorkoutTypeSelect>
                   <WorkoutTypeInput
                     type="number"
@@ -520,7 +503,7 @@ const WorkoutLog = () => {
               </LogBody>
               <LogFooter>
                 <FooterItem>{dailyLog.fit_element?.length}종류</FooterItem>
-                <FooterItem>{dailyLog.calories} cal</FooterItem>
+                <FooterItem>{dailyLog.calories} kcal/kg(todo 체중 곱해야)</FooterItem>
               </LogFooter>
             </Frame>
           </LogWrapper>
