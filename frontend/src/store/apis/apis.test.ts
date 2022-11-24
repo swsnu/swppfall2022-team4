@@ -125,6 +125,7 @@ const searchTagRequest: tagAPI.searchTagRequestType = {
 
 //Group dummy.
 const fitelement1: groupAPI.Fitelement = {
+  id: 1,
   type: 'goal',
   workout_type: 'test',
   category: ' test',
@@ -143,7 +144,30 @@ const postGroupRequest: groupAPI.postGroupRequestType = {
   free: true,
   group_leader: testUsername,
   goal: [fitelement1],
+  lat: 31,
+  lng: 126,
+  address: 'jeju',
 };
+
+const leaderChangeRequest: groupAPI.leaderChangeRequestType = {
+  group_id: '1',
+  username: 'test',
+}
+
+const getCertsRequest: groupAPI.getCertsRequestType = {
+  group_id: '1',
+  year: 2022,
+  month: 12,
+  specific_date: 12,
+}
+
+const createCertRequest: groupAPI.createCertRequestType = {
+  group_id: '1',
+  year: 2022,
+  month: 12,
+  specific_date: 12,
+  fitelement_id: 1,
+}
 
 // Workout dummy.
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {
@@ -490,5 +514,19 @@ describe('Group API TEST', () => {
       const res = await groupAPI.exitGroup('1');
       expect(res).toBe(`/api/group/1/member/`);
     });
+    it('leaderChange', async () => {
+      const res = await groupAPI.leaderChange(leaderChangeRequest);
+      expect(res).toBe(`/api/group/1/leader_change/`);
+    });
   });
+  describe('Group Cert', () => {
+    it('getCerts', async () => {
+      const res = await groupAPI.getCerts(getCertsRequest);
+      expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
+    });
+    it('createCert', async () => {
+      const res = await groupAPI.createCert(createCertRequest);
+      expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
+    });
+  })
 });

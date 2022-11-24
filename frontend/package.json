@@ -26,6 +26,7 @@
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
+    "react-kakao-maps-sdk": "^1.1.5",
     "react-notifications-component": "^4.0.1",
     "react-redux": "^8.0.4",
     "react-router": "^6.4.2",
@@ -70,6 +71,7 @@
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
     "coveralls": "^3.1.1",
+    "dotenv": "^16.0.3",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -77,6 +79,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "invariant": "2.2.4",
     "jest": "29.3.1",
+    "kakao.maps.d.ts": "^0.1.33",
     "prettier": "^2.7.1",
     "redux-devtools-extension": "^2.13.9",
     "ts-jest": "29.0.3"

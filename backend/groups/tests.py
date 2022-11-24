@@ -1,8 +1,10 @@
 from django.test import TestCase, Client
-from .models import Group
+from .models import Group, GroupCert
 from users.models import User
+from workouts.models import FitElement
 import bcrypt
 import json
+from datetime import datetime, date
 
 class GroupTestCase(TestCase):
     def setUp(self):
@@ -30,6 +32,15 @@ class GroupTestCase(TestCase):
                 exp=0,
                 level=1
         )
+        fit1 = FitElement.objects.create(
+            author=user1,
+            type='goal',
+            workout_type='test',
+            weight=10,
+            rep=10,
+            set=10,
+            time=10,
+        )
         gr1 = Group.objects.create(
             group_name='group1',
             group_leader=user1,
@@ -38,9 +49,10 @@ class GroupTestCase(TestCase):
             start_date='2019-01-01',
             end_date='2019-12-01',
             description='Testing',
-            free=True
+            free=True,
         )
         gr1.members.set([user1,user2])
+        gr1.goal.add(fit1)
         gr2 = Group.objects.create(
             group_name='group2',
             group_leader=user2,
@@ -52,7 +64,7 @@ class GroupTestCase(TestCase):
             free=True
         )
         gr2.members.set([user1,user2])
-
+        gr2.goal.add(fit1)
         gr3 = Group.objects.create(
             group_name='group3',
             group_leader=user2,
@@ -64,6 +76,13 @@ class GroupTestCase(TestCase):
             free=True
         )
         gr3.members.set([user2])
+        gr3.goal.add(fit1)
+        cert1 = GroupCert.objects.create(
+            group=gr1,
+            member=user1,
+            date=datetime(2019, 12, 12).date()
+        )
+        cert1.fit_element.add(fit1)
 
     def ready(self):
         client = Client()
@@ -105,6 +124,9 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
+            'lat': 31,
+            'lng': 126,
+            'address': 'jeju',
             },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
@@ -127,6 +149,9 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
+            'lat': 31,
+            'lng': 126,
+            'address': 'jeju',
             },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
@@ -149,6 +174,9 @@ class GroupTestCase(TestCase):
                'set':10,
                'time':30
                 }],
+            'lat': 31,
+            'lng': 126,
+            'address': 'jeju',
             },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
@@ -247,7 +275,7 @@ class GroupTestCase(TestCase):
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 204)
 
         res = client.delete('/api/group/2/',
             content_type='application/json',
@@ -331,3 +359,54 @@ class GroupTestCase(TestCase):
 
         res = client.get('/api/group/10000/mem_check/')
         self.assertEqual(res.status_code, 404)
+
+    def test_leader_change(self):
+        client, _ = self.ready()
+        token_response = client.get('/api/user/token/')
+        csrftoken = token_response.cookies['csrftoken'].value
+
+        res = client.post('/api/group/10000/leader_change/',
+            {'username': 'user2'},
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken
+        )
+        self.assertEqual(res.status_code, 404)
+
+        res = client.post('/api/group/1/leader_change/',
+            {'username': 'user3'},
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken
+        )
+        self.assertEqual(res.status_code, 400)
+
+        res = client.post('/api/group/1/leader_change/',
+            {'username': 'user2'},
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken
+        )
+        self.assertEqual(res.status_code, 204)
+
+    def test_group_cert(self):
+        client, _ = self.ready()
+        token_response = client.get('/api/user/token/')
+        csrftoken = token_response.cookies['csrftoken'].value
+
+        res = client.get('/api/group/3/cert/2019/12/12/')
+        self.assertEqual(res.status_code, 200)
+
+        res = client.get('/api/group/3/cert/2020/9/9/')
+        self.assertEqual(res.status_code, 200)
+
+        res = client.post('/api/group/3/cert/2019/12/11/',
+            {'fitelement_id': 1},
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken
+        )
+        self.assertEqual(res.status_code, 200)
+
+        res = client.post('/api/group/3/cert/2019/12/11/',
+            {'fitelement_id': 1},
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken
+        )
+        self.assertEqual(res.status_code, 200)

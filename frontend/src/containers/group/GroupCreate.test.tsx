@@ -36,39 +36,20 @@ const setup = () => {
 
 describe('setup test', () => {
   it('init1', () => {
-    const store = setup();
-    act(() => {
-      store.dispatch({
-        type: 'group/stateRefresh',
-        payload: undefined,
-      });
-    });
+    setup();
     const back = screen.getByText('Back');
     fireEvent.click(back);
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group');
   });
-  it('init2', () => {
-    const store = setup();
-    act(() => {
-      store.dispatch({
-        type: 'group/stateRefresh',
-        payload: undefined,
-      });
-    });
-    const back = screen.getByText('Back');
-    fireEvent.click(back);
-    expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith('/group');
-  });
-  it('no write1', () => {
+  it('no group name', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('no write2', () => {
+  it('no max number', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
@@ -77,67 +58,201 @@ describe('setup test', () => {
     fireEvent.click(saveBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('no write3', () => {
+  it('no max number check & no date', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
-    const numberInput = screen.getByDisplayValue('0');
     userEvent.type(nameInput, 'group test');
-    userEvent.type(numberInput, '1');
+    const maxNumCheck = screen.getByTestId('maxNumCheck');
+    fireEvent.click(maxNumCheck);
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
   });
   it('wrong date', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
-    const descriptionInput = screen.getByPlaceholderText('그룹의 설명');
-    const numberInput = screen.getByDisplayValue('0');
+    const maxNumCheck = screen.getByTestId('maxNumCheck');
     const startInput = screen.getByTestId('start_date');
     const endInput = screen.getByTestId('end_date');
     userEvent.type(nameInput, 'group test');
-    userEvent.type(descriptionInput, 'group description');
-    userEvent.type(numberInput, '10');
+    fireEvent.click(maxNumCheck);
     userEvent.type(startInput, '2021-01-01');
-    userEvent.type(endInput, '2019-01-02');
+    userEvent.type(endInput, '2019-01-01');
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
+    expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('no write4', () => {
+  it('good date & no goal', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
-    const numberInput = screen.getByDisplayValue('0');
+    const maxNum = screen.getByTestId('maxNum');
     const startInput = screen.getByTestId('start_date');
     const endInput = screen.getByTestId('end_date');
     userEvent.type(nameInput, 'group test');
-    userEvent.type(numberInput, '10');
+    userEvent.type(maxNum, '10');
     userEvent.type(startInput, '2019-01-01');
     userEvent.type(endInput, '2019-01-02');
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
+    expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('no write5', () => {
+  it('wrong goal', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+    setup();
+    const workoutType = screen.getByTestId('workoutType');
+    userEvent.type(workoutType, 'workoutType');
+    const addBtn = screen.getByText('추가');
+    fireEvent.click(addBtn);
+    expect(alertMock).toHaveBeenCalledTimes(1);
+  });
+  it('wrong goal', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+    setup();
+    const workoutType = screen.getByTestId('workoutType');
+    const weight = screen.getByTestId('weight');
+    userEvent.type(workoutType, 'workoutType');
+    userEvent.type(weight, '10');
+    const addBtn = screen.getByText('추가');
+    fireEvent.click(addBtn);
+    expect(alertMock).toHaveBeenCalledTimes(1);
+  });
+  it('wrong goal', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+    setup();
+    const workoutType = screen.getByTestId('workoutType');
+    const weight = screen.getByTestId('weight');
+    const rep = screen.getByTestId('rep');
+    userEvent.type(workoutType, 'workoutType');
+    userEvent.type(weight, '10');
+    userEvent.type(rep, '10');
+    const addBtn = screen.getByText('추가');
+    fireEvent.click(addBtn);
+    expect(alertMock).toHaveBeenCalledTimes(1);
+  });
+  it('wrong goal', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+    setup();
+    const workoutType = screen.getByTestId('workoutType');
+    const weight = screen.getByTestId('weight');
+    const rep = screen.getByTestId('rep');
+    const set = screen.getByTestId('set');
+    userEvent.type(workoutType, 'workoutType');
+    userEvent.type(weight, '10');
+    userEvent.type(rep, '10');
+    userEvent.type(set, '10');
+    const addBtn = screen.getByText('추가');
+    fireEvent.click(addBtn);
+    expect(alertMock).toHaveBeenCalledTimes(1);
+  });
+  it('good goal', () => {
+    setup();
+    const workoutType = screen.getByTestId('workoutType');
+    const weight = screen.getByTestId('weight');
+    const rep = screen.getByTestId('rep');
+    const set = screen.getByTestId('set');
+    const time = screen.getByTestId('time');
+    userEvent.type(workoutType, 'workoutType');
+    userEvent.type(weight, '20');
+    userEvent.type(rep, '20');
+    userEvent.type(set, '20');
+    userEvent.type(time, '20');
+    const addBtn = screen.getByText('추가');
+    fireEvent.click(addBtn);
+    screen.getByText('workoutType');
+    screen.getByText('1');
+  });
+  it('good goal & remove goal', () => {
+    setup();
+    const workoutType = screen.getByTestId('workoutType');
+    const weight = screen.getByTestId('weight');
+    const rep = screen.getByTestId('rep');
+    const set = screen.getByTestId('set');
+    const time = screen.getByTestId('time');
+    userEvent.type(workoutType, 'workoutType');
+    userEvent.type(weight, '20');
+    userEvent.type(rep, '20');
+    userEvent.type(set, '20');
+    userEvent.type(time, '20');
+    const addBtn = screen.getByText('추가');
+    fireEvent.click(addBtn);
+    const XBtn = screen.getByTestId('removeGoal');
+    fireEvent.click(XBtn);
+  });
+  it('good goal & no description', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
-    const numberInput = screen.getByDisplayValue('0');
+    const maxNumCheck = screen.getByTestId('maxNumCheck');
+    const setDate = screen.getByTestId('setDate');
     userEvent.type(nameInput, 'group test');
-    userEvent.type(numberInput, '10');
+    fireEvent.click(maxNumCheck);
+    fireEvent.click(setDate);
+
+    const workoutType = screen.getByTestId('workoutType');
+    const weight = screen.getByTestId('weight');
+    const rep = screen.getByTestId('rep');
+    const set = screen.getByTestId('set');
+    const time = screen.getByTestId('time');
+    userEvent.type(workoutType, 'workoutType');
+    userEvent.type(weight, '20');
+    userEvent.type(rep, '20');
+    userEvent.type(set, '20');
+    userEvent.type(time, '20');
+    const addBtn = screen.getByText('추가');
+    fireEvent.click(addBtn);
+
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
+    expect(alertMock).toHaveBeenCalledTimes(1);
   });
   it('save', () => {
     setup();
     const nameInput = screen.getByPlaceholderText('그룹의 이름');
+    const maxNumCheck = screen.getByTestId('maxNumCheck');
+    const setDate = screen.getByTestId('setDate');
     const descriptionInput = screen.getByPlaceholderText('그룹의 설명');
-    const numberInput = screen.getByDisplayValue('0');
-    const startInput = screen.getByTestId('start_date');
-    const endInput = screen.getByTestId('end_date');
+    const freeCheck = screen.getByTestId('freeCheck');
+    const placeCheck = screen.getByTestId('placeCheck');
     userEvent.type(nameInput, 'group test');
-    userEvent.type(descriptionInput, 'group description');
-    userEvent.type(numberInput, '10');
-    userEvent.type(startInput, '2019-01-01');
-    userEvent.type(endInput, '2019-01-02');
+    fireEvent.click(maxNumCheck);
+    fireEvent.click(setDate);
+    fireEvent.click(freeCheck);
+    fireEvent.click(placeCheck);
+    userEvent.type(descriptionInput, 'group test');
+
+    const workoutType = screen.getByTestId('workoutType');
+    const weight = screen.getByTestId('weight');
+    const rep = screen.getByTestId('rep');
+    const set = screen.getByTestId('set');
+    const time = screen.getByTestId('time');
+    userEvent.type(workoutType, 'workoutType');
+    userEvent.type(weight, '20');
+    userEvent.type(rep, '20');
+    userEvent.type(set, '20');
+    userEvent.type(time, '20');
+    const addBtn = screen.getByText('추가');
+    fireEvent.click(addBtn);
+
     const saveBtn = screen.getByText('Create');
     fireEvent.click(saveBtn);
+    expect(mockDispatch).toBeCalledTimes(1);
+  });
+  it('save & navigate', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/createGroupSuccess',
+        payload: {id: '1'},
+      });
+    });
+    expect(mockNavigate).toBeCalledTimes(1);
+  });
+  it('keyword', () => {
+    setup();
+    const placeInput = screen.getByPlaceholderText('장소 검색');
+    userEvent.type(placeInput, '봉천동');
   });
 });

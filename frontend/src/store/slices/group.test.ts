@@ -3,12 +3,14 @@ import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as groupApi from '../apis/group';
 import groupSaga, { initialState, groupSlice } from './group';
+import { userType } from 'store/apis/user';
 
 const simpleError = new Error('error!');
 
 jest.spyOn(global, 'alert').mockImplementation(msg => msg);
 
 const fitelement1: groupApi.Fitelement = {
+  id: 1,
   type: 'goal',
   workout_type: 'test',
   category: 'test',
@@ -19,6 +21,7 @@ const fitelement1: groupApi.Fitelement = {
 };
 
 const fitelement2: groupApi.Fitelement = {
+  id: 2,
   type: 'goal',
   workout_type: 'test',
   category: 'test',
@@ -27,6 +30,65 @@ const fitelement2: groupApi.Fitelement = {
   set: 20,
   time: 20,
 };
+
+const fitelementRequest: groupApi.FitelementRequestType = {
+  type: 'goal',
+  workout_type: 'test',
+  category: 'test',
+  weight: 20,
+  rep: 20,
+  set: 20,
+  time: 20,
+};
+
+const member1: groupApi.Member = {
+  id: 1,
+  username: 'user12',
+  image: 'image',
+  level: 1,
+  cert_days: 6,
+}
+
+const member2: groupApi.Member = {
+  id: 2,
+  username: 'user34',
+  image: 'image',
+  level: 1,
+  cert_days: 6,
+}
+
+const group1: groupApi.Group = {
+  id: 1,
+  group_name: 'test',
+  number: 5,
+  start_date: '2019-01-01',
+  end_date: '2019-12-31',
+  member_number: 3,
+  lat: 31,
+  lng: 126,
+  address: 'jeju',
+}
+
+const group2: groupApi.Group = {
+  id: 2,
+  group_name: 'test',
+  number: 5,
+  start_date: '2019-01-01',
+  end_date: '2019-12-31',
+  member_number: 3,
+  lat: 31,
+  lng: 126,
+  address: 'jeju',
+}
+
+const memcert1: groupApi.MemberCert = {
+  member : {
+    username: 'test',
+    nickname: 'test',
+    image: 'image'
+  },
+  certs : [fitelement1]
+}
 
 //request
 const postGroupRequest: groupApi.postGroupRequestType = {
@@ -37,53 +99,50 @@ const postGroupRequest: groupApi.postGroupRequestType = {
   description: 'test',
   free: true,
   group_leader: 'test',
-  goal: [fitelement1],
+  goal: [fitelementRequest],
+  lat: 30,
+  lng: 127,
+  address: 'jeju',
 };
+
+const leaderChangeRequest: groupApi.leaderChangeRequestType = {
+  group_id: '1',
+  username: 'junho',
+}
+
+const getCertsRequest: groupApi.getCertsRequestType = {
+  group_id: '1',
+  year: 2022,
+  month: 9,
+  specific_date: 12,
+}
+
+const createCertRequest: groupApi.createCertRequestType = {
+  group_id: '1',
+  year: 2022,
+  month: 9,
+  specific_date: 12,
+  fitelement_id: 1,
+}
 
 //response
 const getGroupsResponse: groupApi.getGroupsResponseType = {
-  groups: [
-    {
-      id: 1,
-      group_name: 'test',
-      number: 5,
-      start_date: '2019-01-01',
-      end_date: '2019-12-31',
-      member_number: 3,
-    },
-    {
-      id: 2,
-      group_name: 'test',
-      number: 5,
-      start_date: '2019-01-01',
-      end_date: '2019-12-31',
-      member_number: 3,
-    },
-  ],
+  groups: [group1, group2],
 };
+
+const postGroupResponse: groupApi.postGroupResponseType = {
+  id: 1,
+}
 
 const checkMemberResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'group_leader',
 };
 
-const getGroupMembersResponse: groupApi.getGroupMembersResponseType = [
-  {
-    id: 1,
-    username: 'user1',
-    cert_days: 7,
-    image: 'image',
-    level: 1,
-  },
-  {
-    id: 1,
-    username: 'user12',
-    cert_days: 7,
-    image: 'image',
-    level: 1,
-  },
-];
+const getGroupMembersResponse: groupApi.getGroupMembersResponseType = {
+  members: [member1, member2],
+};
 
-const GroupDetailResponse: groupApi.GroupDetail = {
+const getGroupDetailResponse: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'test',
   number: 7,
@@ -94,7 +153,14 @@ const GroupDetailResponse: groupApi.GroupDetail = {
   group_leader: { username: 'test', nickname: 'test', image: 'image' },
   goal: [fitelement1, fitelement2],
   member_number: 3,
+  lat: 30,
+  lng: 127,
+  address: 'jeju',
 };
+
+const getCertsResponse: groupApi.getCertsResponseType = {
+  all_certs: [memcert1]
+}
 
 //test
 describe('Group', () => {
@@ -117,10 +183,10 @@ describe('Group', () => {
     it('postGroup', () => {
       return expectSaga(groupSaga)
         .withReducer(groupSlice.reducer)
-        .provide([[call(groupApi.postGroup, postGroupRequest), { id: 1 }]])
+        .provide([[call(groupApi.postGroup, postGroupRequest), postGroupResponse]])
         .put({
           type: 'group/createGroupSuccess',
-          payload: { id: 1 },
+          payload: postGroupResponse,
         })
         .dispatch({
           type: 'group/createGroup',
@@ -129,7 +195,7 @@ describe('Group', () => {
         .hasFinalState({
           ...initialState,
           groupCreate: {
-            group_id: 1,
+            group_id: postGroupResponse.id,
             error: null,
           },
         })
@@ -139,16 +205,16 @@ describe('Group', () => {
   it('getGroupDetail', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.getGroupDetail, '1'), 'data']])
+      .provide([[call(groupApi.getGroupDetail, '1'), getGroupDetailResponse]])
       .put({
         type: 'group/getGroupDetailSuccess',
-        payload: 'data',
+        payload: getGroupDetailResponse,
       })
       .dispatch({ type: 'group/getGroupDetail', payload: '1' })
       .hasFinalState({
         ...initialState,
         groupDetail: {
-          group: 'data',
+          group: getGroupDetailResponse,
           error: null,
         },
       })
@@ -178,7 +244,7 @@ describe('Group', () => {
       .hasFinalState({
         ...initialState,
         groupMemberStatus: {
-          member_status: 'group_leader',
+          member_status: checkMemberResponse.member_status,
           error: null,
         },
       })
@@ -187,16 +253,16 @@ describe('Group', () => {
   it('getGroupMembers', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.getGroupMembers, '1'), 'data']])
+      .provide([[call(groupApi.getGroupMembers, '1'), getGroupMembersResponse]])
       .put({
         type: 'group/getGroupMembersSuccess',
-        payload: 'data',
+        payload: getGroupMembersResponse,
       })
       .dispatch({ type: 'group/getGroupMembers', payload: '1' })
       .hasFinalState({
         ...initialState,
         groupMembers: {
-          members: 'data',
+          members: getGroupMembersResponse.members,
           error: null,
         },
       })
@@ -232,10 +298,61 @@ describe('Group', () => {
       })
       .silentRun();
   });
+  it('leaderChange', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.leaderChange, leaderChangeRequest), undefined]])
+      .put({ type: 'group/leaderChangeSuccess', payload: undefined })
+      .dispatch({ type: 'group/leaderChange', payload: leaderChangeRequest })
+      .hasFinalState({
+        ...initialState,
+        groupAction: {
+          status: true,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
+  it('getCerts', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.getCerts, getCertsRequest), getCertsResponse]])
+      .put({
+        type: 'group/getCertsSuccess',
+        payload: getCertsResponse
+      })
+      .dispatch({ type: 'group/getCerts', payload: getCertsRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: getCertsResponse.all_certs,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
+  it('createCert', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.createCert, createCertRequest), getCertsResponse]])
+      .put({
+        type: 'group/createCertSuccess',
+        payload: getCertsResponse
+      })
+      .dispatch({ type: 'group/createCert', payload: createCertRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: getCertsResponse.all_certs,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
 });
 //----------------------------------------------------------------
 describe('saga failure', () => {
-  it('getGroups1', () => {
+  it('getGroups', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
       .provide([[call(groupApi.getGroups), throwError(simpleError)]])
@@ -250,7 +367,7 @@ describe('saga failure', () => {
       })
       .silentRun();
   });
-  it('getGroups2', () => {
+  it('postGroup', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
       .provide([[call(groupApi.postGroup, postGroupRequest), throwError(simpleError)]])
@@ -316,7 +433,7 @@ describe('saga failure', () => {
       .hasFinalState({
         ...initialState,
         groupMembers: {
-          members: [],
+          members: null,
           error: simpleError,
         },
       })
@@ -347,6 +464,51 @@ describe('saga failure', () => {
         ...initialState,
         groupAction: {
           status: false,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('leaderChange', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.leaderChange, leaderChangeRequest), throwError(simpleError)]])
+      .put({ type: 'group/leaderChangeFailure', payload: simpleError })
+      .dispatch({ type: 'group/leaderChange', payload: leaderChangeRequest })
+      .hasFinalState({
+        ...initialState,
+        groupAction: {
+          status: false,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('getCerts', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.getCerts, getCertsRequest), throwError(simpleError)]])
+      .put({ type: 'group/getCertsFailure', payload: simpleError })
+      .dispatch({ type: 'group/getCerts', payload: getCertsRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: null,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('createCert', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.createCert, createCertRequest), throwError(simpleError)]])
+      .put({ type: 'group/createCertFailure', payload: simpleError })
+      .dispatch({ type: 'group/createCert', payload: createCertRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: null,
           error: simpleError,
         },
       })

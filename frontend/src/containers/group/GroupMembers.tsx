@@ -15,17 +15,20 @@ const GroupMembers = () => {
 
   const { group_id } = useParams<{ group_id: string }>();
   const memberList = useSelector((rootState: RootState) => rootState.group.groupMembers.members);
+  const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
+  const user = useSelector(({ user }: RootState) => user.user);
 
   useEffect(() => {
     if (group_id) {
       dispatch(groupActions.getGroupMembers(group_id));
+      dispatch(groupActions.checkMemberStatus(group_id));
     }
     return () => {
       dispatch(groupActions.stateRefresh());
     };
   }, []);
 
-  if (memberList.length === 0) return <Loading />;
+  if (!memberList) return <Loading />;
   return (
     <Wrapper>
       <TitleWrapper>
@@ -35,7 +38,16 @@ const GroupMembers = () => {
       </TitleWrapper>
 
       {memberList.map((me, index) => (
-        <MemberElement key={index} id={me.id} image={me.image} username={me.username} cert_days={7} level={me.level} />
+        <MemberElement
+          key={index}
+          id={me.id}
+          image={me.image}
+          username={me.username}
+          cert_days={me.cert_days}
+          level={me.level}
+          leader={member_status === 'group_leader' ? true : false}
+          myself={user?.username === me.username ? true : false}
+        />
       ))}
     </Wrapper>
   );
