@@ -1,7 +1,4 @@
-import { workoutLogActions } from 'store/slices/workout';
-import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from 'index';
 
 export interface IProps {
   key: number;

@@ -243,6 +243,9 @@ export const workoutLogSlice = createSlice({
       state.fitelement_types = payload;
     },
     deleteFitElement: (state, { payload }) => {
+      // Empty function
+    },
+    deleteFitElementSuccess: (state, { payload }) => {
       state.fitelementDelete = payload.id;
       notificationSuccess('FitElement', '기록 삭제에 성공했어요!');
     }
@@ -263,7 +266,7 @@ function* getFitElementSaga(action: PayloadAction<workoutLogAPI.getFitElementReq
 function* deleteFitElementSaga(action: PayloadAction<workoutLogAPI.deleteFitElementRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.deleteFitElement, action.payload);
-    yield put(workoutLogActions.deleteFitElement(response));
+    yield put(workoutLogActions.deleteFitElementSuccess(response));
   } catch (error) {
     // Empty function
   }
