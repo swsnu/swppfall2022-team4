@@ -17,6 +17,8 @@ import {
 } from 'store/apis/workout';
 import client from 'store/apis/client';
 
+const CONTENT_IMAGE_LIMIT = 3;
+
 const WorkoutLog = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -45,7 +47,7 @@ const WorkoutLog = () => {
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
   const [memo, setMemo] = useState('');
-  const [image, setImage] = useState('default-upload-image.png');
+  const [image, setImage] = useState<string[] | null>(['default-upload-image.png']);
   const [isCopy, setIsCopy] = useState<boolean>(false);
   const [copy_date, setCopyDate] = useState<Date>(new Date());
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
@@ -176,7 +178,7 @@ const WorkoutLog = () => {
   };
 
   const fitelementDeleteOnClick = (id: number) => {
-    console.log("delete", id)
+    console.log('delete', id);
     dispatch(
       workoutLogActions.deleteFitElement({
         username: user.user?.username!,
@@ -200,7 +202,7 @@ const WorkoutLog = () => {
 
   useEffect(() => {
     setMemo(dailyLog.memo || '여기를 클릭 후 메모를 추가해 보세요.');
-    setImage(dailyLog.image || 'default-upload-image.png');
+    setImage(dailyLog.images || ['default-upload-image.png']);
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
 
@@ -364,16 +366,25 @@ const WorkoutLog = () => {
                   })}
               </Body>
               <CalendarFooter>
-                <ImageWrapper>
-                  <FileInput type="file" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
-                  <WorkoutImage
-                    src={process.env.REACT_APP_API_IMAGE + image}
-                    alt="workout_image"
-                    onClick={() => {
-                      document.getElementById('FileInput_DailyLog')?.click();
-                    }}
-                  />
-                </ImageWrapper>
+                <>
+                  {image!.map((v, index) => (
+                    <WorkoutImage key={index} src={process.env.REACT_APP_API_IMAGE + v} alt="workout_image" />
+                  ))}
+                </>
+                {image!.length + 1 > CONTENT_IMAGE_LIMIT ? (
+                  ''
+                ) : (
+                  <>
+                    <WorkoutImage
+                      src={process.env.REACT_APP_API_IMAGE + 'default-upload-image.png'}
+                      alt="workout_image"
+                      onClick={() => {
+                        document.getElementById('FileInput_DailyLog')?.click();
+                      }}
+                    />
+                    <FileInput type="file" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
+                  </>
+                )}
               </CalendarFooter>
             </Frame>
           </CalendarWrapper>
@@ -396,7 +407,11 @@ const WorkoutLog = () => {
                   <AnyButton className="memo-type" hidden={memo_write_mode} onClick={() => memoOnClick('edit_button')}>
                     수정
                   </AnyButton>
-                  <AnyButton className="memo-type" hidden={!memo_write_mode} onClick={() => memoOnClick('complete_button')}>
+                  <AnyButton
+                    className="memo-type"
+                    hidden={!memo_write_mode}
+                    onClick={() => memoOnClick('complete_button')}
+                  >
                     완료
                   </AnyButton>
                 </MemoButtonWrapper>
@@ -547,10 +562,9 @@ const Wrapper = styled.div`
 const WorkoutImage = styled.img`
   width: 120px;
   height: 120px;
-  border: 2px solid #727272;
+  border: 1px solid #727272;
   border-radius: 15px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin: 5px;
   cursor: pointer;
   transition: border 0.15s linear;
   &:hover {
@@ -1083,13 +1097,13 @@ const ImageWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: start;
 `;
 
 const CalendarFooter = styled.div`
-  width: 88%;
+  width: 90%;
   height: 30%;
   display: flex;
   justify-content: start;

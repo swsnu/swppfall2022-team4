@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
 from datetime import datetime
-from workouts.models import FitElement, Routine, DailyLog
+from workouts.models import FitElement, Routine, DailyLog, DailyLogImage
 from tags.models import TagClass, Tag
 from tags.views import prepare_tag_response
 from users.models import User
@@ -250,7 +250,7 @@ def daily_log(request, year, month, specific_date):
                 'date': datetime(year, month, specific_date).date(),
                 'calories': 0,
                 'fitelements': [],
-                'image': "",
+                'images': [],
             }
             return JsonResponse(daily_log_dict_return, safe=False, status=200)
 
@@ -260,7 +260,7 @@ def daily_log(request, year, month, specific_date):
             'date': daily_log_single[0].date,
             'calories': daily_log_single[0].calories,
             'fitelements': list(daily_log_single[0].fit_element.values_list('id', flat=True)),
-            'image': daily_log_single[0].image,
+            'images': list(DailyLogImage.objects.filter(daily_log=daily_log_single[0]).values_list('image', flat=True))
         }
 
         return JsonResponse(daily_log_dict_return, safe=False, status=200)
@@ -295,16 +295,16 @@ def daily_log(request, year, month, specific_date):
             if len(daily_log_single) == 0:
                 new_daily_log = DailyLog(
                     author=user,
-                    image=req_data["image"],
                     date=str(year) + '-' + str(month) +
                     '-' + str(specific_date),
                     calories=0,
                 )
                 new_daily_log.save()
+                DailyLogImage.objects.create(
+                    image=req_data["image"], daily_log=new_daily_log)
                 return HttpResponse(status=201)
-            image = req_data["image"]
-            daily_log_single[0].image = image
-            daily_log_single[0].save()
+            DailyLogImage.objects.create(
+                image=req_data["image"], daily_log=daily_log_single[0])
             return HttpResponse(status=201)
 
         if "memo" in req_data:

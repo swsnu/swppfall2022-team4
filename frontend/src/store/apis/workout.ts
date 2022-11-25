@@ -21,8 +21,8 @@ export type getDailyLogResponseType = {
   memo: string;
   fitelements: List<getFitElementResponseType>;
   fit_elements: Array<any>;
-  image: string;
   calories: number;
+  images: string[] | null;
 };
 
 export type getFitElementRequestType = {

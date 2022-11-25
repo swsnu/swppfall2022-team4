@@ -67,6 +67,7 @@ const getDailyLogResponse: workoutAPI.getDailyLogResponseType = {
   date: '2022-10-01',
   memo: 'memo',
   calories: 0,
+  images: [],
   fitelements: [
     {
       type: 'log',
@@ -94,7 +95,6 @@ const getDailyLogResponse: workoutAPI.getDailyLogResponseType = {
       date: null,
     },
   ],
-  image: '',
 };
 
 

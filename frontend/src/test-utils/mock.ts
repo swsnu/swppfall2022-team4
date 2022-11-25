@@ -153,7 +153,7 @@ export const initialState: PreloadedState<RootState> = {
       memo: null,
       fit_element: null,
       calories: 0,
-      image: null,
+      images: null,
     },
     daily_fit_elements: [
       {

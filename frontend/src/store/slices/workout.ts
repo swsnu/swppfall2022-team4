@@ -48,7 +48,7 @@ export interface WorkoutLogState {
     memo: string | null;
     fit_element: number[] | null;
     calories: number;
-    image: string | null;
+    images: string[] | null;
   };
   daily_fit_elements: Fitelement[];
   workoutCreate: {
@@ -98,7 +98,7 @@ export const initialState: WorkoutLogState = {
     memo: null,
     fit_element: null,
     calories: 0,
-    image: null,
+    images: [],
   },
   daily_fit_elements: [],
   workoutCreate: {
@@ -182,7 +182,7 @@ export const workoutLogSlice = createSlice({
       state.daily_log.fit_element = payload.fitelements;
       state.daily_log.date = payload.date;
       state.daily_log.calories = payload.calories;
-      state.daily_log.image = payload.image;
+      state.daily_log.images = payload.images;
     },
     getDailyFitElements: (state, { payload }) => {
       // Empty function
