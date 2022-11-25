@@ -503,7 +503,7 @@ const WorkoutLog = () => {
               </LogBody>
               <LogFooter>
                 <FooterItem>{dailyLog.fit_element?.length}종류</FooterItem>
-                <FooterItem>{dailyLog.calories} kcal/kg(todo 체중 곱해야)</FooterItem>
+                <FooterItem>{dailyLog.calories} kcal</FooterItem>
               </LogFooter>
             </Frame>
           </LogWrapper>
