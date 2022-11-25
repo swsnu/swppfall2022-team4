@@ -176,11 +176,13 @@ const WorkoutLog = () => {
   };
 
   const fitelementDeleteOnClick = (id: number) => {
-    dispatch(workoutLogActions.deleteFitElement({
-      username: user.user?.username!,
-      fitelement_id: id
-    }))
-  }
+    dispatch(
+      workoutLogActions.deleteFitElement({
+        username: user.user?.username!,
+        fitelement_id: id,
+      }),
+    );
+  };
 
   const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
@@ -492,9 +494,9 @@ const WorkoutLog = () => {
                   <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
                 ) : (
                   dailyFitElements.map((fitelement, index) => (
-                    <>
+                    <FitElementWrapper key={index}>
                       <FitElement
-                        key={index}
+                        key={fitelement.data.id}
                         id={index + 1}
                         type={fitelement.data.type}
                         workout_type={fitelement.data.workout_type}
@@ -504,12 +506,14 @@ const WorkoutLog = () => {
                         set={fitelement.data.set}
                         time={fitelement.data.time}
                       />
-                      <DeleteButton
-                        onClick={() => fitelementDeleteOnClick(fitelement.data.id)}
-                        data-testid="delete-fitelement"
-                        src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
-                      ></DeleteButton>
-                    </>
+                      <DeleteButton key={index}>
+                        <DeleteEmoji
+                          onClick={() => fitelementDeleteOnClick(fitelement.data.id)}
+                          data-testid="delete-fitelement"
+                          src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
+                        />
+                      </DeleteButton>
+                    </FitElementWrapper>
                   ))
                 )}
               </LogBody>
@@ -1091,8 +1095,24 @@ const CalendarFooter = styled.div`
   align-items: start;
 `;
 
-const DeleteButton = styled.img`
-  width: 20%;
+const FitElementWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid black;
+  align-items: center;
+`;
+
+const DeleteButton = styled.div`
+  width: 5%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const DeleteEmoji = styled.img`
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;

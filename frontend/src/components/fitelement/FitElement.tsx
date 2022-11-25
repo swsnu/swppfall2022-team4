@@ -43,13 +43,12 @@ export const FitElement = (props: IProps) => {
 };
 
 const FitElementLog = styled.div`
-  width: 100%;
+  width: 95%;
   height: 100%;
   min-height: 80px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  border-bottom: 1px solid black;
   font-weight: normal;
 `;
 
