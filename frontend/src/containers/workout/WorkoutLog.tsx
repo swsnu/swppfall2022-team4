@@ -165,7 +165,7 @@ const WorkoutLog = () => {
     if ((memo_write_mode === false && click_type !== 'complete_button') || click_type === 'edit_button') {
       setMemoWriteMode(true);
     } else if (click_type === 'cancel_button') {
-      setMemo(dailyLog!.memo || '수정 클릭 후 메모를 추가해 보세요.');
+      setMemo(dailyLog.memo || '');
       setMemoWriteMode(false);
     } else {
       const editMemoConfig: editMemoRequestType = {
@@ -205,7 +205,7 @@ const WorkoutLog = () => {
   }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus, imageSuccess, memoSuccess]);
 
   useEffect(() => {
-    setMemo(dailyLog.memo || '수정 클릭 후 메모를 추가해 보세요.');
+    setMemo(dailyLog.memo || '');
     setImage(dailyLog.images || ['default-upload-image.png']);
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
@@ -402,7 +402,17 @@ const WorkoutLog = () => {
                 ></MemoEditButton>
               </MemoTitleWrapper>
               <MemoContentWrapper>
-                {memo_write_mode ? <MemoInput value={memo} onChange={e => setMemo(e.target.value)} /> : memo}
+                {memo_write_mode ? (
+                  <MemoInput
+                    value={memo}
+                    placeholder="수정 버튼을 눌러 메모를 추가해 보세요."
+                    onChange={e => setMemo(e.target.value)}
+                  />
+                ) : memo === '' ? (
+                  '수정 버튼을 눌러 메모를 추가해 보세요.'
+                ) : (
+                  memo
+                )}
               </MemoContentWrapper>
 
               <MemoFooter>
