@@ -393,10 +393,10 @@ const WorkoutLog = () => {
               <MemoFooter>
                 <MemoButtonWrapper>
                   <AnyButton className="memo-type">취소</AnyButton>
-                  <AnyButton className="memo-type" onClick={() => memoOnClick('edit_button')}>
+                  <AnyButton className="memo-type" hidden={memo_write_mode} onClick={() => memoOnClick('edit_button')}>
                     수정
                   </AnyButton>
-                  <AnyButton className="memo-type" onClick={() => memoOnClick('complete_button')}>
+                  <AnyButton className="memo-type" hidden={!memo_write_mode} onClick={() => memoOnClick('complete_button')}>
                     완료
                   </AnyButton>
                 </MemoButtonWrapper>
