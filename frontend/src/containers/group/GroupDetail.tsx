@@ -280,14 +280,14 @@ const FitHeader = styled.div`
   font-size: 14px;
   padding: 15px;
   display: flex;
-`
+`;
 
 const GoalListWrapper = styled.div`
   margin-top: 10px;
   padding: 10px;
   border: 1px solid #d1d1d1;
   border-radius: 20px;
-`
+`;
 
 const GroupDetailDate = styled.div`
   font-size: 18px;

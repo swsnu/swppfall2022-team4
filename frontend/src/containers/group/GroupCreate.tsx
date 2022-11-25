@@ -363,6 +363,7 @@ const GroupCreate = () => {
 
         <CreateText>그룹 장소 설정</CreateText>
         <CreateCheck data-testid="placeCheck" type="checkbox" checked={place} onChange={() => setPlace(!place)} />
+        {place && <>
         <CreateInput type="text" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="장소 검색" />
         {clickedAddress && <div>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>}
         <Map // 로드뷰를 표시할 Container
@@ -406,6 +407,8 @@ const GroupCreate = () => {
           {currentLocation.errMsg && <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>}
           {currentLocation.center.lat && <div>{`현위치를 성공적으로 불렀습니다.`}</div>}
         </div>
+        </>
+        }
       </CreateWrapper>
 
       <Button1 content="Create" clicked={saveOnClick} />
