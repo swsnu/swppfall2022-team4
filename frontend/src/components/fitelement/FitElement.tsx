@@ -1,4 +1,7 @@
+import { workoutLogActions } from 'store/slices/workout';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { RootState } from 'index';
 
 export interface IProps {
   key: number;
@@ -22,6 +25,7 @@ export const FitElement = (props: IProps) => {
       return 'example';
     }
   };
+
   return (
     <FitElementLog>
       <LogCategory className="type3">{props.id}</LogCategory>
@@ -30,10 +34,10 @@ export const FitElement = (props: IProps) => {
       <LogCategory className="type2">{props.weight}</LogCategory>
       <LogCategory>{props.rep}</LogCategory>
       <LogCategory>{props.set}</LogCategory>
-      <LogCategory className="type2">{props.time}</LogCategory>
-      <DeleteButton data-testid="delete-fitelement" src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}>
-
-      </DeleteButton>
+      <LogCategory className="type2">
+        <Content>{props.time}</Content>
+        
+      </LogCategory>
     </FitElementLog>
   );
 };
@@ -78,10 +82,11 @@ const LogCategory = styled.div`
   }
 `;
 
-const DeleteButton = styled.img`
+const Content = styled.div`
+  width: 70%;
+  height: 100%;
   display: flex;
-  height: 75%;
-  margin-left: 3px;
   align-items: center;
   justify-content: center;
 `;
+

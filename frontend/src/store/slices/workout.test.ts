@@ -13,6 +13,7 @@ const getFitElementRequest: workoutAPI.getFitElementRequestType = {
 
 const getFitElementResponse: workoutAPI.getFitElementResponseType = {
   type: 'test',
+  id: 0,
   workout_type: 'test',
   period: 0,
   category: 'category',
@@ -69,6 +70,7 @@ const getDailyLogResponse: workoutAPI.getDailyLogResponseType = {
   fitelements: [
     {
       type: 'log',
+      id: 0,
       workout_type: 'type',
       period: 0,
       category: '',

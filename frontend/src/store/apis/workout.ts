@@ -4,6 +4,7 @@ import client from './client';
 
 export type getFitElementResponseType = {
   type: string;
+  id: number;
   workout_type: string;
   period: number;
   category: string;
@@ -154,6 +155,7 @@ export type getSpecificRoutineFitElementsRequestType = {
 
 export type deleteFitElementRequestType = {
   fitelement_id: number;
+  username: string;
 }
 
 export const getFitElement = async (payload: getFitElementRequestType) => {
@@ -162,7 +164,7 @@ export const getFitElement = async (payload: getFitElementRequestType) => {
 };
 
 export const deleteFitElement = async (payload: deleteFitElementRequestType) => {
-  const response = await client.delete(`/api/fitelement/${payload.fitelement_id}/`);
+  const response = await client.delete(`/api/fitelement/${payload.fitelement_id}/?&username=${payload.username}`);
   return response.data;
 };
 

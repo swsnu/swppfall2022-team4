@@ -175,17 +175,25 @@ const WorkoutLog = () => {
     }
   };
 
+  const fitelementDeleteOnClick = (id: number) => {
+    dispatch(workoutLogActions.deleteFitElement({
+      username: user.user?.username!,
+      fitelement_id: id
+    }))
+  }
+
   const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
   const calendarInfo = useSelector((rootState: RootState) => rootState.workout_log.calendar_info);
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
+  const deleteFitElementStatus = useSelector((rootState: RootState) => rootState.workout_log.fitelementDelete);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [createDailyLogStatus, pasteStatus]);
+  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus]);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '여기를 클릭 후 메모를 추가해 보세요.');
@@ -360,7 +368,6 @@ const WorkoutLog = () => {
                     alt="workout_image"
                     onClick={() => {
                       document.getElementById('FileInput_DailyLog')?.click();
-                      
                     }}
                   />
                 </ImageWrapper>
@@ -485,17 +492,24 @@ const WorkoutLog = () => {
                   <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
                 ) : (
                   dailyFitElements.map((fitelement, index) => (
-                    <FitElement
-                      key={index}
-                      id={index + 1}
-                      type={fitelement.data.type}
-                      workout_type={fitelement.data.workout_type}
-                      category={fitelement.data.category}
-                      weight={fitelement.data.weight}
-                      rep={fitelement.data.rep}
-                      set={fitelement.data.set}
-                      time={fitelement.data.time}
-                    />
+                    <>
+                      <FitElement
+                        key={index}
+                        id={index + 1}
+                        type={fitelement.data.type}
+                        workout_type={fitelement.data.workout_type}
+                        category={fitelement.data.category}
+                        weight={fitelement.data.weight}
+                        rep={fitelement.data.rep}
+                        set={fitelement.data.set}
+                        time={fitelement.data.time}
+                      />
+                      <DeleteButton
+                        onClick={() => fitelementDeleteOnClick(fitelement.data.id)}
+                        data-testid="delete-fitelement"
+                        src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
+                      ></DeleteButton>
+                    </>
                   ))
                 )}
               </LogBody>
@@ -1075,4 +1089,12 @@ const CalendarFooter = styled.div`
   display: flex;
   justify-content: start;
   align-items: start;
+`;
+
+const DeleteButton = styled.img`
+  width: 20%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

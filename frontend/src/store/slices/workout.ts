@@ -8,7 +8,7 @@ import { notificationSuccess } from 'utils/sendNotification';
 
 export type Fitelement = {
   data: {
-    id: number | null;
+    id: number;
     type: string | null;
     workout_type: string | null;
     period: number | null;
@@ -30,6 +30,7 @@ export type RoutineType = {
 export interface WorkoutLogState {
   error: AxiosError | null;
   workout_log: {
+    id: number;
     type: string | null;
     workout_type: string | null;
     period: number | null;
@@ -73,13 +74,14 @@ export interface WorkoutLogState {
     category: string;
   };
   fitelement_types: TagClass[];
-  fitelementDelete: Boolean;
+  fitelementDelete: number;
 }
 
 export const initialState: WorkoutLogState = {
   error: null,
   workout_log: {
     type: 'test',
+    id: 0,
     workout_type: 'test',
     period: 0,
     category: 'category',
@@ -122,7 +124,7 @@ export const initialState: WorkoutLogState = {
     calories: 0,
   },
   fitelement_types: [],
-  fitelementDelete: false
+  fitelementDelete: 0
 };
 
 export const workoutLogSlice = createSlice({
@@ -241,7 +243,7 @@ export const workoutLogSlice = createSlice({
       state.fitelement_types = payload;
     },
     deleteFitElement: (state, { payload }) => {
-      state.fitelementDelete = true;
+      state.fitelementDelete = payload.id;
       notificationSuccess('FitElement', '기록 삭제에 성공했어요!');
     }
   },
