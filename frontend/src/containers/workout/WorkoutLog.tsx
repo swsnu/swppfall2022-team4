@@ -175,17 +175,6 @@ const WorkoutLog = () => {
     }
   };
 
-  const imageOnClick = () => {
-    const editImageConfig: editImageRequestType = {
-      username: user.user?.username!,
-      image: image,
-      year: year,
-      month: month + 1,
-      specific_date: day,
-    };
-    dispatch(workoutLogActions.editImage(editImageConfig));
-  };
-
   const dailyLog = useSelector((rootState: RootState) => rootState.workout_log.daily_log);
   const dailyFitElements = useSelector((rootState: RootState) => rootState.workout_log.daily_fit_elements);
   const calendarInfo = useSelector((rootState: RootState) => rootState.workout_log.calendar_info);
@@ -237,7 +226,14 @@ const WorkoutLog = () => {
     formData.append('image', file);
     try {
       const result = await client.post(process.env.REACT_APP_API_IMAGE_UPLOAD || '', formData);
-      setImage(result.data.title);
+      const editImageConfig: editImageRequestType = {
+        username: user.user?.username!,
+        image: result.data.title,
+        year: year,
+        month: month + 1,
+        specific_date: day,
+      };
+      dispatch(workoutLogActions.editImage(editImageConfig));
     } catch (error) {
       alert('이미지 업로드 오류');
     }
@@ -364,11 +360,9 @@ const WorkoutLog = () => {
                     alt="workout_image"
                     onClick={() => {
                       document.getElementById('FileInput_DailyLog')?.click();
+                      
                     }}
                   />
-                  <AnyButton className="image-type" onClick={() => imageOnClick()}>
-                    업로드
-                  </AnyButton>
                 </ImageWrapper>
               </CalendarFooter>
             </Frame>
@@ -532,11 +526,12 @@ const Wrapper = styled.div`
 `;
 
 const WorkoutImage = styled.img`
-  width: 110px;
-  height: 110px;
+  width: 120px;
+  height: 120px;
   border: 2px solid #727272;
   border-radius: 15px;
   margin-top: 20px;
+  margin-bottom: 20px;
   cursor: pointer;
   transition: border 0.15s linear;
   &:hover {
@@ -1075,7 +1070,7 @@ const ImageWrapper = styled.div`
 `;
 
 const CalendarFooter = styled.div`
-  width: 95%;
+  width: 88%;
   height: 30%;
   display: flex;
   justify-content: start;

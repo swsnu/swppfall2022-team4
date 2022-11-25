@@ -4,6 +4,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { TagClass } from 'store/apis/tag';
 import * as workoutLogAPI from 'store/apis/workout';
+import { notificationSuccess } from 'utils/sendNotification';
 
 export type Fitelement = {
   data: {
@@ -72,6 +73,7 @@ export interface WorkoutLogState {
     category: string;
   };
   fitelement_types: TagClass[];
+  fitelementDelete: Boolean;
 }
 
 export const initialState: WorkoutLogState = {
@@ -120,6 +122,7 @@ export const initialState: WorkoutLogState = {
     calories: 0,
   },
   fitelement_types: [],
+  fitelementDelete: false
 };
 
 export const workoutLogSlice = createSlice({
@@ -237,6 +240,10 @@ export const workoutLogSlice = createSlice({
     getFitElementTypesSuccess: (state, { payload }) => {
       state.fitelement_types = payload;
     },
+    deleteFitElement: (state, { payload }) => {
+      state.fitelementDelete = true;
+      notificationSuccess('FitElement', '기록 삭제에 성공했어요!');
+    }
   },
 });
 
@@ -251,10 +258,18 @@ function* getFitElementSaga(action: PayloadAction<workoutLogAPI.getFitElementReq
   }
 }
 
+function* deleteFitElementSaga(action: PayloadAction<workoutLogAPI.deleteFitElementRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.deleteFitElement, action.payload);
+    yield put(workoutLogActions.deleteFitElement(response));
+  } catch (error) {
+    // Empty function
+  }
+}
+
 function* getFitElementsSaga(action: PayloadAction<workoutLogAPI.getFitElementsRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getFitElements, action.payload);
-
     yield put(workoutLogActions.getFitElementsSuccess(response));
   } catch (error) {
     yield put(workoutLogActions.getFitElementsFailure(error));
@@ -389,4 +404,5 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getFitElements, getFitElementsSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutineFitElements, getSpecificRoutineFitElementsSaga);
   yield takeLatest(workoutLogActions.getFitElementsType, getFitElementTypesSaga);
+  yield takeLatest(workoutLogActions.deleteFitElement, deleteFitElementSaga);
 }

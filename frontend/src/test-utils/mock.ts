@@ -107,6 +107,7 @@ export const initialState: PreloadedState<RootState> = {
   },
   workout_log: {
     error: null,
+    fitelementDelete: false,
     workout_log: {
       type: 'log',
       workout_type: '데드리프트',

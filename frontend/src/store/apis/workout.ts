@@ -1,4 +1,5 @@
 import { List } from 'reselect/es/types';
+import { NumericLiteral } from 'typescript';
 import client from './client';
 
 export type getFitElementResponseType = {
@@ -151,8 +152,17 @@ export type getSpecificRoutineFitElementsRequestType = {
   fitelements: number[];
 };
 
+export type deleteFitElementRequestType = {
+  fitelement_id: number;
+}
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
   const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
+  return response.data;
+};
+
+export const deleteFitElement = async (payload: deleteFitElementRequestType) => {
+  const response = await client.delete(`/api/fitelement/${payload.fitelement_id}/`);
   return response.data;
 };
 

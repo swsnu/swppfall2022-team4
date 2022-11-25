@@ -91,6 +91,12 @@ def fit_element(request, fitelement_id):
             return JsonResponse(return_json, safe=False, status=201)
         else:
             return HttpResponseBadRequest(status=404)
+    elif request.method == 'DELETE':
+        if FitElement.objects.filter(id=fitelement_id).exists():
+            workout = FitElement.objects.delete(id=fitelement_id)
+            return JsonResponse({"message": "success"}, status=200)
+        else:
+            return HttpResponseBadRequest(status=404)
 
 
 @require_http_methods(["GET"])

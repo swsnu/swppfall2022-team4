@@ -31,6 +31,9 @@ export const FitElement = (props: IProps) => {
       <LogCategory>{props.rep}</LogCategory>
       <LogCategory>{props.set}</LogCategory>
       <LogCategory className="type2">{props.time}</LogCategory>
+      <DeleteButton data-testid="delete-fitelement" src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}>
+
+      </DeleteButton>
     </FitElementLog>
   );
 };
@@ -73,4 +76,12 @@ const LogCategory = styled.div`
   &&.type3 {
     width: 7%;
   }
+`;
+
+const DeleteButton = styled.img`
+  display: flex;
+  height: 75%;
+  margin-left: 3px;
+  align-items: center;
+  justify-content: center;
 `;
