@@ -233,6 +233,26 @@ describe('slices - workout', () => {
         })
         .run();
     });
+    test('getDailyLog_false', () => {
+      return expectSaga(workoutLogSaga)
+        .withReducer(workoutLogSlice.reducer)
+        .provide([[call(workoutAPI.getDailyLog, getDailyLogRequest), { ...getDailyLogResponse, author: -1 }]])
+        .put({ type: 'workoutlog/getDailyLogSuccess', payload: { ...getDailyLogResponse, author: -1 } })
+        .put({ type: 'workoutlog/getFitElements', payload: { ...getDailyLogResponse, author: -1 } })
+        .dispatch({ type: 'workoutlog/getDailyLog', payload: getDailyLogRequest })
+        .hasFinalState({
+          ...initialState,
+          daily_log: {
+            isDailyLog: false,
+            date: '2022-10-01',
+            memo: 'memo',
+            fit_element: [],
+            calories: 0,
+            images: [],
+          },
+        })
+        .run();
+    });
     test('getFitElements', () => {
       return expectSaga(workoutLogSaga)
         .withReducer(workoutLogSlice.reducer)
@@ -247,10 +267,33 @@ describe('slices - workout', () => {
     test('getCalendarInfo', () => {
       return expectSaga(workoutLogSaga)
         .withReducer(workoutLogSlice.reducer)
-        .provide([[call(workoutAPI.getCalendarInfo, getCalendarInfoRequest), {fitelements: []}]])
-        .put({ type: 'workoutlog/getCalendarInfoSuccess', payload: {fitelements: []}})
-        .dispatch({ type: 'workoutlog/getCanlendarInfo', payload: getCalendarInfoRequest })
-        .hasFinalState(initialState)
+        .provide([
+          [
+            call(workoutAPI.getCalendarInfo, getCalendarInfoRequest),
+            { fitelements: [{ year: 2022, month: 10, date: 1, workouts: [], calories: 0 }] },
+          ],
+        ])
+        .put({
+          type: 'workoutlog/getCalendarInfoSuccess',
+          payload: {
+            fitelements: [
+              {
+                year: 2022,
+                month: 10,
+                date: 1,
+                workouts: [],
+                calories: 0,
+              },
+            ],
+          },
+        })
+        .dispatch({ type: 'workoutlog/getCalendarInfo', payload: getCalendarInfoRequest })
+        .hasFinalState({
+          ...initialState,
+          calendar_info: {
+            fitelements: [{ year: 2022, month: 10, date: 1, workouts: [], calories: 0 }],
+          },
+        })
         .silentRun();
     });
     test('getRoutine', () => {
