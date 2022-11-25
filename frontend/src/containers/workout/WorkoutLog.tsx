@@ -193,12 +193,13 @@ const WorkoutLog = () => {
   const createDailyLogStatus = useSelector((rootState: RootState) => rootState.workout_log.workoutCreate);
   const deleteFitElementStatus = useSelector((rootState: RootState) => rootState.workout_log.fitelementDelete);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
+  const imageSuccess = useSelector((rootState: RootState) => rootState.workout_log.imageSuccess);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus]);
+  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus, imageSuccess]);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '여기를 클릭 후 메모를 추가해 보세요.');

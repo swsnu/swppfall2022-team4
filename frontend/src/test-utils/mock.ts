@@ -209,6 +209,7 @@ export const initialState: PreloadedState<RootState> = {
       category: '',
     },
     fitelement_types: [],
+    imageSuccess: ""
   },
 };
 

@@ -75,6 +75,7 @@ export interface WorkoutLogState {
   };
   fitelement_types: TagClass[];
   fitelementDelete: number;
+  imageSuccess: string;
 }
 
 export const initialState: WorkoutLogState = {
@@ -124,7 +125,8 @@ export const initialState: WorkoutLogState = {
     calories: 0,
   },
   fitelement_types: [],
-  fitelementDelete: 0
+  fitelementDelete: 0,
+  imageSuccess: ""
 };
 
 export const workoutLogSlice = createSlice({
@@ -192,6 +194,9 @@ export const workoutLogSlice = createSlice({
     },
     editImage: (state, action: PayloadAction<workoutLogAPI.editImageRequestType>) => {
       // Empty function
+    },
+    editImageSuccess: (state, { payload }) => {
+      state.imageSuccess = payload.image;
     },
     getCalendarInfo: (state, action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) => {
       // Empty function
@@ -320,6 +325,7 @@ function* editMemoLogSaga(action: PayloadAction<workoutLogAPI.editMemoRequestTyp
 function* editImageSaga(action: PayloadAction<workoutLogAPI.editImageRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.editImage, action.payload);
+    yield put(workoutLogActions.editImageSuccess(response));
   } catch (error) {
     // Empty function
   }

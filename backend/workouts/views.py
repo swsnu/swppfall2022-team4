@@ -302,10 +302,10 @@ def daily_log(request, year, month, specific_date):
                 new_daily_log.save()
                 DailyLogImage.objects.create(
                     image=req_data["image"], daily_log=new_daily_log)
-                return HttpResponse(status=201)
+                return JsonResponse({"image": req_data["image"]}, status=201)
             DailyLogImage.objects.create(
                 image=req_data["image"], daily_log=daily_log_single[0])
-            return HttpResponse(status=201)
+            return JsonResponse({"image": req_data["image"]}, status=201)
 
         if "memo" in req_data:
             if len(daily_log_single) == 0:
