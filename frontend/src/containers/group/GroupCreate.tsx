@@ -274,12 +274,13 @@ const GroupCreate = () => {
         </div>
 
         <CreateText>목표</CreateText>
-        <div style={{ display: 'flex', width: '80%' }}>
-          <div style={{ paddingLeft: '2%' }}>Workout Type</div>
-          <div style={{ paddingLeft: '17%' }}>Weight</div>
-          <div style={{ paddingLeft: '11%' }}>Rep</div>
-          <div style={{ paddingLeft: '12%' }}>Set</div>
-          <div style={{ paddingLeft: '13%' }}>Time</div>
+        <div style={{ display: 'flex', width: '63%', fontSize: '14px' }}>
+          <div style={{ paddingLeft: '0%' }}>WorkoutCategory</div>
+          <div style={{ paddingLeft: '7%' }}>WorkoutType</div>
+          <div style={{ paddingLeft: '8%' }}>Weight</div>
+          <div style={{ paddingLeft: '8%' }}>Rep</div>
+          <div style={{ paddingLeft: '9%' }}>Set</div>
+          <div style={{ paddingLeft: '10%' }}>Time</div>
         </div>
         <LogInputBody>
           <WorkoutTypeSelect defaultValue="선택" className="type2" onChange={e => setWorkoutCategory(e.target.value)}>
@@ -328,7 +329,7 @@ const GroupCreate = () => {
           <Button1 content="추가" clicked={createGoal} />
         </LogInputBody>
         {goal_list.map((go_obj, index) => (
-          <div key={index} style={{ display: 'flex', width: '80%', height: '10%' }}>
+          <div key={index} style={{ display: 'flex', width: '70%', height: '10%' }}>
             <FitElement
               key={index}
               id={index + 1}
@@ -343,7 +344,7 @@ const GroupCreate = () => {
             <div
               data-testid="removeGoal"
               onClick={() => removeGoal(goal_list.indexOf(go_obj))}
-              style={{ paddingTop: '33px', fontSize: '18px', cursor: 'pointer', color: 'gray' }}
+              style={{ paddingLeft: '40px', paddingRight: '40px', paddingTop: '33px', fontSize: '18px', cursor: 'pointer', color: 'gray' }}
             >
               X
             </div>
@@ -520,12 +521,13 @@ const WorkoutTypeInput = styled.input`
     width: 10%;
   }
   &&.type2 {
-    width: 20%;
+    width: 10%;
   }
 `;
 
 const LogInputBody = styled.div`
-  width: 80%;
+  padding-left: 30px;
+  width: 70%;
   height: 10%;
   max-height: 90px;
   display: flex;
