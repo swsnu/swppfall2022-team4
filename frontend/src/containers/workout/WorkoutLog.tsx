@@ -349,13 +349,28 @@ const WorkoutLog = () => {
                         <DayContent visibility_boolean={visibility_value} className={day_type}>
                           {d > 0 ? (d <= days[month] ? d : '') : ''}
                         </DayContent>
-                        <DayToolTip className={calendarInfo[d - 1]?.workouts.length === 0 ? "nothing" : "exist"}>
+                        <DayToolTip className={calendarInfo[d - 1]?.workouts.length === 0 ? 'nothing' : 'exist'}>
                           <Hover key={0} workouts={calendarInfo[d - 1]?.workouts} types={fitElementTypes} />
                         </DayToolTip>
                       </Day>
                     );
                   })}
               </Body>
+              <CalendarFooter>
+                <ImageWrapper>
+                  <FileInput type="file" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
+                  <WorkoutImage
+                    src={process.env.REACT_APP_API_IMAGE + image}
+                    alt="workout_image"
+                    onClick={() => {
+                      document.getElementById('FileInput_DailyLog')?.click();
+                    }}
+                  />
+                  <AnyButton className="image-type" onClick={() => imageOnClick()}>
+                    업로드
+                  </AnyButton>
+                </ImageWrapper>
+              </CalendarFooter>
             </Frame>
           </CalendarWrapper>
           <MemoWrapper>
@@ -372,19 +387,6 @@ const WorkoutLog = () => {
               </MemoContentWrapper>
 
               <MemoFooter>
-                <ImageWrapper>
-                  <FileInput type="file" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
-                  <WorkoutImage
-                    src={process.env.REACT_APP_API_IMAGE + image}
-                    alt="workout_image"
-                    onClick={() => {
-                      document.getElementById('FileInput_DailyLog')?.click();
-                    }}
-                  />
-                  <AnyButton className="image-type" onClick={() => imageOnClick()}>
-                    업로드
-                  </AnyButton>
-                </ImageWrapper>
                 <MemoButtonWrapper>
                   <AnyButton className="memo-type">취소</AnyButton>
                   <AnyButton className="memo-type" onClick={() => memoOnClick('edit_button')}>
@@ -530,8 +532,8 @@ const Wrapper = styled.div`
 `;
 
 const WorkoutImage = styled.img`
-  width: 90px;
-  height: 90px;
+  width: 110px;
+  height: 110px;
   border: 2px solid #727272;
   border-radius: 15px;
   margin-top: 20px;
@@ -625,6 +627,7 @@ const Month = styled.div`
 const CalendarHeader = styled.div`
   font-size: 18px;
   width: 50%;
+  height: 20%;
   padding: 20px 10px 0px 10px;
   font-family: IBMPlexSansThaiLooped;
   border-radius: 10px;
@@ -641,6 +644,7 @@ const Button = styled.div`
 
 const Body = styled.div`
   width: 95%;
+  height: 50%;
   display: flex;
   flex-wrap: wrap;
   margin: 5px;
@@ -823,7 +827,7 @@ const DateWrapper = styled.div`
 const MemoContentWrapper = styled.div`
   display: flex;
   margin: 10px;
-  height: 40%;
+  height: 70%;
   align-items: center;
   font-family: IBMPlexSansThaiLooped;
   font-size: 14px;
@@ -833,7 +837,7 @@ const MemoContentWrapper = styled.div`
 
 const MemoButtonWrapper = styled.div`
   display: flex;
-  width: 50%;
+  width: 100%;
   height: 100%;
   align-items: end;
   justify-content: end;
@@ -888,9 +892,9 @@ const AnyButton = styled.button`
   }
 
   &&.image-type {
-    background-color: #3bb978;
-    width: 60px;
+    width: 110px;
     height: 20px;
+    margin-left: 0px;
   }
 `;
 
@@ -1055,16 +1059,25 @@ const FooterItem = styled.div`
 
 const MemoFooter = styled.div`
   display: flex;
-  height: 50%;
+  height: 20%;
   width: 100%;
   padding: 10px 10px;
   flex-direction: row;
 `;
 
 const ImageWrapper = styled.div`
-  width: 50%;
+  width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: end;
+  align-items: start;
+`;
+
+const CalendarFooter = styled.div`
+  width: 95%;
+  height: 30%;
+  display: flex;
+  justify-content: start;
+  align-items: start;
 `;
