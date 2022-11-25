@@ -64,7 +64,6 @@ const LogCategory = styled.div`
   align-items: center;
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
-  cursor: pointer;
   color: black;
 
   &&.type {

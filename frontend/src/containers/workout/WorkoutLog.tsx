@@ -697,7 +697,6 @@ const Day = styled.div`
   align-items: center;
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
-  cursor: pointer;
   color: black;
 
   && {
@@ -714,6 +713,7 @@ const Day = styled.div`
 
   &&.future_day {
     font-weight: bold;
+    cursor: pointer;
   }
 `;
 
@@ -998,7 +998,6 @@ const LogCategory = styled.div`
   align-items: center;
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
-  cursor: pointer;
   color: black;
   margin-left: 5px;
   margin-right: 5px;
