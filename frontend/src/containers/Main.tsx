@@ -4,6 +4,7 @@ import { WorkoutChart } from 'components/main/WorkoutChart';
 import { workoutLogActions } from 'store/slices/workout';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'index';
+import { userActions } from 'store/slices/user';
 
 export type chartData = {
   date: string;
@@ -18,17 +19,18 @@ const Main = () => {
   const date = today;
   const month = date.getMonth();
   const year = date.getFullYear();
-  const user = useSelector(({ user }: RootState) => user.user);
+  const user = useSelector(({ user }: RootState) => user);
 
   useEffect(() => {
     dispatch(
       workoutLogActions.getCalendarInfo({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        username: user?.username!,
+        username: user.user?.username!,
         year: year,
         month: month + 1,
       }),
     );
+    dispatch(userActions.getProfile(user.user?.username || ''));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
@@ -44,7 +46,7 @@ const Main = () => {
     const dateStringFormat = sMonth + '-' + sDate;
     calories_map.push({
       date: dateStringFormat,
-      calories: child.calories,
+      calories: child.calories * (user.profile?.weight || 1),
     });
   }
 

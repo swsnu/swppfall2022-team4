@@ -6,6 +6,7 @@ import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
 import { Hover } from 'components/fitelement/Hover';
 import { workoutLogActions } from 'store/slices/workout';
+import { userActions } from 'store/slices/user';
 import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
@@ -48,7 +49,7 @@ const WorkoutLog = () => {
   const [isCopy, setIsCopy] = useState<boolean>(false);
   const [copy_date, setCopyDate] = useState<Date>(new Date());
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
-  const user = useSelector(({ user }: RootState) => user.user);
+  const user = useSelector(({ user }: RootState) => user);
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -65,9 +66,9 @@ const WorkoutLog = () => {
     year: year,
     month: month + 1,
     specific_date: day,
-    username: user?.username!,
+    username: user.user?.username!,
     data: {
-      username: user?.username!,
+      username: user.user?.username!,
     },
   };
 
@@ -80,9 +81,9 @@ const WorkoutLog = () => {
       year: year,
       month: month + 1,
       specific_date: d,
-      username: user?.username!,
+      username: user.user?.username!,
       data: {
-        username: user?.username!,
+        username: user.user?.username!,
       },
     };
     dispatch(workoutLogActions.getDailyLog(dailyLogConfig));
@@ -98,7 +99,7 @@ const WorkoutLog = () => {
       alert('운동종류를 입력해주세요.');
     } else {
       const newLogConfig: createWorkoutLogRequestType = {
-        username: user?.username!,
+        username: user.user?.username!,
         type: 'log',
         workout_type: workout_type,
         period: workout_period,
@@ -136,7 +137,7 @@ const WorkoutLog = () => {
         return Number(v.data.id);
       });
       const createRoutineConfig: createRoutineWithFitElementsRequestType = {
-        username: user?.username!,
+        username: user.user?.username!,
         fitelements: fitelements_id_list,
       };
       dispatch(workoutLogActions.createRoutineWithFitElements(createRoutineConfig));
@@ -149,7 +150,7 @@ const WorkoutLog = () => {
     setIsCopy(false);
 
     const addFitElementConfig: addFitElementsRequestType = {
-      username: user?.username!,
+      username: user.user?.username!,
       fitelements: copied_fitelements,
       year: year,
       month: month + 1,
@@ -163,7 +164,7 @@ const WorkoutLog = () => {
       setMemoWriteMode(true);
     } else {
       const editMemoConfig: editMemoRequestType = {
-        username: user?.username!,
+        username: user.user?.username!,
         memo: memo,
         year: year,
         month: month + 1,
@@ -176,7 +177,7 @@ const WorkoutLog = () => {
 
   const imageOnClick = () => {
     const editImageConfig: editImageRequestType = {
-      username: user?.username!,
+      username: user.user?.username!,
       image: image,
       year: year,
       month: month + 1,
@@ -206,7 +207,7 @@ const WorkoutLog = () => {
   useEffect(() => {
     dispatch(
       workoutLogActions.getCalendarInfo({
-        username: user?.username!,
+        username: user.user?.username!,
         year: year,
         month: month + 1,
       }),
@@ -220,6 +221,7 @@ const WorkoutLog = () => {
     setYear(date.getFullYear());
     setStartDay(getStartDayOfMonth(date));
     dispatch(workoutLogActions.getFitElementsType());
+    dispatch(userActions.getProfile(user.user?.username || ''));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [date, calendarInfo]);
 
@@ -265,7 +267,7 @@ const WorkoutLog = () => {
                   onClick={() => {
                     dispatch(
                       workoutLogActions.getCalendarInfo({
-                        username: user?.username!,
+                        username: user.user?.username!,
                         year: month === 0 ? year - 1 : year,
                         month: month === 0 ? 12 : month,
                       }),
@@ -284,7 +286,7 @@ const WorkoutLog = () => {
                   onClick={() => {
                     dispatch(
                       workoutLogActions.getCalendarInfo({
-                        username: user?.username!,
+                        username: user.user?.username!,
                         year: month === 11 ? year + 1 : year,
                         month: ((month + 1) % 12) + 1,
                       }),
@@ -503,7 +505,7 @@ const WorkoutLog = () => {
               </LogBody>
               <LogFooter>
                 <FooterItem>{dailyLog.fit_element?.length}종류</FooterItem>
-                <FooterItem>{dailyLog.calories} kcal</FooterItem>
+                <FooterItem>{dailyLog.calories * (user.profile?.weight || 1)} kcal</FooterItem>
               </LogFooter>
             </Frame>
           </LogWrapper>
