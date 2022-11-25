@@ -4,3 +4,4 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 import 'react-chartjs-2';
+import 'jest-canvas-mock';

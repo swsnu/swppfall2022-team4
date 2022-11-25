@@ -178,7 +178,6 @@ export const workoutLogSlice = createSlice({
       state.dailyLogCreate.status = true;
     },
     getDailyLogSuccess: (state, { payload }) => {
-      console.log(payload);
       state.daily_log.isDailyLog = payload.author === -1 ? false : true;
       state.daily_log.memo = payload.memo;
       state.daily_log.fit_element = payload.fitelements;
@@ -361,9 +360,7 @@ function* getSpecificRoutineSaga(action: PayloadAction<workoutLogAPI.getSpecific
 
 function* addFitElementsSaga(action: PayloadAction<workoutLogAPI.addFitElementsRequestType>) {
   try {
-    console.log('add1', action.payload);
     const response: AxiosResponse = yield call(workoutLogAPI.addFitElements, action.payload);
-    console.log('add2', response);
     yield put(workoutLogActions.addFitElementsSuccess(response));
   } catch (error) {
     // Empty function

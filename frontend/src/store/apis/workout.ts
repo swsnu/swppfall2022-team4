@@ -1,6 +1,6 @@
 import { List } from 'reselect/es/types';
-import { NumericLiteral } from 'typescript';
 import client from './client';
+import { TagClass } from 'store/apis/tag';
 
 export type getFitElementResponseType = {
   type: string;
@@ -156,7 +156,7 @@ export type getSpecificRoutineFitElementsRequestType = {
 export type deleteFitElementRequestType = {
   fitelement_id: number;
   username: string;
-}
+};
 
 export const getFitElement = async (payload: getFitElementRequestType) => {
   const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
@@ -211,7 +211,7 @@ export const createDailyLog = async (payload: createDailyLogRequestType) => {
 };
 
 export const editMemo = async (payload: editMemoRequestType) => {
-  const response = await client.put<editMemoRequestType>(
+  const response = await client.put(
     `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
     payload,
   );
@@ -268,6 +268,6 @@ export const getSpecificRoutineFitElements = async (payload: getSpecificRoutineF
 };
 
 export const getFitelementTypes = async () => {
-  const response = await client.get(`/api/fitelement/type/`);
+  const response = await client.get<TagClass[]>(`/api/fitelement/type/`);
   return response.data;
 };

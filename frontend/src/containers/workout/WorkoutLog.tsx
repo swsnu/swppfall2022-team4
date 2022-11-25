@@ -178,7 +178,6 @@ const WorkoutLog = () => {
   };
 
   const fitelementDeleteOnClick = (id: number) => {
-    console.log('delete', id);
     dispatch(
       workoutLogActions.deleteFitElement({
         username: user.user?.username!,
@@ -523,7 +522,7 @@ const WorkoutLog = () => {
                         set={fitelement.data.set}
                         time={fitelement.data.time}
                       />
-                      <DeleteButton key={index}>
+                      <DeleteButton>
                         <DeleteEmoji
                           data-testid="delete-fitelement"
                           src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
