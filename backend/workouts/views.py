@@ -337,11 +337,11 @@ def daily_log(request, year, month, specific_date):
                     calories=0,
                 )
                 new_daily_log.save()
-                return HttpResponse(status=201)
+                return JsonResponse({"memo": req_data["memo"]}, status=201)
             memo = req_data["memo"]
             daily_log_single[0].memo = memo
             daily_log_single[0].save()
-            return HttpResponse(status=201)
+            return JsonResponse({"memo": req_data["memo"]}, status=201)
         fitelements = req_data["fitelements"]
         if len(daily_log_single) == 0:
             new_daily_log = DailyLog(

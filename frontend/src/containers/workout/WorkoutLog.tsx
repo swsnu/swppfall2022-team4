@@ -164,6 +164,9 @@ const WorkoutLog = () => {
   const memoOnClick = (click_type: string) => {
     if ((memo_write_mode === false && click_type !== 'complete_button') || click_type === 'edit_button') {
       setMemoWriteMode(true);
+    } else if (click_type === 'cancel_button') {
+      setMemo(dailyLog!.memo || '수정 클릭 후 메모를 추가해 보세요.');
+      setMemoWriteMode(false);
     } else {
       const editMemoConfig: editMemoRequestType = {
         username: user.user?.username!,
@@ -193,15 +196,16 @@ const WorkoutLog = () => {
   const deleteFitElementStatus = useSelector((rootState: RootState) => rootState.workout_log.fitelementDelete);
   const pasteStatus = useSelector((rootState: RootState) => rootState.workout_log.add_fit_elements);
   const imageSuccess = useSelector((rootState: RootState) => rootState.workout_log.imageSuccess);
+  const memoSuccess = useSelector((rootState: RootState) => rootState.workout_log.memoSuccess);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus, imageSuccess]);
+  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus, imageSuccess, memoSuccess]);
 
   useEffect(() => {
-    setMemo(dailyLog.memo || '여기를 클릭 후 메모를 추가해 보세요.');
+    setMemo(dailyLog.memo || '수정 클릭 후 메모를 추가해 보세요.');
     setImage(dailyLog.images || ['default-upload-image.png']);
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
@@ -397,13 +401,19 @@ const WorkoutLog = () => {
                   src={require('assets/images/workout_log/memo/memo_edit.png')}
                 ></MemoEditButton>
               </MemoTitleWrapper>
-              <MemoContentWrapper onClick={() => memoOnClick('')}>
+              <MemoContentWrapper>
                 {memo_write_mode ? <MemoInput value={memo} onChange={e => setMemo(e.target.value)} /> : memo}
               </MemoContentWrapper>
 
               <MemoFooter>
                 <MemoButtonWrapper>
-                  <AnyButton className="memo-type">취소</AnyButton>
+                  <AnyButton
+                    className="memo-type"
+                    hidden={!memo_write_mode}
+                    onClick={() => memoOnClick('cancel_button')}
+                  >
+                    취소
+                  </AnyButton>
                   <AnyButton className="memo-type" hidden={memo_write_mode} onClick={() => memoOnClick('edit_button')}>
                     수정
                   </AnyButton>
@@ -1132,4 +1142,5 @@ const DeleteEmoji = styled.img`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 `;

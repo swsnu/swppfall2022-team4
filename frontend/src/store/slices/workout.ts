@@ -76,6 +76,7 @@ export interface WorkoutLogState {
   fitelement_types: TagClass[];
   fitelementDelete: number;
   imageSuccess: string;
+  memoSuccess: string;
 }
 
 export const initialState: WorkoutLogState = {
@@ -126,7 +127,8 @@ export const initialState: WorkoutLogState = {
   },
   fitelement_types: [],
   fitelementDelete: 0,
-  imageSuccess: ""
+  imageSuccess: '',
+  memoSuccess: '',
 };
 
 export const workoutLogSlice = createSlice({
@@ -191,6 +193,9 @@ export const workoutLogSlice = createSlice({
     editMemo: (state, action: PayloadAction<workoutLogAPI.editMemoRequestType>) => {
       // Empty function
     },
+    editMemoSuccess: (state, { payload }) => {
+      state.memoSuccess = payload.memo;
+    },
     editImage: (state, action: PayloadAction<workoutLogAPI.editImageRequestType>) => {
       // Empty function
     },
@@ -252,7 +257,7 @@ export const workoutLogSlice = createSlice({
     deleteFitElementSuccess: (state, { payload }) => {
       state.fitelementDelete = payload.id;
       notificationSuccess('FitElement', '기록 삭제에 성공했어요!');
-    }
+    },
   },
 });
 
@@ -316,6 +321,7 @@ function* createDailyLogSaga(action: PayloadAction<workoutLogAPI.createDailyLogR
 function* editMemoLogSaga(action: PayloadAction<workoutLogAPI.editMemoRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.editMemo, action.payload);
+    yield put(workoutLogActions.editMemoSuccess(response));
   } catch (error) {
     // Empty function
   }
