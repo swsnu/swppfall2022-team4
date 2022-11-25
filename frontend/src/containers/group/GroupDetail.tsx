@@ -134,27 +134,37 @@ const GroupDetail = () => {
         </GroupAboutWrapper>
       )}
 
-      <GroupDetailWrapper>
+      <GroupSpecificationWrapper>
         <GroupAboutText>Specification</GroupAboutText>
         <GroupDetailDate>시작일 : {group_detail.start_date ?? '기한없음'}</GroupDetailDate>
         <GroupDetailDate>마감일 : {group_detail.end_date ?? '기한없음'}</GroupDetailDate>
-        {group_detail.goal.map((goal, index) => {
-          console.log(goal);
-          return (
-            <FitElement
-              key={index}
-              id={index + 1}
-              type={goal.type}
-              workout_type={goal.workout_type}
-              category={goal.category}
-              weight={goal.weight}
-              rep={goal.rep}
-              set={goal.set}
-              time={goal.time}
-            />
-          );
-        })}
-      </GroupDetailWrapper>
+        <GoalListWrapper>
+          <FitHeader>
+            <div style={{ paddingLeft: '5%' }}>WorkoutCategory</div>
+            <div style={{ paddingLeft: '6%' }}>WorkoutType</div>
+            <div style={{ paddingLeft: '16%' }}>Weight</div>
+            <div style={{ paddingLeft: '12%' }}>Rep</div>
+            <div style={{ paddingLeft: '8%' }}>Set</div>
+            <div style={{ paddingLeft: '12%' }}>Time</div>
+          </FitHeader>
+          {group_detail.goal.map((goal, index) => {
+            console.log(goal);
+            return (
+              <FitElement
+                key={index}
+                id={index + 1}
+                type={goal.type}
+                workout_type={goal.workout_type}
+                category={goal.category}
+                weight={goal.weight}
+                rep={goal.rep}
+                set={goal.set}
+                time={goal.time}
+              />
+            );
+          })}
+        </GoalListWrapper>
+      </GroupSpecificationWrapper>
     </Wrapper>
   );
 };
@@ -245,7 +255,7 @@ const GroupAboutDescription = styled.div`
 `;
 
 const GroupDetailWrapper = styled.div`
-  width: 100%;
+  width: 80%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -254,6 +264,31 @@ const GroupDetailWrapper = styled.div`
   border-bottom: 1px solid #727272;
   margin-bottom: 40px;
 `;
+
+const GroupSpecificationWrapper = styled.div`
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 15px 50px 15px;
+  margin-bottom: 40px;
+`;
+
+const FitHeader = styled.div`
+  width: 100%;
+  font-size: 14px;
+  padding: 15px;
+  display: flex;
+`
+
+const GoalListWrapper = styled.div`
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #d1d1d1;
+  border-radius: 20px;
+`
+
 const GroupDetailDate = styled.div`
   font-size: 18px;
   margin: 5px 0;
