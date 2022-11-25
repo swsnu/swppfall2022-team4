@@ -347,7 +347,7 @@ const WorkoutLog = () => {
                         <DayContent visibility_boolean={visibility_value} className={day_type}>
                           {d > 0 ? (d <= days[month] ? d : '') : ''}
                         </DayContent>
-                        <DayToolTip>
+                        <DayToolTip className={calendarInfo[d - 1]?.workouts.length === 0 ? "nothing" : "exist"}>
                           <Hover key={0} workouts={calendarInfo[d - 1]?.workouts} types={fitElementTypes} />
                         </DayToolTip>
                       </Day>
@@ -685,9 +685,14 @@ const DayToolTip = styled.div`
   padding: 5px 11px;
   position: absolute;
   width: 150px;
-  height: 170px;
+  height: 190px;
   z-index: 100;
-  margin-top: 220px;
+  margin-top: 240px;
+
+  &&.nothing {
+    height: 70px;
+    margin-top: 120px;
+  }
 
   &::after {
     border-color: white transparent;

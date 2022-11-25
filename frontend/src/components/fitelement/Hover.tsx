@@ -75,8 +75,8 @@ const WorkoutList = styled.div`
 `;
 
 const Content = styled.div`
-  height: 100px;
-  width: 100px;
+  height: 10px;
+  width: 140px;
   align-items: center;
   justify-content: center;
 `;
