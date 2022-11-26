@@ -25,6 +25,9 @@ interface IPropsCharNum {
   isFull: boolean;
 }
 
+const TITLE_CHAR_LIMIT = 20;
+const CONTENT_CHAR_LIMIT = 400;
+
 const GroupCreate = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -263,9 +266,15 @@ const GroupCreate = () => {
                 <GroupNameInput
                   type="text"
                   value={group_name}
-                  onChange={e => setGroupName(e.target.value)}
+                  onChange={e => {
+                    const charInput = e.target.value;
+                    if (charInput.length <= TITLE_CHAR_LIMIT) setGroupName(charInput);
+                  }}
                   placeholder="그룹의 이름"
                 />
+                <CharNumIndicator isFull={group_name.length >= TITLE_CHAR_LIMIT}>
+                  {group_name.length} / {TITLE_CHAR_LIMIT}
+                </CharNumIndicator>
               </CreateSectionInline>
               <CreateSection>
                 <CreateSectionTitle>그룹 설명</CreateSectionTitle>
@@ -273,9 +282,15 @@ const GroupCreate = () => {
                   <CreateSectionTitleArea
                     rows={10}
                     value={description}
-                    onChange={e => setDescription(e.target.value)}
+                    onChange={e => {
+                      const charInput = e.target.value;
+                      if (charInput.length <= CONTENT_CHAR_LIMIT) setDescription(charInput);
+                    }}
                     placeholder="그룹의 설명"
                   />
+                  <ContentNumIndicator isFull={description.length >= CONTENT_CHAR_LIMIT}>
+                    {description.length} / {CONTENT_CHAR_LIMIT}
+                  </ContentNumIndicator>
                 </CreateSectionBody>
               </CreateSection>
               <CreateSectionInline>
@@ -341,7 +356,7 @@ const GroupCreate = () => {
               <CreateSection>
                 <CreateSectionTitle>목표</CreateSectionTitle>
                 <CreateSectionBodyColumn>
-                  <GoalGridWrapper>
+                  <GoalGridWrapper className="index">
                     <span></span>
                     <div>WorkoutCategory</div>
                     <div>WorkoutType</div>
@@ -561,6 +576,7 @@ const CreateSectionBody = styled.div`
   display: flex;
   flex-direction: row;
   padding: 5px 10px;
+  position: relative;
 `;
 const CreateSectionBodyColumn = styled.div`
   display: flex;
@@ -579,6 +595,7 @@ const CreateSectionInline = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  position: relative;
 `;
 
 const GoalGridWrapper = styled.div`
@@ -588,6 +605,9 @@ const GoalGridWrapper = styled.div`
   margin-left: 40px;
   place-items: center;
 
+  &.index {
+    margin-bottom: 10px;
+  }
   &.goals {
     margin-top: 10px;
   }
@@ -598,7 +618,7 @@ const GoalGridImg = styled.img`
 `;
 
 const GroupNameInput = styled.input`
-  width: 80%;
+  width: 75%;
   font-size: 18px;
   font-family: NanumSquareR;
   text-align: center;
@@ -636,6 +656,7 @@ const CreateCheck = styled.input`
   height: 18px;
   margin: 0px 10px 0px -30px;
 `;
+
 const DateWrapper = styled.div`
   gap: 4px;
   padding-top: 3px;
@@ -644,8 +665,11 @@ const DateWrapper = styled.div`
   font-size: 18px;
   font-family: NanumSquareR;
 `;
+
 const CreateSectionTitleArea = styled.textarea`
   width: 100%;
+  max-height: 230px;
+  margin: 0px 0px 0px 15px;
   padding: 15px;
   font-size: 18px;
   font-family: NanumSquareR;
@@ -709,6 +733,18 @@ const CharNumIndicator = styled.span<IPropsCharNum>`
   position: absolute;
   right: 5px;
   bottom: 3px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
+`;
+
+const ContentNumIndicator = styled.span<IPropsCharNum>`
+  position: absolute;
+  right: 36px;
+  bottom: 12px;
   color: var(--fit-support-gray);
   ${({ isFull }) =>
     isFull &&
