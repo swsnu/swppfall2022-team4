@@ -207,9 +207,8 @@ const GroupCreate = () => {
       }
     });
   }, [map, keyword]);
-  
-  const fitElementTarget = fitElementTypes
-  //.filter(item => item.class_name === workout_category);
+
+  const fitElementTarget = fitElementTypes.filter(item => item.class_name === workout_category);
   return (
     <Wrapper>
       <TitleWrapper>
@@ -284,13 +283,22 @@ const GroupCreate = () => {
           <div style={{ paddingLeft: '10%' }}>Time</div>
         </div>
         <LogInputBody>
-          <WorkoutTypeSelect data-testid="category" defaultValue="선택" className="type2" onChange={e => setWorkoutCategory(e.target.value)}>
+          <WorkoutTypeSelect
+            data-testid="category"
+            defaultValue="선택"
+            className="type2"
+            onChange={e => setWorkoutCategory(e.target.value)}
+          >
             <option disabled>선택</option>
             {fitElementTypes.map((fitelement_category, index) => (
               <option key={index}>{fitelement_category.class_name}</option>
             ))}
           </WorkoutTypeSelect>
-          <WorkoutTypeSelect data-testid="workoutType" defaultValue="종류 선택" onChange={e => setWorkoutType(e.target.value)}>
+          <WorkoutTypeSelect
+            data-testid="workoutType"
+            defaultValue="종류 선택"
+            onChange={e => setWorkoutType(e.target.value)}
+          >
             <option disabled>종류 선택</option>
             {fitElementTarget.length === 1 &&
               fitElementTarget[0].tags.map((fitelement, index) => <option key={index}>{fitelement.name}</option>)}
