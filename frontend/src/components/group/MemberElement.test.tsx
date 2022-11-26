@@ -48,12 +48,12 @@ const setup2 = () => {
 };
 
 describe('<MemberElement/>', () => {
-  it('should render without errors', () => {
+  it('should render without errors1', () => {
     setup();
     screen.getByText('username');
     screen.getByText('Level: 1');
   });
-  it('should render without errors', () => {
+  it('should render without errors2', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     setup2();
     screen.getByText('test');
@@ -63,7 +63,7 @@ describe('<MemberElement/>', () => {
     expect(mockDispatch).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledTimes(1);
   });
-  it('should render without errors', () => {
+  it('should render without errors3', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: undefined });
     setup2();
     const change = screen.getByText('그룹장 위임');
