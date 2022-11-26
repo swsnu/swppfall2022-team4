@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/swsnu/swppfall2022-team4/badge.svg?branch=main&kill_cache=1)](https://coveralls.io/github/swsnu/swppfall2022-team4?branch=main)
 
 ## Locally Install
+_**Note**: We implemented the Kakao social login feature, but this feature only works with local environment (localost:3000) due to the redirect URL problem. Also, it may not work with local environment in the future because HTTPS deployment will be done in the Sprint 5._
 ### Run frontend server
     # node.js : v16.18.1
     # Rename frontend/example.env to frontend/.env
