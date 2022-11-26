@@ -22,6 +22,7 @@ export const FitElement = (props: IProps) => {
       return 'example';
     }
   };
+
   return (
     <FitElementLog>
       <LogCategory className="type3">{props.id}</LogCategory>
@@ -30,19 +31,21 @@ export const FitElement = (props: IProps) => {
       <LogCategory className="type2">{props.weight}</LogCategory>
       <LogCategory>{props.rep}</LogCategory>
       <LogCategory>{props.set}</LogCategory>
-      <LogCategory className="type2">{props.time}</LogCategory>
+      <LogCategory className="type2">
+        <Content>{props.time}</Content>
+        
+      </LogCategory>
     </FitElementLog>
   );
 };
 
 const FitElementLog = styled.div`
-  width: 100%;
+  width: 95%;
   height: 100%;
   min-height: 80px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  border-bottom: 1px solid black;
   font-weight: normal;
 `;
 
@@ -61,7 +64,6 @@ const LogCategory = styled.div`
   align-items: center;
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
-  cursor: pointer;
   color: black;
 
   &&.type {
@@ -74,3 +76,12 @@ const LogCategory = styled.div`
     width: 7%;
   }
 `;
+
+const Content = styled.div`
+  width: 70%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+

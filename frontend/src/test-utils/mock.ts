@@ -107,11 +107,13 @@ export const initialState: PreloadedState<RootState> = {
   },
   workout_log: {
     error: null,
+    fitelementDelete: 0,
     workout_log: {
+      id: 0,
       type: 'log',
       workout_type: '데드리프트',
       period: null,
-      category: 'back',
+      category: '등운동',
       weight: null,
       rep: null,
       set: null,
@@ -134,7 +136,7 @@ export const initialState: PreloadedState<RootState> = {
               type: 'log',
               workout_type: '데드리프트',
               period: null,
-              category: 'back',
+              category: '등운동',
               weight: null,
               rep: null,
               set: null,
@@ -151,7 +153,7 @@ export const initialState: PreloadedState<RootState> = {
       memo: null,
       fit_element: null,
       calories: 0,
-      image: null,
+      images: null,
     },
     daily_fit_elements: [
       {
@@ -160,7 +162,7 @@ export const initialState: PreloadedState<RootState> = {
           type: 'log',
           workout_type: '데드리프트',
           period: null,
-          category: 'back',
+          category: '등운동',
           weight: null,
           rep: null,
           set: null,
@@ -207,6 +209,8 @@ export const initialState: PreloadedState<RootState> = {
       category: '',
     },
     fitelement_types: [],
+    imageSuccess: "",
+    memoSuccess: "",
   },
 };
 
