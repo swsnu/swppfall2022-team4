@@ -104,7 +104,7 @@ def fit_element(request, fitelement_id):
             daily_log_single = daily_logs.get(date=workout.date)
             fitelement_type = Tag.objects.get(tag_name=workout.workout_type)
             daily_log_single.calories -= (
-                fitelement_type.calories / 68 * 60 / 60 * workout.time
+                fitelement_type.calories * workout.time
             )
             daily_log_single.save()
             workout.delete()
