@@ -93,7 +93,7 @@ describe('workout_log', () => {
     render(component);
     const button = screen.getByText('불러오기');
     fireEvent.click(button!);
-    expect(mockDispatch).toBeCalledTimes(3);
+    expect(mockDispatch).toBeCalledTimes(4);
   });
 
   it('memoOnClick', () => {

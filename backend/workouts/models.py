@@ -30,7 +30,12 @@ class DailyLog(models.Model):
     memo = models.TextField(null=True)
     fit_element = models.ManyToManyField(FitElement, blank=True)
     calories = models.IntegerField(default=0, null=True)
-    image = models.CharField(max_length=255, null=True)
+
+
+class DailyLogImage(models.Model):
+    """Daily Log Image definition"""
+    image = models.CharField(max_length=255, null=False)
+    daily_log = models.ForeignKey(DailyLog, related_name="images", on_delete=models.CASCADE)
 
 
 class Routine(models.Model):

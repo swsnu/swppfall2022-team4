@@ -1,8 +1,10 @@
 import { List } from 'reselect/es/types';
 import client from './client';
+import { TagClass } from 'store/apis/tag';
 
 export type getFitElementResponseType = {
   type: string;
+  id: number;
   workout_type: string;
   period: number;
   category: string;
@@ -19,8 +21,8 @@ export type getDailyLogResponseType = {
   memo: string;
   fitelements: List<getFitElementResponseType>;
   fit_elements: Array<any>;
-  image: string;
   calories: number;
+  images: string[] | null;
 };
 
 export type getFitElementRequestType = {
@@ -151,8 +153,18 @@ export type getSpecificRoutineFitElementsRequestType = {
   fitelements: number[];
 };
 
+export type deleteFitElementRequestType = {
+  fitelement_id: number;
+  username: string;
+};
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
   const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
+  return response.data;
+};
+
+export const deleteFitElement = async (payload: deleteFitElementRequestType) => {
+  const response = await client.delete(`/api/fitelement/${payload.fitelement_id}/?&username=${payload.username}`);
   return response.data;
 };
 
@@ -199,7 +211,7 @@ export const createDailyLog = async (payload: createDailyLogRequestType) => {
 };
 
 export const editMemo = async (payload: editMemoRequestType) => {
-  const response = await client.put<editMemoRequestType>(
+  const response = await client.put(
     `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
     payload,
   );
@@ -256,6 +268,6 @@ export const getSpecificRoutineFitElements = async (payload: getSpecificRoutineF
 };
 
 export const getFitelementTypes = async () => {
-  const response = await client.get(`/api/fitelement/type/`);
+  const response = await client.get<TagClass[]>(`/api/fitelement/type/`);
   return response.data;
 };

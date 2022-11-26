@@ -86,22 +86,28 @@ const Routine = () => {
             </RoutineHeader>
           )}
 
-          <LogWrapper>
-            {routine_id === -1
-              ? '루틴을 눌러주세요.'
-              : selected_routine.fitelements.map((fitelement, index) => (
-                  <FitElement
-                    key={index}
-                    id={index + 1}
-                    type={fitelement.data.type}
-                    workout_type={fitelement.data.workout_type}
-                    category={fitelement.data.category}
-                    weight={fitelement.data.weight}
-                    rep={fitelement.data.rep}
-                    set={fitelement.data.set}
-                    time={fitelement.data.time}
-                  />
-                ))}
+          <LogWrapper className={routine_id === -1 ? 'no_routine' : 'routines'}>
+            {routine_id === -1 ? (
+              <div>
+                <Content>달력에서 루틴추가 후</Content>
+                <br/>
+                <Content>루틴을 눌러주세요!</Content>
+              </div>
+            ) : (
+              selected_routine.fitelements.map((fitelement, index) => (
+                <FitElement
+                  key={index}
+                  id={index + 1}
+                  type={fitelement.data.type}
+                  workout_type={fitelement.data.workout_type}
+                  category={fitelement.data.category}
+                  weight={fitelement.data.weight}
+                  rep={fitelement.data.rep}
+                  set={fitelement.data.set}
+                  time={fitelement.data.time}
+                />
+              ))
+            )}
           </LogWrapper>
         </Frame>
       </RightWrapper>
@@ -170,6 +176,18 @@ const LogHeader = styled.div`
   }
 `;
 
+const Content = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  font-family: IBMPlexSansThaiLooped;
+  font-size: 30px;
+  font-weight: 400;
+  color: #818281;
+  justify-content: center;
+  align-items: center;
+`;
+
 const LogCategory = styled.div`
   width: 10%;
   height: 20px;
@@ -216,6 +234,7 @@ const ReturnButtonWrapper = styled.div`
   font-size: 15px;
   font-weight: 600;
   justify-content: start;
+  cursor: pointer;
 `;
 
 const RoutineTitleWrapper = styled.div`
@@ -288,4 +307,9 @@ const LogWrapper = styled.div`
   flex-direction: column;
   justify-content: start;
   align-items: start;
+
+  &&.no_routine {
+    justify-content: center;
+    align-items: center;
+  }
 `;
