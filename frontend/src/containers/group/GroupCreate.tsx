@@ -207,8 +207,9 @@ const GroupCreate = () => {
       }
     });
   }, [map, keyword]);
-
-  const fitElementTarget = fitElementTypes.filter(item => item.class_name === workout_category);
+  
+  const fitElementTarget = fitElementTypes
+  //.filter(item => item.class_name === workout_category);
   return (
     <Wrapper>
       <TitleWrapper>
@@ -274,21 +275,22 @@ const GroupCreate = () => {
         </div>
 
         <CreateText>목표</CreateText>
-        <div style={{ display: 'flex', width: '80%' }}>
-          <div style={{ paddingLeft: '2%' }}>Workout Type</div>
-          <div style={{ paddingLeft: '17%' }}>Weight</div>
-          <div style={{ paddingLeft: '11%' }}>Rep</div>
-          <div style={{ paddingLeft: '12%' }}>Set</div>
-          <div style={{ paddingLeft: '13%' }}>Time</div>
+        <div style={{ display: 'flex', width: '63%', fontSize: '14px' }}>
+          <div style={{ paddingLeft: '0%' }}>WorkoutCategory</div>
+          <div style={{ paddingLeft: '7%' }}>WorkoutType</div>
+          <div style={{ paddingLeft: '8%' }}>Weight</div>
+          <div style={{ paddingLeft: '8%' }}>Rep</div>
+          <div style={{ paddingLeft: '9%' }}>Set</div>
+          <div style={{ paddingLeft: '10%' }}>Time</div>
         </div>
         <LogInputBody>
-          <WorkoutTypeSelect defaultValue="선택" className="type2" onChange={e => setWorkoutCategory(e.target.value)}>
+          <WorkoutTypeSelect data-testid="category" defaultValue="선택" className="type2" onChange={e => setWorkoutCategory(e.target.value)}>
             <option disabled>선택</option>
             {fitElementTypes.map((fitelement_category, index) => (
               <option key={index}>{fitelement_category.class_name}</option>
             ))}
           </WorkoutTypeSelect>
-          <WorkoutTypeSelect defaultValue="종류 선택" onChange={e => setWorkoutType(e.target.value)}>
+          <WorkoutTypeSelect data-testid="workoutType" defaultValue="종류 선택" onChange={e => setWorkoutType(e.target.value)}>
             <option disabled>종류 선택</option>
             {fitElementTarget.length === 1 &&
               fitElementTarget[0].tags.map((fitelement, index) => <option key={index}>{fitelement.name}</option>)}
@@ -328,7 +330,7 @@ const GroupCreate = () => {
           <Button1 content="추가" clicked={createGoal} />
         </LogInputBody>
         {goal_list.map((go_obj, index) => (
-          <div key={index} style={{ display: 'flex', width: '80%', height: '10%' }}>
+          <div key={index} style={{ display: 'flex', width: '70%', height: '10%' }}>
             <FitElement
               key={index}
               id={index + 1}
@@ -343,7 +345,14 @@ const GroupCreate = () => {
             <div
               data-testid="removeGoal"
               onClick={() => removeGoal(goal_list.indexOf(go_obj))}
-              style={{ paddingTop: '33px', fontSize: '18px', cursor: 'pointer', color: 'gray' }}
+              style={{
+                paddingLeft: '40px',
+                paddingRight: '40px',
+                paddingTop: '33px',
+                fontSize: '18px',
+                cursor: 'pointer',
+                color: 'gray',
+              }}
             >
               X
             </div>
@@ -362,49 +371,58 @@ const GroupCreate = () => {
 
         <CreateText>그룹 장소 설정</CreateText>
         <CreateCheck data-testid="placeCheck" type="checkbox" checked={place} onChange={() => setPlace(!place)} />
-        <CreateInput type="text" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="장소 검색" />
-        {clickedAddress && <div>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>}
-        <Map // 로드뷰를 표시할 Container
-          center={{
-            lat: currentLocation.center.lat || 37.480966,
-            lng: currentLocation.center.lng || 126.952317,
-          }}
-          style={{
-            width: '60%',
-            height: '350px',
-          }}
-          level={3}
-          onClick={(_t, mouseEvent) => {
-            setClickedPosition({
-              lat: mouseEvent.latLng.getLat(),
-              lng: mouseEvent.latLng.getLng(),
-            });
-            setMarkerInfo(null);
-          }}
-          onCreate={setMap}
-        >
-          <MapMarker position={{ lat: currentLocation.center.lat, lng: currentLocation.center.lng }} />
-          {clickedPosition.lat && clickedPosition.lng && (
-            <MapMarker position={{ lat: clickedPosition.lat, lng: clickedPosition.lng }} />
-          )}
-          {searchResult.map(marker => (
-            <MapMarker
-              key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
-              position={marker.position}
-              onClick={() => {
-                setMarkerInfo(marker.content);
-                setClickedPosition({ lat: marker.position.lat, lng: marker.position.lng });
+        {place && (
+          <>
+            <CreateInput
+              type="text"
+              value={keyword}
+              onChange={e => setKeyword(e.target.value)}
+              placeholder="장소 검색"
+            />
+            {clickedAddress && <div>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>}
+            <Map // 로드뷰를 표시할 Container
+              center={{
+                lat: currentLocation.center.lat || 37.480966,
+                lng: currentLocation.center.lng || 126.952317,
               }}
+              style={{
+                width: '60%',
+                height: '350px',
+              }}
+              level={3}
+              onClick={(_t, mouseEvent) => {
+                setClickedPosition({
+                  lat: mouseEvent.latLng.getLat(),
+                  lng: mouseEvent.latLng.getLng(),
+                });
+                setMarkerInfo(null);
+              }}
+              onCreate={setMap}
             >
-              {markerInfo === marker.content && <div style={{ color: '#000' }}>{marker.content}</div>}
-            </MapMarker>
-          ))}
-        </Map>
-        <div style={{ paddingTop: '15px', fontFamily: 'FugazOne' }}>
-          {currentLocation.isLoading && <div>{'현위치를 불러오는 중입니다.'}</div>}
-          {currentLocation.errMsg && <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>}
-          {currentLocation.center.lat && <div>{`현위치를 성공적으로 불렀습니다.`}</div>}
-        </div>
+              <MapMarker position={{ lat: currentLocation.center.lat, lng: currentLocation.center.lng }} />
+              {clickedPosition.lat && clickedPosition.lng && (
+                <MapMarker position={{ lat: clickedPosition.lat, lng: clickedPosition.lng }} />
+              )}
+              {searchResult.map(marker => (
+                <MapMarker
+                  key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
+                  position={marker.position}
+                  onClick={() => {
+                    setMarkerInfo(marker.content);
+                    setClickedPosition({ lat: marker.position.lat, lng: marker.position.lng });
+                  }}
+                >
+                  {markerInfo === marker.content && <div style={{ color: '#000' }}>{marker.content}</div>}
+                </MapMarker>
+              ))}
+            </Map>
+            <div style={{ paddingTop: '15px', fontFamily: 'FugazOne' }}>
+              {currentLocation.isLoading && <div>{'현위치를 불러오는 중입니다.'}</div>}
+              {currentLocation.errMsg && <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>}
+              {currentLocation.center.lat && <div>{`현위치를 성공적으로 불렀습니다.`}</div>}
+            </div>
+          </>
+        )}
       </CreateWrapper>
 
       <Button1 content="Create" clicked={saveOnClick} />
@@ -520,12 +538,13 @@ const WorkoutTypeInput = styled.input`
     width: 10%;
   }
   &&.type2 {
-    width: 20%;
+    width: 10%;
   }
 `;
 
 const LogInputBody = styled.div`
-  width: 80%;
+  padding-left: 30px;
+  width: 70%;
   height: 10%;
   max-height: 90px;
   display: flex;

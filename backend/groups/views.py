@@ -92,7 +92,12 @@ def group_detail(request, group_id):
                 workout_tag = Tag.objects.get(pk=goal['workout_type_id'])
                 return_goal.append(
                     {
-                        **goal,
+                        "id": goal['workout_type_id'],
+                        "type": goal['type'],
+                        "weight": goal['weight'],
+                        "rep": goal['rep'],
+                        "set": goal['set'],
+                        "time": goal['time'],
                         "workout_type": workout_tag.tag_name,
                         "category": workout_tag.tag_class.class_name,
                     }

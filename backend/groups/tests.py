@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from .models import Group, GroupCert
 from users.models import User
 from workouts.models import FitElement
+from tags.models import Tag, TagClass
 import bcrypt
 import json
 from datetime import datetime, date
@@ -32,10 +33,12 @@ class GroupTestCase(TestCase):
                 exp=0,
                 level=1
         )
+        tag_class1 = TagClass.objects.create(class_name="workout", color="#101010")
+        tag1 = Tag.objects.create(tag_name="deadlift", tag_class=tag_class1)
         fit1 = FitElement.objects.create(
             author=user1,
             type='goal',
-            workout_type='test',
+            workout_type=tag1,
             weight=10,
             rep=10,
             set=10,
@@ -117,7 +120,7 @@ class GroupTestCase(TestCase):
             'free':True,
             'goal':[{
                'type':'goal',
-               'workout_type':'실외 걷기',
+               'workout_type': 'deadlift',
                'category':'etc',
                'weight':100,
                'rep':10,
@@ -142,7 +145,7 @@ class GroupTestCase(TestCase):
             'free':True,
             'goal':[{
                'type':'goal',
-               'workout_type':'실외 걷기',
+               'workout_type':'deadlift',
                'category':'etc',
                'weight':100,
                'rep':10,
@@ -167,7 +170,7 @@ class GroupTestCase(TestCase):
             'number': None,
             'goal':[{
                'type':'goal',
-               'workout_type':'실외 걷기',
+               'workout_type':'deadlift',
                'category':'etc',
                'weight':100,
                'rep':10,
@@ -192,7 +195,7 @@ class GroupTestCase(TestCase):
             'number': None,
             'goal':[{
                'type':'goal',
-               'workout_type':'실외 걷기',
+               'workout_type':'deadlift',
                'category':'etc',
                'weight':100,
                'rep':10,
@@ -213,7 +216,7 @@ class GroupTestCase(TestCase):
             'end_date': None,
             'number': None,
             'goal':[{
-               'workout_type':'실외 걷기',
+               'workout_type':'deadlift',
                'category':'etc',
                'weight':100,
                'rep':10,
@@ -247,7 +250,7 @@ class GroupTestCase(TestCase):
             'number': None,
             'goal':[{
                'type':'goal',
-               'workout_type':'실외 걷기',
+               'workout_type':'deadlift',
                'category':'etc',
                'weight':100,
                'rep':10,
