@@ -123,15 +123,16 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                                 }
                                 onClick={() => dispatch(postActions.toggleFilterTag(tag))}
                               >
-                                {tagClass.class_type === 'workout' &&
-                                  weight &&
-                                  tag.calories &&
-                                  (caloriesOfUser
-                                    ? `${tag.name} | ${(tag.calories * weight).toFixed(2)}`
-                                    : `${tag.name} | ${tag.calories.toFixed(4)}`)}
+                                {tagClass.class_type === 'workout'
+                                  ? weight &&
+                                    tag.calories &&
+                                    (caloriesOfUser
+                                      ? `${tag.name} | ${(tag.calories * weight).toFixed(2)}`
+                                      : `${tag.name} | ${tag.calories.toFixed(4)}`)
+                                  : `${tag.name}`}
                               </TagBubble>
                             ))}
-                            {selected.length == 0 && tagClass.class_type !== 'place' && createCategory !== tagClass.id && (
+                            {selected.length == 0 && createCategory !== tagClass.id && (
                               <TagBubble
                                 color={tagClass.color}
                                 onClick={() => {

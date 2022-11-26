@@ -271,9 +271,8 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                   </option>
                 );
               })}
-            {currentTagClass?.class_type === 'general' && <option value={NEW_OPTION}> - 태그 만들기 - </option>}
+            {currentTagClass?.class_type !== 'workout' && <option value={NEW_OPTION}> - 태그 만들기 - </option>}
             {currentTagClass?.class_type === 'workout' && <option disabled>[운동] 메인 페이지에서만 생성 가능</option>}
-            {currentTagClass?.class_type === 'place' && <option disabled>[장소] 장소 탭에서만 생성 가능</option>}
           </TagSelect>
           {tagSelect === NEW_OPTION && (
             <TagClassFuncWrapper>
