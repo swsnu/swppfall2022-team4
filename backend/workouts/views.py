@@ -72,7 +72,7 @@ def create_fit_element(request):
                 )
                 daily_log_single.save()
 
-            add_exp(request.user.username, 5)
+            add_exp(request.user.username, 4)
 
             return JsonResponse({"workout_id": str(new_fit_element.pk)}, status=201)
         except (KeyError, json.JSONDecodeError):
