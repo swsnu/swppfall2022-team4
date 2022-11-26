@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFou
 from json.decoder import JSONDecodeError
 from groups.models import Group, GroupCert
 from users.models import User
-from tags.models import Tag
+from tags.models import Tag, TagClass
 from workouts.models import FitElement
 from datetime import datetime
 
@@ -111,6 +111,7 @@ def group_detail(request, group_id):
                         "category": workout_tag.tag_class.class_name,
                     }
                 )
+
             response_dict = {
                 "group_id": gr_obj.id,
                 "group_name": gr_obj.group_name,
@@ -130,6 +131,25 @@ def group_detail(request, group_id):
                 "goal": return_goal,
                 "member_number": gr_obj.member_number,
             }
+
+            if gr_obj.prime_tag:
+                response_dict["prime_tag"] = {
+                    "id": gr_obj.prime_tag.pk,
+                    "name": gr_obj.prime_tag.tag_name,
+                    "color": gr_obj.prime_tag.tag_class.color,
+                }
+
+            tag_response = []
+            for tag in list(gr_obj.tags.all().values()):
+                tag_class = TagClass.objects.get(pk=tag['tag_class_id'])
+                tag_response.append(
+                    {
+                        "id": tag['id'],
+                        "name": tag['tag_name'],
+                        "color": tag_class.color,
+                    }
+                )
+            response_dict["tags"] = tag_response
             return JsonResponse(response_dict, status=200)
         except Group.DoesNotExist:
             return JsonResponse({"message": "존재하지 않는 그룹입니다."}, status=404)

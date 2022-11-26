@@ -40,6 +40,8 @@ const groupDetailResponse: groupApi.getGroupDetailResponseType = {
   lat: null,
   lng: null,
   address: null,
+  tags: [],
+  prime_tag: undefined,
 };
 
 const placeDetailResponse: groupApi.getGroupDetailResponseType = {
@@ -56,6 +58,8 @@ const placeDetailResponse: groupApi.getGroupDetailResponseType = {
   lat: 31,
   lng: 126,
   address: '봉천동',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const nullResponse1: groupApi.getGroupDetailResponseType = {
@@ -72,6 +76,8 @@ const nullResponse1: groupApi.getGroupDetailResponseType = {
   lat: null,
   lng: null,
   address: null,
+  tags: [],
+  prime_tag: undefined,
 };
 
 const nullResponse2: groupApi.getGroupDetailResponseType = {
@@ -88,6 +94,8 @@ const nullResponse2: groupApi.getGroupDetailResponseType = {
   lat: null,
   lng: null,
   address: null,
+  tags: [],
+  prime_tag: undefined,
 };
 
 const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {
@@ -301,7 +309,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailFailure',
-        payload: {response: {data: {status: 404, message: 'error'}}},
+        payload: { response: { data: { status: 404, message: 'error' } } },
       });
     });
   });

@@ -10,6 +10,7 @@ import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { FitElement } from 'components/fitelement/FitElement';
+import { TagBubble } from 'components/tag/tagbubble';
 
 const GroupDetail = () => {
   const dispatch = useDispatch();
@@ -110,6 +111,21 @@ const GroupDetail = () => {
           <GroupAboutNickname>{group_detail.group_leader.nickname}</GroupAboutNickname>
         </div>
         <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
+        <div>
+          <TagBubbleWrapper>
+            {group_detail.tags.map(tags => {
+              return (
+                <TagBubble
+                  key={tags.id}
+                  color={tags.color}
+                  isPrime={group_detail.prime_tag && tags.id === group_detail.prime_tag.id}
+                >
+                  {tags.name}
+                </TagBubble>
+              );
+            })}
+          </TagBubbleWrapper>
+        </div>
       </GroupAboutWrapper>
 
       {group_detail.lat && group_detail.lng && (
@@ -252,6 +268,15 @@ const GroupAboutDescription = styled.div`
   border: 2px solid #d1d1d1;
   border-radius: 20px;
   padding: 20px;
+`;
+
+const TagBubbleWrapper = styled.div`
+  display: flex;
+  margin-left: 10px;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const GroupDetailWrapper = styled.div`

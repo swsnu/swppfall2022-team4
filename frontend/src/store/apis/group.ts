@@ -65,6 +65,8 @@ export type Group = {
   lat: number | null;
   lng: number | null;
   address: string | null;
+  tags: TagVisual[];
+  prime_tag: TagVisual | undefined;
 };
 
 export type Fitelement = {
@@ -143,6 +145,8 @@ export type getGroupDetailResponseType = {
   lat: number | null;
   lng: number | null;
   address: string | null;
+  tags: TagVisual[];
+  prime_tag: TagVisual | undefined;
 };
 
 export type checkGroupMemberResponseType = {
