@@ -308,7 +308,7 @@ const GroupCreate = () => {
             className="type2"
             type="number"
             min="0"
-            value={weight || 0}
+            value={weight || ''}
             onChange={e => setWeight(Number(e.target.value))}
           />
           <WorkoutTypeInput
@@ -316,7 +316,7 @@ const GroupCreate = () => {
             className="type2"
             type="number"
             min="0"
-            value={rep || 0}
+            value={rep || ''}
             onChange={e => setRep(Number(e.target.value))}
           />
           <WorkoutTypeInput
@@ -324,7 +324,7 @@ const GroupCreate = () => {
             className="type2"
             type="number"
             min="0"
-            value={set || 0}
+            value={set || ''}
             onChange={e => setSet(Number(e.target.value))}
           />
           <WorkoutTypeInput
@@ -332,7 +332,7 @@ const GroupCreate = () => {
             className="type2"
             type="number"
             min="0"
-            value={wtime || 0}
+            value={wtime || ''}
             onChange={e => setWTime(Number(e.target.value))}
           />
           <Button1 content="추가" clicked={createGoal} />
