@@ -60,12 +60,12 @@ export const TagBubble = styled.button<IPropsTagBubble>`
     color &&
     `
       background: ${color};
-      color: ${getContrastYIQ(color)}
+      color: ${getContrastYIQ(color)};
     `}
   ${({ isPrime }) =>
     isPrime &&
     `
-      border: 2px solid green;
+      border: 2px solid black;
     `}
 `;
 
