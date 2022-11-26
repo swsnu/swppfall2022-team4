@@ -2,6 +2,7 @@ from django.db import models
 from utils.models import AbstractTimeStampedModel
 from users.models import User
 from tags.models import Tag
+from groups.models import Group
 
 
 class Post(AbstractTimeStampedModel):
@@ -21,6 +22,9 @@ class Post(AbstractTimeStampedModel):
         Tag, related_name="prime_tagged_posts", on_delete=models.SET_NULL, blank=True, null=True
     )
 
+    in_group = models.ForeignKey(
+        Group, on_delete=models.CASCADE, related_name="posts", blank=True, null=True
+    )
     # Related_name : comments <- comments.Comment
     def get_like_num(self):
         """Get number of like"""
