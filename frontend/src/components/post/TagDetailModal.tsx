@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { ColumnCenterFlex } from './layout';
 import { TagBubble } from 'components/tag/tagbubble';
-import { TAG_CLASS_LIMIT, TAG_NAME_LIMIT } from 'containers/post/PostEditorLayout';
+import { TAG_CLASS_LIMIT, TAG_NAME_LIMIT } from 'components/tag/TagSelector';
 import { tagActions } from 'store/slices/tag';
 import { GreenBigBtn, GreenBigSpanBtn } from './button';
 import { getRandomHex } from 'utils/color';

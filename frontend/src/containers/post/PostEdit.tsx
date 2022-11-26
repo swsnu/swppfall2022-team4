@@ -17,6 +17,7 @@ const PostEdit = () => {
     user: user.user,
   }));
   useEffect(() => {
+    dispatch(tagActions.getTags());
     if (id) {
       dispatch(
         postActions.updatePostDetail({

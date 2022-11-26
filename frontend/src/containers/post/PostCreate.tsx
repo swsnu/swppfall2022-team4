@@ -19,6 +19,9 @@ const PostCreate = () => {
     //TODO;
   };
   useEffect(() => {
+    dispatch(tagActions.getTags());
+  });
+  useEffect(() => {
     if (postCreateStatus.status) {
       navigate(`/post/${postCreateStatus.post_id}`);
       dispatch(postActions.stateRefresh());
