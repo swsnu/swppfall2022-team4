@@ -41,13 +41,7 @@ interface IPropsTagSelector {
   setPrimeTag: (prime_tag: TagVisual | undefined) => void;
 }
 
-export const TagSelector = ({
-  tagContent,
-  tagOnChange,
-  tagOnRemove,
-  searchedTagOnClick,
-  setPrimeTag,
-}: IPropsTagSelector) => {
+const TagSelector = ({ tagContent, tagOnChange, tagOnRemove, searchedTagOnClick, setPrimeTag }: IPropsTagSelector) => {
   const dispatch = useDispatch();
 
   const [tagInput, setTagInput] = useState(''); // Tag creation name input
@@ -86,7 +80,6 @@ export const TagSelector = ({
     const tagId = e.target.options[e.target.selectedIndex].value;
     const tagName = e.target.options[e.target.selectedIndex].text;
     if (tagId !== NEW_OPTION && currentTagClass) {
-      console.log(tagId, tagName);
       tagOnChange({
         id: tagId,
         name: tagName,
@@ -296,6 +289,7 @@ const TagWrapper = styled(ColumnFlex)`
   background-color: var(--fit-white);
   width: 100%;
   height: 60%;
+  max-height: 480px;
   overflow-y: auto;
 `;
 
@@ -342,3 +336,5 @@ const TagCharNum = styled.span<IPropsCharNum>`
       color: var(--fit-red-neg-hover);
     `}
 `;
+
+export default TagSelector;

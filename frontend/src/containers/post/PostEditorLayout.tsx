@@ -9,7 +9,7 @@ import client from 'store/apis/client';
 import { BlueBigActiveBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
 import { ColumnCenterFlex, PostContentWrapper, PostPageWrapper } from 'components/post/layout';
 import { notificationSuccess } from 'utils/sendNotification';
-import { TagSelector } from 'components/tag/TagSelector';
+import TagSelector from 'components/tag/TagSelector';
 
 interface IPropsCharNum {
   isFull: boolean;

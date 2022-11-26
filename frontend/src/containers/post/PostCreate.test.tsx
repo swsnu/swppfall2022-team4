@@ -323,36 +323,6 @@ describe('[PostEditor Page - Tag]', () => {
     const deleteImageBtn = await screen.findByText('삭제');
     expect(deleteImageBtn).toBeInTheDocument();
   });
-  test('create tag class', () => {
-    const store = setup();
-    act(() => {
-      store.dispatch({
-        type: 'tag/getTagsSuccess',
-        payload: getTagsResponse,
-      });
-    });
-
-    const tagClassOption = screen.getByRole('option', { name: '- 태그 카테고리 생성 -' }); // Tag Class Create
-    userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
-    expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
-
-    const newTagClassInput = screen.getByPlaceholderText('카테고리 이름');
-    userEvent.type(newTagClassInput, 'HumorHumorHumor');
-    userEvent.clear(newTagClassInput);
-    userEvent.type(newTagClassInput, 'Humor');
-
-    const randColorDice = screen.getByTestId('randColorDice');
-    fireEvent.click(randColorDice);
-
-    const newTagClassBtn = screen.getByText('분류 생성');
-    fireEvent.click(newTagClassBtn);
-
-    expect(mockDispatch).toBeCalledTimes(5);
-    expect(mockDispatch).toBeCalledWith({
-      payload: { name: 'Humor', color: expect.anything() },
-      type: 'tag/createTagClass',
-    });
-  });
   test('search tag', () => {
     const store = setup();
     act(() => {

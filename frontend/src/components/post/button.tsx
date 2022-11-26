@@ -78,6 +78,13 @@ export const GreenBigBtn = styled(GreenBtnBlueprint)`
   border-radius: 4px;
 `;
 
+export const RedBtn = styled(RedBtnBlueprint)`
+  padding: 5px 8px;
+  margin: 6px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+`;
+
 export const GreenCommentSubmitBtn = styled(GreenBtnBlueprint)`
   width: 10%;
   padding: 10px 6px;
