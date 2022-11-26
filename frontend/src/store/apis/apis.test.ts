@@ -147,19 +147,21 @@ const postGroupRequest: groupAPI.postGroupRequestType = {
   lat: 31,
   lng: 126,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const leaderChangeRequest: groupAPI.leaderChangeRequestType = {
   group_id: '1',
   username: 'test',
-}
+};
 
 const getCertsRequest: groupAPI.getCertsRequestType = {
   group_id: '1',
   year: 2022,
   month: 12,
   specific_date: 12,
-}
+};
 
 const createCertRequest: groupAPI.createCertRequestType = {
   group_id: '1',
@@ -167,7 +169,7 @@ const createCertRequest: groupAPI.createCertRequestType = {
   month: 12,
   specific_date: 12,
   fitelement_id: 1,
-}
+};
 
 // Workout dummy.
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {
@@ -202,7 +204,7 @@ const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
   rep: 0,
   set: 0,
   time: 0,
-  date: '2022-10-01'
+  date: '2022-10-01',
 };
 
 const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
@@ -528,5 +530,5 @@ describe('Group API TEST', () => {
       const res = await groupAPI.createCert(createCertRequest);
       expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
     });
-  })
+  });
 });

@@ -34,6 +34,11 @@ def general_group(request):
     else:  ## post
         try:
             req_data = json.loads(request.body.decode())
+            prime_tag = (
+                Tag.objects.get(pk=req_data["prime_tag"]["id"])
+                if ("prime_tag" in req_data.keys() and req_data["prime_tag"])
+                else None
+            )
             group = Group(
                 group_name=req_data["group_name"],
                 number=req_data["number"],
@@ -45,9 +50,13 @@ def general_group(request):
                 lng=req_data["lng"],
                 address=req_data["address"],
                 group_leader=request.user,
+                prime_tag=prime_tag,
             )
             goal_list = req_data["goal"]
             group.save()
+            for tag in req_data["tags"]:
+                tag = Tag.objects.get(pk=tag["id"])
+                group.tags.add(tag)
             group.members.add(request.user)
             group.member_number += 1
             group.save()

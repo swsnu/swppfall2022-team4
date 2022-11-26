@@ -145,6 +145,8 @@ const GroupCreate = () => {
         lng: param_lng,
         address: param_address,
         goal: goal_list,
+        tags,
+        prime_tag: primeTag,
       }),
     );
   };
@@ -743,7 +745,7 @@ const CharNumIndicator = styled.span<IPropsCharNum>`
 
 const ContentNumIndicator = styled.span<IPropsCharNum>`
   position: absolute;
-  right: 36px;
+  right: 22px;
   bottom: 12px;
   color: var(--fit-support-gray);
   ${({ isFull }) =>

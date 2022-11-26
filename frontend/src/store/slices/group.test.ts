@@ -47,7 +47,7 @@ const member1: groupApi.Member = {
   image: 'image',
   level: 1,
   cert_days: 6,
-}
+};
 
 const member2: groupApi.Member = {
   id: 2,
@@ -55,7 +55,7 @@ const member2: groupApi.Member = {
   image: 'image',
   level: 1,
   cert_days: 6,
-}
+};
 
 const group1: groupApi.Group = {
   id: 1,
@@ -67,7 +67,7 @@ const group1: groupApi.Group = {
   lat: 31,
   lng: 126,
   address: 'jeju',
-}
+};
 
 const group2: groupApi.Group = {
   id: 2,
@@ -79,16 +79,16 @@ const group2: groupApi.Group = {
   lat: 31,
   lng: 126,
   address: 'jeju',
-}
+};
 
 const memcert1: groupApi.MemberCert = {
-  member : {
+  member: {
     username: 'test',
     nickname: 'test',
-    image: 'image'
+    image: 'image',
   },
-  certs : [fitelement1]
-}
+  certs: [fitelement1],
+};
 
 //request
 const postGroupRequest: groupApi.postGroupRequestType = {
@@ -103,19 +103,21 @@ const postGroupRequest: groupApi.postGroupRequestType = {
   lat: 30,
   lng: 127,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const leaderChangeRequest: groupApi.leaderChangeRequestType = {
   group_id: '1',
   username: 'junho',
-}
+};
 
 const getCertsRequest: groupApi.getCertsRequestType = {
   group_id: '1',
   year: 2022,
   month: 9,
   specific_date: 12,
-}
+};
 
 const createCertRequest: groupApi.createCertRequestType = {
   group_id: '1',
@@ -123,7 +125,7 @@ const createCertRequest: groupApi.createCertRequestType = {
   month: 9,
   specific_date: 12,
   fitelement_id: 1,
-}
+};
 
 //response
 const getGroupsResponse: groupApi.getGroupsResponseType = {
@@ -132,7 +134,7 @@ const getGroupsResponse: groupApi.getGroupsResponseType = {
 
 const postGroupResponse: groupApi.postGroupResponseType = {
   id: 1,
-}
+};
 
 const checkMemberResponse: groupApi.checkGroupMemberResponseType = {
   member_status: 'group_leader',
@@ -159,8 +161,8 @@ const getGroupDetailResponse: groupApi.getGroupDetailResponseType = {
 };
 
 const getCertsResponse: groupApi.getCertsResponseType = {
-  all_certs: [memcert1]
-}
+  all_certs: [memcert1],
+};
 
 //test
 describe('Group', () => {
@@ -319,7 +321,7 @@ describe('Group', () => {
       .provide([[call(groupApi.getCerts, getCertsRequest), getCertsResponse]])
       .put({
         type: 'group/getCertsSuccess',
-        payload: getCertsResponse
+        payload: getCertsResponse,
       })
       .dispatch({ type: 'group/getCerts', payload: getCertsRequest })
       .hasFinalState({
@@ -337,7 +339,7 @@ describe('Group', () => {
       .provide([[call(groupApi.createCert, createCertRequest), getCertsResponse]])
       .put({
         type: 'group/createCertSuccess',
-        payload: getCertsResponse
+        payload: getCertsResponse,
       })
       .dispatch({ type: 'group/createCert', payload: createCertRequest })
       .hasFinalState({

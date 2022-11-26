@@ -1,4 +1,5 @@
 import client from './client';
+import { TagVisual } from './tag';
 import { userType } from './user';
 
 export const getGroups = async () => {
@@ -120,6 +121,8 @@ export type postGroupRequestType = {
   lng: number | null;
   address: string | null;
   goal: FitelementRequestType[];
+  tags: TagVisual[];
+  prime_tag: TagVisual | undefined;
 };
 
 export type postGroupResponseType = {
