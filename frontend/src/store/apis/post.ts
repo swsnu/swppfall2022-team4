@@ -7,41 +7,59 @@ export type postIdentifyingType = {
 };
 
 export const getPosts = async (payload: getPostsRequestType) => {
-  let response;
+  let link = `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`;
+
   if (payload.searchKeyword) {
-    response = await client.get<getPostsResponseType>(
-      `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}&search=${payload.searchKeyword}`,
-    );
-  } else {
-    response = await client.get<getPostsResponseType>(
-      `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`,
-    );
+    link += `&search=${payload.searchKeyword}`;
   }
+  if (payload.tags.length > 0) {
+    for (const tag of payload.tags) {
+      link += `&tag=${tag.id}`;
+    }
+  }
+  const response = await client.get<getPostsResponseType>(link);
   return response.data;
 };
 
+export type UserInfo = {
+  username: string;
+  nickname: string;
+  avatar: string;
+  level: number;
+  exp: number;
+};
+
 export type Post = {
-  id: string;
+  post_id: string;
+  author: UserInfo;
+
   title: string;
-  author_name: string;
   content: string;
+
   created: string;
   updated: string;
+
   like_num: number;
   dislike_num: number;
   scrap_num: number;
   comments_num: number;
-  tags: TagVisual[];
+
   prime_tag: TagVisual | undefined;
+  has_image: boolean;
+
+  // For detailed
+  tags: TagVisual[];
   liked?: boolean;
   disliked?: boolean;
   scraped?: boolean;
+  images?: string[];
 };
 
 export type getPostsRequestType = {
   pageNum: number;
   pageSize: number;
   searchKeyword?: string;
+  tags: TagVisual[];
 };
 
 export type getPostsResponseType = {
@@ -61,6 +79,7 @@ export type createPostRequestType = {
   content: string;
   author_name: string;
   tags: TagVisual[];
+  images: string[];
   prime_tag: TagVisual | undefined;
 };
 
@@ -84,6 +103,7 @@ export type editPostRequestType = {
   title: string;
   content: string;
   tags: TagVisual[];
+  images: string[];
   prime_tag: TagVisual | undefined;
 };
 
@@ -100,3 +120,6 @@ export type postFuncRequestType = {
 export type postSearchRequestType = {
   search_keyword: string;
 };
+
+export type filterTagRequestType = TagVisual;
+export type removeTagRequestType = string; // id of target tag

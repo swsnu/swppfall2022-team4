@@ -1,8 +1,8 @@
 from django.contrib import admin
-from . import models
+from comments.models import Comment
 
 
-@admin.register(models.Comment)
+@admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     """Comment admin definition"""
 
@@ -27,6 +27,6 @@ class CommentAdmin(admin.ModelAdmin):
 class CommentInlineAdmin(admin.TabularInline):
     """Comment Inline admin"""
 
-    model = models.Comment
+    model = Comment
     verbose_name = "Comment"
     verbose_name_plural = "Comments"

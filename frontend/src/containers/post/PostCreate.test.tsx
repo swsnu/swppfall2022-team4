@@ -10,7 +10,24 @@ import * as postAPI from '../../store/apis/post';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
 
-const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
+import { Store } from 'react-notifications-component';
+import client from 'store/apis/client';
+
+const originalEnv = process.env;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  Store.addNotification = jest.fn();
+});
+afterEach(() => {
+  process.env = originalEnv;
+});
+afterAll(() => jest.restoreAllMocks());
+
+const simpleTagVisuals: tagAPI.TagVisual[] = [
+  { id: '1', name: 'interesting', color: '#101010' },
+  { id: '3', name: 'tag2', color: '#101010' },
+];
 const simpleTagVisuals2: tagAPI.TagVisual[] = [{ id: '2', name: 'tagtagtag', color: '#101010' }];
 const simplePostID: postAPI.postIdentifyingType = {
   post_id: '59',
@@ -19,15 +36,31 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
     {
       id: 1,
-      class_name: 'workout',
+      class_name: 'hey',
+      class_type: 'general',
       color: '#101010',
       tags: simpleTagVisuals,
     },
     {
       id: 2,
       class_name: 'place',
+      class_type: 'place',
       color: '#111111',
       tags: simpleTagVisuals2,
+    },
+    {
+      id: 3,
+      class_name: 'workout',
+      class_type: 'workout',
+      color: '#122222',
+      tags: [],
+    },
+  ],
+  popularTags: [
+    {
+      id: '1',
+      name: '1',
+      color: '#111111',
     },
   ],
 };
@@ -108,7 +141,14 @@ describe('[PostCreate Page]', () => {
     fireEvent.click(confirmBtn);
     expect(mockDispatch).toBeCalledTimes(2);
     expect(mockDispatch).toBeCalledWith({
-      payload: { title: 'Rullu', content: 'Ralla', author_name: 'username', tags: [], prime_tag: undefined },
+      payload: {
+        title: 'Rullu',
+        content: 'Ralla',
+        author_name: 'username',
+        tags: [],
+        images: [],
+        prime_tag: undefined,
+      },
       type: 'post/createPost',
     });
   });
@@ -149,7 +189,7 @@ describe('[PostEditor Page - Tag]', () => {
       });
     });
 
-    const tagClassOption = screen.getByRole('option', { name: 'workout' }); // Tag Class
+    const tagClassOption = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class
     expect((tagClassOption as HTMLOptionElement).selected).not.toBeTruthy();
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
@@ -167,7 +207,7 @@ describe('[PostEditor Page - Tag]', () => {
     const duplicatedTagOption = screen.getByRole('option', { name: 'interesting' }); // Duplicated Tag
     userEvent.selectOptions(screen.getByTestId('tagSelect'), duplicatedTagOption);
 
-    const selectedTagRemove = screen.getByTestId('selectedTagRemove');
+    const selectedTagRemove = screen.getByTestId('tagBubbleXBtn');
     fireEvent.click(selectedTagRemove);
     const selectedTagAfterRemove = screen.queryByTestId(`selectedTag-${getTagsResponse.tags[0].id}`);
     expect(selectedTagAfterRemove).toBeNull();
@@ -175,6 +215,113 @@ describe('[PostEditor Page - Tag]', () => {
     const tagClassOption2 = screen.getByRole('option', { name: 'place' }); // Tag Class
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption2);
     expect((tagClassOption2 as HTMLOptionElement).selected).toBeTruthy();
+  });
+  test('remove prime tag', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+    });
+
+    const tagClassOption = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class
+    expect((tagClassOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
+    expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+
+    const tagOption = screen.getByRole('option', { name: 'interesting' }); // Tag
+    expect((tagOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption);
+    expect((tagOption as HTMLOptionElement).selected).not.toBeTruthy(); // Tag Select would be cleared right after selection
+
+    const selectedTag = screen.getByTestId(`selectedTag-${getTagsResponse.tags[0].id}`);
+    expect(selectedTag).toBeValid();
+
+    fireEvent.click(selectedTag); // Prime tag
+
+    const primeTag = screen.getByTestId('selectedPrimeTagRemove');
+    fireEvent.click(primeTag);
+  });
+  test('remove tag which is not prime tag', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+    });
+
+    const tagClassOption3 = screen.getByRole('option', { name: getTagsResponse.tags[2].class_name }); // Tag Class workout
+    userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption3);
+    const tagClassOption1 = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class general
+    userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption1);
+
+    const tagOption = screen.getByRole('option', { name: 'interesting' }); // Tag
+    userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption);
+    const tagOption2 = screen.getByRole('option', { name: 'tag2' });
+    userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption2);
+
+    const selectedTagRemove = screen.getAllByTestId('tagBubbleXBtn');
+    fireEvent.click(selectedTagRemove[1]);
+  });
+  test('image upload', async () => {
+    setup();
+    const mockClientGet = jest.fn();
+    client.post = mockClientGet.mockImplementation(() => Promise.resolve({ data: { title: 'image' } }));
+
+    const imageUploadBtn = screen.getByText('이미지 추가');
+    fireEvent.click(imageUploadBtn);
+
+    const blob = new Blob(['hahaha']);
+    const file = new File([blob], 'image.jpg');
+    const input = screen.getByTestId('postImageUpload');
+
+    userEvent.upload(input, file);
+
+    const deleteImageBtn = await screen.findByText('삭제');
+    expect(deleteImageBtn).toBeInTheDocument();
+    fireEvent.click(deleteImageBtn);
+  });
+  test('image upload error', async () => {
+    const alertMock = jest.fn();
+    global.alert = alertMock.mockImplementation(() => null);
+    setup();
+    const mockClientGet = jest.fn();
+    client.post = mockClientGet.mockImplementation(() => Promise.reject({}));
+
+    const imageUploadBtn = screen.getByText('이미지 추가');
+    fireEvent.click(imageUploadBtn);
+
+    const blob = new Blob(['hahaha']);
+    const file = new File([blob], 'image.jpg');
+    const input = screen.getByTestId('postImageUpload');
+
+    await userEvent.upload(input, file);
+    expect(alertMock).toBeCalledWith('이미지 업로드 오류');
+  });
+  test('image upload error ENV', async () => {
+    process.env = {
+      ...originalEnv,
+      REACT_APP_API_IMAGE_UPLOAD: undefined,
+    };
+    const alertMock = jest.fn();
+    global.alert = alertMock.mockImplementation(() => null);
+    setup();
+    const mockClientGet = jest.fn();
+    client.post = mockClientGet.mockImplementation(() => Promise.resolve({ data: { title: 'image' } }));
+
+    const imageUploadBtn = screen.getByText('이미지 추가');
+    fireEvent.click(imageUploadBtn);
+
+    const blob = new Blob(['hahaha']);
+    const file = new File([blob], 'image.jpg');
+    const input = screen.getByTestId('postImageUpload');
+
+    userEvent.upload(input, file);
+
+    const deleteImageBtn = await screen.findByText('삭제');
+    expect(deleteImageBtn).toBeInTheDocument();
   });
   test('create tag class', () => {
     const store = setup();
@@ -190,6 +337,8 @@ describe('[PostEditor Page - Tag]', () => {
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
 
     const newTagClassInput = screen.getByPlaceholderText('카테고리 이름');
+    userEvent.type(newTagClassInput, 'HumorHumorHumor');
+    userEvent.clear(newTagClassInput);
     userEvent.type(newTagClassInput, 'Humor');
 
     const randColorDice = screen.getByTestId('randColorDice');
@@ -244,7 +393,7 @@ describe('[PostEditor Page - Tag]', () => {
       });
     });
 
-    const tagClassOption = screen.getByRole('option', { name: 'workout' }); // Tag Class
+    const tagClassOption = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
 
@@ -252,6 +401,8 @@ describe('[PostEditor Page - Tag]', () => {
     userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption);
 
     const tagNameInput = screen.getByPlaceholderText('생성할 태그 이름');
+    userEvent.type(tagNameInput, 'DeadliftDeadliftDeadlift');
+    userEvent.clear(tagNameInput);
     userEvent.type(tagNameInput, 'Deadlift');
 
     const tagCreateBtn = screen.getByText('생성');

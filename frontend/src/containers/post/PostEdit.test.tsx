@@ -6,55 +6,25 @@ import Router from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import PostEdit from './PostEdit';
-import * as postAPI from '../../store/apis/post';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
-
-const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
-const simplePosts: postAPI.Post[] = [
-  {
-    id: '1',
-    title: 'First Post',
-    author_name: 'KJY',
-    content: 'Post Contents',
-    created: '2022-11-11',
-    updated: '2022-11-12',
-    like_num: 1,
-    dislike_num: 2,
-    scrap_num: 3,
-    comments_num: 1,
-    tags: simpleTagVisuals,
-    prime_tag: simpleTagVisuals[0],
-    liked: false,
-    disliked: true,
-    scraped: false,
-  },
-  {
-    id: '2',
-    title: 'Second Post',
-    author_name: 'KJY2',
-    content: 'Post Contents2',
-    created: '2022-11-11',
-    updated: '2022-11-11',
-    like_num: 11,
-    dislike_num: 21,
-    scrap_num: 31,
-    comments_num: 11,
-    tags: [],
-    prime_tag: undefined,
-    liked: false,
-    disliked: true,
-    scraped: false,
-  },
-];
+import { simplePosts, simpleTagVisuals } from 'store/slices/post.test';
 
 const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
     {
       id: 1,
       class_name: 'workout',
+      class_type: 'workout',
       color: '#101010',
       tags: simpleTagVisuals,
+    },
+  ],
+  popularTags: [
+    {
+      id: '1',
+      name: '1',
+      color: '#111111',
     },
   ],
 };
@@ -109,6 +79,19 @@ describe('[PostEdit Page]', () => {
 
     screen.getByDisplayValue('First Post');
   });
+  test('basic rendering with images', () => {
+    // Second post for has image
+    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '2' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: simplePosts[1],
+      });
+    });
+
+    screen.getByDisplayValue('Second Post');
+  });
   test('basic rendering with invalid id', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: undefined });
     setup();
@@ -137,7 +120,11 @@ describe('[PostEdit Page]', () => {
     const confirmBtn = screen.getByText('완료');
     const titleInput = screen.getByPlaceholderText('제목');
     const contentInput = screen.getByPlaceholderText('내용');
+    userEvent.type(titleInput, 'RulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRulluRullu');
+    userEvent.clear(titleInput);
     userEvent.type(titleInput, 'Rullu');
+    userEvent.type(contentInput, 'Ralla'.repeat(200));
+    userEvent.clear(contentInput);
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
     expect(mockDispatch).toBeCalledTimes(3);
@@ -148,6 +135,7 @@ describe('[PostEdit Page]', () => {
         title: 'Rullu',
         content: 'Ralla',
         tags: [],
+        images: [],
         prime_tag: undefined,
       },
       type: 'post/editPost',

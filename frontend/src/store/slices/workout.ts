@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createSlice, Dictionary, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
+import { TagClass } from 'store/apis/tag';
 import * as workoutLogAPI from 'store/apis/workout';
+import { notificationSuccess } from 'utils/sendNotification';
 
-export interface WorkoutLogState {
-  workout_log: {
+export type Fitelement = {
+  data: {
+    id: number;
     type: string | null;
     workout_type: string | null;
     period: number | null;
@@ -16,36 +19,71 @@ export interface WorkoutLogState {
     time: number | null;
     date: Date | null;
   };
-  routine: Array<any>;
+};
+
+export type RoutineType = {
+  id: number | null;
+  name: string;
+  fitelements: Fitelement[];
+};
+
+export interface WorkoutLogState {
+  error: AxiosError | null;
+  workout_log: {
+    id: number;
+    type: string | null;
+    workout_type: string | null;
+    period: number | null;
+    category: string | null;
+    weight: number | null;
+    rep: number | null;
+    set: number | null;
+    time: number | null;
+    date: Date | null;
+  };
+  routine: RoutineType[];
   daily_log: {
     isDailyLog: boolean;
-    date: Date | null;
+    date: string | null;
     memo: string | null;
     fit_element: number[] | null;
+    calories: number;
+    images: string[] | null;
   };
-  daily_fit_elements: Array<any>;
+  daily_fit_elements: Fitelement[];
   workoutCreate: {
     status: boolean;
     workout_id: string | null;
   };
   dailyLogCreate: {
     status: boolean;
-    dailylog_date: Date | null;
+    dailylog_date: string | null;
   };
   calendar_info: workoutLogAPI.calendarInfoResponse[];
   selected_routine: {
     name: string;
-    fitelements: Array<any>;
+    fitelements: Fitelement[];
   };
   add_fit_elements: {
-    fitelements: Array<any>;
+    fitelements: Fitelement[];
     status: boolean;
   };
+  fitelement_type: {
+    name: string;
+    calories: number;
+    category: string;
+  };
+  fitelement_types: TagClass[];
+  fitelementDelete: number;
+  imageSuccess: string;
+  memoSuccess: string;
 }
 
 export const initialState: WorkoutLogState = {
+  error: null,
   workout_log: {
     type: 'test',
+    id: 0,
     workout_type: 'test',
     period: 0,
     category: 'category',
@@ -61,6 +99,8 @@ export const initialState: WorkoutLogState = {
     date: null,
     memo: null,
     fit_element: null,
+    calories: 0,
+    images: [],
   },
   daily_fit_elements: [],
   workoutCreate: {
@@ -80,6 +120,15 @@ export const initialState: WorkoutLogState = {
     fitelements: [],
     status: false,
   },
+  fitelement_type: {
+    name: '',
+    category: '',
+    calories: 0,
+  },
+  fitelement_types: [],
+  fitelementDelete: 0,
+  imageSuccess: '',
+  memoSuccess: '',
 };
 
 export const workoutLogSlice = createSlice({
@@ -102,7 +151,16 @@ export const workoutLogSlice = createSlice({
       state.workout_log.date = payload.date;
     },
     getFitElementFailure: (state, { payload }) => {
-      // Empty function
+      state.error = payload;
+    },
+    getFitElementsFailure: (state, { payload }) => {
+      state.error = payload;
+    },
+    getDailyLogFailure: (state, { payload }) => {
+      state.error = payload;
+    },
+    createWorkoutLogFailure: (state, { payload }) => {
+      state.error = payload;
     },
     createWorkoutLog: (state, action: PayloadAction<workoutLogAPI.createWorkoutLogRequestType>) => {
       // Empty function
@@ -126,12 +184,23 @@ export const workoutLogSlice = createSlice({
       state.daily_log.memo = payload.memo;
       state.daily_log.fit_element = payload.fitelements;
       state.daily_log.date = payload.date;
+      state.daily_log.calories = payload.calories;
+      state.daily_log.images = payload.images;
     },
     getDailyFitElements: (state, { payload }) => {
       // Empty function
     },
     editMemo: (state, action: PayloadAction<workoutLogAPI.editMemoRequestType>) => {
       // Empty function
+    },
+    editMemoSuccess: (state, { payload }) => {
+      state.memoSuccess = payload.memo;
+    },
+    editImage: (state, action: PayloadAction<workoutLogAPI.editImageRequestType>) => {
+      // Empty function
+    },
+    editImageSuccess: (state, { payload }) => {
+      state.imageSuccess = payload.image;
     },
     getCalendarInfo: (state, action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) => {
       // Empty function
@@ -176,6 +245,19 @@ export const workoutLogSlice = createSlice({
     getFitElementsSuccess: (state, { payload }) => {
       state.daily_fit_elements = payload;
     },
+    getFitElementsType: state => {
+      // Empty function
+    },
+    getFitElementTypesSuccess: (state, { payload }) => {
+      state.fitelement_types = payload;
+    },
+    deleteFitElement: (state, { payload }) => {
+      // Empty function
+    },
+    deleteFitElementSuccess: (state, { payload }) => {
+      state.fitelementDelete = payload.id;
+      notificationSuccess('FitElement', '기록 삭제에 성공했어요!');
+    },
   },
 });
 
@@ -190,11 +272,22 @@ function* getFitElementSaga(action: PayloadAction<workoutLogAPI.getFitElementReq
   }
 }
 
+function* deleteFitElementSaga(action: PayloadAction<workoutLogAPI.deleteFitElementRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.deleteFitElement, action.payload);
+    yield put(workoutLogActions.deleteFitElementSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
+}
+
 function* getFitElementsSaga(action: PayloadAction<workoutLogAPI.getFitElementsRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getFitElements, action.payload);
     yield put(workoutLogActions.getFitElementsSuccess(response));
-  } catch (error) {}
+  } catch (error) {
+    yield put(workoutLogActions.getFitElementsFailure(error));
+  }
 }
 
 function* getDailyLogSaga(action: PayloadAction<workoutLogAPI.getDailyLogRequestType>) {
@@ -202,41 +295,63 @@ function* getDailyLogSaga(action: PayloadAction<workoutLogAPI.getDailyLogRequest
     const response: AxiosResponse = yield call(workoutLogAPI.getDailyLog, action.payload);
     yield put(workoutLogActions.getDailyLogSuccess(response));
     yield put(workoutLogActions.getFitElements(response));
-  } catch (error) {}
+  } catch (error) {
+    yield put(workoutLogActions.getDailyLogFailure(error));
+  }
 }
 
 function* createWorkoutLogSaga(action: PayloadAction<workoutLogAPI.createWorkoutLogRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.createWorkoutLog, action.payload);
     yield put(workoutLogActions.createWorkoutLogSuccess(response));
-  } catch (error) {}
+  } catch (error) {
+    yield put(workoutLogActions.createWorkoutLogFailure(error));
+  }
 }
 
 function* createDailyLogSaga(action: PayloadAction<workoutLogAPI.createDailyLogRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.createDailyLog, action.payload);
     yield put(workoutLogActions.createDailyLogSuccess(response));
-  } catch (error) {}
+  } catch (error) {
+    // Empty function
+  }
 }
 
 function* editMemoLogSaga(action: PayloadAction<workoutLogAPI.editMemoRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.editMemo, action.payload);
-  } catch (error) {}
+    yield put(workoutLogActions.editMemoSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
+}
+
+function* editImageSaga(action: PayloadAction<workoutLogAPI.editImageRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.editImage, action.payload);
+    yield put(workoutLogActions.editImageSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
 }
 
 function* getCalendarInfoSaga(action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getCalendarInfo, action.payload);
     yield put(workoutLogActions.getCalendarInfoSuccess(response));
-  } catch (error) {}
+  } catch (error) {
+    // Empty function
+  }
 }
 
 function* getRoutineSaga(action: PayloadAction<workoutLogAPI.getRoutineRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getRoutine, action.payload);
     yield put(workoutLogActions.getRoutineSuccess(response));
-  } catch (error) {}
+  } catch (error) {
+    // Empty function
+  }
 }
 
 function* getSpecificRoutineSaga(action: PayloadAction<workoutLogAPI.getSpecificRoutineRequestType>) {
@@ -244,14 +359,18 @@ function* getSpecificRoutineSaga(action: PayloadAction<workoutLogAPI.getSpecific
     const response: AxiosResponse = yield call(workoutLogAPI.getSpecificRoutine, action.payload);
     yield put(workoutLogActions.getSpecificRoutineSuccess(response));
     yield put(workoutLogActions.getSpecificRoutineFitElements(response));
-  } catch (error) {}
+  } catch (error) {
+    // Empty function
+  }
 }
 
 function* addFitElementsSaga(action: PayloadAction<workoutLogAPI.addFitElementsRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.addFitElements, action.payload);
     yield put(workoutLogActions.addFitElementsSuccess(response));
-  } catch (error) {}
+  } catch (error) {
+    // Empty function
+  }
 }
 
 function* createRoutineWithFitElementsSaga(
@@ -259,7 +378,9 @@ function* createRoutineWithFitElementsSaga(
 ) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.createRoutineWithFitElements, action.payload);
-  } catch (error) {}
+  } catch (error) {
+    // Empty function
+  }
 }
 
 function* getSpecificRoutineFitElementsSaga(
@@ -268,7 +389,18 @@ function* getSpecificRoutineFitElementsSaga(
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.getSpecificRoutineFitElements, action.payload);
     yield put(workoutLogActions.getSpecificRoutineFitElementsSuccess(response));
-  } catch (error) {}
+  } catch (error) {
+    // Empty function
+  }
+}
+
+function* getFitElementTypesSaga() {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.getFitelementTypes);
+    yield put(workoutLogActions.getFitElementTypesSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
 }
 
 export default function* workoutLogSaga() {
@@ -277,6 +409,7 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.createDailyLog, createDailyLogSaga);
   yield takeLatest(workoutLogActions.createWorkoutLog, createWorkoutLogSaga);
   yield takeLatest(workoutLogActions.editMemo, editMemoLogSaga);
+  yield takeLatest(workoutLogActions.editImage, editImageSaga);
   yield takeLatest(workoutLogActions.getCalendarInfo, getCalendarInfoSaga);
   yield takeLatest(workoutLogActions.getRoutine, getRoutineSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutine, getSpecificRoutineSaga);
@@ -284,4 +417,6 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.createRoutineWithFitElements, createRoutineWithFitElementsSaga);
   yield takeLatest(workoutLogActions.getFitElements, getFitElementsSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutineFitElements, getSpecificRoutineFitElementsSaga);
+  yield takeLatest(workoutLogActions.getFitElementsType, getFitElementTypesSaga);
+  yield takeLatest(workoutLogActions.deleteFitElement, deleteFitElementSaga);
 }

@@ -7,79 +7,19 @@ import { rootReducer } from 'store';
 import PostMain from './PostMain';
 
 import * as postAPI from '../../store/apis/post';
-import * as commentAPI from '../../store/apis/comment';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
+import { simpleComments, simplePosts, simpleTagVisuals } from 'store/slices/post.test';
+import { TagDetailModalIprops } from 'components/post/TagDetailModal';
 
-const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
-const simplePosts: postAPI.Post[] = [
-  {
-    id: '1',
-    title: 'First Post',
-    author_name: 'KJY',
-    content: 'Post Contents',
-    created: '2022-11-11',
-    updated: '2022-11-12',
-    like_num: 1,
-    dislike_num: 2,
-    scrap_num: 3,
-    comments_num: 1,
-    tags: simpleTagVisuals,
-    prime_tag: simpleTagVisuals[0],
-    liked: false,
-    disliked: true,
-    scraped: false,
-  },
-  {
-    id: '2',
-    title: 'Second Post',
-    author_name: 'KJY2',
-    content: 'Post Contents2',
-    created: '2022-11-11',
-    updated: '2022-11-11',
-    like_num: 11,
-    dislike_num: 21,
-    scrap_num: 31,
-    comments_num: 11,
-    tags: [],
-    prime_tag: undefined,
-    liked: false,
-    disliked: true,
-    scraped: false,
-  },
-];
-const simpleComments: commentAPI.Comment[] = [
-  {
-    id: '1',
-    author_name: 'KJY',
-    content: 'Comment Content longlong longlong',
-    created: '2022-11-11',
-    updated: '2022-11-12',
-    like_num: 1,
-    dislike_num: 2,
-    parent_comment: null,
-    replyActive: false,
-    editActive: false,
-    liked: false,
-    disliked: false,
-    post_id: '1',
-  },
-  {
-    id: '2',
-    author_name: 'KJY2',
-    content: 'GETBYCOM',
-    created: '2022-11-12',
-    updated: '2022-11-12',
-    like_num: 12,
-    dislike_num: 1,
-    parent_comment: null,
-    replyActive: false,
-    editActive: false,
-    liked: false,
-    disliked: false,
-    post_id: '1',
-  },
-];
+jest.mock('../../components/post/TagDetailModal.tsx', () => (props: TagDetailModalIprops) => (
+  <div data-testid="spyTagModal">
+    <button data-testid="spyTagModalDelete" onClick={props.onClose}>
+      delete
+    </button>
+  </div>
+));
+
 const simpleSearch = {
   search_keyword: 'searchKeyword',
 };
@@ -90,16 +30,26 @@ const getPostsResponse: postAPI.getPostsResponseType = {
   page_size: 15,
   page_total: 5,
 };
+
 const getRecentCommentsResponse = {
   comments: simpleComments,
 };
+
 const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
     {
       id: 1,
       class_name: 'workout',
+      class_type: 'workout',
       color: '#101010',
       tags: simpleTagVisuals,
+    },
+  ],
+  popularTags: [
+    {
+      id: '1',
+      name: '1',
+      color: '#111111',
     },
   ],
 };
@@ -135,6 +85,7 @@ const defaultPageConfig: postAPI.getPostsRequestType = {
   pageNum: 1,
   pageSize: 15,
   searchKeyword: undefined,
+  tags: [],
 };
 
 describe('[PostMain Page]', () => {
@@ -154,7 +105,7 @@ describe('[PostMain Page]', () => {
         payload: getTagsResponse,
       });
     });
-    expect(mockDispatch).toBeCalledTimes(3); // getTags, getPosts, getRecentComments
+    expect(mockDispatch).toBeCalledTimes(4); // getTags, getPosts, getRecentComments, getProfile
     expect(mockDispatch).toBeCalledWith({ payload: defaultPageConfig, type: 'post/getPosts' });
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'post/getRecentComments' });
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });
@@ -179,7 +130,7 @@ describe('[PostMain Page]', () => {
     expect(articleItem).toHaveLength(2);
     fireEvent.click(articleItem[0]);
     expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith(`/post/${getPostsResponse.posts[0].id}`);
+    expect(mockNavigate).toBeCalledWith(`/post/${getPostsResponse.posts[0].post_id}`);
   });
   test('search', () => {
     const store = setup();
@@ -207,7 +158,7 @@ describe('[PostMain Page]', () => {
         payload: getRecentCommentsResponse,
       });
     });
-    const sidebarComment = screen.getByText('GETBYCOM');
+    const sidebarComment = screen.getByText('GETBYCOMComm...');
     fireEvent.click(sidebarComment);
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith(`/post/${simpleComments[1].post_id}`);
@@ -248,5 +199,100 @@ describe('[PostMain Page]', () => {
 
     const page4 = screen.getByText('4');
     fireEvent.click(page4);
+  });
+
+  test('modal test', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/getPostsSuccess',
+        payload: getPostsResponse,
+      });
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+    });
+
+    const tagModal = screen.getByText('자세히보기');
+    fireEvent.click(tagModal);
+
+    act(() => {
+      store.dispatch({
+        type: 'post/toggleFilterTag',
+        payload: getTagsResponse.tags[0],
+      });
+    });
+
+    // Clear
+    const filterTagClearBtn = screen.getByTestId('filterTagClear');
+    fireEvent.click(filterTagClearBtn);
+
+    // Remove
+    const filterTagRemoveBt = screen.getByTestId('selectedTagRemove');
+    fireEvent.click(filterTagRemoveBt);
+
+    // Modal Close
+    const tagModalClose = screen.getByTestId('spyTagModalDelete');
+    fireEvent.click(tagModalClose);
+  });
+
+  test('modal close with selected with search', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/getPostsSuccess',
+        payload: getPostsResponse,
+      });
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+      store.dispatch({
+        type: 'post/postSearch',
+        payload: { search_keyword: 'hi' },
+      });
+      store.dispatch({
+        type: 'post/toggleFilterTag',
+        payload: getTagsResponse.tags[0],
+      });
+    });
+
+    const tagModal = screen.getByText('자세히보기');
+    fireEvent.click(tagModal);
+
+    // Modal Close
+    const tagModalClose = screen.getByTestId('spyTagModalDelete');
+    fireEvent.click(tagModalClose);
+  });
+
+  test('modal close without selected', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/getPostsSuccess',
+        payload: getPostsResponse,
+      });
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+    });
+
+    const tagModal = screen.getByText('자세히보기');
+    fireEvent.click(tagModal);
+
+    // Modal Close
+    const tagModalClose = screen.getByTestId('spyTagModalDelete');
+    fireEvent.click(tagModalClose);
+  });
+
+  test('without user', () => {
+    const store = configureStore({ reducer: rootReducer });
+    render(
+      <Provider store={store}>
+        <PostMain />
+      </Provider>,
+    );
   });
 });

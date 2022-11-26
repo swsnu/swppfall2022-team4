@@ -1,69 +1,75 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-// import { RootState } from 'index';
-import { postActions } from 'store/slices/post';
-import { rowCenterFlex } from 'components/post/layout';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-// import { timeAgoFormat } from 'utils/datetime';
-
-interface IPropsSearchClear {
-  isActive?: boolean;
-}
+import { infoActions } from 'store/slices/information';
+import { RootState } from 'index';
+import { useNavigate } from 'react-router-dom';
+import { tagActions } from 'store/slices/tag';
+import { TagBubble } from 'components/tag/tagbubble';
+import SearchBar from 'components/common/SearchBar';
 
 const InformationLobby = () => {
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { info, tagList } = useSelector(({ info, tag }: RootState) => ({
+    info: info,
+    tagList: tag.tagList,
+  }));
+  useEffect(() => {
+    dispatch(infoActions.initializeInformation());
+    dispatch(tagActions.getTags());
+  }, []);
+
   return (
     <PostPageWrapper>
       <PostContentWrapper>
         <TopElementWrapperWithoutPadding>
-          <SearchForm
+          <SearchBar
             onSubmit={e => {
               e.preventDefault();
-              dispatch(
-                postActions.postSearch({
-                  search_keyword: search,
-                }),
-              );
-            }}
-          >
-            <SearchIcon>
-              <FontAwesomeIcon icon={faSearch} />
-            </SearchIcon>
-            <SearchInput
-              placeholder="Search keyword"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            ></SearchInput>
-            <ClearSearchInput
-              isActive={search !== ''}
-              onClick={() => {
-                setSearch('');
+              if (info.contents?.basic.name !== search)
                 dispatch(
-                  postActions.postSearch({
-                    search_keyword: '',
+                  infoActions.getInformation({
+                    information_name: search,
                   }),
                 );
-              }}
-            >
-              Clear
-            </ClearSearchInput>
-          </SearchForm>
+              navigate(`/information/${search}`);
+            }}
+            onClear={() => {
+              setSearch('');
+            }}
+            search={search}
+            setSearch={setSearch}
+          />
         </TopElementWrapperWithoutPadding>
+
         <SectionWrapper>
           <SectionItemWrapper>
-            <span>1</span>
+            <span>즐겨찾기</span>
+            <br />
+            <span>검색기록</span>
           </SectionItemWrapper>
           <SectionItemWrapper>
-            <span>2</span>
-          </SectionItemWrapper>
-          <SectionItemWrapper>
-            <span>3</span>
-          </SectionItemWrapper>
-          <SectionItemWrapper>
-            <span>4</span>
+            <span>운동 태그 목록</span>
+            <br />
+            {tagList?.map(tagClass => {
+              return (
+                tagClass.class_type === 'workout' &&
+                tagClass.tags.map(tag => {
+                  return (
+                    <TagBubble
+                      style={{ cursor: 'pointer' }}
+                      key={tag.id}
+                      color={tag.color}
+                      onClick={() => navigate(`/information/${tag.name}`)}
+                    >
+                      {tag.name}
+                    </TagBubble>
+                  );
+                })
+              );
+            })}
           </SectionItemWrapper>
         </SectionWrapper>
       </PostContentWrapper>
@@ -105,39 +111,12 @@ const TopElementWrapperWithoutPadding = styled.div`
 const SectionWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr;
   row-gap: 10px;
   column-gap: 10px;
   width: 100%;
   min-height: 600px;
   height: 70vh;
-`;
-
-const SearchForm = styled.form`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const SearchInput = styled.input`
-  width: 95%;
-  padding: 15px 20px;
-  font-size: 15px;
-  border: none;
-`;
-const ClearSearchInput = styled.span<IPropsSearchClear>`
-  width: 5%;
-  text-align: center;
-  cursor: pointer;
-  ${({ isActive }) =>
-    !isActive &&
-    `
-    display: none;
-  `}
-`;
-const SearchIcon = styled(rowCenterFlex)`
-  margin-left: 20px;
 `;
 
 const SectionItemWrapper = styled.div`

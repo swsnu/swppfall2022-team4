@@ -6,6 +6,7 @@ import { tagSlice } from 'store/slices/tag';
 import { userSlice } from 'store/slices/user';
 import { workoutLogSlice } from 'store/slices/workout';
 import { chatSlice } from 'store/slices/chat';
+import { notificationSlice } from 'store/slices/notification';
 
 export const initialState: PreloadedState<RootState> = {
   user: {
@@ -13,17 +14,14 @@ export const initialState: PreloadedState<RootState> = {
     error: null,
 
     profile: null,
-    profileContent: {
-      post: null,
-      comment: null,
-      scrap: null,
-    },
+
     loading: false,
     editProfile: false,
     deleteProfile: false,
     profileError: null,
-
-    notice: [],
+  },
+  notification: {
+    notificationList: [],
   },
   post: {
     postList: {
@@ -53,6 +51,7 @@ export const initialState: PreloadedState<RootState> = {
     postDelete: false,
     postFunc: false,
     postSearch: '',
+    filterTag: [],
   },
   group: {
     groupList: {
@@ -80,16 +79,22 @@ export const initialState: PreloadedState<RootState> = {
       members: [],
       error: null,
     },
+    groupCerts: {
+      all_certs: [],
+      error: null,
+    }
   },
   tag: {
     tagList: null,
+    popularTags: null,
     tagSearch: null,
     tagCreate: null,
+    tagClassCreate: null,
     error: null,
   },
   chat: {
     socket: null,
-    where: null,
+    where: '/',
 
     create: {
       id: null,
@@ -101,35 +106,41 @@ export const initialState: PreloadedState<RootState> = {
     error: null,
   },
   workout_log: {
+    error: null,
+    fitelementDelete: 0,
     workout_log: {
-      type: null,
-      workout_type: null,
+      id: 0,
+      type: 'log',
+      workout_type: '데드리프트',
       period: null,
-      category: null,
+      category: '등운동',
       weight: null,
       rep: null,
       set: null,
-      time: null,
+      time: 20,
       date: null,
     },
     routine: [
       {
+        id: 0,
         name: 'test_routine',
         fitelements: [],
       },
       {
+        id: 1,
         name: 'test_routine2',
         fitelements: [
           {
             data: {
+              id: 0,
               type: 'log',
-              workout_type: 'type',
+              workout_type: '데드리프트',
               period: null,
-              category: null,
+              category: '등운동',
               weight: null,
               rep: null,
               set: null,
-              time: null,
+              time: 20,
               date: null,
             },
           },
@@ -141,18 +152,21 @@ export const initialState: PreloadedState<RootState> = {
       date: null,
       memo: null,
       fit_element: null,
+      calories: 0,
+      images: null,
     },
     daily_fit_elements: [
       {
         data: {
+          id: 0,
           type: 'log',
-          workout_type: 'type',
+          workout_type: '데드리프트',
           period: null,
-          category: null,
+          category: '등운동',
           weight: null,
           rep: null,
           set: null,
-          time: null,
+          time: 10,
           date: null,
         },
       },
@@ -165,7 +179,22 @@ export const initialState: PreloadedState<RootState> = {
       status: false,
       dailylog_date: null,
     },
-    calendar_info: [],
+    calendar_info: [
+      {
+        year: 2022,
+        month: 10,
+        date: 1,
+        workouts: [],
+        calories: 0
+      },
+      {
+        year: 2022,
+        month: 10,
+        date: 2,
+        workouts: [],
+        calories: 0
+      }
+    ],
     selected_routine: {
       name: 'test_routine2',
       fitelements: [],
@@ -174,6 +203,14 @@ export const initialState: PreloadedState<RootState> = {
       fitelements: [],
       status: false,
     },
+    fitelement_type: {
+      name: '',
+      calories: 0,
+      category: '',
+    },
+    fitelement_types: [],
+    imageSuccess: "",
+    memoSuccess: "",
   },
 };
 
@@ -186,6 +223,7 @@ export const getMockStore = (preloadedState?: PreloadedState<RootState>) => {
       group: groupSlice.reducer,
       tag: tagSlice.reducer,
       chat: chatSlice.reducer,
+      notification: notificationSlice.reducer,
     },
     preloadedState,
   });

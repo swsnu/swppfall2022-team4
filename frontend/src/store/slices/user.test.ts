@@ -17,6 +17,14 @@ const signupRequest = {
   weight: 88.8,
   age: 36,
 };
+const socialSignupRequest = {
+  username: '11111111',
+  nickname: 'abcd',
+  gender: 'male',
+  height: 160.5,
+  weight: 88.8,
+  age: 36,
+};
 const loginRequest = {
   username: '11111111',
   password: '11111111',
@@ -24,11 +32,6 @@ const loginRequest = {
 const editProfileRequest = {
   username: '11111111',
   data: { oldPassword: '11111111', newPassword: '22222222' },
-};
-const getProfileContentResponse = {
-  posts: 1,
-  comments: 2,
-  scraps: 3,
 };
 
 describe('slices - user', () => {
@@ -53,6 +56,22 @@ describe('slices - user', () => {
     ],
     [
       userActions.signupFailure('error'),
+      {
+        ...initialState,
+        error: 'error',
+      },
+    ],
+
+    [userActions.socialSignup(socialSignupRequest), initialState],
+    [
+      userActions.socialSignupSuccess(simpleUser),
+      {
+        ...initialState,
+        user: simpleUser,
+      },
+    ],
+    [
+      userActions.socialSignupFailure('error'),
       {
         ...initialState,
         error: 'error',
@@ -128,12 +147,25 @@ describe('slices - user', () => {
         profileError: 'error',
       },
     ],
+
+    [userActions.follow('1111111'), initialState],
+    [userActions.followSuccess({ is_follow: true }), initialState],
+    [userActions.followFailure('error'), initialState],
   ])('reducer', (action, state) => {
     const store = configureStore({
       reducer: rootReducer,
     });
     store.dispatch(action);
     expect(store.getState().user).toEqual(state);
+  });
+
+  test('followSuccess', () => {
+    const store = configureStore({
+      reducer: rootReducer,
+    });
+    store.dispatch(userActions.getProfileSuccess({ is_follow: false }));
+    store.dispatch(userActions.followSuccess({ is_follow: true }));
+    expect(store.getState().user).toEqual({ ...initialState, profile: { is_follow: true } });
   });
 
   describe('saga success', () => {
@@ -143,6 +175,18 @@ describe('slices - user', () => {
         .provide([[call(userAPI.token), undefined]])
         .dispatch({ type: 'user/token' })
         .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('socialSignup', () => {
+      return expectSaga(userSaga)
+        .withReducer(userSlice.reducer)
+        .provide([[call(userAPI.socialSignup, socialSignupRequest), simpleUser]])
+        .put({ type: 'user/socialSignupSuccess', payload: simpleUser })
+        .dispatch({ type: 'user/socialSignup', payload: socialSignupRequest })
+        .hasFinalState({
+          ...initialState,
+          user: simpleUser,
+        })
         .silentRun();
     });
     test('signup', () => {
@@ -197,22 +241,6 @@ describe('slices - user', () => {
         })
         .silentRun();
     });
-    test('getProfileContent', () => {
-      return expectSaga(userSaga)
-        .withReducer(userSlice.reducer)
-        .provide([[call(userAPI.getProfileContent, '11111111'), getProfileContentResponse]])
-        .put({ type: 'user/getProfileContentSuccess', payload: getProfileContentResponse })
-        .dispatch({ type: 'user/getProfileContent', payload: '11111111' })
-        .hasFinalState({
-          ...initialState,
-          profileContent: {
-            post: getProfileContentResponse.posts,
-            comment: getProfileContentResponse.comments,
-            scrap: getProfileContentResponse.scraps,
-          },
-        })
-        .silentRun();
-    });
     test('editProfile', () => {
       return expectSaga(userSaga)
         .withReducer(userSlice.reducer)
@@ -238,6 +266,15 @@ describe('slices - user', () => {
         })
         .silentRun();
     });
+    test('follow', () => {
+      return expectSaga(userSaga)
+        .withReducer(userSlice.reducer)
+        .provide([[call(userAPI.follow, '11111111'), undefined]])
+        .put({ type: 'user/followSuccess', payload: undefined })
+        .dispatch({ type: 'user/follow', payload: '11111111' })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
   });
 
   describe('saga failure', () => {
@@ -249,6 +286,18 @@ describe('slices - user', () => {
         .provide([[call(userAPI.signup, signupRequest), throwError(simpleError)]])
         .put({ type: 'user/signupFailure', payload: simpleError })
         .dispatch({ type: 'user/signup', payload: signupRequest })
+        .hasFinalState({
+          ...initialState,
+          error: simpleError,
+        })
+        .silentRun();
+    });
+    test('socialSignup', () => {
+      return expectSaga(userSaga)
+        .withReducer(userSlice.reducer)
+        .provide([[call(userAPI.socialSignup, socialSignupRequest), throwError(simpleError)]])
+        .put({ type: 'user/socialSignupFailure', payload: simpleError })
+        .dispatch({ type: 'user/socialSignup', payload: socialSignupRequest })
         .hasFinalState({
           ...initialState,
           error: simpleError,
@@ -310,6 +359,15 @@ describe('slices - user', () => {
           ...initialState,
           profileError: simpleError,
         })
+        .silentRun();
+    });
+    test('follow', () => {
+      return expectSaga(userSaga)
+        .withReducer(userSlice.reducer)
+        .provide([[call(userAPI.follow, '11111111'), throwError(simpleError)]])
+        .put({ type: 'user/followFailure', payload: simpleError })
+        .dispatch({ type: 'user/follow', payload: '11111111' })
+        .hasFinalState(initialState)
         .silentRun();
     });
   });

@@ -8,14 +8,37 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer } from 'store';
 
+import { Store } from 'react-notifications-component';
+
+beforeEach(() => {
+  Store.addNotification = jest.fn();
+});
+afterAll(() => jest.restoreAllMocks());
+
 // Mock objects
 const simpleError = new Error('error!');
-const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
-const simplePosts: postAPI.Post[] = [
+export const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
+export const simpleUserInfo: postAPI.UserInfo[] = [
   {
-    id: '1',
+    username: 'KJY',
+    nickname: 'KimV',
+    avatar: 'kimv.jpeg',
+    level: 3,
+    exp: 99,
+  },
+  {
+    username: 'KJY2',
+    nickname: 'KimV2',
+    avatar: 'kimv2.jpeg',
+    level: 33,
+    exp: 99,
+  },
+];
+export const simplePosts: postAPI.Post[] = [
+  {
+    post_id: '1',
     title: 'First Post',
-    author_name: 'KJY',
+    author: simpleUserInfo[0],
     content: 'Post Contents',
     created: '2022-11-11',
     updated: '2022-11-12',
@@ -25,14 +48,16 @@ const simplePosts: postAPI.Post[] = [
     comments_num: 1,
     tags: simpleTagVisuals,
     prime_tag: simpleTagVisuals[0],
-    liked: false,
+    has_image: true,
+    images: ['1.png'],
+    liked: true,
     disliked: true,
-    scraped: false,
+    scraped: true,
   },
   {
-    id: '2',
+    post_id: '2',
     title: 'Second Post',
-    author_name: 'KJY2',
+    author: simpleUserInfo[1],
     content: 'Post Contents2',
     created: '2022-11-11',
     updated: '2022-11-11',
@@ -42,19 +67,21 @@ const simplePosts: postAPI.Post[] = [
     comments_num: 11,
     tags: [],
     prime_tag: undefined,
+    has_image: false,
     liked: false,
-    disliked: true,
+    disliked: false,
     scraped: false,
   },
 ];
 const simplePostID: postAPI.postIdentifyingType = {
   post_id: '59',
 };
-const simpleComments: commentAPI.Comment[] = [
+const simpleImages: string[] = ['test_image1.jpg', 'test_image2.png'];
+export const simpleComments: commentAPI.Comment[] = [
   {
-    id: '1',
-    author_name: 'KJY',
-    content: 'Comment Content',
+    comment_id: '1',
+    author: simpleUserInfo[0],
+    content: 'GETBYCOMComment Content',
     created: '2022-11-11',
     updated: '2022-11-12',
     like_num: 1,
@@ -67,9 +94,9 @@ const simpleComments: commentAPI.Comment[] = [
     post_id: '1',
   },
   {
-    id: '2',
-    author_name: 'KJY2',
-    content: 'Comment Content2',
+    comment_id: '2',
+    author: simpleUserInfo[1],
+    content: 'short',
     created: '2022-11-12',
     updated: '2022-11-12',
     like_num: 12,
@@ -87,13 +114,15 @@ const simpleComments: commentAPI.Comment[] = [
 const getPostsRequest: postAPI.getPostsRequestType = {
   pageNum: 1,
   pageSize: 15,
-  searchKeyword: '',
+  searchKeyword: 'search',
+  tags: [],
 };
 const createPostRequest: postAPI.createPostRequestType = {
   title: 'post title',
   content: 'post content',
   author_name: 'KJY',
   tags: simpleTagVisuals,
+  images: simpleImages,
   prime_tag: simpleTagVisuals[0],
 };
 const updatePostDetailRequest: postAPI.postIdentifyingType = simplePostID;
@@ -103,6 +132,7 @@ const editPostRequest: postAPI.editPostRequestType = {
   title: 'title modified',
   content: 'content modified',
   tags: simpleTagVisuals,
+  images: simpleImages,
   prime_tag: simpleTagVisuals[0],
 };
 const getPostCommentRequest: postAPI.postIdentifyingType = simplePostID;
@@ -141,6 +171,12 @@ const getPostsResponse: postAPI.getPostsResponseType = {
   page_size: 15,
   page_total: 7,
 };
+const getPostsEmptyResponse: postAPI.getPostsResponseType = {
+  posts: [],
+  page: 2,
+  page_size: 15,
+  page_total: 7,
+};
 const getRecentCommentsResponse = {
   comments: simpleComments,
 };
@@ -164,9 +200,6 @@ describe('slices - posts', () => {
       [postActions.toggleCommentReply(createCommentReplyRequest), initialState],
       [postActions.toggleCommentEdit(editCommentRequest), initialState],
       [postActions.resetPost(), initialState],
-      // [postActions.createComment(createCommentRequest), initialState],
-      // [postActions.editComment(editCommentRequest), initialState],
-      // [postActions.deleteComment(deleteCommentRequest), initialState],
     ])('reducer', (action, state) => {
       const store = configureStore({
         reducer: rootReducer,
@@ -191,6 +224,27 @@ describe('slices - posts', () => {
         { ...simpleComments[0], replyActive: false },
         { ...simpleComments[1], editActive: false },
       ]);
+    });
+    test('toggle, remove, clear tags', () => {
+      const store = configureStore({
+        reducer: rootReducer,
+      });
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      expect(store.getState().post.filterTag).toEqual(simpleTagVisuals);
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      expect(store.getState().post.filterTag).toEqual([]);
+      store.dispatch(postActions.removeFilterTag(simpleTagVisuals[0].id));
+      expect(store.getState().post.filterTag).toEqual([]);
+      store.dispatch(postActions.toggleFilterTag(simpleTagVisuals[0]));
+      store.dispatch(postActions.clearFilterTag());
+      expect(store.getState().post.filterTag).toEqual([]);
+    });
+    test('search - getPosts empty', () => {
+      const store = configureStore({
+        reducer: rootReducer,
+      });
+      store.dispatch(postActions.postSearch({ search_keyword: 'key' }));
+      store.dispatch(postActions.getPostsSuccess(getPostsEmptyResponse));
     });
     test('getPosts', () => {
       return expectSaga(postSaga)
@@ -297,8 +351,8 @@ describe('slices - posts', () => {
     test('postFunc', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
-        .provide([[call(postAPI.postFunc, postFuncRequest), undefined]])
-        .put({ type: 'post/postFuncSuccess', payload: undefined })
+        .provide([[call(postAPI.postFunc, postFuncRequest), { type: 'like' }]])
+        .put({ type: 'post/postFuncSuccess', payload: { type: 'like' } })
         .dispatch({ type: 'post/postFunc', payload: postFuncRequest })
         .hasFinalState({
           ...initialState,
@@ -309,8 +363,8 @@ describe('slices - posts', () => {
     test('commentFunc', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
-        .provide([[call(commentAPI.commentFunc, commentFuncRequest), undefined]])
-        .put({ type: 'post/commentFuncSuccess', payload: undefined })
+        .provide([[call(commentAPI.commentFunc, commentFuncRequest), { type: 'like' }]])
+        .put({ type: 'post/commentFuncSuccess', payload: { type: 'like' } })
         .dispatch({ type: 'post/commentFunc', payload: commentFuncRequest })
         .hasFinalState({
           ...initialState,
@@ -325,6 +379,7 @@ describe('slices - posts', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
         .provide([[call(commentAPI.createComment, createCommentRequest), undefined]])
+        .put({ type: 'post/createCommentSuccess', payload: undefined })
         .dispatch({ type: 'post/createComment', payload: createCommentRequest })
         .hasFinalState(initialState)
         .silentRun();
@@ -333,6 +388,7 @@ describe('slices - posts', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
         .provide([[call(commentAPI.editComment, editCommentRequest), undefined]])
+        .put({ type: 'post/editCommentSuccess', payload: undefined })
         .dispatch({ type: 'post/editComment', payload: editCommentRequest })
         .hasFinalState(initialState)
         .silentRun();
@@ -341,6 +397,7 @@ describe('slices - posts', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
         .provide([[call(commentAPI.deleteComment, deleteCommentRequest), undefined]])
+        .put({ type: 'post/deleteCommentSuccess', payload: undefined })
         .dispatch({ type: 'post/deleteComment', payload: deleteCommentRequest })
         .hasFinalState(initialState)
         .silentRun();
@@ -458,6 +515,48 @@ describe('slices - posts', () => {
         .hasFinalState({
           ...initialState,
           postFunc: false,
+        })
+        .silentRun();
+    });
+    test('createComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.createComment, createCommentRequest), throwError(simpleError)]])
+        .put({ type: 'post/createCommentFailure', payload: simpleError })
+        .dispatch({ type: 'post/createComment', payload: createCommentRequest })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('editComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.editComment, editCommentRequest), throwError(simpleError)]])
+        .put({ type: 'post/editCommentFailure', payload: simpleError })
+        .dispatch({ type: 'post/editComment', payload: editCommentRequest })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('deleteComment', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.deleteComment, deleteCommentRequest), throwError(simpleError)]])
+        .put({ type: 'post/deleteCommentFailure', payload: simpleError })
+        .dispatch({ type: 'post/deleteComment', payload: deleteCommentRequest })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('commentFunc', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(commentAPI.commentFunc, commentFuncRequest), throwError(simpleError)]])
+        .put({ type: 'post/commentFuncFailure', payload: simpleError })
+        .dispatch({ type: 'post/commentFunc', payload: commentFuncRequest })
+        .hasFinalState({
+          ...initialState,
+          postComment: {
+            ...initialState.postComment,
+            commentFunc: true,
+          },
         })
         .silentRun();
     });

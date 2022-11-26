@@ -1,0 +1,39 @@
+﻿No,english_type,korean_type,category,calories(시간 당 68kg 기준. 계산법: calories/68/60*사용자몸무게*할당시간(min))
+1,deadlift,데드리프트,back,510
+2,lat pull down,랫 풀 다운,back,442
+3,pull up,턱걸이,back,408
+4,barbell row,바벨 로우,back,408
+5,cable row,케이블 로우,back,374
+6,barbell pull over,바벨 풀오버,back,459
+7,bench press,벤치 프레스,chest,459
+8,dips,딥스,chest,425
+9,pac deck fly,팩 덱 플라이,chest,374
+10,push up,팔굽혀펴기,chest,340
+11,dumbbell pull over,덤벨 풀오버,chest,408
+12,military press,밀리터리 프레스,deltoid,459
+13,lateral raise,래터럴 레이즈,deltoid,272
+14,upright row,업라이트 로우,deltoid,374
+15,squat,스쿼트,leg,476
+16,leg press,레그 프레스,leg,408
+17,calf raise,카프레이즈,leg,204
+18,crunch,크런치,abs,204
+19,AB roll out,AB 롤아웃,abs,408
+20,sit up,윗몸 일으키기,abs,340
+21,mountain climber,마운틴 클라이머,abs,466
+22,bicycle crunch,바이시클 크런치,abs,255
+23,skull crusher,스컬 크러셔,arm,268
+24,triceps push down,트라이셉스 푸시 다운,arm,272
+25,barbell curl,바벨 컬,arm,357
+26,dumbbel curl,덤벨 컬,arm,323
+27,swimming,수영,etc,476
+28,indoor walking,실내 걷기,cardio,170
+29,outdoor walking,실외 걷기,cardio,170
+30,stretching,스트레칭,etc,170
+31,climbing,계단 오르기,etc,440
+32,bicycle,자전거,etc,650
+33,cycle machine,사이클 머신,etc,550
+34,jump rope,줄넘기,etc,700
+35,pilates,필라테스,etc,328
+36,aerobic,에어로빅,etc,664
+37,boxing,복싱,etc,612
+38,hiking,등산,etc,504

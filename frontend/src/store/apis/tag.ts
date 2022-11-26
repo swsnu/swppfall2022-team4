@@ -13,6 +13,7 @@ export type Tag = {
 export type TagClass = {
   id: number;
   class_name: string;
+  class_type: string;
   color: string;
   tags: TagVisual[];
 };
@@ -21,10 +22,13 @@ export type TagVisual = {
   id: string;
   name: string;
   color: string;
+  posts?: number;
+  calories?: number;
 };
 
 export type getTagListResponseType = {
   tags: TagClass[];
+  popularTags: TagVisual[];
 };
 
 export const createTagClass = async (payload: createTagClassRequestType) => {
@@ -44,7 +48,8 @@ export const createTag = async (payload: createTagRequestType) => {
 
 export type createTagRequestType = {
   name: string;
-  classId: string;
+  classId: number;
+  calories?: number;
 };
 
 export const searchTag = async (payload: searchTagRequestType) => {

@@ -6,6 +6,12 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer } from 'store';
 
+import { Store } from 'react-notifications-component';
+beforeEach(() => {
+  Store.addNotification = jest.fn();
+});
+afterAll(() => jest.restoreAllMocks());
+
 // Mock objects
 const simpleError = new Error('error!');
 const simpleTagVisuals: tagAPI.TagVisual[] = [{ id: '1', name: 'interesting', color: '#101010' }];
@@ -17,7 +23,7 @@ const createTagClassRequest: tagAPI.createTagClassRequestType = {
 };
 const createTagRequest: tagAPI.createTagRequestType = {
   name: 'new category',
-  classId: '1',
+  classId: 1,
 };
 const searchTagRequest: tagAPI.searchTagRequestType = {
   class_name: 'category1',
@@ -29,16 +35,36 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
     {
       id: 1,
       class_name: 'workout',
+      class_type: 'workout',
       color: '#101010',
       tags: simpleTagVisuals,
+    },
+  ],
+  popularTags: [
+    {
+      id: '1',
+      name: '1',
+      color: '#111111',
     },
   ],
 };
 const createTagResponse: tagAPI.tagVisualsResponseType = {
   tags: simpleTagVisuals,
 };
+const createTagClassResponse = {
+  tag_class: {
+    id: 1,
+    class_name: 'class',
+    class_type: 'type',
+    color: '#111',
+    tags: [],
+  },
+};
 const searchTagResponse: tagAPI.tagVisualsResponseType = {
   tags: simpleTagVisuals,
+};
+const searchTagEmptyResponse: tagAPI.tagVisualsResponseType = {
+  tags: [],
 };
 
 describe('slices - tags', () => {
@@ -62,16 +88,17 @@ describe('slices - tags', () => {
         .hasFinalState({
           ...initialState,
           tagList: getTagsResponse.tags,
+          popularTags: getTagsResponse.popularTags,
         })
         .silentRun();
     });
     test('createTagClass', () => {
       return expectSaga(tagSaga)
         .withReducer(tagSlice.reducer)
-        .provide([[call(tagAPI.createTagClass, createTagClassRequest), undefined]])
-        .put({ type: 'tag/createTagClassSuccess', payload: undefined })
+        .provide([[call(tagAPI.createTagClass, createTagClassRequest), createTagClassResponse]])
+        .put({ type: 'tag/createTagClassSuccess', payload: createTagClassResponse })
         .dispatch({ type: 'tag/createTagClass', payload: createTagClassRequest })
-        .hasFinalState(initialState)
+        .hasFinalState({ ...initialState, tagClassCreate: createTagClassResponse.tag_class })
         .silentRun();
     });
     test('createTag', () => {
@@ -90,6 +117,15 @@ describe('slices - tags', () => {
         .put({ type: 'tag/searchTagSuccess', payload: searchTagResponse })
         .dispatch({ type: 'tag/searchTag', payload: searchTagRequest })
         .hasFinalState({ ...initialState, tagSearch: searchTagResponse.tags })
+        .silentRun();
+    });
+    test('searchTagEmpty', () => {
+      return expectSaga(tagSaga)
+        .withReducer(tagSlice.reducer)
+        .provide([[call(tagAPI.searchTag, searchTagRequest), searchTagEmptyResponse]])
+        .put({ type: 'tag/searchTagSuccess', payload: searchTagEmptyResponse })
+        .dispatch({ type: 'tag/searchTag', payload: searchTagRequest })
+        .hasFinalState({ ...initialState, tagSearch: [] })
         .silentRun();
     });
   });

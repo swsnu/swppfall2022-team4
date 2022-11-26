@@ -4,6 +4,10 @@
 
     /* Gray */
     --fit-disabled-gray: #9b9b9b;
+    --fit-disabled-gray-deep: #5b5b5b;
+    --fit-support-gray: #939393;
+    --fit-modal-background: rgba(0, 0, 0, 0.3);
+    --fit-unselected-tag: #dbdbdb;
 
     /* Red */
     --fit-red-neg: #f790a8;
@@ -12,6 +16,7 @@
 
     /* Green */
     --fit-green-back: #d7efe3;
+    --fit-green-text: #008e2f;
     --fit-green-pos-big-btn1: #00be5f;
     --fit-green-small-btn1: #54dd6d;
     --fit-green-mid-btn1: #8ee5b9;
