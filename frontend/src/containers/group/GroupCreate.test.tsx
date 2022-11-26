@@ -123,7 +123,7 @@ describe('setup test', () => {
     fireEvent.click(addBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('wrong goal', () => {
+  it('wrong goal1', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     
@@ -134,7 +134,7 @@ describe('setup test', () => {
     fireEvent.click(addBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('wrong goal', () => {
+  it('wrong goal2', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     
@@ -147,7 +147,7 @@ describe('setup test', () => {
     fireEvent.click(addBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
   });
-  it('wrong goal', () => {
+  it('wrong goal3', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
     
