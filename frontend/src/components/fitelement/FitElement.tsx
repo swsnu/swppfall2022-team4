@@ -33,7 +33,6 @@ export const FitElement = (props: IProps) => {
       <LogCategory>{props.set}</LogCategory>
       <LogCategory className="type2">
         <Content>{props.time}</Content>
-        
       </LogCategory>
     </FitElementLog>
   );
@@ -84,4 +83,3 @@ const Content = styled.div`
   align-items: center;
   justify-content: center;
 `;
-

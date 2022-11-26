@@ -90,7 +90,7 @@ const Routine = () => {
             {routine_id === -1 ? (
               <div>
                 <Content>달력에서 루틴추가 후</Content>
-                <br/>
+                <br />
                 <Content>루틴을 눌러주세요!</Content>
               </div>
             ) : (
