@@ -115,7 +115,11 @@ const GroupDetail = () => {
       </div>
       <GroupAboutWrapper>
         <GroupAboutText>About</GroupAboutText>
-        <ProfileImage src={process.env.REACT_APP_API_IMAGE + group_detail.group_leader.image} alt="profile" />
+        <ProfileImage
+          src={process.env.REACT_APP_API_IMAGE + group_detail.group_leader.image}
+          alt="profile"
+          onClick={() => navigate(`/profile/${group_detail.group_leader.username}`)}
+        />
         <div style={{ display: 'flex' }}>
           <GroupAboutSmallText>그룹장:</GroupAboutSmallText>
           <GroupAboutNickname>{group_detail.group_leader.nickname}</GroupAboutNickname>
@@ -241,6 +245,7 @@ const GroupAboutText = styled.div`
 const ProfileImage = styled.img`
   width: 80px;
   height: 80px;
+  cursor: pointer;
   border: 2px solid black;
   border-radius: 30px;
   margin-bottom: 15px;
