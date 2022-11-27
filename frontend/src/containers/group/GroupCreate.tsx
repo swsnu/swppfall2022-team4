@@ -262,6 +262,7 @@ const GroupCreate = () => {
               type="date"
               className="input-date"
               disabled={!set_date}
+              max={end_date}
               onChange={e => setStartDate(e.target.value)}
             />
             <input
@@ -270,6 +271,7 @@ const GroupCreate = () => {
               className="input-date"
               disabled={!set_date}
               onChange={e => setEndDate(e.target.value)}
+              min={start_date}
             />
           </DateWrapper>
         </div>
