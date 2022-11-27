@@ -235,6 +235,7 @@ const GroupListWrapper = styled.div`
 `;
 
 const SortButton = styled.div`
+  cursor: pointer;
   padding: 5px;
   font-size: 16px;
 `;
