@@ -62,6 +62,11 @@ const GroupDetail = () => {
       dispatch(groupActions.exitGroup(group_id));
     }
   };
+  const deleteOnClick = () => {
+    if (confirm('삭제하시겠습니까?') == true) {
+      if (group_id) dispatch(groupActions.deleteGroup(group_id));
+    }
+  };
 
   if (!group_id || !group_detail) return <Loading />;
   return (
@@ -91,7 +96,7 @@ const GroupDetail = () => {
             <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
             <Button1 content="Chat" clicked={() => navigate(`/chat/${group_id}`)} />
             <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
-            <Button1 content="Delete" clicked={() => dispatch(groupActions.deleteGroup(group_id))} />
+            <Button1 content="Delete" clicked={deleteOnClick} />
           </div>
         )}
         {member_status === 'group_member' && (
