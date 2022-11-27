@@ -148,7 +148,7 @@ def post_home(request):
             for image in data["images"]:  # image would be string type
                 PostImage.objects.create(image=image, post=created_post)
 
-            add_exp(request.user.username, 5)
+            add_exp(request.user.username, 10)
 
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
