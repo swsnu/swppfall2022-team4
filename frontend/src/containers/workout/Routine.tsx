@@ -17,11 +17,11 @@ const Routine = () => {
   const routineClick = (id: number) => {
     setRoutineId(id);
   };
-  const user = useSelector(({ user }: RootState) => user.user);
+  const user = useSelector(({ user }: RootState) => user);
   const [routine_id, setRoutineId] = useState<number>(-1);
 
   const defaultRoutineRequest: getRoutineRequestType = {
-    username: user?.username!,
+    username: user.user?.username!,
   };
 
   const { selected_routine, routines } = useSelector(({ workout_log }: RootState) => ({
@@ -29,22 +29,34 @@ const Routine = () => {
     routines: workout_log.routine,
   }));
 
+  const create_routine_id = useSelector((rootState: RootState) => rootState.workout_log.create_routine_id);
+  const deleteFitElementStatus = useSelector((rootState: RootState) => rootState.workout_log.fitelementDelete);
+
+  const fitelementDeleteOnClick = (id: number) => {
+    dispatch(
+      workoutLogActions.deleteFitElement({
+        username: user.user?.username!,
+        fitelement_id: id,
+      }),
+    );
+  };
+
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, []);
+  }, [create_routine_id]);
 
   useEffect(() => {
     if (routine_id !== -1) {
       dispatch(
         workoutLogActions.getSpecificRoutine({
-          username: user?.username!,
+          username: user.user?.username!,
           routine_id: routine_id,
         }),
       );
     }
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [routine_id, routines]);
+  }, [routine_id, routines, deleteFitElementStatus ]);
 
   return (
     <Wrapper>
@@ -76,7 +88,8 @@ const Routine = () => {
           ) : (
             <RoutineHeader>
               <LogHeader className="title">{selected_routine.name}</LogHeader>
-              <LogHeader>
+                <LogHeader>
+                <LogCategory className="type3"></LogCategory>
                 <LogCategory className="type">종류</LogCategory>
                 <LogCategory className="type2">강도</LogCategory>
                 <LogCategory>반복</LogCategory>
@@ -95,17 +108,26 @@ const Routine = () => {
               </div>
             ) : (
               selected_routine.fitelements.map((fitelement, index) => (
-                <FitElement
-                  key={index}
-                  id={index + 1}
-                  type={fitelement.data.type}
-                  workout_type={fitelement.data.workout_type}
-                  category={fitelement.data.category}
-                  weight={fitelement.data.weight}
-                  rep={fitelement.data.rep}
-                  set={fitelement.data.set}
-                  time={fitelement.data.time}
-                />
+                <FitElementWrapper key={index}>
+                  <FitElement
+                    key={fitelement.data.id}
+                    id={index + 1}
+                    type={fitelement.data.type}
+                    workout_type={fitelement.data.workout_type}
+                    category={fitelement.data.category}
+                    weight={fitelement.data.weight}
+                    rep={fitelement.data.rep}
+                    set={fitelement.data.set}
+                    time={fitelement.data.time}
+                  />
+                  <DeleteButton>
+                    <DeleteEmoji
+                      data-testid="delete-fitelement"
+                      src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
+                      onClick={() => fitelementDeleteOnClick(fitelement.data.id)}
+                    />
+                  </DeleteButton>
+                </FitElementWrapper>
               ))
             )}
           </LogWrapper>
@@ -189,7 +211,7 @@ const Content = styled.div`
 `;
 
 const LogCategory = styled.div`
-  width: 10%;
+  width: 8%;
   height: 20px;
   font-size: 14px;
   display: flex;
@@ -200,10 +222,13 @@ const LogCategory = styled.div`
   color: black;
 
   &&.type {
-    width: 40%;
+    width: 20%;
   }
   &&.type2 {
     width: 20%;
+  }
+  &&.type3{
+    width: 15%;
   }
 `;
 
@@ -312,4 +337,29 @@ const LogWrapper = styled.div`
     justify-content: center;
     align-items: center;
   }
+`;
+
+const DeleteButton = styled.div`
+  width: 5%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const DeleteEmoji = styled.img`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
+const FitElementWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid black;
+  align-items: center;
 `;

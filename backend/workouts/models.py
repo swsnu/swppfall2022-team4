@@ -29,7 +29,7 @@ class DailyLog(models.Model):
     date = models.DateField(null=False)
     memo = models.TextField(null=True)
     fit_element = models.ManyToManyField(FitElement, blank=True)
-    calories = models.IntegerField(default=0, null=True)
+    calories = models.FloatField(default=0, null=True)
 
 
 class DailyLogImage(models.Model):

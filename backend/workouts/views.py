@@ -10,6 +10,7 @@ import calendar
 
 DATE_FORMAT = "%Y-%m-%d"
 
+
 def add_exp(username, exp):
     if User.objects.filter(username=username).exists():
         user = User.objects.get(username=username)
@@ -59,6 +60,7 @@ def create_fit_element(request):
                 new_daily_log.calories += (
                     fitelement_type.calories * new_fit_element.time
                 )
+                print(fitelement_type.calories, new_fit_element.time)
                 new_daily_log.save()
 
             else:
@@ -70,6 +72,7 @@ def create_fit_element(request):
                 daily_log_single.calories += (
                     fitelement_type.calories * new_fit_element.time
                 )
+                print(fitelement_type.calories, new_fit_element.time)
                 daily_log_single.save()
 
             add_exp(request.user.username, 4)
@@ -111,11 +114,15 @@ def fit_element(request, fitelement_id):
             username = request.GET.get("username")
             user = User.objects.get(username=username)
             daily_logs = DailyLog.objects.filter(author=user)
+            if not daily_logs.filter(date=workout.date).exists():
+                workout.delete()
+                return JsonResponse(
+                    {"id": fitelement_id, "message": "success"}, status=200
+                )
             daily_log_single = daily_logs.get(date=workout.date)
             fitelement_type = Tag.objects.get(tag_name=workout.workout_type)
-            daily_log_single.calories -= (
-                fitelement_type.calories * workout.time
-            )
+            daily_log_single.calories -= fitelement_type.calories * workout.time
+            print(fitelement_type.calories, workout.time)
             daily_log_single.save()
             workout.delete()
             return JsonResponse({"id": fitelement_id, "message": "success"}, status=200)
@@ -223,7 +230,7 @@ def routines(request):
                 fitelement.save()
                 new_routine.fit_element.add(fitelement)
         new_routine.save()
-        return HttpResponse(status=201)
+        return JsonResponse({"id": new_routine.pk}, status=201)
 
 
 @require_http_methods(["GET", "PUT", "DELETE"])
@@ -280,7 +287,7 @@ def daily_log(request, year, month, specific_date):
             "author": daily_log_single[0].author.id,
             "memo": daily_log_single[0].memo,
             "date": daily_log_single[0].date,
-            "calories": daily_log_single[0].calories,
+            "calories": int(daily_log_single[0].calories),
             "fitelements": list(
                 daily_log_single[0].fit_element.values_list("id", flat=True)
             ),
@@ -372,9 +379,7 @@ def daily_log(request, year, month, specific_date):
                     return_json.append(fitelement.pk)
                     new_daily_log.fit_element.add(fitelement)
                     fitelement_type = Tag.objects.get(tag_name=fitelement.workout_type)
-                    new_daily_log.calories += (
-                        fitelement_type.calories / 68 * 60 / 60 * fitelement.time
-                    )
+                    new_daily_log.calories += fitelement_type.calories * fitelement.time
             new_daily_log.save()
             return JsonResponse(return_json, safe=False, status=200)
 
@@ -390,7 +395,7 @@ def daily_log(request, year, month, specific_date):
                 daily_log_single[0].fit_element.add(fitelement)
                 fitelement_type = Tag.objects.get(tag_name=fitelement.workout_type)
                 daily_log_single[0].calories += (
-                    fitelement_type.calories / 68 * 60 / 60 * fitelement.time
+                    fitelement_type.calories * fitelement.time
                 )
         daily_log_single[0].save()
         return JsonResponse(return_json, safe=False, status=200)

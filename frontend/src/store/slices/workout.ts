@@ -77,6 +77,7 @@ export interface WorkoutLogState {
   fitelementDelete: number;
   imageSuccess: string;
   memoSuccess: string;
+  create_routine_id: number | null;
 }
 
 export const initialState: WorkoutLogState = {
@@ -129,6 +130,7 @@ export const initialState: WorkoutLogState = {
   fitelementDelete: 0,
   imageSuccess: '',
   memoSuccess: '',
+  create_routine_id: null,
 };
 
 export const workoutLogSlice = createSlice({
@@ -238,6 +240,10 @@ export const workoutLogSlice = createSlice({
       action: PayloadAction<workoutLogAPI.createRoutineWithFitElementsRequestType>,
     ) => {
       // Empty function
+    },
+    createRoutineWithFitElementsSuccess: (state, { payload }) => {
+      state.create_routine_id = payload.id;
+      console.log(payload);
     },
     getFitElements: (state, { payload }) => {
       getFitElementsSaga(payload.fitelements);
@@ -378,6 +384,7 @@ function* createRoutineWithFitElementsSaga(
 ) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.createRoutineWithFitElements, action.payload);
+    yield put(workoutLogActions.createRoutineWithFitElementsSuccess(response));
   } catch (error) {
     // Empty function
   }

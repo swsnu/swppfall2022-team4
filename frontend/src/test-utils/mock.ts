@@ -213,6 +213,7 @@ export const initialState: PreloadedState<RootState> = {
     fitelement_types: [],
     imageSuccess: '',
     memoSuccess: '',
+    create_routine_id: null
   },
 };
 
