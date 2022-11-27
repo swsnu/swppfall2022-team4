@@ -882,9 +882,11 @@ const MemoEditButton = styled.img`
 
 const MemoInput = styled.input`
   width: 400px;
-  height: 50%;
-  padding: 8px 20px;
-  font-size: 10px;
+  height: 80%;
+  padding: 5px 15px 5px 15px;
+  font-size: 14px;
+  font-weight: normal;
+  font-family: IBMPlexSansThaiLooped;
 `;
 
 const MemoTitleWrapper = styled.div`
