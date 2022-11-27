@@ -109,6 +109,8 @@ const WorkoutLog = () => {
   const createWorkoutLog = () => {
     if (workout_type === '') {
       alert('운동종류를 입력해주세요.');
+    } else if (workout_time === null || workout_time < 0) {
+      alert('시간이 입력되어야 합니다.');
     } else {
       const newLogConfig: createWorkoutLogRequestType = {
         username: user.user?.username!,
@@ -213,7 +215,7 @@ const WorkoutLog = () => {
   const imageSuccess = useSelector((rootState: RootState) => rootState.workout_log.imageSuccess);
   const memoSuccess = useSelector((rootState: RootState) => rootState.workout_log.memoSuccess);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
-  const visible_input = (workout_category === '기타운동' || workout_category === '유산소') ? 'hidden' : 'visible';
+  const visible_input = workout_category === '기타운동' || workout_category === '유산소' ? 'hidden' : 'visible';
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
@@ -530,7 +532,7 @@ const WorkoutLog = () => {
                   <WorkoutTypeInput
                     type="number"
                     className={visible_input}
-                    disabled={visible_input==="hidden" ? true: false}
+                    disabled={visible_input === 'hidden' ? true : false}
                     min="0"
                     value={weight || ''}
                     onChange={e => setWeight(Number(e.target.value))}
@@ -538,7 +540,7 @@ const WorkoutLog = () => {
                   <WorkoutTypeInput
                     type="number"
                     className={visible_input}
-                    disabled={visible_input==="hidden" ? true: false}
+                    disabled={visible_input === 'hidden' ? true : false}
                     min="0"
                     value={rep || ''}
                     onChange={e => setRep(Number(e.target.value))}
@@ -546,7 +548,7 @@ const WorkoutLog = () => {
                   <WorkoutTypeInput
                     type="number"
                     className={visible_input}
-                    disabled={visible_input==="hidden" ? true: false}
+                    disabled={visible_input === 'hidden' ? true : false}
                     min="0"
                     value={set || ''}
                     onChange={e => setSet(Number(e.target.value))}
@@ -1086,8 +1088,8 @@ const WorkoutTypeInput = styled.input`
   &&.hidden {
     disabled: true;
     readonly: true;
-    background: #F0F0F0;
-    border: #DCDCDC;
+    background: #f0f0f0;
+    border: #dcdcdc;
   }
 `;
 
