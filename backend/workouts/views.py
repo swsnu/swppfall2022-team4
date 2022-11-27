@@ -7,6 +7,7 @@ from tags.views import prepare_tag_response
 from users.models import User
 import json
 import calendar
+import time
 
 DATE_FORMAT = "%Y-%m-%d"
 

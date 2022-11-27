@@ -259,7 +259,7 @@ const WorkoutLog = () => {
 
   const days = isLeapYear(date.getFullYear()) ? DAYS_LEAP : DAYS;
 
-  const onChangeProfileImage = async (e: any) => {
+  const onChangeDailyLogImage = async (e: any) => {
     const file = e.target.files[0];
     if (file.size > 5 * 1024 * 1024) {
       alert('5MB 이하의 파일만 업로드가 가능합니다.');
@@ -277,6 +277,8 @@ const WorkoutLog = () => {
         specific_date: day,
       };
       dispatch(workoutLogActions.editImage(editImageConfig));
+      var input = document.getElementById('FileInput_DailyLog') as HTMLInputElement;
+      input.value = '';
     } catch (error) {
       alert('이미지 업로드 오류');
     }
@@ -436,7 +438,7 @@ const WorkoutLog = () => {
                         document.getElementById('FileInput_DailyLog')?.click();
                       }}
                     />
-                    <FileInput type="file" accept="image/*" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
+                    <FileInput type="file" accept="image/*" id="FileInput_DailyLog" onChange={onChangeDailyLogImage} />
                   </WorkoutImageWrapper>
                 )}
               </CalendarFooter>
