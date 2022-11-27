@@ -328,6 +328,13 @@ def daily_log(request, year, month, specific_date):
         )
         req_data = json.loads(request.body.decode())
         return_json = []
+        if "delete" in req_data:
+            daily_log_image = DailyLogImage.objects.get(
+                image=req_data["image"], daily_log=daily_log_single[0]
+            )
+            daily_log_image.delete()
+            return JsonResponse({"image": req_data["image"]}, status=201)
+
         if "image" in req_data:
             if len(daily_log_single) == 0:
                 new_daily_log = DailyLog(

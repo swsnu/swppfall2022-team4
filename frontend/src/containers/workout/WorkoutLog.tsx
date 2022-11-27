@@ -5,10 +5,12 @@ import { useOnClickOutside } from 'usehooks-ts';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
+import { RedSmallBtn } from 'components/post/button';
 import { Hover } from 'components/fitelement/Hover';
 import { workoutLogActions } from 'store/slices/workout';
 import { userActions } from 'store/slices/user';
 import ImageDetailModal from 'components/post/ImageDetailModal';
+import { notificationSuccess } from 'utils/sendNotification';
 import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
@@ -16,6 +18,7 @@ import {
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
   editImageRequestType,
+  deleteImageRequestType,
 } from 'store/apis/workout';
 import client from 'store/apis/client';
 
@@ -216,11 +219,12 @@ const WorkoutLog = () => {
   const memoSuccess = useSelector((rootState: RootState) => rootState.workout_log.memoSuccess);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
   const visible_input = workout_category === '기타운동' || workout_category === '유산소' ? 'hidden' : 'visible';
+  const deleteImageSuccess = useSelector((rootState: RootState) => rootState.workout_log.deleteImageSuccess);
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus, imageSuccess, memoSuccess]);
+  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus, imageSuccess, memoSuccess, deleteImageSuccess]);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '');
@@ -277,6 +281,20 @@ const WorkoutLog = () => {
       alert('이미지 업로드 오류');
     }
   };
+
+  const removeImages = (targetImage: string) => {
+    const deleteImageConfig: deleteImageRequestType = {
+      username: user.user?.username!,
+      image: targetImage,
+      year: year,
+      month: month + 1,
+      specific_date: day,
+      delete: true,
+    };
+    dispatch(workoutLogActions.deleteImage(deleteImageConfig));
+    notificationSuccess('Image', '이미지 삭제에 성공했어요!');
+  };
+
   const fitElementTarget = fitElementTypes.filter(item => item.class_name === workout_category);
   return (
     <Wrapper>
@@ -394,21 +412,23 @@ const WorkoutLog = () => {
               <CalendarFooter>
                 <>
                   {image!.map((v, index) => (
-                    <WorkoutImage
-                      key={index}
-                      src={process.env.REACT_APP_API_IMAGE + v}
-                      alt="workout_image"
-                      onClick={() => {
-                        setActiveImage(v);
-                        setImageModalOpen(true);
-                      }}
-                    />
+                    <WorkoutImageWrapper key={index}>
+                      <WorkoutImage
+                        src={process.env.REACT_APP_API_IMAGE + v}
+                        alt="workout_image"
+                        onClick={() => {
+                          setActiveImage(v);
+                          setImageModalOpen(true);
+                        }}
+                      />
+                      <RedSmallBtn onClick={() => removeImages(v)}>삭제</RedSmallBtn>
+                    </WorkoutImageWrapper>
                   ))}
                 </>
                 {image!.length + 1 > CONTENT_IMAGE_LIMIT ? (
                   ''
                 ) : (
-                  <>
+                  <WorkoutImageWrapper>
                     <WorkoutImage
                       src={process.env.REACT_APP_API_IMAGE + 'default-upload-image.png'}
                       alt="workout_image"
@@ -417,7 +437,7 @@ const WorkoutLog = () => {
                       }}
                     />
                     <FileInput type="file" accept="image/*" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
-                  </>
+                  </WorkoutImageWrapper>
                 )}
               </CalendarFooter>
             </Frame>
@@ -651,18 +671,35 @@ const Wrapper = styled.div`
   align-items: start;
 `;
 
+const WorkoutImageWrapper = styled.div`
+  width: 120px;
+  height: 110px;
+  border-radius: 15px;
+  margin: 5px 5px;
+  cursor: pointer;
+  transition: border 0.15s linear;
+  position: relative;
+  button {
+    display: none;
+  }
+  &:hover button {
+    display: block;
+    width: 60px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -30px;
+    margin-top: -15px;
+  }
+`;
+
 const WorkoutImage = styled.img`
   width: 120px;
   height: 110px;
-  border: 1px solid #727272;
+  background-color: var(--fit-disabled-gray);
   border-radius: 15px;
-  margin: 3px;
-  margin-top: 18px;
-  cursor: pointer;
-  transition: border 0.15s linear;
-  &:hover {
-    border: 2px solid #000000;
-  }
+  object-fit: cover;
 `;
 const FileInput = styled.input`
   display: none;

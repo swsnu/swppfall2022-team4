@@ -108,6 +108,15 @@ export type editImageRequestType = {
   image: string;
 };
 
+export type deleteImageRequestType = {
+  year: number;
+  month: number;
+  specific_date: number;
+  username: string;
+  image: string;
+  delete: true;
+};
+
 export type getCalendarInfoResponseType = {
   fitelements: calendarInfoResponse[];
 };
@@ -177,6 +186,14 @@ export const getDailyLog = async (payload: getDailyLogRequestType) => {
 
 export const editImage = async (payload: editImageRequestType) => {
   const response = await client.put<editImageRequestType>(
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
+    payload,
+  );
+  return response.data;
+};
+
+export const deleteImage = async (payload: deleteImageRequestType) => {
+  const response = await client.put<deleteImageRequestType>(
     `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
     payload,
   );
