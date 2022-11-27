@@ -60,8 +60,8 @@ def create_fit_element(request):
                 new_daily_log.calories += (
                     fitelement_type.calories * new_fit_element.time
                 )
-                listToStore = [new_fit_element.id]
-                new_daily_log.log_index = json.dumps(listToStore)
+                list_to_store = [new_fit_element.id]
+                new_daily_log.log_index = json.dumps(list_to_store)
                 new_daily_log.save()
 
             else:
@@ -73,14 +73,14 @@ def create_fit_element(request):
                 daily_log_single.calories += (
                     fitelement_type.calories * new_fit_element.time
                 )
-                listToStore = []
+                list_to_store = []
                 if daily_log_single.log_index:
                     prev_list = json.loads(str(daily_log_single.log_index))
                     prev_list.append(new_fit_element.id)
                     daily_log_single.log_index = json.dumps(prev_list)
                 else:
-                    listToStore = [new_fit_element.id]
-                    daily_log_single.log_index = json.dumps(listToStore)
+                    list_to_store = [new_fit_element.id]
+                    daily_log_single.log_index = json.dumps(list_to_store)
                 daily_log_single.save()
 
             add_exp(request.user.username, 4)
@@ -129,7 +129,6 @@ def fit_element(request, fitelement_id):
             daily_log_single = daily_logs.get(date=workout.date)
             fitelement_type = Tag.objects.get(tag_name=workout.workout_type)
             daily_log_single.calories -= fitelement_type.calories * workout.time
-            listToStore = []
             prev_list = json.loads(daily_log_single.log_index)
             prev_list.remove(workout.id)
             daily_log_single.log_index = json.dumps(prev_list)
@@ -384,7 +383,6 @@ def daily_log(request, year, month, specific_date):
             print(index_list)
             DailyLog.objects.filter(date=datetime(year, month, specific_date).date()).update(log_index = index_list)
             return JsonResponse({"log_index": req_data["log_index"]}, status=201)
-        
         fitelements = req_data["fitelements"]
         if len(daily_log_single) == 0:
             new_daily_log = DailyLog(
@@ -406,14 +404,14 @@ def daily_log(request, year, month, specific_date):
                     new_daily_log.fit_element.add(fitelement)
                     fitelement_type = Tag.objects.get(tag_name=fitelement.workout_type)
                     new_daily_log.calories += fitelement_type.calories * fitelement.time
-                    listToStore = []
+                    list_to_store = []
                     if new_daily_log.log_index:
                         prev_list = json.loads(new_daily_log.log_index)
                         prev_list.append(fitelement.id)
                         new_daily_log.log_index = json.dumps(prev_list)
                     else:
-                        listToStore = [fitelement.id]
-                        new_daily_log.log_index = json.dumps(listToStore)
+                        list_to_store = [fitelement.id]
+                        new_daily_log.log_index = json.dumps(list_to_store)
             new_daily_log.save()
             return JsonResponse(return_json, safe=False, status=200)
 
@@ -431,16 +429,14 @@ def daily_log(request, year, month, specific_date):
                 daily_log_single[0].calories += (
                     fitelement_type.calories * fitelement.time
                 )
-                listToStore = []
-                if new_daily_log.log_index:
-                    prev_list = json.loads(new_daily_log.log_index)
+                list_to_store = []
+                if daily_log_single[0].log_index:
+                    prev_list = json.loads(daily_log_single[0].log_index)
                     prev_list.append(fitelement.id)
-                    new_daily_log.log_index = json.dumps(prev_list)
+                    daily_log_single[0].log_index = json.dumps(prev_list)
                 else:
-                    listToStore = [fitelement.id]
-                    new_daily_log.log_index = json.dumps(listToStore)
-                
-                
+                    list_to_store = [fitelement.id]
+                    daily_log_single[0].log_index = json.dumps(list_to_store)
         daily_log_single[0].save()
         return JsonResponse(return_json, safe=False, status=200)
 

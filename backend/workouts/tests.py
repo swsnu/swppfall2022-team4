@@ -53,8 +53,15 @@ class WorkoutTestCase(TestCase):
             author_id=1,
             date="2022-10-1",
             memo="memo",
+            log_index=[fit_element.pk]
         )
         daily_log.fit_element.add(fit_element)
+
+        daily_log2 = DailyLog.objects.create(
+            author_id=1,
+            date="2022-10-15",
+            memo="memo",
+        )
 
     def ready(self):
         client = Client()
@@ -120,6 +127,25 @@ class WorkoutTestCase(TestCase):
         )
 
         self.assertEqual(res.status_code, 400)
+
+        res = client.post(
+            "/api/fitelement/",
+            {
+                "username": "username",
+                "type": "log",
+                "workout_type": "deadlift",
+                "period": 0,
+                "weight": 0,
+                "rep": 0,
+                "set": 0,
+                "time": 20,
+                "date": "2022-10-15",
+            },
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=csrftoken,
+        )
+
+        self.assertEqual(res.status_code, 201)
 
     def test_get_fit_element(self):
         client, _ = self.ready()
@@ -262,6 +288,17 @@ class WorkoutTestCase(TestCase):
             HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 200)
+
+        res = client.put(
+            "/api/fitelement/dailylog/2022/10/5/?&username=username",
+            {
+                "username": "username",
+                "log_index": [1, 2]
+            },
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=csrftoken,
+        )
+        self.assertEqual(res.status_code, 201)
 
     def test_get_fit_element_types(self):
         client, _ = self.ready()
