@@ -614,7 +614,7 @@ const PostDetail = () => {
   );
 };
 
-const TagBubbleWrapper = styled.div`
+export const TagBubbleWrapper = styled.div`
   display: flex;
   margin-left: 10px;
   overflow-x: scroll;
@@ -623,7 +623,7 @@ const TagBubbleWrapper = styled.div`
   }
 `;
 
-const ArticleBodyFooter = styled.div`
+export const ArticleBodyFooter = styled.div`
   padding: 10px 20px;
   display: flex;
   justify-content: flex-start;
@@ -631,7 +631,7 @@ const ArticleBodyFooter = styled.div`
   align-items: center;
 `;
 
-const ArticleDetailWrapper = styled(ScrollShadow)`
+export const ArticleDetailWrapper = styled(ScrollShadow)`
   width: 100%;
   height: 100%;
   background-color: var(--fit-white);
@@ -642,7 +642,7 @@ const ArticleDetailWrapper = styled(ScrollShadow)`
   }
 `;
 
-const ArticleBody = styled.div`
+export const ArticleBody = styled.div`
   font-size: 14px;
   width: 100%;
   height: 80%;
@@ -654,7 +654,7 @@ const ArticleBody = styled.div`
   margin-bottom: 8px;
 `;
 
-const ArticleItem = styled.div`
+export const ArticleItem = styled.div`
   font-size: 14px;
   width: 100%;
   height: fit-content;
@@ -668,7 +668,7 @@ const ArticleItem = styled.div`
 `;
 
 // Article Title
-const ArticleTitleWrapper = styled.div`
+export const ArticleTitleWrapper = styled.div`
   width: 100%;
   padding: 5px 30px 0px 30px;
   background-color: var(--fit-white);
@@ -680,7 +680,7 @@ const ArticleTitleWrapper = styled.div`
   margin-bottom: 20px;
 `;
 
-const ArticleBackBtn = styled.button`
+export const ArticleBackBtn = styled.button`
   margin-right: 30px;
   font-size: 30px;
   background: none;
@@ -688,19 +688,20 @@ const ArticleBackBtn = styled.button`
   cursor: pointer;
 `;
 
-const ArticleTitle = styled.h1`
-  width: 100%;
+export const ArticleTitle = styled.h1`
+  width: fit-content;
   font-size: 24px;
   word-wrap: break-word;
   word-break: break-all;
 `;
 
-const PostWritterWrapper = styled.div`
+export const PostWritterWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
 
-const PostWritterLeftWrapper = styled.div`
+export const PostWritterLeftWrapper = styled.div`
+  width: fit-content;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -708,7 +709,7 @@ const PostWritterLeftWrapper = styled.div`
   margin-right: 8px;
 `;
 
-const PostWritterAvatar = styled(RowCenterFlex)`
+export const PostWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -716,17 +717,18 @@ const PostWritterAvatar = styled(RowCenterFlex)`
   font-size: 8px;
 `;
 
-const PostWritterText = styled.span`
+export const PostWritterText = styled.span`
+  width: 100%;
   font-size: 16px;
   margin-bottom: 3px;
 `;
 
-const PostTimeText = styled.span`
+export const PostTimeText = styled.span`
   font-size: 13px;
   margin-bottom: 2px;
 `;
 
-const ArticleBodyContent = styled.div`
+export const ArticleBodyContent = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
@@ -738,7 +740,7 @@ const ArticleBodyContent = styled.div`
 `;
 
 // Article Comment List
-const ArticleCommentWrapper = styled.div`
+export const ArticleCommentWrapper = styled.div`
   width: 100%;
 `;
 
@@ -747,9 +749,9 @@ export const CommentWrapper = styled.div`
   padding: 0px 20px;
 `;
 
-const CommentReplyWrapper = styled(ColumnFlex)``;
+export const CommentReplyWrapper = styled(ColumnFlex)``;
 
-const CommentItem = styled.div<IPropsComment>`
+export const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
   font-size: 14px;
   display: flex;
@@ -765,25 +767,25 @@ const CommentItem = styled.div<IPropsComment>`
   `}
 `;
 
-const CommentWritterWrapperO1 = styled.div`
+export const CommentWritterWrapperO1 = styled.div`
   text-align: center;
   width: fit-content;
   margin-right: 20px;
 `;
 
-const CommentWritterWrapper = styled(ColumnFlex)`
+export const CommentWritterWrapper = styled(ColumnFlex)`
   align-items: center;
   font-size: 8px;
 `;
 
-const CommentWritterAvatar = styled(RowCenterFlex)`
+export const CommentWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin-bottom: 5px;
 `;
 
-const UserAvatar = styled.img`
+export const UserAvatar = styled.img`
   border: 1px solid black;
   width: 40px;
   height: 40px;
@@ -792,13 +794,13 @@ const UserAvatar = styled.img`
   object-fit: cover;
 `;
 
-const CommentWritterText = styled.span`
+export const CommentWritterText = styled.span`
   font-size: 12px;
   width: fit-content;
   white-space: nowrap;
 `;
 
-const CommentRightWrapper = styled(ColumnFlex)`
+export const CommentRightWrapper = styled(ColumnFlex)`
   width: 100%;
   height: 100%;
   min-height: 50px;
@@ -813,7 +815,7 @@ export const CommentFuncWrapper = styled.div`
   justify-content: flex-end;
 `;
 
-const handleFuncBtnColor = (color: string) => {
+export const handleFuncBtnColor = (color: string) => {
   switch (color) {
     case FuncType.Like:
       return '#ff0000';
@@ -831,7 +833,7 @@ export const FuncBtn = styled.div<IPropsFuncBtn>`
   margin-left: 8px;
 `;
 
-const FuncBtnWrapper = styled.div`
+export const FuncBtnWrapper = styled.div`
   margin-left: 12px;
 `;
 
@@ -842,7 +844,7 @@ export const CommentFuncTimeIndicator = styled.span`
   min-width: 48px;
 `;
 
-const CommentNumIndicator = styled.span`
+export const CommentNumIndicator = styled.span`
   font-size: 15px;
   width: 50px;
   margin-right: 5px;
@@ -860,7 +862,7 @@ export const CommentContentWrapper = styled.div`
   text-align: left;
 `;
 
-const CommentEditInput = styled.input`
+export const CommentEditInput = styled.input`
   text-align: left;
   width: 100%;
   padding: 10px 12px;
@@ -872,7 +874,7 @@ export const CommentContent = styled.span`
 `;
 
 // Comment Writing Form
-const CommentForm = styled.form`
+export const CommentForm = styled.form`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -880,7 +882,7 @@ const CommentForm = styled.form`
   padding: 10px 20px;
 `;
 
-const CommentReplyForm = styled.form`
+export const CommentReplyForm = styled.form`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -890,19 +892,19 @@ const CommentReplyForm = styled.form`
   border-bottom: 1px solid gray;
 `;
 
-const CommentReplyFormWrapper = styled.div``;
+export const CommentReplyFormWrapper = styled.div``;
 
-const CommentInput = styled.input`
+export const CommentInput = styled.input`
   width: 90%;
   padding: 10px 12px;
 `;
 
-const PostPanelWrapper = styled(ColumnCenterFlex)`
+export const PostPanelWrapper = styled(ColumnCenterFlex)`
   width: 100%;
 `;
 
 // Image Content Section
-const ContentImageSection = styled.div`
+export const ContentImageSection = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -913,7 +915,7 @@ const ContentImageSection = styled.div`
   padding: 8px 10px;
 `;
 
-const PostUploadedImageWrapper = styled.div`
+export const PostUploadedImageWrapper = styled.div`
   width: 130px;
   height: 130px;
   border-radius: 15px;
@@ -921,7 +923,7 @@ const PostUploadedImageWrapper = styled.div`
   position: relative;
 `;
 
-const PostUploadedImage = styled.img`
+export const PostUploadedImage = styled.img`
   width: 130px;
   height: 130px;
   background-color: var(--fit-disabled-gray);

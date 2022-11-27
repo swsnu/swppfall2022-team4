@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useOnClickOutside } from 'usehooks-ts';
-import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -13,17 +12,53 @@ import { Comment } from 'store/apis/comment';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { BlueBigBtn, CommentGreenBtn, RedSmallBtn, GreenCommentSubmitBtn } from 'components/post/button';
 import { TagBubble } from 'components/tag/tagbubble';
-import {
-  ColumnCenterFlex,
-  ColumnFlex,
-  PostContentWrapper,
-  PostPageWrapper,
-  RowCenterFlex,
-} from 'components/post/layout';
+import { PostContentWrapper, PostPageWrapper } from 'components/post/layout';
 import { UserDetailHorizontalModal, UserDetailModal } from 'components/post/UserDetailModal';
 import ImageDetailModal from 'components/post/ImageDetailModal';
 import { chatActions } from 'store/slices/chat';
-import { ScrollShadow } from 'components/common/ScrollShadow';
+import {
+  ArticleBackBtn,
+  ArticleBody,
+  ArticleBodyContent,
+  ArticleBodyFooter,
+  ArticleCommentWrapper,
+  ArticleDetailWrapper,
+  ArticleItem,
+  ArticleTitle,
+  ArticleTitleWrapper,
+  CommentContent,
+  CommentContentWrapper,
+  CommentEditInput,
+  CommentForm,
+  CommentFuncNumIndicator,
+  CommentFuncTimeIndicator,
+  CommentFuncWrapper,
+  CommentInput,
+  CommentItem,
+  CommentNumIndicator,
+  CommentReplyForm,
+  CommentReplyFormWrapper,
+  CommentReplyWrapper,
+  CommentRightWrapper,
+  CommentWrapper,
+  CommentWritterAvatar,
+  CommentWritterText,
+  CommentWritterWrapper,
+  CommentWritterWrapperO1,
+  ContentImageSection,
+  FuncBtn,
+  FuncBtnWrapper,
+  PostPanelWrapper,
+  PostTimeText,
+  PostUploadedImage,
+  PostUploadedImageWrapper,
+  PostWritterAvatar,
+  PostWritterLeftWrapper,
+  PostWritterText,
+  PostWritterWrapper,
+  TagBubbleWrapper,
+  UserAvatar,
+} from 'containers/post/PostDetail';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -35,10 +70,6 @@ export const FuncType = {
   Dislike: 'dislike',
   Scrap: 'scrap',
 };
-
-interface IPropsFuncBtn {
-  color: string;
-}
 
 const GroupPostDetail = () => {
   const { group_id, post_id } = useParams<{ group_id: string; post_id: string }>();
@@ -584,321 +615,5 @@ const GroupPostDetail = () => {
     </PostPageWrapper>
   );
 };
-
-const TagBubbleWrapper = styled.div`
-  display: flex;
-  margin-left: 10px;
-  overflow-x: scroll;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const ArticleBodyFooter = styled.div`
-  padding: 10px 20px;
-  display: flex;
-  justify-content: flex-start;
-  width: 100%;
-  align-items: center;
-`;
-
-const ArticleDetailWrapper = styled(ScrollShadow)`
-  width: 100%;
-  height: 100%;
-  background-color: var(--fit-white);
-  overflow-y: auto;
-  border-radius: 15px;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const ArticleBody = styled.div`
-  font-size: 14px;
-  width: 100%;
-  height: 80%;
-  min-height: 360px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-bottom: 1px solid var(--fit-support-gray-bright);
-  margin-bottom: 8px;
-`;
-
-const ArticleItem = styled.div`
-  font-size: 14px;
-  width: 100%;
-  height: fit-content;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-// Article Title
-const ArticleTitleWrapper = styled.div`
-  width: 100%;
-  padding: 5px 30px 0px 30px;
-  background-color: var(--fit-white);
-  height: fit-content;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--fit-support-gray-bright);
-  margin-bottom: 20px;
-`;
-
-const ArticleBackBtn = styled.button`
-  margin-right: 30px;
-  font-size: 30px;
-  background: none;
-  border: none;
-  cursor: pointer;
-`;
-
-const ArticleTitle = styled.h1`
-  width: 100%;
-  font-size: 24px;
-  word-wrap: break-word;
-  word-break: break-all;
-`;
-
-const PostWritterWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const PostWritterLeftWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 8px;
-  margin-right: 8px;
-`;
-
-const PostWritterAvatar = styled(RowCenterFlex)`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-bottom: 5px;
-  font-size: 8px;
-`;
-
-const PostWritterText = styled.span`
-  font-size: 16px;
-  margin-bottom: 3px;
-`;
-
-const PostTimeText = styled.span`
-  font-size: 13px;
-  margin-bottom: 2px;
-`;
-
-const ArticleBodyContent = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100%;
-  padding: 10px 20px;
-  min-height: 360px;
-  font-size: 16px;
-  word-wrap: break-word;
-  word-break: break-all;
-`;
-
-// Article Comment List
-const ArticleCommentWrapper = styled.div`
-  width: 100%;
-`;
-
-export const CommentWrapper = styled.div`
-  width: 100%;
-  padding: 0px 20px;
-`;
-
-const CommentReplyWrapper = styled(ColumnFlex)``;
-
-const CommentItem = styled.div<IPropsComment>`
-  padding: 5px 10px;
-  font-size: 14px;
-  display: flex;
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  border-bottom: 1px solid var(--fit-support-gray-bright);
-
-  ${({ isChild }) =>
-    isChild &&
-    `
-    padding-left: 40px;
-  `}
-`;
-
-const CommentWritterWrapperO1 = styled.div`
-  text-align: center;
-  width: fit-content;
-  margin-right: 20px;
-`;
-
-const CommentWritterWrapper = styled(ColumnFlex)`
-  align-items: center;
-  font-size: 8px;
-`;
-
-const CommentWritterAvatar = styled(RowCenterFlex)`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-bottom: 5px;
-`;
-
-const UserAvatar = styled.img`
-  border: 1px solid black;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  object-fit: cover;
-`;
-
-const CommentWritterText = styled.span`
-  font-size: 12px;
-  width: fit-content;
-  white-space: nowrap;
-`;
-
-const CommentRightWrapper = styled(ColumnFlex)`
-  width: 100%;
-  height: 100%;
-  min-height: 50px;
-  justify-content: space-between;
-`;
-
-export const CommentFuncWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-`;
-
-const handleFuncBtnColor = (color: string) => {
-  switch (color) {
-    case FuncType.Like:
-      return '#ff0000';
-    case FuncType.Dislike:
-      return '#0000ff';
-    case FuncType.Scrap:
-      return '#dddd00';
-    default:
-      return '#dddddd';
-  }
-};
-export const FuncBtn = styled.div<IPropsFuncBtn>`
-  color: ${({ color }) => handleFuncBtnColor(color)};
-  cursor: pointer;
-  margin-left: 8px;
-`;
-
-const FuncBtnWrapper = styled.div`
-  margin-left: 12px;
-`;
-
-export const CommentFuncTimeIndicator = styled.span`
-  font-size: 12px;
-  text-align: right;
-  margin-left: 12px;
-  min-width: 48px;
-`;
-
-const CommentNumIndicator = styled.span`
-  font-size: 15px;
-  width: 50px;
-  margin-right: 5px;
-  white-space: nowrap;
-`;
-export const CommentFuncNumIndicator = styled.span`
-  font-size: 12px;
-  margin-left: 8px;
-  min-width: 15px;
-`;
-
-export const CommentContentWrapper = styled.div`
-  width: 100%;
-  margin-top: 5px;
-  text-align: left;
-`;
-
-const CommentEditInput = styled.input`
-  text-align: left;
-  width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 6px;
-`;
-
-export const CommentContent = styled.span`
-  text-align: left;
-`;
-
-// Comment Writing Form
-const CommentForm = styled.form`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding: 10px 20px;
-`;
-
-const CommentReplyForm = styled.form`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding-left: 40px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid gray;
-`;
-
-const CommentReplyFormWrapper = styled.div``;
-
-const CommentInput = styled.input`
-  width: 90%;
-  padding: 10px 12px;
-`;
-
-const PostPanelWrapper = styled(ColumnCenterFlex)`
-  width: 100%;
-`;
-
-// Image Content Section
-const ContentImageSection = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  width: 100%;
-  height: fit-content;
-  position: relative;
-  background-color: var(--fit-white);
-  padding: 8px 10px;
-`;
-
-const PostUploadedImageWrapper = styled.div`
-  width: 130px;
-  height: 130px;
-  border-radius: 15px;
-  margin: 5px 5px;
-  position: relative;
-`;
-
-const PostUploadedImage = styled.img`
-  width: 130px;
-  height: 130px;
-  background-color: var(--fit-disabled-gray);
-  border-radius: 15px;
-  object-fit: cover;
-  cursor: pointer;
-`;
 
 export default GroupPostDetail;
