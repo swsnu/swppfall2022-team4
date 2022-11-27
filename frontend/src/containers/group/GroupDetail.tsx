@@ -91,6 +91,7 @@ const GroupDetail = () => {
           <div style={{ display: 'flex', gap: '15px' }}>
             <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
             <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
             <Button1 content="Delete" clicked={() => dispatch(groupActions.deleteGroup(group_id))} />
           </div>
         )}
@@ -98,6 +99,7 @@ const GroupDetail = () => {
           <div style={{ display: 'flex', gap: '15px' }}>
             <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
             <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
             <Button1 content="Leave" clicked={exitOnClick} />
           </div>
         )}
