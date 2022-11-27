@@ -27,8 +27,18 @@ def general_group(request):
                 'lat',
                 'lng',
                 'address',
+                'prime_tag',
             )
         )
+
+        for group in group_list:
+            if group['prime_tag']:
+                prime_tag = Tag.objects.get(pk=group['prime_tag'])
+                group["prime_tag"] = {
+                    "id": prime_tag.pk,
+                    "name": prime_tag.tag_name,
+                    "color": prime_tag.tag_class.color,
+                }
         return JsonResponse({"groups": group_list}, safe=False)
 
     else:  ## post
