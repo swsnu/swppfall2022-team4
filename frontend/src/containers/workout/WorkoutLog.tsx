@@ -7,10 +7,11 @@ import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
 import { RedSmallBtn } from 'components/post/button';
 import { Hover } from 'components/fitelement/Hover';
-import { workoutLogActions } from 'store/slices/workout';
+import { Fitelement, workoutLogActions } from 'store/slices/workout';
 import { userActions } from 'store/slices/user';
 import ImageDetailModal from 'components/post/ImageDetailModal';
 import { notificationSuccess } from 'utils/sendNotification';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
@@ -297,365 +298,401 @@ const WorkoutLog = () => {
     notificationSuccess('Image', '이미지 삭제에 성공했어요!');
   };
 
+  const onDragEnd = () => {
+    //드래그 끝나면 할일
+  };
+
+  const FitElementList = (fitelement: Fitelement, id: number, index: number) => {
+    return (
+      //이전코드를 Draggable 컨테이너로 감싸준뒤 마찬가지로 id와 index 번호를 준다.
+      <Draggable draggableId={String(id)} index={index}>
+        {provided => (
+          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+            <FitElementWrapper key={index}>
+              <FitElement
+                key={fitelement.data.id}
+                id={index + 1}
+                type={fitelement.data.type}
+                workout_type={fitelement.data.workout_type}
+                category={fitelement.data.category}
+                weight={fitelement.data.weight}
+                rep={fitelement.data.rep}
+                set={fitelement.data.set}
+                time={fitelement.data.time}
+              />
+              <DeleteButton>
+                <DeleteEmoji
+                  data-testid="delete-fitelement"
+                  src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
+                  onClick={() => fitelementDeleteOnClick(fitelement.data.id)}
+                />
+              </DeleteButton>
+            </FitElementWrapper>
+          </div>
+        )}
+      </Draggable>
+    );
+  };
+
   const fitElementTarget = fitElementTypes.filter(item => item.class_name === workout_category);
   return (
-    <Wrapper>
-      <InnerWrapper>
-        <LeftWrapper>
-          <LeftUpper>
-            <DateWrapper>
-              {isCopy === true
-                ? String(copy_date.getFullYear()) +
-                  '.' +
-                  String(copy_date.getMonth() + 1) +
-                  '.' +
-                  String(copy_date.getDate()) +
-                  ' ' +
-                  '복사중'
-                : '복사 없음'}
-            </DateWrapper>
-          </LeftUpper>
-          <CalendarWrapper>
-            <Frame>
-              <CalendarHeader>
-                <Button
-                  onClick={() => {
-                    dispatch(
-                      workoutLogActions.getCalendarInfo({
-                        username: user.user?.username!,
-                        year: month === 0 ? year - 1 : year,
-                        month: month === 0 ? 12 : month,
-                      }),
-                    );
-                    setDate(new Date(year, month - 1, day));
-                  }}
-                >
-                  {'<'}
-                </Button>
-                <YearMonth>
-                  <Year>{year}</Year>
-                  <Month>{MONTHS[month]}</Month>
-                </YearMonth>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Wrapper>
+        <InnerWrapper>
+          <LeftWrapper>
+            <LeftUpper>
+              <DateWrapper>
+                {isCopy === true
+                  ? String(copy_date.getFullYear()) +
+                    '.' +
+                    String(copy_date.getMonth() + 1) +
+                    '.' +
+                    String(copy_date.getDate()) +
+                    ' ' +
+                    '복사중'
+                  : '복사 없음'}
+              </DateWrapper>
+            </LeftUpper>
+            <CalendarWrapper>
+              <Frame>
+                <CalendarHeader>
+                  <Button
+                    onClick={() => {
+                      dispatch(
+                        workoutLogActions.getCalendarInfo({
+                          username: user.user?.username!,
+                          year: month === 0 ? year - 1 : year,
+                          month: month === 0 ? 12 : month,
+                        }),
+                      );
+                      setDate(new Date(year, month - 1, day));
+                    }}
+                  >
+                    {'<'}
+                  </Button>
+                  <YearMonth>
+                    <Year>{year}</Year>
+                    <Month>{MONTHS[month]}</Month>
+                  </YearMonth>
 
-                <Button
-                  onClick={() => {
-                    dispatch(
-                      workoutLogActions.getCalendarInfo({
-                        username: user.user?.username!,
-                        year: month === 11 ? year + 1 : year,
-                        month: ((month + 1) % 12) + 1,
-                      }),
-                    );
-                    setDate(new Date(year, month + 1, day));
-                  }}
-                >
-                  {'>'}
-                </Button>
-              </CalendarHeader>
-              <Body>
-                {DAYS_OF_THE_WEEK.map(d =>
-                  d === 'SUN' ? (
-                    <Day className="sunday" key={d}>
-                      {d}
-                    </Day>
-                  ) : d === 'SAT' ? (
-                    <Day className="saturday" key={d}>
-                      {d}
-                    </Day>
-                  ) : (
-                    <Day key={d}>{d}</Day>
-                  ),
-                )}
-                {Array(36)
-                  .fill(null)
-                  .map((_, index) => {
-                    const d = index - (startDay - 2);
-                    const visibility_value = d > 0 ? (d <= days[month] ? false : true) : true;
-                    // {year}.{selected_month + 1}.{day}
-                    let day_type = 'future_day';
-                    if (year === selected_year && month === selected_month && d === selected_date) {
-                      day_type = 'selected_day';
-                    } else if (year > today.getFullYear()) {
-                      day_type = 'future_day';
-                    } else if (year === today.getFullYear() && month > today.getMonth()) {
-                      day_type = 'future_day';
-                    } else if (year === today.getFullYear() && month === today.getMonth() && d > today.getDate()) {
-                      day_type = 'future_day';
-                    } else if (year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) {
-                      day_type = 'today';
-                    } else if (d > 0 && d <= days[month] && calendarInfo.length > 0) {
-                      if (calendarInfo[d - 1]?.workouts.length === 0) {
-                        day_type = 'type2';
-                      } else {
-                        day_type = 'type1';
-                      }
-                    } else {
-                      day_type = 'type2';
-                    }
-                    return (
-                      <Day
-                        className={day_type}
-                        data-testid="day_component"
-                        key={index}
-                        onClick={() => {
-                          clickDate(year, month, d);
-                        }}
-                      >
-                        <DayContent visibility_boolean={visibility_value} className={day_type}>
-                          {d > 0 ? (d <= days[month] ? d : '') : ''}
-                        </DayContent>
-                        <DayToolTip className={calendarInfo[d - 1]?.workouts.length === 0 ? 'nothing' : 'exist'}>
-                          <Hover key={0} workouts={calendarInfo[d - 1]?.workouts} types={fitElementTypes} />
-                        </DayToolTip>
+                  <Button
+                    onClick={() => {
+                      dispatch(
+                        workoutLogActions.getCalendarInfo({
+                          username: user.user?.username!,
+                          year: month === 11 ? year + 1 : year,
+                          month: ((month + 1) % 12) + 1,
+                        }),
+                      );
+                      setDate(new Date(year, month + 1, day));
+                    }}
+                  >
+                    {'>'}
+                  </Button>
+                </CalendarHeader>
+                <Body>
+                  {DAYS_OF_THE_WEEK.map(d =>
+                    d === 'SUN' ? (
+                      <Day className="sunday" key={d}>
+                        {d}
                       </Day>
-                    );
-                  })}
-              </Body>
-              <CalendarFooter>
-                <>
-                  {image!.map((v, index) => (
-                    <WorkoutImageWrapper key={index}>
+                    ) : d === 'SAT' ? (
+                      <Day className="saturday" key={d}>
+                        {d}
+                      </Day>
+                    ) : (
+                      <Day key={d}>{d}</Day>
+                    ),
+                  )}
+                  {Array(36)
+                    .fill(null)
+                    .map((_, index) => {
+                      const d = index - (startDay - 2);
+                      const visibility_value = d > 0 ? (d <= days[month] ? false : true) : true;
+                      // {year}.{selected_month + 1}.{day}
+                      let day_type = 'future_day';
+                      if (year === selected_year && month === selected_month && d === selected_date) {
+                        day_type = 'selected_day';
+                      } else if (year > today.getFullYear()) {
+                        day_type = 'future_day';
+                      } else if (year === today.getFullYear() && month > today.getMonth()) {
+                        day_type = 'future_day';
+                      } else if (year === today.getFullYear() && month === today.getMonth() && d > today.getDate()) {
+                        day_type = 'future_day';
+                      } else if (year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) {
+                        day_type = 'today';
+                      } else if (d > 0 && d <= days[month] && calendarInfo.length > 0) {
+                        if (calendarInfo[d - 1]?.workouts.length === 0) {
+                          day_type = 'type2';
+                        } else {
+                          day_type = 'type1';
+                        }
+                      } else {
+                        day_type = 'type2';
+                      }
+                      return (
+                        <Day
+                          className={day_type}
+                          data-testid="day_component"
+                          key={index}
+                          onClick={() => {
+                            clickDate(year, month, d);
+                          }}
+                        >
+                          <DayContent visibility_boolean={visibility_value} className={day_type}>
+                            {d > 0 ? (d <= days[month] ? d : '') : ''}
+                          </DayContent>
+                          <DayToolTip className={calendarInfo[d - 1]?.workouts.length === 0 ? 'nothing' : 'exist'}>
+                            <Hover key={0} workouts={calendarInfo[d - 1]?.workouts} types={fitElementTypes} />
+                          </DayToolTip>
+                        </Day>
+                      );
+                    })}
+                </Body>
+                <CalendarFooter>
+                  <>
+                    {image!.map((v, index) => (
+                      <WorkoutImageWrapper key={index}>
+                        <WorkoutImage
+                          src={process.env.REACT_APP_API_IMAGE + v}
+                          alt="workout_image"
+                          onClick={() => {
+                            setActiveImage(v);
+                            setImageModalOpen(true);
+                          }}
+                        />
+                        <RedSmallBtn onClick={() => removeImages(v)}>삭제</RedSmallBtn>
+                      </WorkoutImageWrapper>
+                    ))}
+                  </>
+                  {image!.length + 1 > CONTENT_IMAGE_LIMIT ? (
+                    ''
+                  ) : (
+                    <WorkoutImageWrapper>
                       <WorkoutImage
-                        src={process.env.REACT_APP_API_IMAGE + v}
+                        src={process.env.REACT_APP_API_IMAGE + 'default-upload-image.png'}
                         alt="workout_image"
                         onClick={() => {
-                          setActiveImage(v);
-                          setImageModalOpen(true);
+                          document.getElementById('FileInput_DailyLog')?.click();
                         }}
                       />
-                      <RedSmallBtn onClick={() => removeImages(v)}>삭제</RedSmallBtn>
-                    </WorkoutImageWrapper>
-                  ))}
-                </>
-                {image!.length + 1 > CONTENT_IMAGE_LIMIT ? (
-                  ''
-                ) : (
-                  <WorkoutImageWrapper>
-                    <WorkoutImage
-                      src={process.env.REACT_APP_API_IMAGE + 'default-upload-image.png'}
-                      alt="workout_image"
-                      onClick={() => {
-                        document.getElementById('FileInput_DailyLog')?.click();
-                      }}
-                    />
-                    <FileInput type="file" accept="image/*" id="FileInput_DailyLog" onChange={onChangeDailyLogImage} />
-                  </WorkoutImageWrapper>
-                )}
-              </CalendarFooter>
-            </Frame>
-          </CalendarWrapper>
-          <MemoWrapper>
-            <Frame className="memo">
-              <MemoTitleWrapper>Notes</MemoTitleWrapper>
-              <MemoContentWrapper>
-                {memo_write_mode ? (
-                  <MemoInput
-                    value={memo}
-                    placeholder="수정 버튼을 눌러 메모를 추가해 보세요."
-                    onChange={e => setMemo(e.target.value)}
-                  />
-                ) : memo === '' ? (
-                  '수정 버튼을 눌러 메모를 추가해 보세요.'
-                ) : (
-                  memo
-                )}
-              </MemoContentWrapper>
-
-              <MemoFooter>
-                <MemoButtonWrapper>
-                  <AnyButton
-                    className="memo-type"
-                    hidden={!memo_write_mode}
-                    onClick={() => memoOnClick('cancel_button')}
-                  >
-                    취소
-                  </AnyButton>
-                  <AnyButton className="memo-type" data-testid="memo_edit_button" hidden={memo_write_mode} onClick={() => memoOnClick('edit_button')}>
-                    수정
-                  </AnyButton>
-                  <AnyButton
-                    className="memo-type"
-                    hidden={!memo_write_mode}
-                    onClick={() => memoOnClick('complete_button')}
-                  >
-                    완료
-                  </AnyButton>
-                </MemoButtonWrapper>
-              </MemoFooter>
-            </Frame>
-          </MemoWrapper>
-        </LeftWrapper>
-        <RightWrapper>
-          <LogWrapper>
-            <LogUpper>
-              <DateWrapper>
-                {selected_year}.{selected_month + 1}.{selected_date}
-              </DateWrapper>
-              <AnyButton onClick={() => routineClick()}>루틴</AnyButton>
-              <AnyButton
-                className="disable-type"
-                disabled={
-                  isCopy
-                    ? copy_date.getFullYear() === selected_year &&
-                      copy_date.getMonth() === selected_month &&
-                      copy_date.getDate() === selected_date
-                      ? true
-                      : false
-                    : true
-                }
-                onClick={() => pasteDailyLog()}
-              >
-                불러오기
-              </AnyButton>
-              <AnyButton onClick={() => copyDailyLog()}>내보내기</AnyButton>
-              <AnyButton>저장</AnyButton>
-              <AnyButton onClick={() => addRoutineClick()}>루틴추가</AnyButton>
-            </LogUpper>
-            <Frame className="right">
-              <LogHeader>
-                <LogCategory>부위</LogCategory>
-                <LogCategory className="type">종류</LogCategory>
-                <LogCategory
-                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
-                >
-                  강도
-                </LogCategory>
-                <LogCategory
-                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
-                >
-                  반복
-                </LogCategory>
-                <LogCategory
-                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
-                >
-                  세트
-                </LogCategory>
-                <LogCategory>시간(분)</LogCategory>
-              </LogHeader>
-              <LogInputBody>
-                <LogInputBodyInput>
-                  <WorkoutTypeSelect
-                    value={workout_category || '선택'}
-                    className="type2"
-                    onChange={e => setWorkoutCategory(e.target.value)}
-                  >
-                    <option disabled>선택</option>
-                    {fitElementTypes.map((fitelement_category, index) => (
-                      <option key={index}>{fitelement_category.class_name}</option>
-                    ))}
-                  </WorkoutTypeSelect>
-                  <WorkoutTypeSelect value={workout_type || '종류 선택'} onChange={e => setWorkoutType(e.target.value)}>
-                    <option disabled>종류 선택</option>
-                    {fitElementTarget.length === 1 &&
-                      fitElementTarget[0].tags.map((fitelement, index) => (
-                        <option key={index}>{fitelement.name}</option>
-                      ))}
-                  </WorkoutTypeSelect>
-                  <WorkoutTypeInput
-                    pattern="[0-9]+"
-                    type="number"
-                    onKeyPress={event => {
-                      if (!(48 <= event.charCode && event.charCode <= 57)) {
-                        event.preventDefault();
-                      }
-                    }}
-                    className={visible_input}
-                    disabled={visible_input === 'hidden' ? true : false}
-                    min="0"
-                    value={weight || ''}
-                    onChange={e => setWeight(Number(e.target.value))}
-                  />
-                  <WorkoutTypeInput
-                    type="number"
-                    onKeyPress={event => {
-                      if (!(48 <= event.charCode && event.charCode <= 57)) {
-                        event.preventDefault();
-                      }
-                    }}
-                    className={visible_input}
-                    disabled={visible_input === 'hidden' ? true : false}
-                    min="0"
-                    value={rep || ''}
-                    onChange={e => setRep(Number(e.target.value))}
-                  />
-                  <WorkoutTypeInput
-                    type="number"
-                    onKeyPress={event => {
-                      if (!(48 <= event.charCode && event.charCode <= 57)) {
-                        event.preventDefault();
-                      }
-                    }}
-                    className={visible_input}
-                    disabled={visible_input === 'hidden' ? true : false}
-                    min="0"
-                    value={set || ''}
-                    onChange={e => setSet(Number(e.target.value))}
-                  />
-                  <WorkoutTypeInput
-                    type="number"
-                    min="0"
-                    onKeyPress={event => {
-                      if (!(48 <= event.charCode && event.charCode <= 57)) {
-                        event.preventDefault();
-                      }
-                    }}
-                    value={workout_time || ''}
-                    onChange={e => setWorkoutTime(Number(e.target.value))}
-                  />
-                </LogInputBodyInput>
-                <LogInputBodyButton>
-                  <AnyButton className="type1" onClick={() => cancelWorkoutLog()}>
-                    초기화
-                  </AnyButton>
-                  <AnyButton className="type1" onClick={() => createWorkoutLog()}>
-                    완료
-                  </AnyButton>
-                </LogInputBodyButton>
-              </LogInputBody>
-              <LogBody>
-                {dailyFitElements.length === 0 ? (
-                  <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
-                ) : (
-                  dailyFitElements.map((fitelement, index) => (
-                    <FitElementWrapper key={index}>
-                      <FitElement
-                        key={fitelement.data.id}
-                        id={index + 1}
-                        type={fitelement.data.type}
-                        workout_type={fitelement.data.workout_type}
-                        category={fitelement.data.category}
-                        weight={fitelement.data.weight}
-                        rep={fitelement.data.rep}
-                        set={fitelement.data.set}
-                        time={fitelement.data.time}
+                      <FileInput
+                        type="file"
+                        accept="image/*"
+                        id="FileInput_DailyLog"
+                        onChange={onChangeDailyLogImage}
                       />
-                      <DeleteButton>
-                        <DeleteEmoji
-                          data-testid="delete-fitelement"
-                          src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
-                          onClick={() => fitelementDeleteOnClick(fitelement.data.id)}
-                        />
-                      </DeleteButton>
-                    </FitElementWrapper>
-                  ))
-                )}
-              </LogBody>
-              <LogFooter>
-                <FooterItem>{dailyLog.fit_element?.length}종류</FooterItem>
-                <FooterItem>{dailyLog.calories * (user.profile?.weight || 1)} kcal</FooterItem>
-              </LogFooter>
-            </Frame>
-          </LogWrapper>
-        </RightWrapper>
-      </InnerWrapper>
-      {ImageDetailModal({
-        isActive: imageModalOpen,
-        onClose: imageModalOnClose,
-        modalRef: imageModalRef,
-        modalAnimRef: imageModalAnimRef,
-        activeImage,
-      })}
-    </Wrapper>
+                    </WorkoutImageWrapper>
+                  )}
+                </CalendarFooter>
+              </Frame>
+            </CalendarWrapper>
+            <MemoWrapper>
+              <Frame className="memo">
+                <MemoTitleWrapper>Notes</MemoTitleWrapper>
+                <MemoContentWrapper>
+                  {memo_write_mode ? (
+                    <MemoInput
+                      value={memo}
+                      placeholder="수정 버튼을 눌러 메모를 추가해 보세요."
+                      onChange={e => setMemo(e.target.value)}
+                    />
+                  ) : memo === '' ? (
+                    '수정 버튼을 눌러 메모를 추가해 보세요.'
+                  ) : (
+                    memo
+                  )}
+                </MemoContentWrapper>
+
+                <MemoFooter>
+                  <MemoButtonWrapper>
+                    <AnyButton
+                      className="memo-type"
+                      hidden={!memo_write_mode}
+                      onClick={() => memoOnClick('cancel_button')}
+                    >
+                      취소
+                    </AnyButton>
+                    <AnyButton
+                      className="memo-type"
+                      data-testid="memo_edit_button"
+                      hidden={memo_write_mode}
+                      onClick={() => memoOnClick('edit_button')}
+                    >
+                      수정
+                    </AnyButton>
+                    <AnyButton
+                      className="memo-type"
+                      hidden={!memo_write_mode}
+                      onClick={() => memoOnClick('complete_button')}
+                    >
+                      완료
+                    </AnyButton>
+                  </MemoButtonWrapper>
+                </MemoFooter>
+              </Frame>
+            </MemoWrapper>
+          </LeftWrapper>
+          <RightWrapper>
+            <LogWrapper>
+              <LogUpper>
+                <DateWrapper>
+                  {selected_year}.{selected_month + 1}.{selected_date}
+                </DateWrapper>
+                <AnyButton onClick={() => routineClick()}>루틴</AnyButton>
+                <AnyButton
+                  className="disable-type"
+                  disabled={
+                    isCopy
+                      ? copy_date.getFullYear() === selected_year &&
+                        copy_date.getMonth() === selected_month &&
+                        copy_date.getDate() === selected_date
+                        ? true
+                        : false
+                      : true
+                  }
+                  onClick={() => pasteDailyLog()}
+                >
+                  불러오기
+                </AnyButton>
+                <AnyButton onClick={() => copyDailyLog()}>내보내기</AnyButton>
+                <AnyButton>저장</AnyButton>
+                <AnyButton onClick={() => addRoutineClick()}>루틴추가</AnyButton>
+              </LogUpper>
+              <Frame className="right">
+                <LogHeader>
+                  <LogCategory>부위</LogCategory>
+                  <LogCategory className="type">종류</LogCategory>
+                  <LogCategory
+                    className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                  >
+                    강도
+                  </LogCategory>
+                  <LogCategory
+                    className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                  >
+                    반복
+                  </LogCategory>
+                  <LogCategory
+                    className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                  >
+                    세트
+                  </LogCategory>
+                  <LogCategory>시간(분)</LogCategory>
+                </LogHeader>
+                <LogInputBody>
+                  <LogInputBodyInput>
+                    <WorkoutTypeSelect
+                      value={workout_category || '선택'}
+                      className="type2"
+                      onChange={e => setWorkoutCategory(e.target.value)}
+                    >
+                      <option disabled>선택</option>
+                      {fitElementTypes.map((fitelement_category, index) => (
+                        <option key={index}>{fitelement_category.class_name}</option>
+                      ))}
+                    </WorkoutTypeSelect>
+                    <WorkoutTypeSelect
+                      value={workout_type || '종류 선택'}
+                      onChange={e => setWorkoutType(e.target.value)}
+                    >
+                      <option disabled>종류 선택</option>
+                      {fitElementTarget.length === 1 &&
+                        fitElementTarget[0].tags.map((fitelement, index) => (
+                          <option key={index}>{fitelement.name}</option>
+                        ))}
+                    </WorkoutTypeSelect>
+                    <WorkoutTypeInput
+                      pattern="[0-9]+"
+                      type="number"
+                      onKeyPress={event => {
+                        if (!(48 <= event.charCode && event.charCode <= 57)) {
+                          event.preventDefault();
+                        }
+                      }}
+                      className={visible_input}
+                      disabled={visible_input === 'hidden' ? true : false}
+                      min="0"
+                      value={weight || ''}
+                      onChange={e => setWeight(Number(e.target.value))}
+                    />
+                    <WorkoutTypeInput
+                      type="number"
+                      onKeyPress={event => {
+                        if (!(48 <= event.charCode && event.charCode <= 57)) {
+                          event.preventDefault();
+                        }
+                      }}
+                      className={visible_input}
+                      disabled={visible_input === 'hidden' ? true : false}
+                      min="0"
+                      value={rep || ''}
+                      onChange={e => setRep(Number(e.target.value))}
+                    />
+                    <WorkoutTypeInput
+                      type="number"
+                      onKeyPress={event => {
+                        if (!(48 <= event.charCode && event.charCode <= 57)) {
+                          event.preventDefault();
+                        }
+                      }}
+                      className={visible_input}
+                      disabled={visible_input === 'hidden' ? true : false}
+                      min="0"
+                      value={set || ''}
+                      onChange={e => setSet(Number(e.target.value))}
+                    />
+                    <WorkoutTypeInput
+                      type="number"
+                      min="0"
+                      onKeyPress={event => {
+                        if (!(48 <= event.charCode && event.charCode <= 57)) {
+                          event.preventDefault();
+                        }
+                      }}
+                      value={workout_time || ''}
+                      onChange={e => setWorkoutTime(Number(e.target.value))}
+                    />
+                  </LogInputBodyInput>
+                  <LogInputBodyButton>
+                    <AnyButton className="type1" onClick={() => cancelWorkoutLog()}>
+                      초기화
+                    </AnyButton>
+                    <AnyButton className="type1" onClick={() => createWorkoutLog()}>
+                      완료
+                    </AnyButton>
+                  </LogInputBodyButton>
+                </LogInputBody>
+                <Droppable droppableId="Logs">
+                  {provided => (
+                    <LogBody ref={provided.innerRef} {...provided.droppableProps}>
+                      {dailyFitElements.length === 0 ? (
+                        <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
+                      ) : (
+                        dailyFitElements.map((fitelement: Fitelement, index: number) =>
+                          FitElementList(fitelement, fitelement.data.id, index),
+                        )
+                      )}
+                    </LogBody>
+                  )}
+                </Droppable>
+                <LogFooter>
+                  <FooterItem>{dailyLog.fit_element?.length}종류</FooterItem>
+                  <FooterItem>{dailyLog.calories * (user.profile?.weight || 1)} kcal</FooterItem>
+                </LogFooter>
+              </Frame>
+            </LogWrapper>
+          </RightWrapper>
+        </InnerWrapper>
+        {ImageDetailModal({
+          isActive: imageModalOpen,
+          onClose: imageModalOnClose,
+          modalRef: imageModalRef,
+          modalAnimRef: imageModalAnimRef,
+          activeImage,
+        })}
+      </Wrapper>
+    </DragDropContext>
   );
 };
 

@@ -287,3 +287,4 @@ class WorkoutTestCase(TestCase):
 
         res = client.delete("/api/fitelement/1/?&username=username")
         self.assertEqual(res.status_code, 200)
+        

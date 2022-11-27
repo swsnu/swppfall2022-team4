@@ -5,3 +5,4 @@
 import '@testing-library/jest-dom';
 import 'react-chartjs-2';
 import 'jest-canvas-mock';
+import 'react-beautiful-dnd';
