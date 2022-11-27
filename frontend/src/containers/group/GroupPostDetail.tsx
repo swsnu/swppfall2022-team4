@@ -150,7 +150,7 @@ const GroupPostDetail = () => {
   }, [postComment]); // This looks disposable, but it makes the action smoothly.
   useEffect(() => {
     if (postDeleteStatus) {
-      navigate('/post');
+      navigate(`/group/detail/${group_id}/post`);
       dispatch(postActions.stateRefresh());
     }
   }, [postDeleteStatus]);
@@ -448,12 +448,12 @@ const GroupPostDetail = () => {
     );
   };
 
-  const CreateBtn = <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>;
+  const CreateBtn = <BlueBigBtn onClick={() => navigate(`/group/detail/${group_id}/post/create`)}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
     user?.username == post?.author.username ? (
       <PostPanelWrapper>
         {CreateBtn}
-        <BlueBigBtn onClick={() => navigate(`/post/${post_id}/edit`)}>글 편집</BlueBigBtn>
+        <BlueBigBtn onClick={() => navigate(`/group/detail/${group_id}/post/${post_id}/edit`)}>글 편집</BlueBigBtn>
         <BlueBigBtn onClick={postDeleteOnClick}>글 삭제</BlueBigBtn>
       </PostPanelWrapper>
     ) : (
