@@ -64,9 +64,9 @@ const CurrentPageWrapper = styled.div`
 
 const PageNumber = styled(BtnBlueprint)`
   background: none;
-  margin: 0px 5px;
+  margin: 0px 8px;
   cursor: pointer;
-  color: var(--fit-green-deep);
+  color: var(--fit-green-text);
 
   :disabled {
     background: none;

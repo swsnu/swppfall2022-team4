@@ -36,7 +36,7 @@ export const PostContentWrapper = styled(ColumnCenterFlex)`
   height: 100%;
   min-height: 100vh;
   max-width: 1200px;
-  margin-bottom: 100px;
+  margin-bottom: 00px;
   @media all and (max-width: 650px) {
     width: 100%;
   }
@@ -57,8 +57,7 @@ export const PostContentWrapper = styled(ColumnCenterFlex)`
     column-gap: 10px;
     width: 100%;
     height: fit-content;
-    min-height: 605px;
-    margin-bottom: 50px;
+    min-height: 875px;
 
     > div:first-child {
       /* MainContent */

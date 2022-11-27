@@ -67,13 +67,14 @@ const ArticleItemGridCompact = styled.div`
 
 const ArticleHeaderWrapper = styled(ArticleItemGrid)`
   padding: 10px 10px 10px 10px;
+  height: 35px;
   font-size: 14px;
   width: 100%;
   border-bottom: 1px solid black;
 `;
 
 const ArticleItem = styled(ArticleItemGrid)`
-  padding: 8px 10px 8px 10px;
+  padding: 10px 10px 10px 10px;
   font-size: 14px;
   width: 100%;
   border-bottom: 0.2px solid var(--fit-support-gray-bright);

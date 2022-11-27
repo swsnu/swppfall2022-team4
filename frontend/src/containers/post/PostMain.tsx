@@ -46,7 +46,7 @@ const PostMain = () => {
     if (selected.length > 0) {
       const defaultPageConfig: getPostsRequestType = {
         pageNum: page,
-        pageSize: 15,
+        pageSize: 20,
         searchKeyword: searchKeyword ? searchKeyword : undefined,
         tags: selected,
       };
@@ -73,7 +73,7 @@ const PostMain = () => {
     if (!tagModalOpen) {
       const defaultPageConfig: getPostsRequestType = {
         pageNum: page,
-        pageSize: 15,
+        pageSize: 20,
         searchKeyword: searchKeyword ? searchKeyword : undefined,
         tags: selected,
       };
@@ -150,7 +150,7 @@ const PostMain = () => {
   );
 
   const MainContent = (
-    <ArticleListWrapper className={`${postList?.length == 15 && 'full'}`}>
+    <ArticleListWrapper className={`${postList?.length == 20 && 'full'}`}>
       <ArticleHeader />
       {postList ? (
         postList.map(post => {
