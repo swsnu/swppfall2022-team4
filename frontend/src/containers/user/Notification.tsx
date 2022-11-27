@@ -46,7 +46,10 @@ const Notification = () => {
             content={x.content}
             image={x.image}
             created={x.created}
-            clicked={() => navigate(x.link)}
+            clicked={() => {
+              navigate(x.link);
+              dispatch(notificationActions.deleteNotification(x.id));
+            }}
             clickedDelete={() => dispatch(notificationActions.deleteNotification(x.id))}
           />
         ))}

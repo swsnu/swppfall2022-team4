@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'jest-canvas-mock';
 import { render, screen } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
@@ -20,8 +22,8 @@ jest.mock('react-redux', () => ({
 
 jest.mock('react-chartjs-2', () => {
   const { forwardRef } = require('react');
-  const Line = forwardRef((props: any, ref: any)=> <div ref={ref} {...props}></div>);
-  const Bar = forwardRef((props: any, ref: any)=> <div ref={ref} {...props}></div>);
+  const Line = forwardRef((props: any, ref: any) => <div ref={ref} {...props}></div>);
+  const Bar = forwardRef((props: any, ref: any) => <div ref={ref} {...props}></div>);
   return {
     Line,
     Bar,

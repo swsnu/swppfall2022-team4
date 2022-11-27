@@ -74,7 +74,7 @@ def comment_home(request):
                 author=author, post=post, content=content, parent_comment=parent_comment
             )
 
-        add_exp(request.user.username, 15)
+        add_exp(request.user.username, 5)
 
         return JsonResponse({"message": "Success!"}, status=201)
     except (
