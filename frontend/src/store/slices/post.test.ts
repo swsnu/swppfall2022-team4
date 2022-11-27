@@ -421,7 +421,7 @@ describe('slices - posts', () => {
   describe('saga failure', () => {
     global.alert = jest.fn().mockImplementation(() => null);
 
-    test('getPosts', () => {
+    test('getPostsMain', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
         .provide([[call(postAPI.getPostsMain), throwError(simpleError)]])
