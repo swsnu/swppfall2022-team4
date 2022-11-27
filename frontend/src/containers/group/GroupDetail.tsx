@@ -85,10 +85,11 @@ const GroupDetail = () => {
           <GroupPlace>{`장소: 장소 없음`}</GroupPlace>
         )}
       </GroupDetailHeader>
-      <div style={{ display: 'flex', gap: '15px', paddingLeft: '60%', paddingTop: '15px' }}>
+      <div style={{ display: 'flex', gap: '15px', paddingLeft: '50%', paddingTop: '15px' }}>
         {member_status === 'group_leader' && (
           <div style={{ display: 'flex', gap: '15px' }}>
             <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <Button1 content="Chat" clicked={() => navigate(`/chat/${group_id}`)} />
             <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
             <Button1 content="Delete" clicked={() => dispatch(groupActions.deleteGroup(group_id))} />
           </div>
@@ -96,12 +97,13 @@ const GroupDetail = () => {
         {member_status === 'group_member' && (
           <div style={{ display: 'flex', gap: '15px' }}>
             <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <Button1 content="Chat" clicked={() => navigate(`/chat/${group_id}`)} />
             <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
             <Button1 content="Leave" clicked={exitOnClick} />
           </div>
         )}
         {member_status === 'not_member' && (
-          <div style={{ display: 'flex', gap: '15px', paddingLeft: '110%' }}>
+          <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
             <Button1 content="Join" clicked={joinOnClick} />
           </div>
         )}
