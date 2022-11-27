@@ -675,7 +675,8 @@ const WorkoutImageWrapper = styled.div`
   width: 120px;
   height: 110px;
   border-radius: 15px;
-  margin: 5px 5px;
+  margin: 3px;
+  margin-top: 35px;
   cursor: pointer;
   transition: border 0.15s linear;
   position: relative;
@@ -785,7 +786,7 @@ const Month = styled.div`
 const CalendarHeader = styled.div`
   font-size: 18px;
   width: 50%;
-  height: 20%;
+  height: 15%;
   padding: 20px 10px 0px 10px;
   font-family: IBMPlexSansThaiLooped;
   border-radius: 10px;
@@ -1234,7 +1235,7 @@ const MemoFooter = styled.div`
 
 const CalendarFooter = styled.div`
   width: 88%;
-  height: 30%;
+  height: 35%;
   display: flex;
   justify-content: start;
   align-items: start;
