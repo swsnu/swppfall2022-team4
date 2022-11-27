@@ -622,6 +622,7 @@ const TagBubbleWrapper = styled.div`
     display: none;
   }
 `;
+
 const ArticleBodyFooter = styled.div`
   padding: 10px 20px;
   display: flex;
@@ -629,12 +630,13 @@ const ArticleBodyFooter = styled.div`
   width: 100%;
   align-items: center;
 `;
+
 const ArticleDetailWrapper = styled(ScrollShadow)`
-  border: 1px solid black;
   width: 100%;
   height: 100%;
   background-color: var(--fit-white);
   overflow-y: auto;
+  border-radius: 15px;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -648,7 +650,8 @@ const ArticleBody = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--fit-support-gray-bright);
+  margin-bottom: 8px;
 `;
 
 const ArticleItem = styled.div`
@@ -667,13 +670,13 @@ const ArticleItem = styled.div`
 // Article Title
 const ArticleTitleWrapper = styled.div`
   width: 100%;
-  padding: 5px 15px 0px 40px;
+  padding: 5px 30px 0px 30px;
   background-color: var(--fit-white);
   height: fit-content;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--fit-support-gray-bright);
   margin-bottom: 20px;
 `;
 
@@ -686,6 +689,7 @@ const ArticleBackBtn = styled.button`
 `;
 
 const ArticleTitle = styled.h1`
+  width: 100%;
   font-size: 24px;
   word-wrap: break-word;
   word-break: break-all;
@@ -752,7 +756,7 @@ const CommentItem = styled.div<IPropsComment>`
   width: 100%;
   flex-direction: row;
   align-items: center;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid var(--fit-support-gray-bright);
 
   ${({ isChild }) =>
     isChild &&
