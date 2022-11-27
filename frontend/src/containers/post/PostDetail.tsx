@@ -868,7 +868,7 @@ export const CommentContent = styled.span`
 `;
 
 // Comment Writing Form
-const CommentForm = styled.div`
+const CommentForm = styled.form`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -876,7 +876,7 @@ const CommentForm = styled.div`
   padding: 10px 20px;
 `;
 
-const CommentReplyForm = styled.div`
+const CommentReplyForm = styled.form`
   width: 100%;
   display: flex;
   justify-content: space-between;
