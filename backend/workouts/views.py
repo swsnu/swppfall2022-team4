@@ -10,14 +10,6 @@ import calendar
 
 DATE_FORMAT = "%Y-%m-%d"
 
-def add_exp(username, exp):
-    if User.objects.filter(username=username).exists():
-        user = User.objects.get(username=username)
-        temp = user.exp + exp
-        user.exp = temp % 100
-        user.level = user.level + (temp // 100)
-        user.save()
-
 
 @require_http_methods(["POST"])
 def create_fit_element(request):
@@ -71,8 +63,6 @@ def create_fit_element(request):
                     fitelement_type.calories * new_fit_element.time
                 )
                 daily_log_single.save()
-
-            add_exp(request.user.username, 5)
 
             return JsonResponse({"workout_id": str(new_fit_element.pk)}, status=201)
         except (KeyError, json.JSONDecodeError):
