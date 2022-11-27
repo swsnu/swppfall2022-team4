@@ -23,6 +23,7 @@ const CATEGORY = [
   { to: '/workout', text: '기록', icon: <HiOutlineDocumentReport /> },
   { to: '/group', text: '그룹', icon: <HiUserGroup /> },
   { to: '/post', text: '커뮤니티', icon: <HiOutlineAnnotation /> },
+  { to: '/place', text: '장소', icon: <HiPhotograph /> },
   { to: '/information', text: '운동정보', icon: <HiInformationCircle /> },
 ];
 

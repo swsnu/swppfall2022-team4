@@ -252,7 +252,6 @@ const GroupAboutDescription = styled.div`
   border: 2px solid #d1d1d1;
   border-radius: 20px;
   padding: 20px;
-  line-height: normal;
 `;
 
 const GroupDetailWrapper = styled.div`
