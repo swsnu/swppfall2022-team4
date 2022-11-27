@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 "weight": lambda x: random.randint(45, 130),
                 "age": lambda x: random.randint(15, 60),
                 "exp": lambda x: random.randint(0, 100),
-                "level": lambda x: random.randint(1, 12),
+                "level": lambda x: random.randint(1, 20),
                 "created": lambda x: seeder.faker.date_between_dates(
                     datetime.datetime(2022, 1, 1), datetime.datetime(2022, 7, 1)
                 ),

@@ -20,10 +20,6 @@ export const getPosts = async (payload: getPostsRequestType) => {
   const response = await client.get<getPostsResponseType>(link);
   return response.data;
 };
-export const getPostsMain = async () => {
-  const response = await client.get<getPostsResponseType>(`/api/post/main/hot/`);
-  return response.data;
-};
 
 export type UserInfo = {
   username: string;

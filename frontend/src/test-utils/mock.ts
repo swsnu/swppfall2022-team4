@@ -24,8 +24,6 @@ export const initialState: PreloadedState<RootState> = {
     notificationList: [],
   },
   post: {
-    main: null,
-
     postList: {
       posts: null,
       pageNum: null,
@@ -84,7 +82,7 @@ export const initialState: PreloadedState<RootState> = {
     groupCerts: {
       all_certs: [],
       error: null,
-    },
+    }
   },
   tag: {
     tagList: null,
@@ -187,15 +185,15 @@ export const initialState: PreloadedState<RootState> = {
         month: 10,
         date: 1,
         workouts: [],
-        calories: 0,
+        calories: 0
       },
       {
         year: 2022,
         month: 10,
         date: 2,
         workouts: [],
-        calories: 0,
-      },
+        calories: 0
+      }
     ],
     selected_routine: {
       name: 'test_routine2',
@@ -211,8 +209,8 @@ export const initialState: PreloadedState<RootState> = {
       category: '',
     },
     fitelement_types: [],
-    imageSuccess: '',
-    memoSuccess: '',
+    imageSuccess: "",
+    memoSuccess: "",
   },
 };
 
