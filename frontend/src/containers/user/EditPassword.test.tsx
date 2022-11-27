@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import EditPassword from './EditPassword';
+import { Store } from 'react-notifications-component';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -16,7 +17,10 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
 }));
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  Store.addNotification = jest.fn();
+});
 afterAll(() => jest.restoreAllMocks());
 
 const setup = () => {

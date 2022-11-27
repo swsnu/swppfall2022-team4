@@ -152,14 +152,14 @@ const postGroupRequest: groupAPI.postGroupRequestType = {
 const leaderChangeRequest: groupAPI.leaderChangeRequestType = {
   group_id: '1',
   username: 'test',
-}
+};
 
 const getCertsRequest: groupAPI.getCertsRequestType = {
   group_id: '1',
   year: 2022,
   month: 12,
   specific_date: 12,
-}
+};
 
 const createCertRequest: groupAPI.createCertRequestType = {
   group_id: '1',
@@ -167,7 +167,7 @@ const createCertRequest: groupAPI.createCertRequestType = {
   month: 12,
   specific_date: 12,
   fitelement_id: 1,
-}
+};
 
 // Workout dummy.
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {
@@ -202,7 +202,7 @@ const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
   rep: 0,
   set: 0,
   time: 0,
-  date: '2022-10-01'
+  date: '2022-10-01',
 };
 
 const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
@@ -331,6 +331,10 @@ describe('API TEST', () => {
     });
   });
   describe('Post', () => {
+    test('getPostsMain', async () => {
+      const result = await postAPI.getPostsMain();
+      expect(result).toBe(`/api/post/main/hot/`);
+    });
     test('getPosts', async () => {
       const result = await postAPI.getPosts(getPostsRequest);
       expect(result).toBe(`/api/post/?page=1&pageSize=15`);
@@ -528,5 +532,5 @@ describe('Group API TEST', () => {
       const res = await groupAPI.createCert(createCertRequest);
       expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
     });
-  })
+  });
 });

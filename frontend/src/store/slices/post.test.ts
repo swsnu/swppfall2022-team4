@@ -196,6 +196,8 @@ describe('slices - posts', () => {
           postSearch: postSearchRequest.search_keyword,
         },
       ],
+      [postActions.getPostsMain(), initialState],
+      [postActions.getPostsMainFailure('error'), initialState],
       [postActions.stateRefresh(), initialState],
       [postActions.toggleCommentReply(createCommentReplyRequest), initialState],
       [postActions.toggleCommentEdit(editCommentRequest), initialState],
@@ -245,6 +247,18 @@ describe('slices - posts', () => {
       });
       store.dispatch(postActions.postSearch({ search_keyword: 'key' }));
       store.dispatch(postActions.getPostsSuccess(getPostsEmptyResponse));
+    });
+    test('getPostsMain', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.getPostsMain), getPostsResponse]])
+        .put({ type: 'post/getPostsMainSuccess', payload: getPostsResponse })
+        .dispatch({ type: 'post/getPostsMain' })
+        .hasFinalState({
+          ...initialState,
+          main: getPostsResponse.posts,
+        })
+        .silentRun();
     });
     test('getPosts', () => {
       return expectSaga(postSaga)
@@ -407,6 +421,15 @@ describe('slices - posts', () => {
   describe('saga failure', () => {
     global.alert = jest.fn().mockImplementation(() => null);
 
+    test('getPosts', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.getPostsMain), throwError(simpleError)]])
+        .put({ type: 'post/getPostsMainFailure', payload: simpleError })
+        .dispatch({ type: 'post/getPostsMain' })
+        .hasFinalState(initialState)
+        .silentRun();
+    });
     test('getPosts', () => {
       return expectSaga(postSaga)
         .withReducer(postSlice.reducer)
