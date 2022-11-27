@@ -23,14 +23,15 @@ class WorkoutTestCase(TestCase):
             exp=0,
             level=1,
         )
-        tag_class1 = TagClass.objects.create(class_name="workout", color="#101010")
-        TagClass.objects.create(class_name="workout", color="#121212")
-        TagClass.objects.create(class_name="place", color="#111111")
-        self.assertEqual(str(tag_class1), "workout")
+        tag_class1 = TagClass.objects.create(class_type="workout", class_name="back", color="#101010")
+        tag_class2 = TagClass.objects.create(class_type="workout", class_name="etc", color="#121212")
+        TagClass.objects.create(class_type="place", color="#111111")
+        self.assertEqual(str(tag_class1), "back")
         tag11 = Tag.objects.create(
             tag_name="deadlift", tag_class=tag_class1, calories=1
         )
         Tag.objects.create(tag_name="squat", tag_class=tag_class1, calories=1)
+        Tag.objects.create(tag_name="boxing", tag_class=tag_class2, calories=1)
         self.assertEqual(str(tag11), "deadlift")
         fit_element = FitElement.objects.create(
             author_id=1,
@@ -202,6 +203,29 @@ class WorkoutTestCase(TestCase):
         self.assertEqual(res.status_code, 201)
 
         res = client.put(
+            "/api/fitelement/dailylog/2022/11/5/?&username=username",
+            {
+                "username": "username",
+                "image": "test.png",
+            },
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=csrftoken,
+        )
+        self.assertEqual(res.status_code, 201)
+
+        res = client.put(
+            "/api/fitelement/dailylog/2022/11/5/?&username=username",
+            {
+                "username": "username",
+                "image": "test.png",
+                "delete": True
+            },
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=csrftoken,
+        )
+        self.assertEqual(res.status_code, 201)
+
+        res = client.put(
             "/api/fitelement/dailylog/2022/10/6/?&username=username",
             {"username": "username", "fitelements": [1]},
             content_type="application/json",
@@ -246,10 +270,20 @@ class WorkoutTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_delete_fit_element(self):
-        client, _ = self.ready()
+        client, csrftoken = self.ready()
         res = client.delete("/api/fitelement/100/?&username=username")
         self.assertEqual(res.status_code, 404)
 
-        res = client.delete("/api/fitelement/1/?&username=username")
+        res = client.post(
+            "/api/fitelement/routine/?&username=username",
+            {"username": "username", "fitelements": [1]},
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=csrftoken,
+        )
+        self.assertEqual(res.status_code, 201)
 
+        res = client.delete("/api/fitelement/2/?&username=username")
+        self.assertEqual(res.status_code, 200)
+
+        res = client.delete("/api/fitelement/1/?&username=username")
         self.assertEqual(res.status_code, 200)

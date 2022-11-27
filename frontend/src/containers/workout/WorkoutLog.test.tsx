@@ -98,7 +98,7 @@ describe('workout_log', () => {
 
   it('memoOnClick', () => {
     render(component);
-    const button = screen.getByTestId('memo_edit');
+    const button = screen.getByTestId('memo_edit_button');
     fireEvent.click(button!);
     expect(mockDispatch).toHaveBeenCalled();
     fireEvent.click(button!);

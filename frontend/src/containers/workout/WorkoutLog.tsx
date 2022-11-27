@@ -277,7 +277,7 @@ const WorkoutLog = () => {
         specific_date: day,
       };
       dispatch(workoutLogActions.editImage(editImageConfig));
-      var input = document.getElementById('FileInput_DailyLog') as HTMLInputElement;
+      let input = document.getElementById('FileInput_DailyLog') as HTMLInputElement;
       input.value = '';
     } catch (error) {
       alert('이미지 업로드 오류');
@@ -470,7 +470,7 @@ const WorkoutLog = () => {
                   >
                     취소
                   </AnyButton>
-                  <AnyButton className="memo-type" hidden={memo_write_mode} onClick={() => memoOnClick('edit_button')}>
+                  <AnyButton className="memo-type" data-testid="memo_edit_button" hidden={memo_write_mode} onClick={() => memoOnClick('edit_button')}>
                     수정
                   </AnyButton>
                   <AnyButton
