@@ -45,7 +45,7 @@ export const WorkoutChart = (props: IProps) => {
         position: 'top' as const,
       },
       title: {
-        display: true,
+        display: false,
         font: {
           size: 18,
           family: 'IBMPlexSansThaiLooped',
@@ -54,7 +54,25 @@ export const WorkoutChart = (props: IProps) => {
       },
     },
     scales: {
+      x: {
+        title: {
+          display: true,
+          text: '일자',
+          font: {
+            size: 15,
+            family: 'IBMPlexSansThaiLooped',
+          }
+        }
+      },
       y: {
+        title: {
+          display: true,
+          text: '칼로리',
+          font: {
+            size: 15,
+            family: 'IBMPlexSansThaiLooped',
+          }
+        },
         min: 0,
       },
     },
