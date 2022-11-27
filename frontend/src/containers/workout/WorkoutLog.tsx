@@ -213,6 +213,7 @@ const WorkoutLog = () => {
   const imageSuccess = useSelector((rootState: RootState) => rootState.workout_log.imageSuccess);
   const memoSuccess = useSelector((rootState: RootState) => rootState.workout_log.memoSuccess);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
+  const visible_input = (workout_category === '기타운동' || workout_category === '유산소') ? 'hidden' : 'visible';
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
@@ -421,9 +422,7 @@ const WorkoutLog = () => {
           </CalendarWrapper>
           <MemoWrapper>
             <Frame className="memo">
-              <MemoTitleWrapper>
-                Notes
-              </MemoTitleWrapper>
+              <MemoTitleWrapper>Notes</MemoTitleWrapper>
               <MemoContentWrapper>
                 {memo_write_mode ? (
                   <MemoInput
@@ -492,9 +491,21 @@ const WorkoutLog = () => {
               <LogHeader>
                 <LogCategory>부위</LogCategory>
                 <LogCategory className="type">종류</LogCategory>
-                <LogCategory>강도</LogCategory>
-                <LogCategory>반복</LogCategory>
-                <LogCategory>세트</LogCategory>
+                <LogCategory
+                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                >
+                  강도
+                </LogCategory>
+                <LogCategory
+                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                >
+                  반복
+                </LogCategory>
+                <LogCategory
+                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                >
+                  세트
+                </LogCategory>
                 <LogCategory>시간(분)</LogCategory>
               </LogHeader>
               <LogInputBody>
@@ -518,18 +529,24 @@ const WorkoutLog = () => {
                   </WorkoutTypeSelect>
                   <WorkoutTypeInput
                     type="number"
+                    className={visible_input}
+                    disabled={visible_input==="hidden" ? true: false}
                     min="0"
                     value={weight || ''}
                     onChange={e => setWeight(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
                     type="number"
+                    className={visible_input}
+                    disabled={visible_input==="hidden" ? true: false}
                     min="0"
                     value={rep || ''}
                     onChange={e => setRep(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
                     type="number"
+                    className={visible_input}
+                    disabled={visible_input==="hidden" ? true: false}
                     min="0"
                     value={set || ''}
                     onChange={e => setSet(Number(e.target.value))}
@@ -1044,6 +1061,10 @@ const LogCategory = styled.div`
   &&.type {
     width: 20%;
   }
+
+  &&.hide {
+    color: #dcdcdc;
+  }
 `;
 
 const LogInputBodyInput = styled.div`
@@ -1061,6 +1082,13 @@ const WorkoutTypeInput = styled.input`
   font-size: 14px;
   margin: 5px;
   margin-top: 7px;
+
+  &&.hidden {
+    disabled: true;
+    readonly: true;
+    background: #F0F0F0;
+    border: #DCDCDC;
+  }
 `;
 
 const WorkoutTypeSelect = styled.select`
