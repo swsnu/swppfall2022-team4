@@ -215,6 +215,7 @@ export const initialState: PreloadedState<RootState> = {
     memoSuccess: '',
     create_routine_id: null,
     deleteImageSuccess: '',
+    indexSuccess: []
   },
 };
 

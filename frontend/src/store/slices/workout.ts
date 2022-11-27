@@ -79,6 +79,7 @@ export interface WorkoutLogState {
   memoSuccess: string;
   create_routine_id: number | null;
   deleteImageSuccess: string;
+  indexSuccess: number[];
 }
 
 export const initialState: WorkoutLogState = {
@@ -133,6 +134,7 @@ export const initialState: WorkoutLogState = {
   memoSuccess: '',
   create_routine_id: null,
   deleteImageSuccess: '',
+  indexSuccess: [],
 };
 
 export const workoutLogSlice = createSlice({
@@ -205,6 +207,12 @@ export const workoutLogSlice = createSlice({
     },
     editImageSuccess: (state, { payload }) => {
       state.imageSuccess = payload.image;
+    },
+    editIndex: (state, action: PayloadAction<workoutLogAPI.editIndexRequestType>) => {
+      // Empty function
+    },
+    editIndexSuccess: (state, { payload }) => {
+      state.indexSuccess = payload.log_index;
     },
     deleteImage: (state, action: PayloadAction<workoutLogAPI.deleteImageRequestType>) => {
       // Empty function
@@ -350,6 +358,15 @@ function* editImageSaga(action: PayloadAction<workoutLogAPI.editImageRequestType
   }
 }
 
+function* editIndexSaga(action: PayloadAction<workoutLogAPI.editIndexRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.editIndex, action.payload);
+    yield put(workoutLogActions.editIndexSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
+}
+
 function* deleteImageSaga(action: PayloadAction<workoutLogAPI.deleteImageRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.deleteImage, action.payload);
@@ -434,6 +451,7 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.createWorkoutLog, createWorkoutLogSaga);
   yield takeLatest(workoutLogActions.editMemo, editMemoLogSaga);
   yield takeLatest(workoutLogActions.editImage, editImageSaga);
+  yield takeLatest(workoutLogActions.editIndex, editIndexSaga);
   yield takeLatest(workoutLogActions.getCalendarInfo, getCalendarInfoSaga);
   yield takeLatest(workoutLogActions.getRoutine, getRoutineSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutine, getSpecificRoutineSaga);

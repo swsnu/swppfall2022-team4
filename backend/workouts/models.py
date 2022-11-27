@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import User
 from tags.models import Tag
+from django.contrib.postgres.fields import ArrayField
 
 
 class FitElement(models.Model):
@@ -30,6 +31,7 @@ class DailyLog(models.Model):
     memo = models.TextField(null=True)
     fit_element = models.ManyToManyField(FitElement, blank=True)
     calories = models.FloatField(default=0, null=True)
+    log_index = models.TextField(null=True)
 
 
 class DailyLogImage(models.Model):

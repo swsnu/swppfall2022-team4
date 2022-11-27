@@ -11,7 +11,7 @@ import { Fitelement, workoutLogActions } from 'store/slices/workout';
 import { userActions } from 'store/slices/user';
 import ImageDetailModal from 'components/post/ImageDetailModal';
 import { notificationSuccess } from 'utils/sendNotification';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
@@ -20,6 +20,7 @@ import {
   createRoutineWithFitElementsRequestType,
   editImageRequestType,
   deleteImageRequestType,
+  editIndexRequestType,
 } from 'store/apis/workout';
 import client from 'store/apis/client';
 
@@ -221,17 +222,35 @@ const WorkoutLog = () => {
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
   const visible_input = workout_category === '기타운동' || workout_category === '유산소' ? 'hidden' : 'visible';
   const deleteImageSuccess = useSelector((rootState: RootState) => rootState.workout_log.deleteImageSuccess);
+  const indexSuccess = useSelector((rootState: RootState) => rootState.workout_log.indexSuccess);
+
+  const daily_ref = useRef<Fitelement[]>([]);
+  const [daily_temp, setDailyTemp] = useState<Fitelement[]>([]);
+  daily_ref.current = dailyFitElements;
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus, imageSuccess, memoSuccess, deleteImageSuccess]);
+  }, [
+    createDailyLogStatus,
+    pasteStatus,
+    deleteFitElementStatus,
+    imageSuccess,
+    memoSuccess,
+    deleteImageSuccess,
+    indexSuccess,
+  ]);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '');
     setImage(dailyLog.images || ['default-upload-image.png']);
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
+
+  useEffect(() => {
+    setDailyTemp(dailyFitElements);
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [dailyFitElements]);
 
   useEffect(() => {
     dispatch(
@@ -298,17 +317,40 @@ const WorkoutLog = () => {
     notificationSuccess('Image', '이미지 삭제에 성공했어요!');
   };
 
-  const onDragEnd = () => {
-    //드래그 끝나면 할일
+  const onDragEnd = (res: DropResult) => {
+    const { source, destination } = res;
+    console.log(res);
+
+    if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+    let index_list = [...dailyLog.fit_element!];
+
+    const _fit_list = [...dailyFitElements];
+    const [target_fit] = _fit_list.splice(source.index, 1);
+    _fit_list.splice(destination.index, 0, target_fit);
+    setDailyTemp(_fit_list);
+
+    const temp_index = [...dailyLog.fit_element!];
+    const [target_index] = temp_index.splice(source.index, 1);
+    temp_index.splice(destination.index, 0, target_index);
+    index_list = temp_index;
+
+    const editIndexConfig: editIndexRequestType = {
+      username: user.user?.username!,
+      log_index: index_list,
+      year: year,
+      month: month + 1,
+      specific_date: day,
+    };
+    dispatch(workoutLogActions.editIndex(editIndexConfig));
   };
 
   const FitElementList = (fitelement: Fitelement, id: number, index: number) => {
     return (
-      //이전코드를 Draggable 컨테이너로 감싸준뒤 마찬가지로 id와 index 번호를 준다.
-      <Draggable draggableId={String(id)} index={index}>
+      <Draggable key={id} draggableId={String(id)} index={index}>
         {provided => (
           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-            <FitElementWrapper key={index}>
+            <FitElementWrapper>
               <FitElement
                 key={fitelement.data.id}
                 id={index + 1}
@@ -666,13 +708,14 @@ const WorkoutLog = () => {
                 <Droppable droppableId="Logs">
                   {provided => (
                     <LogBody ref={provided.innerRef} {...provided.droppableProps}>
-                      {dailyFitElements.length === 0 ? (
+                      {daily_temp.length === 0 ? (
                         <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
                       ) : (
-                        dailyFitElements.map((fitelement: Fitelement, index: number) =>
+                        daily_temp.map((fitelement: Fitelement, index: number) =>
                           FitElementList(fitelement, fitelement.data.id, index),
                         )
                       )}
+                      {provided.placeholder}
                     </LogBody>
                   )}
                 </Droppable>
