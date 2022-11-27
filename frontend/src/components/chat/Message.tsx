@@ -68,6 +68,7 @@ const Image = styled.img`
   border: 1px solid #d1d1d1;
   border-radius: 5px;
   margin-right: 8px;
+  background-color: #ffffff;
 `;
 const Nickname = styled.div`
   font-size: 20px;

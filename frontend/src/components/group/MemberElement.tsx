@@ -65,6 +65,7 @@ const ProfileImage = styled.img`
   border: 2px solid #00000032;
   border-radius: 10px;
   margin-right: 15px;
+  background-color: #ffffff;
 `;
 
 const MemberElementLineWrapper = styled.div`

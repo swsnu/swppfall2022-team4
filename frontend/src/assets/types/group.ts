@@ -15,7 +15,7 @@ export type listGeoStateType = {
   errMsg: string | null;
   isLoading: boolean;
 };
-  
+
 export type co2regionResponseType = {
   region_type: string;
   address_name: string;
@@ -31,7 +31,7 @@ export type co2regionResponseType = {
 export type coordinateType = {
   lat: number | null;
   lng: number | null;
-}
+};
 
 export type co2addResponseType = {
   road_address: {
@@ -45,7 +45,7 @@ export type co2addResponseType = {
     sub_building_no: string;
     building_name: string;
     zone_no: string;
-  } | null,
+  } | null;
   address: {
     address_name: string;
     region_1depth_name: string;
@@ -54,8 +54,8 @@ export type co2addResponseType = {
     mountain_yn: string;
     main_address_no: string;
     sub_address_no: string;
-  }
-}
+  };
+};
 
 export type keywordSearchResultType = {
   position: {

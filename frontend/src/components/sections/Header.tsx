@@ -5,13 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AiFillHome } from 'react-icons/ai';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { IoIosNotifications, IoIosNotificationsOutline } from 'react-icons/io';
-import {
-  HiOutlineDocumentReport,
-  HiUserGroup,
-  HiOutlineAnnotation,
-  HiPhotograph,
-  HiInformationCircle,
-} from 'react-icons/hi';
+import { HiOutlineDocumentReport, HiUserGroup, HiOutlineAnnotation, HiInformationCircle } from 'react-icons/hi';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
@@ -23,7 +17,6 @@ const CATEGORY = [
   { to: '/workout', text: '기록', icon: <HiOutlineDocumentReport /> },
   { to: '/group', text: '그룹', icon: <HiUserGroup /> },
   { to: '/post', text: '커뮤니티', icon: <HiOutlineAnnotation /> },
-  { to: '/place', text: '장소', icon: <HiPhotograph /> },
   { to: '/information', text: '운동정보', icon: <HiInformationCircle /> },
 ];
 
@@ -45,7 +38,7 @@ const Header = () => {
   useEffect(() => {
     if (user) dispatch(notificationActions.getNotificationList());
     if (!user) navigate('/login');
-  }, [dispatch, navigate, user]);
+  }, [user]);
   useEffect(() => {
     function handleClickOutside(e: MouseEvent): void {
       if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
@@ -77,17 +70,7 @@ const Header = () => {
   const ws: React.MutableRefObject<WebSocket | null> = useRef(null);
   useEffect(() => {
     ws.current = new WebSocket(`ws://${process.env.REACT_APP_API_SOCKET_URL}/ws/chat/${user && user.username}/`);
-    ws.current.onopen = () => {
-      console.log(`CONNECTED`);
-      dispatch(chatActions.setSocket(ws.current));
-    };
-    ws.current.onclose = () => {
-      console.log(`DISCONNECTED`);
-    };
-    ws.current.onerror = error => {
-      console.log(`CONNECTION ERROR`);
-      console.log(error);
-    };
+    ws.current.onopen = () => dispatch(chatActions.setSocket(ws.current));
     ws.current.onmessage = onMessage;
     return () => {
       if (ws && ws.current) ws.current.close();
@@ -99,26 +82,17 @@ const Header = () => {
 
   const onMessage = (e: any) => {
     const data = JSON.parse(e.data);
-    if (data.type === 'CHAT') {
-      if (where.substring(0, 5) !== '/chat') {
-        console.log('[CHAT] ignore...');
-      } else if (where === `/chat/${data.where}` || where === `/chat/${data.where}/`) {
-        console.log('[CHAT] update list and message...');
-        dispatch(chatActions.getChatroomList());
+    if (data.type === 'CHAT' && where.substring(0, 5) === '/chat') {
+      dispatch(chatActions.getChatroomList());
+      if (where === `/chat/${data.where}` || where === `/chat/${data.where}/`) {
         dispatch(chatActions.addMessage(data.message));
-      } else {
-        console.log('[CHAT] update list...');
-        dispatch(chatActions.getChatroomList());
       }
-    } else if (data.type === 'GROUP_CHAT') {
-      if (where === `/group/chat/${data.where}` || where === `/group/chat/${data.where}/`) {
-        console.log('[GROUP_CHAT] update message...');
-        dispatch(chatActions.addMessage(data.message));
-      } else {
-        console.log('[GROUP_CHAT] ignore...');
-      }
+    } else if (
+      data.type === 'GROUP_CHAT' &&
+      (where === `/group/chat/${data.where}` || where === `/group/chat/${data.where}/`)
+    ) {
+      dispatch(chatActions.addMessage(data.message));
     } else if (data.type === 'NOTIFICATION') {
-      console.log('[NOTIFICATION] get noticifation');
       dispatch(notificationActions.getNotificationList());
     }
   };
@@ -178,7 +152,10 @@ const Header = () => {
                       content={x.content}
                       image={x.image}
                       created={x.created}
-                      clicked={() => navigate(x.link)}
+                      clicked={() => {
+                        navigate(x.link);
+                        dispatch(notificationActions.deleteNotification(x.id));
+                      }}
                       clickedDelete={() => dispatch(notificationActions.deleteNotification(x.id))}
                     />
                   ))}
