@@ -77,7 +77,6 @@ const ArticleItem = styled(ArticleItemGrid)`
   width: 100%;
   border-bottom: 1px solid black;
   cursor: pointer;
-  background-color: #ffffff;
 `;
 
 const ArticleItemComp = styled(ArticleItemGridCompact)`

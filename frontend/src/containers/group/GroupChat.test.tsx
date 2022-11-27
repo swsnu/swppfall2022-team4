@@ -68,10 +68,4 @@ describe('[GroupChat Page]', () => {
     fireEvent.click(screen.getByTestId('sendIcon'));
     expect(mockSend).toBeCalledTimes(2);
   });
-
-  test('back', () => {
-    setup();
-    fireEvent.click(screen.getByText('Back'));
-    expect(mockNavigate).toBeCalledTimes(1);
-  });
 });

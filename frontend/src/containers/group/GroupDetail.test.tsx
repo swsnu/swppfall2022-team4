@@ -301,7 +301,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailFailure',
-        payload: { response: { data: { status: 404, message: 'error' } } },
+        payload: {response: {data: {status: 404, message: 'error'}}},
       });
     });
   });

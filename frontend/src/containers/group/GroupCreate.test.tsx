@@ -8,22 +8,20 @@ import GroupCreate from './GroupCreate';
 import * as tagApi from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
 
-const TagResponse: tagApi.TagClass[] = [
-  {
-    id: 1,
-    class_name: 'back',
-    class_type: 'back',
-    color: 'gray',
-    tags: [{ id: '1', name: 'back', color: 'gray' }],
-  },
-  {
-    id: 2,
-    class_name: 'chest',
-    class_type: 'chest',
-    color: 'gray',
-    tags: [{ id: '1', name: 'chest', color: 'gray' }],
-  },
-];
+const TagResponse: tagApi.TagClass[] = [{
+  id: 1,
+  class_name: 'back',
+  class_type: 'back',
+  color: 'gray',
+  tags: [{id:'1', name:'back', color: 'gray'}]
+},{
+  id: 2,
+  class_name: 'chest',
+  class_type: 'chest',
+  color: 'gray',
+  tags: [{id:'1', name:'chest', color: 'gray'}]
+}
+]
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -120,7 +118,7 @@ describe('setup test', () => {
   it('Get fit types', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
-    expect(screen.getAllByRole('option').length).toBe(2);
+    expect(screen.getAllByRole('option').length).toBe(2)
     const addBtn = screen.getByText('추가');
     fireEvent.click(addBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);
@@ -128,9 +126,9 @@ describe('setup test', () => {
   it('wrong goal1', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
-
+    
     const weight = screen.getByTestId('weight');
-
+    
     userEvent.type(weight, '10');
     const addBtn = screen.getByText('추가');
     fireEvent.click(addBtn);
@@ -139,10 +137,10 @@ describe('setup test', () => {
   it('wrong goal2', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
-
+    
     const weight = screen.getByTestId('weight');
     const rep = screen.getByTestId('rep');
-
+    
     userEvent.type(weight, '10');
     userEvent.type(rep, '10');
     const addBtn = screen.getByText('추가');
@@ -152,11 +150,11 @@ describe('setup test', () => {
   it('wrong goal3', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
-
+    
     const weight = screen.getByTestId('weight');
     const rep = screen.getByTestId('rep');
     const set = screen.getByTestId('set');
-
+    
     userEvent.type(weight, '10');
     userEvent.type(rep, '10');
     userEvent.type(set, '10');
@@ -166,29 +164,29 @@ describe('setup test', () => {
   });
   it('good goal', () => {
     setup();
-
+    
     const weight = screen.getByTestId('weight');
     const rep = screen.getByTestId('rep');
     const set = screen.getByTestId('set');
     const time = screen.getByTestId('time');
-
+    
     userEvent.type(weight, '20');
     userEvent.type(rep, '20');
     userEvent.type(set, '20');
     userEvent.type(time, '20');
     const addBtn = screen.getByText('추가');
     fireEvent.click(addBtn);
-
+    
     //screen.getByText('1');
   });
   it('good goal & remove goal', () => {
     setup();
-
+    
     const weight = screen.getByTestId('weight');
     const rep = screen.getByTestId('rep');
     const set = screen.getByTestId('set');
     const time = screen.getByTestId('time');
-
+    
     userEvent.type(weight, '20');
     userEvent.type(rep, '20');
     userEvent.type(set, '20');
@@ -212,7 +210,7 @@ describe('setup test', () => {
     const rep = screen.getByTestId('rep');
     const set = screen.getByTestId('set');
     const time = screen.getByTestId('time');
-
+    
     userEvent.type(weight, '20');
     userEvent.type(rep, '20');
     userEvent.type(set, '20');
@@ -239,11 +237,12 @@ describe('setup test', () => {
     fireEvent.click(placeCheck);
     userEvent.type(descriptionInput, 'group test');
 
+    
     const weight = screen.getByTestId('weight');
     const rep = screen.getByTestId('rep');
     const set = screen.getByTestId('set');
     const time = screen.getByTestId('time');
-
+    
     userEvent.type(weight, '20');
     userEvent.type(rep, '20');
     userEvent.type(set, '20');
@@ -260,7 +259,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/createGroupSuccess',
-        payload: { id: '1' },
+        payload: {id: '1'},
       });
     });
     expect(mockNavigate).toBeCalledTimes(1);

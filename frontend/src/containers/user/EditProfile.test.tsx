@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import EditProfile from './EditProfile';
-import { Store } from 'react-notifications-component';
 
 const simpleProfile = {
   username: 'username',
@@ -31,11 +30,7 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
 }));
-
-beforeEach(() => {
-  jest.clearAllMocks();
-  Store.addNotification = jest.fn();
-});
+beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
 const setup = () => {

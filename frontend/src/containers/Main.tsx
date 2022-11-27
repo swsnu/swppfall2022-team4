@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AiFillLike } from 'react-icons/ai';
 import { BsPencil, BsSignpost2, BsFillPersonFill, BsFillPeopleFill } from 'react-icons/bs';
 import styled from 'styled-components';
@@ -122,7 +122,7 @@ const Main = () => {
               {posts ? (
                 <>
                   {posts.map(x => (
-                    <PostItemWrapper key={x.post_id} onClick={() => navigate(`/post/${x.post_id}`)}>
+                    <PostItemWrapper key={x.post_id} to={`/post/${x.post_id}`}>
                       <PostSmallWrapper1>
                         <PostTitle>{x.title}</PostTitle>
                         <PostAuthor>{x.author.nickname}</PostAuthor>
@@ -155,7 +155,7 @@ const Main = () => {
               {groups ? (
                 <>
                   {groups.slice(0, 3).map(x => (
-                    <GroupItemWrapper key={x.id} onClick={() => navigate(`/group/detail/${x.id}`)}>
+                    <GroupItemWrapper key={x.id} to={`/group/detail/${x.id}`}>
                       <GroupName>{x.group_name}</GroupName>
                       <GroupSmallWrapper>
                         <div style={{ display: 'flex' }}>
@@ -389,7 +389,7 @@ const PostWrapper = styled.div`
   align-items: center;
   gap: 5px;
 `;
-const PostItemWrapper = styled.div`
+const PostItemWrapper = styled(Link)`
   background-color: #ffffff;
   width: 100%;
   height: 48px;
@@ -443,7 +443,7 @@ const GroupWrapper = styled.div`
   align-items: center;
   gap: 12px;
 `;
-const GroupItemWrapper = styled.div`
+const GroupItemWrapper = styled(Link)`
   background-color: #f5fffd;
   width: 100%;
   height: 72px;

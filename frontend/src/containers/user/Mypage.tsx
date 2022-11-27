@@ -54,7 +54,6 @@ const Mypage = () => {
 
   useEffect(() => {
     dispatch(userActions.getProfile(username || ''));
-    setType(0);
     return () => {
       dispatch(userActions.resetProfile());
       dispatch(chatActions.resetCreate());
@@ -203,10 +202,6 @@ const Mypage = () => {
             {
               0: (
                 <ProfileContentWrapper>
-                  <FollowCountWrapper>
-                    <FollowCountText>게시글</FollowCountText>
-                    <FollowCountNumber>{profile.information.post.length}</FollowCountNumber>
-                  </FollowCountWrapper>
                   {profile.information.post.map(post => (
                     <ArticleItemDefault
                       key={post.post_id}
@@ -218,10 +213,6 @@ const Mypage = () => {
               ),
               1: (
                 <ProfileContentWrapper>
-                  <FollowCountWrapper>
-                    <FollowCountText>댓글</FollowCountText>
-                    <FollowCountNumber>{profile.information.comment.length}</FollowCountNumber>
-                  </FollowCountWrapper>
                   {profile.information.comment.map(comment => (
                     <MyPageCommentItem key={comment.comment_id} comment={comment} />
                   ))}
@@ -229,10 +220,6 @@ const Mypage = () => {
               ),
               2: (
                 <ProfileContentWrapper>
-                  <FollowCountWrapper>
-                    <FollowCountText>스크랩</FollowCountText>
-                    <FollowCountNumber>{profile.information.scrap.length}</FollowCountNumber>
-                  </FollowCountWrapper>
                   {profile.information.scrap.map(post => (
                     <ArticleItemDefault
                       key={post.post_id}
@@ -249,32 +236,18 @@ const Mypage = () => {
                     <FollowCountNumber>{profile.information.follower.length}</FollowCountNumber>
                   </FollowCountWrapper>
                   <FollowUserWrapper>
-                    <>
-                      {profile.information.follower.map(user => (
-                        <UserItem
-                          key={user.username}
-                          user={user}
-                          clicked={() => navigate(`/profile/${user.username}`)}
-                        />
-                      ))}
-                      {profile.information.follower.length === 0 && <NoFollowText>팔로워가 없습니다.</NoFollowText>}
-                    </>
+                    {profile.information.follower.map(user => (
+                      <UserItem key={user.username} user={user} clicked={() => navigate(`/profile/${user.username}`)} />
+                    ))}
                   </FollowUserWrapper>
                   <FollowCountWrapper>
                     <FollowCountText>Following</FollowCountText>
                     <FollowCountNumber>{profile.information.following.length}</FollowCountNumber>
                   </FollowCountWrapper>
                   <FollowUserWrapper>
-                    <>
-                      {profile.information.following.map(user => (
-                        <UserItem
-                          key={user.username}
-                          user={user}
-                          clicked={() => navigate(`/profile/${user.username}`)}
-                        />
-                      ))}
-                      {profile.information.follower.length === 0 && <NoFollowText>팔로잉이 없습니다.</NoFollowText>}
-                    </>
+                    {profile.information.following.map(user => (
+                      <UserItem key={user.username} user={user} clicked={() => navigate(`/profile/${user.username}`)} />
+                    ))}
                   </FollowUserWrapper>
                 </FollowContentWrapper>
               ),
@@ -625,7 +598,6 @@ const ProfileContentWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-  background-color: #f5f5f5;
 `;
 const CommentItem = styled.div<IPropsComment>`
   padding: 5px 30px;
@@ -641,7 +613,6 @@ const CommentItem = styled.div<IPropsComment>`
     `
     padding-left: 30px;
   `}
-  background-color:#ffffff;
 `;
 const CommentChildIndicator = styled.div`
   margin-right: 12px;
@@ -656,14 +627,11 @@ const FollowContentWrapper = styled.div`
 `;
 const FollowCountWrapper = styled.div`
   width: 100%;
-  min-height: 80px;
+  height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-bottom: 1px solid #d1d1d1;
-  padding: 15px 0;
-  border-top: 1px solid black;
-  background-color: #ffffff;
 `;
 const FollowCountText = styled.div`
   font-size: 20px;
@@ -684,12 +652,4 @@ const FollowUserWrapper = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  min-height: 195.65px;
-  background-color: #f5f5f5;
-`;
-const NoFollowText = styled.div`
-  font-size: 24px;
-  font-family: NanumSquareR;
-  height: 150px;
-  padding-top: 68px;
 `;

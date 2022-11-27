@@ -86,5 +86,4 @@ const RecentMessage = styled.div`
   text-overflow: ellipsis;
   text-align: center;
   margin-top: 7.5px;
-  line-height: normal;
 `;
