@@ -423,10 +423,6 @@ const WorkoutLog = () => {
             <Frame className="memo">
               <MemoTitleWrapper>
                 Notes
-                <MemoEditButton
-                  data-testid="memo_edit"
-                  src={require('assets/images/workout_log/memo/memo_edit.png')}
-                ></MemoEditButton>
               </MemoTitleWrapper>
               <MemoContentWrapper>
                 {memo_write_mode ? (
@@ -866,17 +862,9 @@ const DayContent = styled.div<{ visibility_boolean: boolean }>`
 const MemoWrapper = styled.div`
   width: 100%;
   height: 20%;
-  min-height: 200px;
+  min-height: 100px;
   margin-bottom: 10px;
   display: flex;
-  justify-content: center;
-`;
-
-const MemoEditButton = styled.img`
-  display: flex;
-  height: 75%;
-  margin-left: 3px;
-  align-items: center;
   justify-content: center;
 `;
 
