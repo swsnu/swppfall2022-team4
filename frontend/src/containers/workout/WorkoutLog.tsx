@@ -941,6 +941,7 @@ const AnyButton = styled.button`
 
   &&.disable-type {
     background-color: #d7efe3;
+    cursor: default;
   }
 
   &&.memo-type {
