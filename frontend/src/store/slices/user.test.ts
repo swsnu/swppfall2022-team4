@@ -5,12 +5,6 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { rootReducer } from '../index';
 import * as userAPI from '../apis/user';
 import userSaga, { initialState, userSlice, userActions } from './user';
-import { Store } from 'react-notifications-component';
-
-beforeEach(() => {
-  Store.addNotification = jest.fn();
-});
-afterAll(() => jest.restoreAllMocks());
 
 const simpleError = new Error('error!');
 const simpleUser = { username: '11111111', nickname: 'abcd', image: 'image.png' };

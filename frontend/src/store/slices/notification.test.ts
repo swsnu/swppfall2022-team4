@@ -5,12 +5,6 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { rootReducer } from '../index';
 import * as notificationAPI from '../apis/notification';
 import notificationSaga, { initialState, notificationSlice, notificationActions } from './notification';
-import { Store } from 'react-notifications-component';
-
-beforeEach(() => {
-  Store.addNotification = jest.fn();
-});
-afterAll(() => jest.restoreAllMocks());
 
 const simpleError = new Error('error!');
 

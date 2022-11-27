@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as notificationAPI from 'store/apis/notification';
-import { notificationSuccess } from 'utils/sendNotification';
 
 interface NotificationState {
   notificationList: notificationAPI.notificationType[];
@@ -25,7 +24,6 @@ export const notificationSlice = createSlice({
     },
     deleteAllNotification: state => {
       state.notificationList = [];
-      notificationSuccess('알림 삭제', '모든 알림을 삭제했습니다.');
     },
     deleteNotification: (state, action: PayloadAction<number>) => {
       state.notificationList = state.notificationList.filter(x => x.id !== action.payload);
