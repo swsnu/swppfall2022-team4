@@ -58,7 +58,7 @@ const GroupPosts = () => {
           {MainContent}
           <div>
             <PostPanelWrapper>
-              <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>
+              <BlueBigBtn onClick={() => navigate(`/group/detail/${group_id}/post/create`)}>글 쓰기</BlueBigBtn>
             </PostPanelWrapper>
           </div>
         </div>

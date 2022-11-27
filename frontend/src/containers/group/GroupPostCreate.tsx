@@ -35,6 +35,7 @@ const GroupPostCreate = () => {
         postActions.createPost({
           ...postContent,
           author_name: user.username,
+          group_id: group_id,
         }),
       );
     }

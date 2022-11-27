@@ -18,10 +18,8 @@ import ImageDetailModal from 'components/post/ImageDetailModal';
 import { chatActions } from 'store/slices/chat';
 import {
   ArticleBackBtn,
-  ArticleBody,
   ArticleBodyContent,
   ArticleBodyFooter,
-  ArticleCommentWrapper,
   ArticleDetailWrapper,
   ArticleItem,
   ArticleTitle,
@@ -37,7 +35,6 @@ import {
   CommentItem,
   CommentNumIndicator,
   CommentReplyForm,
-  CommentReplyFormWrapper,
   CommentReplyWrapper,
   CommentRightWrapper,
   CommentWrapper,
@@ -50,7 +47,6 @@ import {
   FuncBtnWrapper,
   PostPanelWrapper,
   PostTimeText,
-  PostUploadedImage,
   PostUploadedImageWrapper,
   PostWritterAvatar,
   PostWritterLeftWrapper,
@@ -457,7 +453,7 @@ const GroupPostDetail = () => {
             </CommentFuncWrapper>
           </CommentRightWrapper>
         </CommentItem>
-        <CommentReplyFormWrapper>
+        <div>
           {comment.replyActive === true && (
             <CommentReplyForm>
               <CommentInput
@@ -474,7 +470,7 @@ const GroupPostDetail = () => {
               </GreenCommentSubmitBtn>
             </CommentReplyForm>
           )}
-        </CommentReplyFormWrapper>
+        </div>
       </CommentReplyWrapper>
     );
   };
@@ -499,7 +495,7 @@ const GroupPostDetail = () => {
           <ArticleDetailWrapper id="articleDetailWrapper">
             {post ? (
               <ArticleItem>
-                <ArticleBody>
+                <div>
                   <ArticleTitleWrapper>
                     <ArticleBackBtn onClick={() => navigate(`/group/detail/${group_id}/post/`)}>◀︎</ArticleBackBtn>
                     <ArticleTitle>{post.title}</ArticleTitle>
@@ -531,7 +527,7 @@ const GroupPostDetail = () => {
                   <ContentImageSection>
                     {post.images?.map((img, index) => (
                       <PostUploadedImageWrapper key={index}>
-                        <PostUploadedImage
+                        <img
                           src={process.env.REACT_APP_API_IMAGE + img}
                           onClick={() => {
                             setActiveImage(img);
@@ -583,8 +579,8 @@ const GroupPostDetail = () => {
                       })}
                     </TagBubbleWrapper>
                   </ArticleBodyFooter>
-                </ArticleBody>
-                <ArticleCommentWrapper>
+                </div>
+                <div>
                   <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
                   <CommentForm>
                     <CommentInput
@@ -596,7 +592,7 @@ const GroupPostDetail = () => {
                       작성
                     </GreenCommentSubmitBtn>
                   </CommentForm>
-                </ArticleCommentWrapper>
+                </div>
               </ArticleItem>
             ) : (
               <LoadingWithoutMinHeight />

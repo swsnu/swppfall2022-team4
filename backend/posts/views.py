@@ -139,10 +139,16 @@ def post_home(request):
                 if ("prime_tag" in data.keys() and data["prime_tag"])
                 else None
             )
+            group = Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
 
             created_post = Post.objects.create(
-                author=author, title=data["title"], content=data["content"], prime_tag=prime_tag
+                author=author,
+                title=data["title"],
+                content=data["content"],
+                prime_tag=prime_tag,
+                in_group=group,
             )
+
             for tag in data["tags"]:
                 tag = Tag.objects.get(pk=tag["id"])
                 created_post.tags.add(tag)

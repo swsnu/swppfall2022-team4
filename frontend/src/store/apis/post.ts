@@ -94,6 +94,7 @@ export type createPostRequestType = {
   tags: TagVisual[];
   images: string[];
   prime_tag: TagVisual | undefined;
+  group_id?: string;
 };
 
 export const updatePostDetail = async (payload: postIdentifyingType) => {

@@ -427,7 +427,7 @@ const PostDetail = () => {
             </CommentFuncWrapper>
           </CommentRightWrapper>
         </CommentItem>
-        <CommentReplyFormWrapper>
+        <div>
           {comment.replyActive === true && (
             <CommentReplyForm>
               <CommentInput
@@ -444,7 +444,7 @@ const PostDetail = () => {
               </GreenCommentSubmitBtn>
             </CommentReplyForm>
           )}
-        </CommentReplyFormWrapper>
+        </div>
       </CommentReplyWrapper>
     );
   };
@@ -458,7 +458,7 @@ const PostDetail = () => {
         <BlueBigBtn onClick={postDeleteOnClick}>글 삭제</BlueBigBtn>
       </PostPanelWrapper>
     ) : (
-      <PostPanelWrapper> {CreateBtn}</PostPanelWrapper>
+      <PostPanelWrapper>{CreateBtn}</PostPanelWrapper>
     );
 
   const postSearch = useSelector(({ post }: RootState) => post.postSearch);
@@ -497,7 +497,7 @@ const PostDetail = () => {
           <ArticleDetailWrapper id="articleDetailWrapper">
             {post ? (
               <ArticleItem>
-                <ArticleBody>
+                <div>
                   <ArticleTitleWrapper>
                     <ArticleBackBtn onClick={() => navigate('/post')}>◀︎</ArticleBackBtn>
                     <ArticleTitle>{post.title}</ArticleTitle>
@@ -529,7 +529,7 @@ const PostDetail = () => {
                   <ContentImageSection>
                     {post.images?.map((img, index) => (
                       <PostUploadedImageWrapper key={index}>
-                        <PostUploadedImage
+                        <img
                           src={process.env.REACT_APP_API_IMAGE + img}
                           onClick={() => {
                             setActiveImage(img);
@@ -581,8 +581,8 @@ const PostDetail = () => {
                       })}
                     </TagBubbleWrapper>
                   </ArticleBodyFooter>
-                </ArticleBody>
-                <ArticleCommentWrapper>
+                </div>
+                <div>
                   <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
                   <CommentForm>
                     <CommentInput
@@ -594,7 +594,7 @@ const PostDetail = () => {
                       작성
                     </GreenCommentSubmitBtn>
                   </CommentForm>
-                </ArticleCommentWrapper>
+                </div>
               </ArticleItem>
             ) : (
               <LoadingWithoutMinHeight />
@@ -642,18 +642,6 @@ export const ArticleDetailWrapper = styled(ScrollShadow)`
   }
 `;
 
-export const ArticleBody = styled.div`
-  font-size: 14px;
-  width: 100%;
-  height: 80%;
-  min-height: 360px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-bottom: 1px solid var(--fit-support-gray-bright);
-  margin-bottom: 8px;
-`;
-
 export const ArticleItem = styled.div`
   font-size: 14px;
   width: 100%;
@@ -664,6 +652,22 @@ export const ArticleItem = styled.div`
   overflow: auto;
   &::-webkit-scrollbar {
     display: none;
+  }
+  > div:first-child {
+    /* Article Body : Post, PostFunc */
+    font-size: 14px;
+    width: 100%;
+    height: 80%;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid var(--fit-support-gray-bright);
+    margin-bottom: 8px;
+  }
+  > div:nth-child(2) {
+    /* Comment Wrapper */
+    width: 100%;
   }
 `;
 
@@ -740,9 +744,7 @@ export const ArticleBodyContent = styled.div`
 `;
 
 // Article Comment List
-export const ArticleCommentWrapper = styled.div`
-  width: 100%;
-`;
+export const ArticleCommentWrapper = styled.div``;
 
 export const CommentWrapper = styled.div`
   width: 100%;
@@ -892,8 +894,6 @@ export const CommentReplyForm = styled.form`
   border-bottom: 1px solid gray;
 `;
 
-export const CommentReplyFormWrapper = styled.div``;
-
 export const CommentInput = styled.input`
   width: 90%;
   padding: 10px 12px;
@@ -921,15 +921,15 @@ export const PostUploadedImageWrapper = styled.div`
   border-radius: 15px;
   margin: 5px 5px;
   position: relative;
-`;
 
-export const PostUploadedImage = styled.img`
-  width: 130px;
-  height: 130px;
-  background-color: var(--fit-disabled-gray);
-  border-radius: 15px;
-  object-fit: cover;
-  cursor: pointer;
+  img {
+    width: 130px;
+    height: 130px;
+    background-color: var(--fit-disabled-gray);
+    border-radius: 15px;
+    object-fit: cover;
+    cursor: pointer;
+  }
 `;
 
 export default PostDetail;
