@@ -110,7 +110,7 @@ const WorkoutLog = () => {
     if (workout_type === '') {
       alert('운동종류를 입력해주세요.');
     } else if (workout_time === null || workout_time < 0) {
-      alert('시간이 입력되어야 합니다.');
+      alert('시간을 입력해야 해요.');
     } else {
       const newLogConfig: createWorkoutLogRequestType = {
         username: user.user?.username!,
@@ -120,7 +120,7 @@ const WorkoutLog = () => {
         category: workout_category,
         weight: weight,
         rep: rep,
-        set: set,
+        set: set === 0 ? null : set,
         time: workout_time,
         date: String(year) + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0'),
       };
@@ -530,7 +530,13 @@ const WorkoutLog = () => {
                       ))}
                   </WorkoutTypeSelect>
                   <WorkoutTypeInput
+                    pattern="[0-9]+"
                     type="number"
+                    onKeyPress={event => {
+                      if (!(48 <= event.charCode && event.charCode <= 57)) {
+                        event.preventDefault();
+                      }
+                    }}
                     className={visible_input}
                     disabled={visible_input === 'hidden' ? true : false}
                     min="0"
@@ -539,6 +545,11 @@ const WorkoutLog = () => {
                   />
                   <WorkoutTypeInput
                     type="number"
+                    onKeyPress={event => {
+                      if (!(48 <= event.charCode && event.charCode <= 57)) {
+                        event.preventDefault();
+                      }
+                    }}
                     className={visible_input}
                     disabled={visible_input === 'hidden' ? true : false}
                     min="0"
@@ -547,6 +558,11 @@ const WorkoutLog = () => {
                   />
                   <WorkoutTypeInput
                     type="number"
+                    onKeyPress={event => {
+                      if (!(48 <= event.charCode && event.charCode <= 57)) {
+                        event.preventDefault();
+                      }
+                    }}
                     className={visible_input}
                     disabled={visible_input === 'hidden' ? true : false}
                     min="0"
@@ -556,6 +572,11 @@ const WorkoutLog = () => {
                   <WorkoutTypeInput
                     type="number"
                     min="0"
+                    onKeyPress={event => {
+                      if (!(48 <= event.charCode && event.charCode <= 57)) {
+                        event.preventDefault();
+                      }
+                    }}
                     value={workout_time || ''}
                     onChange={e => setWorkoutTime(Number(e.target.value))}
                   />
@@ -1090,6 +1111,10 @@ const WorkoutTypeInput = styled.input`
     readonly: true;
     background: #f0f0f0;
     border: #dcdcdc;
+  }
+
+  &:invalid {
+    border: 1px solid red;
   }
 `;
 
