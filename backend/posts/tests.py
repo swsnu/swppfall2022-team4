@@ -265,3 +265,9 @@ class PostTestCase(TestCase):
 
         res = client.delete('/api/post/1/')
         self.assertEqual(res.status_code, 404)  # Already deleted, Not found
+
+    def test_post_main(self):
+        client, _ = self.ready()
+
+        res = client.get('/api/post/main/hot/')
+        self.assertEqual(res.status_code, 200)
