@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useOnClickOutside } from 'usehooks-ts';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
 import { Hover } from 'components/fitelement/Hover';
 import { workoutLogActions } from 'store/slices/workout';
 import { userActions } from 'store/slices/user';
+import ImageDetailModal from 'components/post/ImageDetailModal';
 import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
@@ -52,6 +54,14 @@ const WorkoutLog = () => {
   const [copy_date, setCopyDate] = useState<Date>(new Date());
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
   const user = useSelector(({ user }: RootState) => user);
+  const imageModalRef = useRef(null);
+  const imageModalAnimRef = useRef(null);
+  const [activeImage, setActiveImage] = useState('');
+
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+
+  const imageModalOnClose = () => setImageModalOpen(false);
+  useOnClickOutside(imageModalRef, imageModalOnClose, 'mousedown');
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -164,7 +174,7 @@ const WorkoutLog = () => {
     setRep(null);
     setSet(null);
     setWorkoutTime(null);
-  }
+  };
 
   const memoOnClick = (click_type: string) => {
     if ((memo_write_mode === false && click_type !== 'complete_button') || click_type === 'edit_button') {
@@ -381,7 +391,15 @@ const WorkoutLog = () => {
               <CalendarFooter>
                 <>
                   {image!.map((v, index) => (
-                    <WorkoutImage key={index} src={process.env.REACT_APP_API_IMAGE + v} alt="workout_image" />
+                    <WorkoutImage
+                      key={index}
+                      src={process.env.REACT_APP_API_IMAGE + v}
+                      alt="workout_image"
+                      onClick={() => {
+                        setActiveImage(v);
+                        setImageModalOpen(true);
+                      }}
+                    />
                   ))}
                 </>
                 {image!.length + 1 > CONTENT_IMAGE_LIMIT ? (
@@ -528,7 +546,9 @@ const WorkoutLog = () => {
                   />
                 </LogInputBodyInput>
                 <LogInputBodyButton>
-                  <AnyButton className="type1" onClick={() => cancelWorkoutLog()}>초기화</AnyButton>
+                  <AnyButton className="type1" onClick={() => cancelWorkoutLog()}>
+                    초기화
+                  </AnyButton>
                   <AnyButton className="type1" onClick={() => createWorkoutLog()}>
                     완료
                   </AnyButton>
@@ -570,6 +590,13 @@ const WorkoutLog = () => {
           </LogWrapper>
         </RightWrapper>
       </InnerWrapper>
+      {ImageDetailModal({
+        isActive: imageModalOpen,
+        onClose: imageModalOnClose,
+        modalRef: imageModalRef,
+        modalAnimRef: imageModalAnimRef,
+        activeImage,
+      })}
     </Wrapper>
   );
 };
