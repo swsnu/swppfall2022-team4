@@ -16,20 +16,29 @@ def general_group(request):
     POST : create group
     """
     if request.method == 'GET':
-        group_list = list(
-            Group.objects.all().values(
-                'id',
-                'group_name',
-                'number',
-                'start_date',
-                'end_date',
-                'member_number',
-                'lat',
-                'lng',
-                'address',
-            )
-        )
-        return JsonResponse({"groups": group_list}, safe=False)
+        result = []
+        for gr_obj in Group.objects.all():
+            my_group = "not_member"
+            if gr_obj.group_leader.username == request.user.username:
+                my_group = "group_leader"
+            elif gr_obj.members.filter(username=request.user.username):
+                my_group = "group_member"
+            else:
+                my_group = "not_member"
+            result.append({
+                "id": gr_obj.id,
+                "group_name": gr_obj.group_name,
+                "number": gr_obj.number,
+                "start_date": gr_obj.start_date,
+                "end_date": gr_obj.end_date,
+                "member_number": gr_obj.member_number,
+                "free": gr_obj.free,
+                "lat": gr_obj.lat,
+                "lng": gr_obj.lng,
+                "address": gr_obj.address,
+                "my_group": my_group,
+            })
+        return JsonResponse({"groups": result}, safe=False)
 
     else:  ## post
         try:

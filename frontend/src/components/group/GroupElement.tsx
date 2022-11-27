@@ -8,6 +8,7 @@ export interface IProps {
   end_date: string | null;
   member_number: number;
   address: string | null;
+  free: boolean;
   clicked: React.MouseEventHandler<HTMLDivElement>;
 }
 
@@ -22,6 +23,7 @@ export const GroupElement = (props: IProps) => {
       </GroupElementLine>
       <GroupElementLine>최대인원 : {props.number ?? '제한없음'}</GroupElementLine>
       <GroupElementLine>현재인원 : {props.member_number}</GroupElementLine>
+      <GroupElementLine>{props.free ? '자유가입O' : '자유가입X'}</GroupElementLine>
       <GroupElementLine>시작일 : {props.start_date ?? '기한없음'}</GroupElementLine>
       <GroupElementLine>마감일 : {props.end_date ?? '기한없음'}</GroupElementLine>
     </GroupElementWrapper>
@@ -30,7 +32,7 @@ export const GroupElement = (props: IProps) => {
 
 const GroupElementWrapper = styled.div`
   width: calc(33.3% - 20px);
-  height: 270px;
+  height: 290px;
   display: flex;
   flex-direction: column;
   align-items: center;

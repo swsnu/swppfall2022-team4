@@ -64,6 +64,8 @@ export type Group = {
   lat: number | null;
   lng: number | null;
   address: string | null;
+  free: boolean;
+  my_group: string;
 };
 
 export type Fitelement = {
