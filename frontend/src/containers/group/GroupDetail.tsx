@@ -100,7 +100,11 @@ const GroupDetail = () => {
             <Button1 content="Leave" clicked={exitOnClick} />
           </div>
         )}
-        {member_status === 'not_member' && <Button1 content="Join" clicked={joinOnClick} />}
+        {member_status === 'not_member' && (
+          <div style={{ display: 'flex', gap: '15px', paddingLeft: '110%' }}>
+            <Button1 content="Join" clicked={joinOnClick} />
+          </div>
+        )}
       </div>
       <GroupAboutWrapper>
         <GroupAboutText>About</GroupAboutText>
