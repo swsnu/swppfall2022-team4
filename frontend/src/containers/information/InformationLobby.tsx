@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { tagActions } from 'store/slices/tag';
 import { TagBubble } from 'components/tag/tagbubble';
 import SearchBar from 'components/common/SearchBar';
+import { get_image } from 'components/fitelement/FitElement';
 
 const InformationLobby = () => {
   const [search, setSearch] = useState('');
@@ -55,19 +56,30 @@ const InformationLobby = () => {
             <br />
             {tagList?.map(tagClass => {
               return (
-                tagClass.class_type === 'workout' &&
-                tagClass.tags.map(tag => {
-                  return (
-                    <TagBubble
-                      style={{ cursor: 'pointer' }}
-                      key={tag.id}
-                      color={tag.color}
-                      onClick={() => navigate(`/information/${tag.name}`)}
-                    >
-                      {tag.name}
-                    </TagBubble>
-                  );
-                })
+                tagClass.class_type === 'workout' && (
+                  <div>
+                    <div>
+                      <TagClassImg
+                        src={require(`assets/images/workout_log/fitelement_category/${get_image(
+                          tagClass.class_name,
+                        )}.png`)}
+                      />
+                      {tagClass.class_name}
+                    </div>
+                    {tagClass.tags.map(tag => {
+                      return (
+                        <TagBubble
+                          style={{ cursor: 'pointer' }}
+                          key={tag.id}
+                          color={tag.color}
+                          onClick={() => navigate(`/information/${tag.name}`)}
+                        >
+                          {tag.name}
+                        </TagBubble>
+                      );
+                    })}
+                  </div>
+                )
               );
             })}
           </SectionItemWrapper>
@@ -78,7 +90,7 @@ const InformationLobby = () => {
 };
 
 const PostPageWrapper = styled.div`
-  background-color: #d7efe3;
+  background-color: var(--fit-green-back);
   width: 100%;
   height: 100%;
   min-height: 100vh;
@@ -105,7 +117,12 @@ const PostContentWrapper = styled.div`
 const TopElementWrapperWithoutPadding = styled.div`
   margin: 40px 0px 15px 0px;
   width: 100%;
+  border-radius: 15px;
   background-color: #ffffff;
+`;
+
+const TagClassImg = styled.img`
+  max-width: 40px;
 `;
 
 const SectionWrapper = styled.div`
@@ -122,7 +139,8 @@ const SectionWrapper = styled.div`
 const SectionItemWrapper = styled.div`
   width: 100%;
   padding: 15px 20px;
-  border: 1px solid black;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
   background-color: #ffffff;
 `;
 

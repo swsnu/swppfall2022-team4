@@ -45,7 +45,8 @@ export const ArticleItemCompact = ({ post, onClick }: IpropsArticleItem) => (
       <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
     )}
     <PostTitle>
-      {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
+      {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}{' '}
+      <PostItemCommentNum>[{post.comments_num}]</PostItemCommentNum>
     </PostTitle>
     <span>{post.author.nickname}</span>
   </ArticleItemComp>
