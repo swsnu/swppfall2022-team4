@@ -393,10 +393,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const uploadPostImage = async (e: any) => {
     const file = e.target.files[0];
-    if (file.size > 5 * 1024 * 1024) {
-      alert('5MB 이하의 파일만 업로드가 가능합니다.');
-      return;
-    }
     const formData = new FormData();
     formData.append('image', file);
     try {
@@ -463,7 +459,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               </ContentCharNum>
               <FileInput
                 type="file"
-                accept="image/*"
                 id="FileInput_PostContent"
                 data-testid="postImageUpload"
                 onChange={uploadPostImage}
