@@ -590,10 +590,11 @@ const Wrapper = styled.div`
 
 const WorkoutImage = styled.img`
   width: 120px;
-  height: 120px;
+  height: 110px;
   border: 1px solid #727272;
   border-radius: 15px;
-  margin: 5px;
+  margin: 3px;
+  margin-top: 18px;
   cursor: pointer;
   transition: border 0.15s linear;
   &:hover {
@@ -1122,17 +1123,8 @@ const MemoFooter = styled.div`
   flex-direction: row;
 `;
 
-const ImageWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: start;
-`;
-
 const CalendarFooter = styled.div`
-  width: 90%;
+  width: 88%;
   height: 30%;
   display: flex;
   justify-content: start;
