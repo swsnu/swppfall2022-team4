@@ -240,6 +240,7 @@ const GroupCreate = () => {
             type="number"
             disabled={!max_num}
             value={group_num}
+            min="0"
             max="100"
             onChange={e => setGroupNum(e.target.valueAsNumber)}
             style={{ width: '90px' }}
