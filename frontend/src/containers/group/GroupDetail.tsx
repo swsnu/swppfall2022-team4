@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -6,7 +6,6 @@ import { RootState } from 'index';
 import { groupActions } from 'store/slices/group';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
-import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { FitElement } from 'components/fitelement/FitElement';
@@ -21,6 +20,10 @@ const GroupDetail = () => {
   const group_detail_error = useSelector(({ group }: RootState) => group.groupDetail.error);
   const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
   const groupDeleteStatus = useSelector(({ group }: RootState) => group.groupDelete);
+
+  const [done, setDone] = useState(false);
+  const today = new Date();
+  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
   useEffect(() => {
     if (group_id) {
@@ -39,6 +42,7 @@ const GroupDetail = () => {
   useEffect(() => {
     if (group_id && group_detail) {
       dispatch(groupActions.checkMemberStatus(group_id));
+      if (group_detail.end_date && group_detail.end_date < date) setDone(true);
     }
   }, [group_detail]);
   useEffect(() => {
@@ -71,7 +75,7 @@ const GroupDetail = () => {
   if (!group_id || !group_detail) return <Loading />;
   return (
     <Wrapper>
-      <GroupDetailHeader>
+      <GroupDetailHeader className={done ? 'end' : 'ing'}>
         <Button4 content="Back" clicked={() => navigate(`/group`)} style={{ alignSelf: 'start' }} />
         <GroupName>{group_detail.group_name}</GroupName>
         {group_detail.start_date ? (
@@ -93,23 +97,41 @@ const GroupDetail = () => {
       <div style={{ display: 'flex', gap: '15px', paddingLeft: '50%', paddingTop: '15px' }}>
         {member_status === 'group_leader' && (
           <div style={{ display: 'flex', gap: '15px' }}>
-            <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
-            <Button1 content="Chat" clicked={() => navigate(`/chat/${group_id}`)} />
-            <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
-            <Button1 content="Delete" clicked={deleteOnClick} />
+            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/cert`)}>
+              Cert
+            </Button>
+            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/chat/${group_id}`)}>
+              Chat
+            </Button>
+            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/member`)}>
+              Member
+            </Button>
+            <Button className={done ? 'end' : 'ing'} onClick={deleteOnClick}>
+              Delete
+            </Button>
           </div>
         )}
         {member_status === 'group_member' && (
           <div style={{ display: 'flex', gap: '15px' }}>
-            <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
-            <Button1 content="Chat" clicked={() => navigate(`/chat/${group_id}`)} />
-            <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
-            <Button1 content="Leave" clicked={exitOnClick} />
+            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/cert`)}>
+              Cert
+            </Button>
+            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/chat/${group_id}`)}>
+              Chat
+            </Button>
+            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/member`)}>
+              Member
+            </Button>
+            <Button className={done ? 'end' : 'ing'} onClick={exitOnClick}>
+              Leave
+            </Button>
           </div>
         )}
         {member_status === 'not_member' && (
           <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
-            <Button1 content="Join" clicked={joinOnClick} />
+            <Button className={done ? 'disabled' : 'ing'} onClick={joinOnClick} disabled={done}>
+              Join
+            </Button>
           </div>
         )}
       </div>
@@ -203,6 +225,10 @@ const GroupDetailHeader = styled.div`
   align-items: center;
   background-color: #d7efe3;
   padding: 15px 15px 40px 15px;
+
+  &&.end {
+    background-color: silver;
+  }
 `;
 const GroupName = styled.div`
   font-size: 40px;
@@ -309,6 +335,33 @@ const GoalListWrapper = styled.div`
 const GroupDetailDate = styled.div`
   font-size: 18px;
   margin: 5px 0;
+`;
+
+const Button = styled.button`
+  width: 120px;
+  height: 45px;
+  border: 0;
+  border-radius: 5px;
+  background-color: #349c66;
+  color: white;
+  font-size: 20px;
+  font-family: FugazOne;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  &:hover {
+    background-color: #3bb978;
+  }
+
+  &&.end {
+    color: black;
+    background-color: silver;
+  }
+
+  &&.disabled {
+    color: black;
+    background-color: silver;
+    cursor: default;
+  }
 `;
 
 export default GroupDetail;

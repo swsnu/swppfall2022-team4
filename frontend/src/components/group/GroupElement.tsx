@@ -13,9 +13,15 @@ export interface IProps {
 }
 
 export const GroupElement = (props: IProps) => {
+  const today = new Date();
+  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
   return (
-    <GroupElementWrapper onClick={props.clicked}>
-      <LogImage src={require('assets/images/workout_log/fitelement_category/example.png')} />
+    <GroupElementWrapper className={props.end_date && props.end_date < date ? 'end' : 'ing'} onClick={props.clicked}>
+      <LogImage
+        src={require('assets/images/workout_log/fitelement_category/example.png')}
+        className={props.end_date && props.end_date < date ? 'end' : 'ing'}
+      />
       <GroupElementLine style={{ fontSize: '24px', marginBottom: '15px' }}>{props.group_name}</GroupElementLine>
       <GroupElementLine>
         장소 :
@@ -54,6 +60,11 @@ const GroupElementWrapper = styled.div`
   @media all and (max-width: 500px) {
     width: 100%;
   }
+
+  &&.end {
+    background-color: silver;
+    box-shadow: 1px 1px 1px 1px darkgray;
+  }
 `;
 const LogImage = styled.img`
   width: 80px;
@@ -61,6 +72,10 @@ const LogImage = styled.img`
   border-radius: 10px;
   border: 2px solid #6ab18d;
   margin-bottom: 15px;
+
+  &&.end {
+    border: 2px solid darkgray;
+  }
 `;
 const GroupElementLine = styled.div`
   width: 70%;
