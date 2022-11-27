@@ -10,6 +10,7 @@ from math import ceil
 from posts.models import Post, PostImage
 from users.models import User
 from tags.models import Tag, TagClass
+from groups.models import Group
 from django.db.models import Count
 
 from comments.views import prepare_comment_response
@@ -101,7 +102,7 @@ def post_home(request):
         offset = (query_args["page_num"] - 1) * query_args["page_size"]
         limit = query_args["page_num"] * query_args["page_size"]
 
-        posts = Post.objects.all()
+        posts = Post.objects.filter(in_group=None)
 
         if query_args["keyword"]:
             filter_args = {}
@@ -154,6 +155,23 @@ def post_home(request):
             # data should have user, post info.
         except (KeyError, json.JSONDecodeError, User.DoesNotExist, Tag.DoesNotExist):
             return HttpResponseBadRequest()
+
+
+@require_http_methods(["GET", "PUT", "DELETE"])
+def post_group(request, group_id):
+    if request.method == "GET":
+        group = Group.objects.get(pk=group_id)
+        posts = Post.objects.filter(in_group=group)
+        posts_serial = prepare_posts_response(posts)
+
+        # Total page number calculation.
+        response = JsonResponse(
+            {
+                "posts": posts_serial,
+            },
+            status=200,
+        )
+        return response
 
 
 @require_http_methods(["GET", "PUT", "DELETE"])
