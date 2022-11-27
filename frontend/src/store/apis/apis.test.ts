@@ -333,6 +333,10 @@ describe('API TEST', () => {
     });
   });
   describe('Post', () => {
+    test('getPostsMain', async () => {
+      const result = await postAPI.getPostsMain();
+      expect(result).toBe(`/api/post/main/hot/`);
+    });
     test('getPosts', async () => {
       const result = await postAPI.getPosts(getPostsRequest);
       expect(result).toBe(`/api/post/?page=1&pageSize=15`);

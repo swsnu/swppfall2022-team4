@@ -7,6 +7,8 @@ import { notificationFailure, notificationInfo, notificationSuccess } from 'util
 import { TagVisual } from 'store/apis/tag';
 
 interface PostState {
+  main: postAPI.Post[] | null;
+
   postList: {
     posts: postAPI.Post[] | null;
     pageNum: number | null;
@@ -37,6 +39,8 @@ interface PostState {
   filterTag: TagVisual[];
 }
 export const initialState: PostState = {
+  main: null,
+
   postList: {
     posts: null,
     pageNum: null,
@@ -86,6 +90,17 @@ export const postSlice = createSlice({
   reducers: {
     /* eslint-disable @typescript-eslint/no-unused-vars */
     // getPosts ------------------------------------------------------------------------
+    getPostsMain: state => {
+      state.main = null;
+    },
+    getPostsMainSuccess: (state, { payload }) => {
+      state.main = payload.posts;
+    },
+    getPostsMainFailure: (state, { payload }) => {
+      state.main = null;
+      alert(payload.response?.data.message);
+    },
+
     getPosts: (state, action: PayloadAction<postAPI.getPostsRequestType>) => {
       state.postList.posts = null;
       state.postList.error = null;
@@ -279,6 +294,14 @@ export const postSlice = createSlice({
 });
 export const postActions = postSlice.actions;
 
+function* getPostsMainSaga() {
+  try {
+    const response: AxiosResponse = yield call(postAPI.getPostsMain);
+    yield put(postActions.getPostsMainSuccess(response));
+  } catch (error) {
+    yield put(postActions.getPostsMainFailure(error));
+  }
+}
 function* getPostsSaga(action: PayloadAction<postAPI.getPostsRequestType>) {
   try {
     const response: AxiosResponse = yield call(postAPI.getPosts, action.payload);
@@ -388,6 +411,8 @@ function* commentFuncSaga(action: PayloadAction<commentAPI.commentFuncRequestTyp
 }
 
 export default function* postSaga() {
+  yield takeLatest(postActions.getPostsMain, getPostsMainSaga);
+
   yield takeLatest(postActions.getPosts, getPostsSaga);
   yield takeLatest(postActions.getRecentComments, getRecentCommentsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);

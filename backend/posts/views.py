@@ -10,6 +10,7 @@ from math import ceil
 from posts.models import Post, PostImage
 from users.models import User
 from tags.models import Tag, TagClass
+from django.db.models import Count
 
 from comments.views import prepare_comment_response
 
@@ -147,7 +148,7 @@ def post_home(request):
             for image in data["images"]:  # image would be string type
                 PostImage.objects.create(image=image, post=created_post)
 
-            add_exp(request.user.username, 20)
+            add_exp(request.user.username, 10)
 
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
@@ -288,3 +289,14 @@ def post_func(request, query_id):
         return JsonResponse({"type": type_of_work}, status=200)
     except (Post.DoesNotExist, User.DoesNotExist):
         return HttpResponseNotFound()
+
+
+@require_http_methods(["GET"])
+def post_main(request):
+    """
+    GET : get data for main page.
+    """
+    posts = prepare_posts_response(
+        Post.objects.annotate(num_likes=Count('liker')).all().order_by('-num_likes')[:5]
+    )
+    return JsonResponse({"posts": posts}, status=200)
