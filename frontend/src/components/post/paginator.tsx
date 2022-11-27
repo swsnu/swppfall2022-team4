@@ -48,11 +48,12 @@ const PostPaginatorWrapper = styled.div`
   padding: 10px 20px;
   font-size: 16px;
   width: 100%;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
-  bottom: 0px;
+  bottom: -50px;
 `;
 
 const CurrentPageWrapper = styled.div`

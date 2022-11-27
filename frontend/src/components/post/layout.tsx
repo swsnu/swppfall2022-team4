@@ -36,7 +36,7 @@ export const PostContentWrapper = styled(ColumnCenterFlex)`
   height: 100%;
   min-height: 100vh;
   max-width: 1200px;
-
+  margin-bottom: 100px;
   @media all and (max-width: 650px) {
     width: 100%;
   }
@@ -46,6 +46,7 @@ export const PostContentWrapper = styled(ColumnCenterFlex)`
     margin: 40px 0px 15px 0px;
     width: 100%;
     background-color: var(--fit-white);
+    border-radius: 15px;
   }
 
   > div:nth-child(2) {
@@ -55,8 +56,8 @@ export const PostContentWrapper = styled(ColumnCenterFlex)`
     row-gap: 10px;
     column-gap: 10px;
     width: 100%;
-    height: 80vh;
-    min-height: 640px;
+    height: fit-content;
+    min-height: 605px;
     margin-bottom: 50px;
 
     > div:first-child {

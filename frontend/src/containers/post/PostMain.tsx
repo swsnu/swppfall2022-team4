@@ -150,7 +150,7 @@ const PostMain = () => {
   );
 
   const MainContent = (
-    <ArticleListWrapper>
+    <ArticleListWrapper className={`${postList?.length == 15 && 'full'}`}>
       <ArticleHeader />
       {postList ? (
         postList.map(post => {
@@ -161,7 +161,7 @@ const PostMain = () => {
       ) : (
         <LoadingWithoutMinHeight />
       )}
-      {maxPage ? postPaginator({ page, setPage, maxPage }) : postPaginator({ page, setPage, maxPage: 1 })}
+      {postPaginator({ page, setPage, maxPage: maxPage ? maxPage : 1 })}
     </ArticleListWrapper>
   );
 
@@ -254,12 +254,19 @@ const TagBubbleWrapper = styled.div`
 `;
 
 const ArticleListWrapper = styled.div`
-  border: 1px solid black;
+  border: 0px solid black;
   width: 100%;
   height: 100%;
   min-height: 100%;
   background-color: #ffffff;
   position: relative;
+
+  border-radius: 15px;
+  &.full > div:nth-last-child(2) {
+    border-bottom: none;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
 `;
 
 const SideBarItem = styled(ColumnFlex)`
@@ -269,7 +276,8 @@ const SideBarItem = styled(ColumnFlex)`
   background-color: var(--fit-white);
   justify-content: flex-start;
   align-items: center;
-  padding: 10px 0px;
+  padding: 14px 2px;
+  border-radius: 20px;
 `;
 
 const PostPanelWrapper = styled(ColumnFlex)`
