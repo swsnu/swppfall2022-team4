@@ -42,7 +42,7 @@ const WorkoutLog = () => {
   const [weight, setWeight] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
   const [workout_time, setWorkoutTime] = useState<number | null>(null);
-  const [workout_category, setWorkoutCategory] = useState('back');
+  const [workout_category, setWorkoutCategory] = useState('');
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
@@ -113,11 +113,7 @@ const WorkoutLog = () => {
         date: String(year) + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0'),
       };
       dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
-      setWorkoutType('');
-      setRep(0);
-      setWeight(0);
-      setSet(0);
-      setWorkoutTime(0);
+      cancelWorkoutLog();
     }
   };
 
@@ -160,6 +156,15 @@ const WorkoutLog = () => {
     };
     dispatch(workoutLogActions.addFitElements(addFitElementConfig));
   };
+
+  const cancelWorkoutLog = () => {
+    setWorkoutCategory('');
+    setWorkoutType('');
+    setWeight(null);
+    setRep(null);
+    setSet(null);
+    setWorkoutTime(null);
+  }
 
   const memoOnClick = (click_type: string) => {
     if ((memo_write_mode === false && click_type !== 'complete_button') || click_type === 'edit_button') {
@@ -481,7 +486,7 @@ const WorkoutLog = () => {
               <LogInputBody>
                 <LogInputBodyInput>
                   <WorkoutTypeSelect
-                    defaultValue="선택"
+                    value={workout_category || '선택'}
                     className="type2"
                     onChange={e => setWorkoutCategory(e.target.value)}
                   >
@@ -490,7 +495,7 @@ const WorkoutLog = () => {
                       <option key={index}>{fitelement_category.class_name}</option>
                     ))}
                   </WorkoutTypeSelect>
-                  <WorkoutTypeSelect defaultValue="종류 선택" onChange={e => setWorkoutType(e.target.value)}>
+                  <WorkoutTypeSelect value={workout_type || '종류 선택'} onChange={e => setWorkoutType(e.target.value)}>
                     <option disabled>종류 선택</option>
                     {fitElementTarget.length === 1 &&
                       fitElementTarget[0].tags.map((fitelement, index) => (
@@ -523,7 +528,7 @@ const WorkoutLog = () => {
                   />
                 </LogInputBodyInput>
                 <LogInputBodyButton>
-                  <AnyButton className="type1">취소</AnyButton>
+                  <AnyButton className="type1" onClick={() => cancelWorkoutLog()}>초기화</AnyButton>
                   <AnyButton className="type1" onClick={() => createWorkoutLog()}>
                     완료
                   </AnyButton>
