@@ -341,6 +341,7 @@ def validate_social_account(request):
     data = json.loads(request.body.decode())
     try:
         user = User.objects.get(username=data["username"])
+        user.nickname = data["nickname"]
         user.gender = data["gender"]
         user.height = data["height"]
         user.weight = data["weight"]

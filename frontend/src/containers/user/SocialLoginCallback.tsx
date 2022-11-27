@@ -74,7 +74,7 @@ const SocialLoginCallback = ({
       weight: parseFloat(state.weight),
       age: parseFloat(state.age),
     };
-
+    console.log(request);
     dispatch(userActions.socialSignup(request));
   };
 
