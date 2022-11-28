@@ -331,7 +331,7 @@ def group_cert(request, group_id, year, month, specific_date):
         req_data = json.loads(request.body.decode())
         gr_obj = Group.objects.get(id=int(group_id))
         fit = gr_obj.goal.get(workout_type_id=req_data["fitelement_id"])
-        
+
         cert = (
             GroupCert.objects.filter(member=request.user.id)
             .filter(date=datetime(year, month, specific_date).date())
@@ -353,7 +353,7 @@ def group_cert(request, group_id, year, month, specific_date):
             new_cert.save()
             new_cert.fit_element.add(fit)
             new_cert.save()
-            
+
         certs = GroupCert.objects.filter(group=group_id).filter(
             date=datetime(year, month, specific_date).date()
         )
@@ -393,7 +393,7 @@ def group_cert(request, group_id, year, month, specific_date):
         req_data = json.loads(request.body.decode())
         gr_obj = Group.objects.get(id=int(group_id))
         fit = gr_obj.goal.get(workout_type_id=req_data["fitelement_id"])
-        
+
         try:
             removed_cert = (
                 GroupCert.objects.filter(member=request.user.id)
@@ -409,7 +409,7 @@ def group_cert(request, group_id, year, month, specific_date):
             removed_cert.delete()
         else:
             removed_cert.fit_element.remove(fit)
-        
+
         certs = GroupCert.objects.filter(group=group_id).filter(
             date=datetime(year, month, specific_date).date()
         )
@@ -453,7 +453,7 @@ def join_permission(request, group_id):
     POST : permit join request
     DELETE : delete join request
     """
-    
+
     if request.method == "GET":
         try:
             gr_obj = Group.objects.get(id=int(group_id))
@@ -486,7 +486,7 @@ def join_permission(request, group_id):
                 return HttpResponse(status=403)
             if gr_obj.member_number == gr_obj.number:
                 return HttpResponseBadRequest()
-            
+
             gr_obj.members.add(req_user)
             gr_obj.member_number += 1
             join_obj.members.remove(req_user)
