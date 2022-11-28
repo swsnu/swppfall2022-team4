@@ -61,8 +61,8 @@ export const WorkoutChart = (props: IProps) => {
           font: {
             size: 15,
             family: 'IBMPlexSansThaiLooped',
-          }
-        }
+          },
+        },
       },
       y: {
         title: {
@@ -71,7 +71,7 @@ export const WorkoutChart = (props: IProps) => {
           font: {
             size: 15,
             family: 'IBMPlexSansThaiLooped',
-          }
+          },
         },
         min: 0,
       },
