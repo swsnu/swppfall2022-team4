@@ -1,6 +1,7 @@
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { TagBubbleCompact } from 'components/tag/tagbubble';
+import { UserBadge } from 'components/user/UserBadge';
 import { Post } from 'store/apis/post';
 import styled from 'styled-components';
 import { timeAgoFormat } from 'utils/datetime';
@@ -31,7 +32,7 @@ export const ArticleItemDefault = ({ post, onClick }: IpropsArticleItem) => (
       {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}{' '}
       <PostItemCommentNum>[{post.comments_num}]</PostItemCommentNum>
     </PostTitle>
-    <span>{post.author.nickname}</span>
+    <UserBadge nickname={post.author.nickname} level={post.author.level} />
     <span>{post.like_num - post.dislike_num}</span>
     <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
   </ArticleItem>
