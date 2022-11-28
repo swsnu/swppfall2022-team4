@@ -46,9 +46,6 @@ const GroupCert = () => {
   }
   const clickDate = (year: number, month: number, d: number) => {
     setDate(new Date(year, month, d));
-    setSelectedYear(year);
-    setSelectedDay(d);
-    setSelectedMonth(month);
     if (group_id) {
       const dayilycert: getCertsRequestType = {
         group_id: group_id,
@@ -69,9 +66,6 @@ const GroupCert = () => {
   const submitCert = () => {
     if (group_id && selectedGoal) {
       setDate(new Date(selected_year, selected_month, selected_date));
-      setSelectedYear(selected_year);
-      setSelectedMonth(selected_month);
-      setSelectedDay(selected_date);
       const createCertRequest: certRequestType = {
         group_id: group_id,
         fitelement_id: selectedGoal.id,
@@ -85,9 +79,6 @@ const GroupCert = () => {
   const deleteCert = (id: number) => {
     if (group_id) {
       setDate(new Date(selected_year, selected_month, selected_date));
-      setSelectedYear(selected_year);
-      setSelectedMonth(selected_month);
-      setSelectedDay(selected_date);
       const deleteCertRequest: certRequestType = {
         group_id: group_id,
         fitelement_id: id,
