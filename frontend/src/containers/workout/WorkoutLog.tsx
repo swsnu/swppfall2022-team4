@@ -538,6 +538,7 @@ const WorkoutLog = () => {
                   {memo_write_mode ? (
                     <MemoInput
                       value={memo}
+                      data-testid="memo_input"
                       placeholder="수정 버튼을 눌러 메모를 추가해 보세요."
                       onChange={e => setMemo(e.target.value)}
                     />
@@ -552,6 +553,7 @@ const WorkoutLog = () => {
                   <MemoButtonWrapper>
                     <AnyButton
                       className="memo-type"
+                      data-testid="memo_cancel_button"
                       hidden={!memo_write_mode}
                       onClick={() => memoOnClick('cancel_button')}
                     >
@@ -567,6 +569,7 @@ const WorkoutLog = () => {
                     </AnyButton>
                     <AnyButton
                       className="memo-type"
+                      data-testid="memo_submit_button"
                       hidden={!memo_write_mode}
                       onClick={() => memoOnClick('complete_button')}
                     >

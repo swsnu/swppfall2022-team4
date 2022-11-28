@@ -55,9 +55,22 @@ describe('workout_log', () => {
     const selectType = screen.getAllByTestId('select_type')[0];
     const selectCategory = screen.getAllByTestId('select_category')[0];
     const time_input = screen.getAllByTestId('workout_time')[0];
-    fireEvent.change(selectCategory, { target: { value: "등운동" } });
-    fireEvent.change(selectType, { target: { value: "데드리프트" } });
-    userEvent.type(time_input, "10");
+    fireEvent.change(selectCategory, { target: { value: '등운동' } });
+    fireEvent.change(selectType, { target: { value: '데드리프트' } });
+    userEvent.type(time_input, '10');
+    const button = screen.getAllByText('완료')[1];
+    fireEvent.click(button!);
+    expect(mockDispatch).toHaveBeenCalled();
+  });
+
+  it('create workout log(유산소)', () => {
+    render(component);
+    const selectType = screen.getAllByTestId('select_type')[0];
+    const selectCategory = screen.getAllByTestId('select_category')[0];
+    const time_input = screen.getAllByTestId('workout_time')[0];
+    fireEvent.change(selectCategory, { target: { value: '유산소' } });
+    fireEvent.change(selectType, { target: { value: '수영' } });
+    userEvent.type(time_input, '10');
     const button = screen.getAllByText('완료')[1];
     fireEvent.click(button!);
     expect(mockDispatch).toHaveBeenCalled();
@@ -68,8 +81,8 @@ describe('workout_log', () => {
     render(component);
     const selectType = screen.getAllByTestId('select_type')[0];
     const selectCategory = screen.getAllByTestId('select_category')[0];
-    fireEvent.change(selectCategory, { target: { value: "" } });
-    fireEvent.change(selectType, { target: { value: "" } });
+    fireEvent.change(selectCategory, { target: { value: '' } });
+    fireEvent.change(selectType, { target: { value: '' } });
     const button = screen.getAllByText('완료')[1];
     fireEvent.click(button!);
 
@@ -83,11 +96,11 @@ describe('workout_log', () => {
 
     userEvent.selectOptions(screen.getAllByTestId('select_category')[0], '등운동');
     expect((screen.getByText('등운동') as HTMLOptionElement).selected).toBeTruthy();
-    
+
     userEvent.selectOptions(screen.getAllByTestId('select_type')[0], '데드리프트');
     expect((screen.getAllByText('데드리프트')[0] as HTMLOptionElement).selected).toBeTruthy();
 
-    userEvent.type(time_input, "0");
+    userEvent.type(time_input, '0');
     const button = screen.getAllByText('완료')[1];
     fireEvent.click(button!);
 
@@ -110,7 +123,6 @@ describe('workout_log', () => {
 
     const deleteImageBtn = await screen.findByText('삭제');
     expect(deleteImageBtn).toBeInTheDocument();
-    fireEvent.click(deleteImageBtn);
   });
 
   test('image upload error', async () => {
@@ -205,5 +217,22 @@ describe('workout_log', () => {
     expect(mockDispatch).toHaveBeenCalled();
     fireEvent.click(button!);
     expect(mockDispatch).toHaveBeenCalled();
+  });
+
+  it('memoOnClick_2', () => {
+    render(component);
+    const button_2 = screen.getByTestId('memo_edit_button');
+    fireEvent.click(button_2!);
+    const button_1 = screen.getByTestId('memo_cancel_button');
+    const button = screen.getByTestId('memo_submit_button');
+
+    const memo_input = screen.getAllByTestId('memo_input')[0];
+    userEvent.type(memo_input, 'memo');
+
+    fireEvent.click(button!);
+    expect(mockDispatch).toHaveBeenCalled();
+
+    userEvent.type(memo_input, 'memo2');
+    fireEvent.click(button_1!);
   });
 });

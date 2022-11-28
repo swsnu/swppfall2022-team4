@@ -224,6 +224,19 @@ export const initialState: PreloadedState<RootState> = {
           },
         ],
       },
+      {
+        id: 1,
+        class_name: '유산소',
+        class_type: '수영',
+        color: '#FFFFFF',
+        tags: [
+          {
+            id: '1',
+            name: '수영',
+            color: '#FFFFFF',
+          },
+        ],
+      },
     ],
     imageSuccess: '',
     memoSuccess: '',

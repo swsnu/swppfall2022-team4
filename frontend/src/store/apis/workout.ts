@@ -178,7 +178,7 @@ export type deleteFitElementRequestType = {
 export type exchangeFitElementsRequestType = {
   fitelement1_id: number;
   fitelement2_id: number;
-}
+};
 
 export const getFitElement = async (payload: getFitElementRequestType) => {
   const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
