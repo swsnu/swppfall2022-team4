@@ -363,34 +363,33 @@ const PostDetail = () => {
       <CommentReplyWrapper key={comment.comment_id}>
         <CommentItem isChild={comment.parent_comment !== null}>
           {/* {comment.parent_comment !== null && <FontAwesomeIcon icon={faArrowRightLong} />} */}
-          <CommentWritterWrapperO1>
-            <CommentWritterWrapper>
-              <CommentWritterAvatar>
-                <UserAvatar
-                  ref={el => (commentModalPivot.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)}
-                  src={process.env.REACT_APP_API_IMAGE + comment.author.avatar}
-                  onClick={() => {
-                    if (!commentModalOpen && !commentModalDisable) {
-                      setCommentModalNum(comment.comment_id);
-                      setCommentModalOpen(true);
-                      setCommentModalDisable(true);
-                    }
-                  }}
-                  alt={`commentAvatar${comment.comment_id}`}
-                />
-                {UserDetailHorizontalModal({
-                  isActive: commentModalOpen && commentModalNum === comment.comment_id,
-                  modalRef: commentModalRef,
-                  pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
-                  userInfo: comment.author,
-                  navigate,
-                  username: user ? user.username : '',
-                  clickedChat: () => dispatch(chatActions.createChatroom({ username: comment.author.username })),
-                })}
-              </CommentWritterAvatar>
-              <CommentWritterText> {comment.author.nickname} </CommentWritterText>
-            </CommentWritterWrapper>
-          </CommentWritterWrapperO1>
+
+          <CommentWritterWrapper>
+            <CommentWritterAvatar>
+              <UserAvatar
+                ref={el => (commentModalPivot.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)}
+                src={process.env.REACT_APP_API_IMAGE + comment.author.avatar}
+                onClick={() => {
+                  if (!commentModalOpen && !commentModalDisable) {
+                    setCommentModalNum(comment.comment_id);
+                    setCommentModalOpen(true);
+                    setCommentModalDisable(true);
+                  }
+                }}
+                alt={`commentAvatar${comment.comment_id}`}
+              />
+              {UserDetailHorizontalModal({
+                isActive: commentModalOpen && commentModalNum === comment.comment_id,
+                modalRef: commentModalRef,
+                pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
+                userInfo: comment.author,
+                navigate,
+                username: user ? user.username : '',
+                clickedChat: () => dispatch(chatActions.createChatroom({ username: comment.author.username })),
+              })}
+            </CommentWritterAvatar>
+            <CommentWritterText> {comment.author.nickname} </CommentWritterText>
+          </CommentWritterWrapper>
           <CommentRightWrapper>
             <CommentContentWrapper>
               {comment.editActive ? (
@@ -429,13 +428,17 @@ const PostDetail = () => {
         </CommentItem>
         <div>
           {comment.replyActive === true && (
-            <CommentReplyForm onSubmit={() => commentCreateOnClick(comment.comment_id)}>
+            <CommentReplyForm onSubmit={e => e.preventDefault()}>
               <CommentInput
                 placeholder="답글 입력"
                 value={commentReplyInput}
                 onChange={e => setCommentReplyInput(e.target.value)}
               ></CommentInput>
-              <GreenCommentSubmitBtn data-testid="commentReplySubmitBtn" disabled={commentReplyInput === ''}>
+              <GreenCommentSubmitBtn
+                data-testid="commentReplySubmitBtn"
+                disabled={commentReplyInput === ''}
+                onClick={() => commentCreateOnClick(comment.comment_id)}
+              >
                 작성
               </GreenCommentSubmitBtn>
             </CommentReplyForm>
@@ -580,13 +583,15 @@ const PostDetail = () => {
                 </div>
                 <div>
                   <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
-                  <CommentForm onSubmit={() => commentCreateOnClick(null)}>
+                  <CommentForm onSubmit={e => e.preventDefault()}>
                     <CommentInput
                       placeholder="댓글 입력"
                       value={commentInput}
                       onChange={e => setCommentInput(e.target.value)}
                     ></CommentInput>
-                    <GreenCommentSubmitBtn disabled={commentInput === ''}>작성</GreenCommentSubmitBtn>
+                    <GreenCommentSubmitBtn disabled={commentInput === ''} onClick={() => commentCreateOnClick(null)}>
+                      작성
+                    </GreenCommentSubmitBtn>
                   </CommentForm>
                 </div>
               </ArticleItem>
@@ -763,15 +768,12 @@ export const CommentItem = styled.div<IPropsComment>`
   `}
 `;
 
-export const CommentWritterWrapperO1 = styled.div`
-  text-align: center;
-  width: fit-content;
-  margin-right: 20px;
-`;
-
 export const CommentWritterWrapper = styled(ColumnFlex)`
   align-items: center;
   font-size: 8px;
+  text-align: center;
+  width: fit-content;
+  margin-right: 20px;
 `;
 
 export const CommentWritterAvatar = styled(RowCenterFlex)`

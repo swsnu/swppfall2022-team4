@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { BlueBigBtn } from 'components/post/button';
-import { ColumnFlex, PostContentWrapper, PostPageWrapper } from 'components/post/layout';
+import { PostContentWrapper, PostPageWrapper } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { ArticleHeader, ArticleItemDefault } from 'components/post/ArticleItem';
 
@@ -31,35 +31,29 @@ const GroupPosts = () => {
     }
   }, []);
 
-  const MainContent = (
-    <ArticleListWrapper className={`${postList?.length == 20 && 'full'}`}>
-      <ArticleHeader />
-      {postList ? (
-        postList.map(post => {
-          return (
-            <ArticleItemDefault
-              key={post.post_id}
-              post={post}
-              onClick={() => navigate(`/group/detail/${group_id}/post/${post.post_id}`)}
-            />
-          );
-        })
-      ) : (
-        <LoadingWithoutMinHeight />
-      )}
-    </ArticleListWrapper>
-  );
-
   return (
     <PostPageWrapper>
       <PostContentWrapper>
         <div></div>
         <div>
-          {MainContent}
+          <ArticleListWrapper className={`${postList?.length == 20 && 'full'}`}>
+            <ArticleHeader />
+            {postList ? (
+              postList.map(post => {
+                return (
+                  <ArticleItemDefault
+                    key={post.post_id}
+                    post={post}
+                    onClick={() => navigate(`/group/detail/${group_id}/post/${post.post_id}`)}
+                  />
+                );
+              })
+            ) : (
+              <LoadingWithoutMinHeight />
+            )}
+          </ArticleListWrapper>
           <div>
-            <PostPanelWrapper>
-              <BlueBigBtn onClick={() => navigate(`/group/detail/${group_id}/post/create`)}>글 쓰기</BlueBigBtn>
-            </PostPanelWrapper>
+            <BlueBigBtn onClick={() => navigate(`/group/detail/${group_id}/post/create`)}>글 쓰기</BlueBigBtn>
           </div>
         </div>
       </PostContentWrapper>
@@ -81,11 +75,6 @@ const ArticleListWrapper = styled.div`
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
   }
-`;
-
-const PostPanelWrapper = styled(ColumnFlex)`
-  width: 100%;
-  align-items: center;
 `;
 
 export default GroupPosts;

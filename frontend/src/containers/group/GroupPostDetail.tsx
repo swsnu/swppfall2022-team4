@@ -41,7 +41,6 @@ import {
   CommentWritterAvatar,
   CommentWritterText,
   CommentWritterWrapper,
-  CommentWritterWrapperO1,
   ContentImageSection,
   FuncBtn,
   FuncBtnWrapper,
@@ -389,34 +388,34 @@ const GroupPostDetail = () => {
       <CommentReplyWrapper key={comment.comment_id}>
         <CommentItem isChild={comment.parent_comment !== null}>
           {/* {comment.parent_comment !== null && <FontAwesomeIcon icon={faArrowRightLong} />} */}
-          <CommentWritterWrapperO1>
-            <CommentWritterWrapper>
-              <CommentWritterAvatar>
-                <UserAvatar
-                  ref={el => (commentModalPivot.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)}
-                  src={process.env.REACT_APP_API_IMAGE + comment.author.avatar}
-                  onClick={() => {
-                    if (!commentModalOpen && !commentModalDisable) {
-                      setCommentModalNum(comment.comment_id);
-                      setCommentModalOpen(true);
-                      setCommentModalDisable(true);
-                    }
-                  }}
-                  alt={`commentAvatar${comment.comment_id}`}
-                />
-                {UserDetailHorizontalModal({
-                  isActive: commentModalOpen && commentModalNum === comment.comment_id,
-                  modalRef: commentModalRef,
-                  pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
-                  userInfo: comment.author,
-                  navigate,
-                  username: user ? user.username : '',
-                  clickedChat: () => dispatch(chatActions.createChatroom({ username: comment.author.username })),
-                })}
-              </CommentWritterAvatar>
-              <CommentWritterText> {comment.author.nickname} </CommentWritterText>
-            </CommentWritterWrapper>
-          </CommentWritterWrapperO1>
+
+          <CommentWritterWrapper>
+            <CommentWritterAvatar>
+              <UserAvatar
+                ref={el => (commentModalPivot.current[Number.parseInt(comment.comment_id)] = el as HTMLImageElement)}
+                src={process.env.REACT_APP_API_IMAGE + comment.author.avatar}
+                onClick={() => {
+                  if (!commentModalOpen && !commentModalDisable) {
+                    setCommentModalNum(comment.comment_id);
+                    setCommentModalOpen(true);
+                    setCommentModalDisable(true);
+                  }
+                }}
+                alt={`commentAvatar${comment.comment_id}`}
+              />
+              {UserDetailHorizontalModal({
+                isActive: commentModalOpen && commentModalNum === comment.comment_id,
+                modalRef: commentModalRef,
+                pivotRef: commentModalPivot.current[Number.parseInt(comment.comment_id)],
+                userInfo: comment.author,
+                navigate,
+                username: user ? user.username : '',
+                clickedChat: () => dispatch(chatActions.createChatroom({ username: comment.author.username })),
+              })}
+            </CommentWritterAvatar>
+            <CommentWritterText> {comment.author.nickname} </CommentWritterText>
+          </CommentWritterWrapper>
+
           <CommentRightWrapper>
             <CommentContentWrapper>
               {comment.editActive ? (

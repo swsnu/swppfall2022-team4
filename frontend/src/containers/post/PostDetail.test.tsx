@@ -263,7 +263,7 @@ describe('[PostDetail Page]', () => {
     userEvent.type(commentReplyInput, 'REPLREPL');
 
     const commentReplySubmitBtn = screen.getByTestId('commentReplySubmitBtn');
-    fireEvent.submit(commentReplySubmitBtn);
+    fireEvent.click(commentReplySubmitBtn);
   });
 
   test('basic rendering my post - edit, delete', async () => {
@@ -404,7 +404,7 @@ describe('[PostDetail Page]', () => {
     userEvent.type(commentInput, 'NEWCOMM');
 
     expect(commentCreateBtn).not.toBeDisabled();
-    fireEvent.submit(commentCreateBtn);
+    fireEvent.click(commentCreateBtn);
 
     expect(mockDispatch).toBeCalledWith({
       payload: { content: 'NEWCOMM', author_name: 'KJY', post_id: '2', parent_comment: 'none' },
@@ -434,7 +434,7 @@ describe('[PostDetail Page]', () => {
     userEvent.type(commentInput, 'NEWCOMM');
 
     expect(commentCreateBtn).not.toBeDisabled();
-    fireEvent.submit(commentCreateBtn);
+    fireEvent.click(commentCreateBtn);
 
     // PostFunc
     const postFuncLike = screen.getByTestId('postFuncLike');
@@ -567,7 +567,7 @@ describe('[PostDetail Page]', () => {
       });
     });
     userEvent.type(screen.getByPlaceholderText('답글 입력'), 'REPLREPL');
-    fireEvent.submit(screen.getByTestId('commentReplySubmitBtn'));
+    fireEvent.click(screen.getByTestId('commentReplySubmitBtn'));
     expect(mockSend).toBeCalledTimes(6);
   });
 
