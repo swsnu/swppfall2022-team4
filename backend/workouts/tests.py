@@ -57,7 +57,7 @@ class WorkoutTestCase(TestCase):
         )
         daily_log.fit_element.add(fit_element)
 
-        daily_log2 = DailyLog.objects.create(
+        DailyLog.objects.create(
             author_id=1,
             date="2022-10-15",
             memo="memo",

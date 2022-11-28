@@ -399,6 +399,7 @@ const WorkoutLog = () => {
               <Frame>
                 <CalendarHeader>
                   <Button
+                    data-testid="left_button"
                     onClick={() => {
                       dispatch(
                         workoutLogActions.getCalendarInfo({
@@ -418,6 +419,7 @@ const WorkoutLog = () => {
                   </YearMonth>
 
                   <Button
+                    data-testid="right_button"
                     onClick={() => {
                       dispatch(
                         workoutLogActions.getCalendarInfo({

@@ -235,4 +235,29 @@ describe('workout_log', () => {
     userEvent.type(memo_input, 'memo2');
     fireEvent.click(button_1!);
   });
+
+  it('click day component', () => {
+    render(component);
+    const day_component = screen.getAllByTestId('day_component')[8];
+    fireEvent.click(day_component!);
+
+    const day_component_2 = screen.getAllByTestId('day_component')[35];
+    fireEvent.click(day_component_2!);
+  });
+
+  it('click month mover', () => {
+    render(component);
+    const left_button = screen.getAllByTestId('left_button')[0];
+    const right_button = screen.getAllByTestId('right_button')[0];
+
+    for (let i = 0; i < 3; i++) {
+      fireEvent.click(right_button!);
+    }
+    for (let i = 0; i < 3; i++) {
+      fireEvent.click(left_button!);
+    }
+    for (let i = 0; i < 24; i++) {
+      fireEvent.click(right_button!);
+    }
+  });
 });

@@ -380,7 +380,6 @@ def daily_log(request, year, month, specific_date):
 
         if "log_index" in req_data:
             index_list = json.dumps(req_data["log_index"])
-            print(index_list)
             DailyLog.objects.filter(date=datetime(year, month, specific_date).date()).update(log_index = index_list)
             return JsonResponse({"log_index": req_data["log_index"]}, status=201)
         fitelements = req_data["fitelements"]
