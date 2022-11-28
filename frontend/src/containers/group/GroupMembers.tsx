@@ -48,6 +48,7 @@ const GroupMembers = () => {
           leader={member_status === 'group_leader' ? true : false}
           myself={user?.username === me.username ? true : false}
           request={false}
+          is_full={false}
         />
       ))}
     </Wrapper>

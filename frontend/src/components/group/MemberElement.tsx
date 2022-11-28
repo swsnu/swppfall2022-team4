@@ -7,11 +7,12 @@ export interface IProps {
   id: number;
   image: string;
   username: string;
-  cert_days: number;
+  cert_days: number | null;
   level: number;
   leader: boolean;
   myself: boolean;
   request: boolean;
+  is_full: boolean;
 }
 
 export const MemberElement = (props: IProps) => {
@@ -56,7 +57,7 @@ export const MemberElement = (props: IProps) => {
       <ProfileImage src={process.env.REACT_APP_API_IMAGE + props.image} alt="profile" />
       <MemberElementLineWrapper>
         <MemberElementLine style={{ fontWeight: '600' }}>{props.username}</MemberElementLine>
-        <MemberElementLine>Cert_days: {props.cert_days}</MemberElementLine>
+        {props.cert_days != null && <MemberElementLine>Cert_days: {props.cert_days}</MemberElementLine>}
         <MemberElementLine>Level: {props.level}</MemberElementLine>
       </MemberElementLineWrapper>
       {props.leader && !props.myself && !props.request && (
@@ -64,7 +65,12 @@ export const MemberElement = (props: IProps) => {
       )}
       {props.leader && props.request && (
         <div>
-          <Button style={{ fontSize: '15px' }} onClick={postRequestClick}>
+          <Button
+            className={props.is_full ? 'disabled' : 'ing'}
+            style={{ fontSize: '15px' }}
+            onClick={postRequestClick}
+            disabled={props.is_full}
+          >
             승인
           </Button>
           <Button className="remove" style={{ fontSize: '15px' }} onClick={deleteRequestClick}>
