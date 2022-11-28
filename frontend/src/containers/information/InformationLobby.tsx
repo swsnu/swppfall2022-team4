@@ -55,7 +55,7 @@ const InformationLobby = () => {
             {tagList?.map(tagClass => {
               return (
                 tagClass.class_type === 'workout' && (
-                  <WorkoutClassWrapper>
+                  <WorkoutClassWrapper key={tagClass.id}>
                     <WorkoutClassTitleWrapper>
                       <TagClassImg
                         src={require(`assets/images/workout_log/fitelement_category/${get_image(

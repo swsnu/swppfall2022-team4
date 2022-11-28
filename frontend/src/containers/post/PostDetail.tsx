@@ -429,17 +429,13 @@ const PostDetail = () => {
         </CommentItem>
         <div>
           {comment.replyActive === true && (
-            <CommentReplyForm>
+            <CommentReplyForm onSubmit={() => commentCreateOnClick(comment.comment_id)}>
               <CommentInput
                 placeholder="답글 입력"
                 value={commentReplyInput}
                 onChange={e => setCommentReplyInput(e.target.value)}
               ></CommentInput>
-              <GreenCommentSubmitBtn
-                data-testid="commentReplySubmitBtn"
-                disabled={commentReplyInput === ''}
-                onClick={() => commentCreateOnClick(comment.comment_id)}
-              >
+              <GreenCommentSubmitBtn data-testid="commentReplySubmitBtn" disabled={commentReplyInput === ''}>
                 작성
               </GreenCommentSubmitBtn>
             </CommentReplyForm>
@@ -584,15 +580,13 @@ const PostDetail = () => {
                 </div>
                 <div>
                   <CommentWrapper>{commentList.map(comment => CommentItemComponent(comment))}</CommentWrapper>
-                  <CommentForm>
+                  <CommentForm onSubmit={() => commentCreateOnClick(null)}>
                     <CommentInput
                       placeholder="댓글 입력"
                       value={commentInput}
                       onChange={e => setCommentInput(e.target.value)}
                     ></CommentInput>
-                    <GreenCommentSubmitBtn disabled={commentInput === ''} onClick={() => commentCreateOnClick(null)}>
-                      작성
-                    </GreenCommentSubmitBtn>
+                    <GreenCommentSubmitBtn disabled={commentInput === ''}>작성</GreenCommentSubmitBtn>
                   </CommentForm>
                 </div>
               </ArticleItem>
