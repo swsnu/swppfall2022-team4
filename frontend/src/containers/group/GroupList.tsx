@@ -145,7 +145,7 @@ const GroupList = () => {
   const freeGroupClicked = () => {
     if (groupList) {
       const newGroupOrdered: Group[] = [...groupList];
-      setGroupListOrdered(newGroupOrdered.filter(gr_obj => gr_obj.free == true));
+      setGroupListOrdered(newGroupOrdered.filter(gr_obj => gr_obj.free));
       setRecent(false);
       setOld(false);
       setClose(false);

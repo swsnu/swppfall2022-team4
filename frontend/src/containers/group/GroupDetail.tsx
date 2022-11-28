@@ -67,7 +67,7 @@ const GroupDetail = () => {
     }
   };
   const deleteOnClick = () => {
-    if (confirm('삭제하시겠습니까?') == true) {
+    if (confirm('삭제하시겠습니까?')) {
       if (group_id) dispatch(groupActions.deleteGroup(group_id));
     }
   };
