@@ -31,3 +31,8 @@ class GroupCert(models.Model):
 
     def did(self):
         return self.fit_element.count() == self.group.goal.count()
+
+class JoinRequest(models.Model):
+    """ group join request """
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='join_request')
+    members = models.ManyToManyField(User, related_name = 'join_request')

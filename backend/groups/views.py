@@ -2,7 +2,7 @@ import json
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from json.decoder import JSONDecodeError
-from groups.models import Group, GroupCert
+from groups.models import Group, GroupCert, JoinRequest
 from users.models import User
 from tags.models import Tag
 from workouts.models import FitElement
@@ -431,3 +431,67 @@ def group_cert(request, group_id, year, month, specific_date):
             )
         response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
+
+@require_http_methods(["GET", "POST", "DELETE"])
+def join_permission(request, group_id):
+    """
+    GET : get join requests
+    POST : permit join request
+    DELETE : delete join request
+    """
+    
+    if request.method == "GET":
+        try:
+            gr_obj = Group.objects.get(id=int(group_id))
+            if not gr_obj.group_leader.username != request.user.username:
+                return HttpResponse(status=403)
+            result = []
+            for req in gr_obj.join_request.members.all():
+                result.append(
+                {
+                    "id": req.id,
+                    "username": req.username,
+                    "image": req.image,
+                    "level": req.level,
+                })
+            return JsonResponse({"requests": result}, safe=False)
+        except Group.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception:
+            return HttpResponseBadRequest()
+
+    elif request.method == "POST":
+        try:
+            req_data = json.loads(request.body.decode())
+            req_user = User.objects.get(username=req_data["username"])
+            gr_obj = Group.objects.get(id=int(group_id))
+
+            if not gr_obj.group_leader.username != request.user.username:
+                return HttpResponse(status=403)
+            if gr_obj.member_number == gr_obj.number:
+                return HttpResponseBadRequest()
+            
+            gr_obj.members.add(req_user)
+            gr_obj.join_request.members.remove(req_user)
+            gr_obj.member_number += 1
+            gr_obj.save()
+            return HttpResponse(status=204)
+        except Group.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception:
+            return HttpResponseBadRequest()
+
+    elif request.method == "DELETE":
+        try:
+            req_data = json.loads(request.body.decode())
+            req_user = User.objects.get(username=req_data["username"])
+            gr_obj = Group.objects.get(id=int(group_id))
+
+            if not gr_obj.group_leader.username != request.user.username:
+                return HttpResponse(status=403)
+            gr_obj.join_request.members.remove(req_user)
+            return HttpResponse(status=204)
+        except Group.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception:
+            return HttpResponseBadRequest()
