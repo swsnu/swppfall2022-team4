@@ -104,6 +104,7 @@ export type MemberCert = {
     image: string;
   };
   certs: Fitelement[];
+  did: boolean;
 };
 
 export type getGroupsResponseType = {

@@ -28,3 +28,6 @@ class GroupCert(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_cert')
     date = models.DateField(null=False)
     fit_element = models.ManyToManyField(FitElement, blank=True)
+
+    def did(self):
+        return self.fit_element.count() == self.group.goal.count()
