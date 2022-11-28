@@ -55,9 +55,15 @@ describe('workout_log', () => {
     const selectType = screen.getAllByTestId('select_type')[0];
     const selectCategory = screen.getAllByTestId('select_category')[0];
     const time_input = screen.getAllByTestId('workout_time')[0];
+    const weight_input = screen.getAllByTestId('type_input')[0];
+    const rep_input = screen.getAllByTestId('type_input')[1];
+    const set_input = screen.getAllByTestId('type_input')[2];
     fireEvent.change(selectCategory, { target: { value: '등운동' } });
     fireEvent.change(selectType, { target: { value: '데드리프트' } });
     userEvent.type(time_input, '10');
+    userEvent.type(weight_input, '10');
+    userEvent.type(rep_input, '10');
+    userEvent.type(set_input, '10');
     const button = screen.getAllByText('완료')[1];
     fireEvent.click(button!);
     expect(mockDispatch).toHaveBeenCalled();
@@ -123,6 +129,20 @@ describe('workout_log', () => {
 
     const deleteImageBtn = await screen.findByText('삭제');
     expect(deleteImageBtn).toBeInTheDocument();
+
+    fireEvent.click(imageUploadBtn);
+
+    const blob2 = new Blob(['hahaha']);
+    const file2 = new File([blob2], 'image2.jpg');
+
+    userEvent.upload(input, file2);
+
+    fireEvent.click(imageUploadBtn);
+
+    const blob3 = new Blob(['hahaha']);
+    const file3 = new File([blob3], 'image3.jpg');
+
+    userEvent.upload(input, file3);
   });
 
   test('image upload error', async () => {
@@ -259,5 +279,25 @@ describe('workout_log', () => {
     for (let i = 0; i < 24; i++) {
       fireEvent.click(right_button!);
     }
+  });
+
+  it('type input', () => {
+    render(component);
+    const selectType = screen.getAllByTestId('select_type')[0];
+    const selectCategory = screen.getAllByTestId('select_category')[0];
+    fireEvent.change(selectCategory, { target: { value: '등운동' } });
+    fireEvent.change(selectType, { target: { value: '데드리프트' } });
+    const inputNode_1 = screen.getAllByTestId('type_input')[0];
+    const inputNode_2 = screen.getAllByTestId('type_input')[1];
+    const inputNode_3 = screen.getAllByTestId('type_input')[2];
+    const inputNode_4 = screen.getAllByTestId('workout_time')[0];
+    fireEvent.keyPress(inputNode_1, { key: 'Enter', charCode: 13 });
+    fireEvent.keyPress(inputNode_2, { key: 'Enter', charCode: 13 });
+    fireEvent.keyPress(inputNode_3, { key: 'Enter', charCode: 13 });
+    fireEvent.keyPress(inputNode_4, { key: 'Enter', charCode: 13 });
+    fireEvent.keyPress(inputNode_1, { key: 'e', charCode: 69 });
+    fireEvent.keyPress(inputNode_2, { key: 'e', charCode: 69 });
+    fireEvent.keyPress(inputNode_3, { key: 'e', charCode: 69 });
+    fireEvent.keyPress(inputNode_4, { key: 'e', charCode: 69 });
   });
 });

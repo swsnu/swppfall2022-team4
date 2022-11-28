@@ -659,6 +659,7 @@ const WorkoutLog = () => {
                     </WorkoutTypeSelect>
                     <WorkoutTypeInput
                       pattern="[0-9]+"
+                      data-testid="type_input"
                       type="number"
                       onKeyPress={event => {
                         if (!(48 <= event.charCode && event.charCode <= 57)) {
@@ -673,6 +674,7 @@ const WorkoutLog = () => {
                     />
                     <WorkoutTypeInput
                       type="number"
+                      data-testid="type_input"
                       onKeyPress={event => {
                         if (!(48 <= event.charCode && event.charCode <= 57)) {
                           event.preventDefault();
@@ -686,6 +688,7 @@ const WorkoutLog = () => {
                     />
                     <WorkoutTypeInput
                       type="number"
+                      data-testid="type_input"
                       onKeyPress={event => {
                         if (!(48 <= event.charCode && event.charCode <= 57)) {
                           event.preventDefault();
