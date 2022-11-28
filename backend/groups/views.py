@@ -375,7 +375,7 @@ def group_cert(request, group_id, year, month, specific_date):
             )
         response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
-    else:
+    elif request.method == "DELETE":
         req_data = json.loads(request.body.decode())
         gr_obj = Group.objects.get(id=int(group_id))
         fit = gr_obj.goal.get(workout_type_id=req_data["fitelement_id"])
@@ -391,7 +391,7 @@ def group_cert(request, group_id, year, month, specific_date):
 
         if removed_cert.fit_element.count() == 0:
             return HttpResponseBadRequest()
-        elif len(cert) == 1:
+        elif removed_cert.fit_element.count() == 1:
             removed_cert.delete()
         else:
             removed_cert.fit_element.remove(fit)

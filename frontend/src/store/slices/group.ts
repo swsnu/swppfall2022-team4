@@ -196,7 +196,7 @@ export const groupSlice = createSlice({
     getCertsFailure: (state, { payload }) => {
       state.groupCerts.error = payload;
     },
-    createCert: (state, action: PayloadAction<groupAPI.createCertRequestType>) => {
+    createCert: (state, action: PayloadAction<groupAPI.certRequestType>) => {
       state.groupCerts.all_certs = null;
       state.groupCerts.error = null;
     },
@@ -205,6 +205,17 @@ export const groupSlice = createSlice({
       state.groupCerts.error = null;
     },
     createCertFailure: (state, { payload }) => {
+      state.groupCerts.error = payload;
+    },
+    deleteCert: (state, action: PayloadAction<groupAPI.certRequestType>) => {
+      state.groupCerts.all_certs = null;
+      state.groupCerts.error = null;
+    },
+    deleteCertSuccess: (state, { payload }) => {
+      state.groupCerts.all_certs = payload.all_certs;
+      state.groupCerts.error = null;
+    },
+    deleteCertFailure: (state, { payload }) => {
       state.groupCerts.error = payload;
     },
   },
@@ -283,7 +294,7 @@ function* leaderChangeSaga(action: PayloadAction<groupAPI.leaderChangeRequestTyp
     yield put(groupActions.leaderChangeFailure(error));
   }
 }
-function* createCertSaga(action: PayloadAction<groupAPI.createCertRequestType>) {
+function* createCertSaga(action: PayloadAction<groupAPI.certRequestType>) {
   try {
     const response: AxiosResponse = yield call(groupAPI.createCert, action.payload);
     yield put(groupActions.createCertSuccess(response));
@@ -299,6 +310,16 @@ function* getCertsSaga(action: PayloadAction<groupAPI.getCertsRequestType>) {
     yield put(groupActions.getCertsFailure(error));
   }
 }
+function* deleteCertSaga(action: PayloadAction<groupAPI.certRequestType>) {
+  console.log('delete saga');
+  try {
+    const response: AxiosResponse = yield call(groupAPI.deleteCert, action.payload);
+    console.log('before put');
+    yield put(groupActions.deleteCertSuccess(response));
+  } catch (error) {
+    yield put(groupActions.deleteCertFailure(error));
+  }
+}
 
 export default function* groupSaga() {
   yield takeLatest(groupActions.getGroups, getGroupsSaga);
@@ -312,4 +333,5 @@ export default function* groupSaga() {
   yield takeLatest(groupActions.leaderChange, leaderChangeSaga);
   yield takeLatest(groupActions.createCert, createCertSaga);
   yield takeLatest(groupActions.getCerts, getCertsSaga);
+  yield takeLatest(groupActions.deleteCert, deleteCertSaga);
 }

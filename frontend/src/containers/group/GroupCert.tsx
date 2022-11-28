@@ -8,8 +8,7 @@ import { groupActions } from 'store/slices/group';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
 import Loading from 'components/common/Loading';
-import { createCertRequestType, Fitelement, getCertsRequestType } from 'store/apis/group';
-import Button1 from 'components/common/buttons/Button1';
+import { certRequestType, Fitelement, getCertsRequestType } from 'store/apis/group';
 import Button4 from 'components/common/buttons/Button4';
 
 const GroupCert = () => {
@@ -31,7 +30,6 @@ const GroupCert = () => {
   const [selected_month, setSelectedMonth] = useState(date.getMonth());
   const [selected_date, setSelectedDay] = useState(date.getDate());
   const [selectedGoal, setSelectedGoal] = useState<Fitelement | null>(null);
-  const user = useSelector(({ user }: RootState) => user);
   const [done, setDone] = useState(false);
   const [future, setFuture] = useState(false);
   const str_today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -74,7 +72,7 @@ const GroupCert = () => {
       setSelectedYear(selected_year);
       setSelectedMonth(selected_month);
       setSelectedDay(selected_date);
-      const createCertRequest: createCertRequestType = {
+      const createCertRequest: certRequestType = {
         group_id: group_id,
         fitelement_id: selectedGoal.id,
         year: selected_year,
@@ -84,11 +82,28 @@ const GroupCert = () => {
       dispatch(groupActions.createCert(createCertRequest));
     }
   };
+  const deleteCert = (id: number) => {
+    if (group_id) {
+      setDate(new Date(selected_year, selected_month, selected_date));
+      setSelectedYear(selected_year);
+      setSelectedMonth(selected_month);
+      setSelectedDay(selected_date);
+      const deleteCertRequest: certRequestType = {
+        group_id: group_id,
+        fitelement_id: id,
+        year: selected_year,
+        month: selected_month + 1,
+        specific_date: selected_date,
+      };
+      dispatch(groupActions.deleteCert(deleteCertRequest));
+    }
+  };
 
   const calendarInfo = useSelector((rootState: RootState) => rootState.workout_log.calendar_info);
   const group_detail = useSelector(({ group }: RootState) => group.groupDetail.group);
   const all_certs = useSelector(({ group }: RootState) => group.groupCerts.all_certs);
   const { group_id } = useParams<{ group_id: string }>();
+  const user = useSelector(({ user }: RootState) => user);
 
   useEffect(() => {
     if (group_id) {
@@ -276,18 +291,20 @@ const GroupCert = () => {
                               set={c.set}
                               time={c.time}
                             />
-                            <span
-                              data-testid="removeGoal"
-                              onClick={() => console.log('hi')}
-                              style={{
-                                fontSize: '18px',
-                                cursor: 'pointer',
-                                color: 'gray',
-                                paddingTop: '33px',
-                              }}
-                            >
-                              X
-                            </span>
+                            {item.member.username == user.user?.username && (
+                              <span
+                                data-testid="removeGoal"
+                                onClick={() => deleteCert(c.id)}
+                                style={{
+                                  fontSize: '18px',
+                                  cursor: 'pointer',
+                                  color: 'gray',
+                                  paddingTop: '33px',
+                                }}
+                              >
+                                X
+                              </span>
+                            )}
                           </div>
                         ))}
                     </div>
