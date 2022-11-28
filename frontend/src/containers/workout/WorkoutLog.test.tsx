@@ -1,9 +1,13 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, getAllByTestId } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import { MemoryRouter, Route, Routes } from 'react-router';
 import WorkoutLog from './WorkoutLog';
 import { initialState, getMockStore } from 'test-utils/mock';
+import userEvent from '@testing-library/user-event';
+import client from 'store/apis/client';
+
+const originalEnv = process.env;
 
 const store = getMockStore(initialState);
 const mockNavigate = jest.fn();
@@ -46,11 +50,109 @@ describe('workout_log', () => {
     expect(mockNavigate).toBeCalledTimes(1);
   });
 
-  it('createWorkoutLog', () => {
+  it('create workout log', () => {
     render(component);
-    const button = screen.getAllByText('완료')[0];
+    const selectType = screen.getAllByTestId('select_type')[0];
+    const selectCategory = screen.getAllByTestId('select_category')[0];
+    const time_input = screen.getAllByTestId('workout_time')[0];
+    fireEvent.change(selectCategory, { target: { value: "등운동" } });
+    fireEvent.change(selectType, { target: { value: "데드리프트" } });
+    userEvent.type(time_input, "10");
+    const button = screen.getAllByText('완료')[1];
     fireEvent.click(button!);
     expect(mockDispatch).toHaveBeenCalled();
+  });
+
+  it('create workout log(운동종류 x)', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+    render(component);
+    const selectType = screen.getAllByTestId('select_type')[0];
+    const selectCategory = screen.getAllByTestId('select_category')[0];
+    fireEvent.change(selectCategory, { target: { value: "" } });
+    fireEvent.change(selectType, { target: { value: "" } });
+    const button = screen.getAllByText('완료')[1];
+    fireEvent.click(button!);
+
+    expect(alertMock).toBeCalledWith('운동종류를 입력해주세요.');
+  });
+
+  it('create workout log(시간 x)', () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+    render(component);
+    const time_input = screen.getAllByTestId('workout_time')[0];
+
+    userEvent.selectOptions(screen.getAllByTestId('select_category')[0], '등운동');
+    expect((screen.getByText('등운동') as HTMLOptionElement).selected).toBeTruthy();
+    
+    userEvent.selectOptions(screen.getAllByTestId('select_type')[0], '데드리프트');
+    expect((screen.getAllByText('데드리프트')[0] as HTMLOptionElement).selected).toBeTruthy();
+
+    userEvent.type(time_input, "0");
+    const button = screen.getAllByText('완료')[1];
+    fireEvent.click(button!);
+
+    expect(alertMock).toBeCalledWith('시간을 입력해야 해요.');
+  });
+
+  test('image upload', async () => {
+    render(component);
+    const mockClientGet = jest.fn();
+    client.post = mockClientGet.mockImplementation(() => Promise.resolve({ data: { title: 'image' } }));
+
+    const imageUploadBtn = screen.getAllByTestId('FileInput_DailyLog')[0];
+    fireEvent.click(imageUploadBtn);
+
+    const blob = new Blob(['hahaha']);
+    const file = new File([blob], 'image.jpg');
+    const input = screen.getByTestId('dailylog_upload');
+
+    userEvent.upload(input, file);
+
+    const deleteImageBtn = await screen.findByText('삭제');
+    expect(deleteImageBtn).toBeInTheDocument();
+    fireEvent.click(deleteImageBtn);
+  });
+
+  test('image upload error', async () => {
+    const alertMock = jest.fn();
+    global.alert = alertMock.mockImplementation(() => null);
+    render(component);
+    const mockClientGet = jest.fn();
+    client.post = mockClientGet.mockImplementation(() => Promise.reject({}));
+
+    const imageUploadBtn = screen.getAllByTestId('FileInput_DailyLog')[0];
+    fireEvent.click(imageUploadBtn);
+
+    const blob = new Blob(['hahaha']);
+    const file = new File([blob], 'image.jpg');
+    const input = screen.getByTestId('dailylog_upload');
+
+    await userEvent.upload(input, file);
+    expect(alertMock).toBeCalledWith('이미지 업로드 오류');
+  });
+
+  test('image upload error ENV', async () => {
+    process.env = {
+      ...originalEnv,
+      REACT_APP_API_IMAGE_UPLOAD: undefined,
+    };
+    const alertMock = jest.fn();
+    global.alert = alertMock.mockImplementation(() => null);
+    render(component);
+    const mockClientGet = jest.fn();
+    client.post = mockClientGet.mockImplementation(() => Promise.resolve({ data: { title: 'image' } }));
+
+    const imageUploadBtn = screen.getAllByTestId('FileInput_DailyLog')[0];
+    fireEvent.click(imageUploadBtn);
+
+    const blob = new Blob(['hahaha']);
+    const file = new File([blob], 'image.jpg');
+    const input = screen.getByTestId('dailylog_upload');
+
+    userEvent.upload(input, file);
+
+    const deleteImageBtn = await screen.findByText('삭제');
+    expect(deleteImageBtn).toBeInTheDocument();
   });
 
   it('DayOnClick', () => {

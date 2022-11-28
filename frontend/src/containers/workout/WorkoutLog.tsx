@@ -114,7 +114,7 @@ const WorkoutLog = () => {
   const createWorkoutLog = () => {
     if (workout_type === '') {
       alert('운동종류를 입력해주세요.');
-    } else if (workout_time === null || workout_time < 0) {
+    } else if (workout_time === null || workout_time <= 0) {
       alert('시간을 입력해야 해요.');
     } else {
       const newLogConfig: createWorkoutLogRequestType = {
@@ -125,7 +125,7 @@ const WorkoutLog = () => {
         category: workout_category,
         weight: weight,
         rep: rep,
-        set: set === 0 ? null : set,
+        set: set,
         time: workout_time,
         date: String(year) + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0'),
       };
@@ -512,6 +512,7 @@ const WorkoutLog = () => {
                   ) : (
                     <WorkoutImageWrapper>
                       <WorkoutImage
+                        data-testid="FileInput_DailyLog"
                         src={process.env.REACT_APP_API_IMAGE + 'default-upload-image.png'}
                         alt="workout_image"
                         onClick={() => {
@@ -520,7 +521,8 @@ const WorkoutLog = () => {
                       />
                       <FileInput
                         type="file"
-                        accept="image/*"
+                          accept="image/*"
+                          data-testid="dailylog_upload"
                         id="FileInput_DailyLog"
                         onChange={onChangeDailyLogImage}
                       />
@@ -627,21 +629,27 @@ const WorkoutLog = () => {
                     <WorkoutTypeSelect
                       value={workout_category || '선택'}
                       className="type2"
+                      data-testid="select_category"
                       onChange={e => setWorkoutCategory(e.target.value)}
                     >
                       <option disabled>선택</option>
                       {fitElementTypes.map((fitelement_category, index) => (
-                        <option key={index}>{fitelement_category.class_name}</option>
+                        <option data-testid="select-option-category" key={index}>
+                          {fitelement_category.class_name}
+                        </option>
                       ))}
                     </WorkoutTypeSelect>
                     <WorkoutTypeSelect
                       value={workout_type || '종류 선택'}
+                      data-testid="select_type"
                       onChange={e => setWorkoutType(e.target.value)}
                     >
                       <option disabled>종류 선택</option>
                       {fitElementTarget.length === 1 &&
                         fitElementTarget[0].tags.map((fitelement, index) => (
-                          <option key={index}>{fitelement.name}</option>
+                          <option data-testid="select-option-type" key={index}>
+                            {fitelement.name}
+                          </option>
                         ))}
                     </WorkoutTypeSelect>
                     <WorkoutTypeInput
@@ -687,6 +695,7 @@ const WorkoutLog = () => {
                     <WorkoutTypeInput
                       type="number"
                       min="0"
+                      data-testid="workout_time"
                       onKeyPress={event => {
                         if (!(48 <= event.charCode && event.charCode <= 57)) {
                           event.preventDefault();
