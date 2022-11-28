@@ -60,6 +60,9 @@ def general_group(request):
             group.members.add(request.user)
             group.member_number += 1
             group.save()
+            join_obj = JoinRequest()
+            join_obj.group = group
+            join_obj.save()
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
 
@@ -196,10 +199,18 @@ def group_members(request, group_id):
                 return HttpResponseBadRequest()
             if gr_obj.member_number == gr_obj.number:
                 return HttpResponseBadRequest()
-            gr_obj.members.add(user)
-            gr_obj.member_number += 1
-            gr_obj.save()
-            return HttpResponse(status=204)
+            ## 자유가입O
+            if gr_obj.free:
+                gr_obj.members.add(user)
+                gr_obj.member_number += 1
+                gr_obj.save()
+                return HttpResponse(status=204)
+            ## 자유가입X
+            else:
+                join_obj = JoinRequest.objects.get(group=gr_obj)
+                join_obj.members.add(user)
+                join_obj.save()
+                return HttpResponse(status=204)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
         except Exception:
@@ -227,7 +238,10 @@ def group_member_check(request, group_id):
     """
     try:
         gr_obj = Group.objects.get(id=int(group_id))
-        if gr_obj.group_leader.username == request.user.username:
+        join_obj = JoinRequest.objects.get(group=gr_obj)
+        if join_obj.members.filter(username=request.user.username):
+            response_dict = {"member_status": "request_member"}
+        elif gr_obj.group_leader.username == request.user.username:
             response_dict = {"member_status": "group_leader"}
         elif gr_obj.members.filter(username=request.user.username):
             response_dict = {"member_status": "group_member"}
@@ -443,10 +457,11 @@ def join_permission(request, group_id):
     if request.method == "GET":
         try:
             gr_obj = Group.objects.get(id=int(group_id))
-            if not gr_obj.group_leader.username != request.user.username:
+            join_obj = JoinRequest.objects.get(group=gr_obj)
+            if gr_obj.group_leader.username != request.user.username:
                 return HttpResponse(status=403)
             result = []
-            for req in gr_obj.join_request.members.all():
+            for req in join_obj.members.all():
                 result.append(
                 {
                     "id": req.id,
@@ -465,16 +480,18 @@ def join_permission(request, group_id):
             req_data = json.loads(request.body.decode())
             req_user = User.objects.get(username=req_data["username"])
             gr_obj = Group.objects.get(id=int(group_id))
+            join_obj = JoinRequest.objects.get(group=gr_obj)
 
-            if not gr_obj.group_leader.username != request.user.username:
+            if gr_obj.group_leader.username != request.user.username:
                 return HttpResponse(status=403)
             if gr_obj.member_number == gr_obj.number:
                 return HttpResponseBadRequest()
             
             gr_obj.members.add(req_user)
-            gr_obj.join_request.members.remove(req_user)
             gr_obj.member_number += 1
+            join_obj.members.remove(req_user)
             gr_obj.save()
+            join_obj.save()
             return HttpResponse(status=204)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
@@ -486,10 +503,12 @@ def join_permission(request, group_id):
             req_data = json.loads(request.body.decode())
             req_user = User.objects.get(username=req_data["username"])
             gr_obj = Group.objects.get(id=int(group_id))
+            join_obj = JoinRequest.objects.get(group=gr_obj)
 
-            if not gr_obj.group_leader.username != request.user.username:
+            if gr_obj.group_leader.username != request.user.username:
                 return HttpResponse(status=403)
-            gr_obj.join_request.members.remove(req_user)
+            join_obj.members.remove(req_user)
+            join_obj.save()
             return HttpResponse(status=204)
         except Group.DoesNotExist:
             return HttpResponseNotFound()

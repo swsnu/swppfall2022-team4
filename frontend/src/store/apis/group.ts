@@ -33,19 +33,16 @@ export const exitGroup = async (payload: string) => {
   const response = await client.delete(`/api/group/${payload}/member/`);
   return response.data;
 };
-
 export const leaderChange = async (payload: leaderChangeRequestType) => {
   const response = await client.post(`/api/group/${payload.group_id}/leader_change/`, payload);
   return response.data;
 };
-
 export const getCerts = async (payload: getCertsRequestType) => {
   const response = await client.get<getCertsResponseType>(
     `/api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`,
   );
   return response.data;
 };
-
 export const createCert = async (payload: certRequestType) => {
   const response = await client.post<getCertsResponseType>(
     `/api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`,
@@ -53,7 +50,6 @@ export const createCert = async (payload: certRequestType) => {
   );
   return response.data;
 };
-
 export const deleteCert = async (payload: certRequestType) => {
   console.log('groupApi.deleteCert');
   console.log(payload);
@@ -62,6 +58,18 @@ export const deleteCert = async (payload: certRequestType) => {
     { data: payload },
   );
   console.log(response);
+  return response.data;
+};
+export const getRequests = async (payload: string) => {
+  const response = await client.get<getJoinReqResponseType>(`/api/group/${payload}/join_permission/`);
+  return response.data;
+};
+export const postRequest = async (payload: joinReqLeaderRequestType) => {
+  const response = await client.post(`/api/group/${payload.group_id}/join_permission/`, payload);
+  return response.data;
+};
+export const deleteRequest = async (payload: joinReqLeaderRequestType) => {
+  const response = await client.delete(`/api/group/${payload.group_id}/join_permission/`, { data: payload });
   return response.data;
 };
 
@@ -105,6 +113,13 @@ export type Member = {
   username: string;
   image: string;
   cert_days: number;
+  level: number;
+};
+
+export type MemberReq = {
+  id: number;
+  username: string;
+  image: string;
   level: number;
 };
 
@@ -186,4 +201,13 @@ export type getCertsRequestType = {
 
 export type getCertsResponseType = {
   all_certs: MemberCert[];
+};
+
+export type getJoinReqResponseType = {
+  requests: MemberReq[];
+};
+
+export type joinReqLeaderRequestType = {
+  group_id: string;
+  username: string;
 };

@@ -9,18 +9,19 @@ import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { MemberElement } from 'components/group/MemberElement';
 
-const GroupMembers = () => {
+const GroupJoinReq = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { group_id } = useParams<{ group_id: string }>();
-  const memberList = useSelector((rootState: RootState) => rootState.group.groupMembers.members);
+  const memberList = useSelector((rootState: RootState) => rootState.group.reqMembers.requests);
   const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
   const user = useSelector(({ user }: RootState) => user.user);
+  const groupActionStatus = useSelector(({ group }: RootState) => group.groupAction.status);
 
   useEffect(() => {
     if (group_id) {
-      dispatch(groupActions.getGroupMembers(group_id));
+      dispatch(groupActions.getRequests(group_id));
       dispatch(groupActions.checkMemberStatus(group_id));
     }
     return () => {
@@ -28,12 +29,20 @@ const GroupMembers = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (groupActionStatus && group_id) {
+      dispatch(groupActions.stateRefresh());
+      dispatch(groupActions.getRequests(group_id));
+      dispatch(groupActions.checkMemberStatus(group_id));
+    }
+  }, [groupActionStatus]);
+
   if (!memberList) return <Loading />;
   return (
     <Wrapper>
       <TitleWrapper>
         <Button4 content="Back" clicked={() => navigate(`/group/detail/${group_id}/`)} />
-        <Title>그룹 멤버</Title>
+        <Title>멤버 승인 요청</Title>
         <div style={{ width: '136px' }} />
       </TitleWrapper>
 
@@ -43,18 +52,18 @@ const GroupMembers = () => {
           id={me.id}
           image={me.image}
           username={me.username}
-          cert_days={me.cert_days}
+          cert_days={0}
           level={me.level}
           leader={member_status === 'group_leader' ? true : false}
           myself={user?.username === me.username ? true : false}
-          request={false}
+          request={true}
         />
       ))}
     </Wrapper>
   );
 };
 
-export default GroupMembers;
+export default GroupJoinReq;
 
 const Wrapper = styled.div`
   width: 100%;

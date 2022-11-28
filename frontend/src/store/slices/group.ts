@@ -34,6 +34,10 @@ interface GroupState {
     all_certs: groupAPI.MemberCert[] | null;
     error: AxiosError | null;
   };
+  reqMembers: {
+    requests: groupAPI.MemberReq[] | null;
+    error: AxiosError | null;
+  };
 }
 
 export const initialState: GroupState = {
@@ -64,6 +68,10 @@ export const initialState: GroupState = {
   },
   groupCerts: {
     all_certs: [],
+    error: null,
+  },
+  reqMembers: {
+    requests: [],
     error: null,
   },
 };
@@ -218,6 +226,43 @@ export const groupSlice = createSlice({
     deleteCertFailure: (state, { payload }) => {
       state.groupCerts.error = payload;
     },
+    getRequests: (state, action: PayloadAction<string>) => {
+      state.reqMembers.requests = null;
+      state.reqMembers.error = null;
+    },
+    getRequestsSuccess: (state, { payload }) => {
+      state.reqMembers.requests = payload.requests;
+      state.reqMembers.error = null;
+    },
+    getRequestsFailure: (state, { payload }) => {
+      state.reqMembers.error = payload;
+    },
+    postRequest: (state, action: PayloadAction<groupAPI.joinReqLeaderRequestType>) => {
+      state.groupAction.status = false;
+      state.groupAction.error = null;
+    },
+    postRequestSuccess: state => {
+      state.groupAction.status = true;
+      state.groupAction.error = null;
+    },
+    postRequestFailure: (state, { payload }) => {
+      state.groupAction.status = false;
+      state.groupAction.error = payload;
+      alert(payload.response?.data.message);
+    },
+    deleteRequest: (state, action: PayloadAction<groupAPI.joinReqLeaderRequestType>) => {
+      state.groupAction.status = false;
+      state.groupMemberStatus.error = null;
+    },
+    deleteRequestSuccess: state => {
+      state.groupAction.status = true;
+      state.groupAction.error = null;
+    },
+    deleteRequestFailure: (state, { payload }) => {
+      state.groupAction.status = false;
+      state.groupAction.error = payload;
+      alert(payload.response?.data.message);
+    },
   },
 });
 export const groupActions = groupSlice.actions;
@@ -320,6 +365,30 @@ function* deleteCertSaga(action: PayloadAction<groupAPI.certRequestType>) {
     yield put(groupActions.deleteCertFailure(error));
   }
 }
+function* getRequestsSaga(action: PayloadAction<string>) {
+  try {
+    const response: AxiosResponse = yield call(groupAPI.getRequests, action.payload);
+    yield put(groupActions.getRequestsSuccess(response));
+  } catch (error) {
+    yield put(groupActions.getRequestsFailure(error));
+  }
+}
+function* postRequestSaga(action: PayloadAction<groupAPI.joinReqLeaderRequestType>) {
+  try {
+    yield call(groupAPI.postRequest, action.payload);
+    yield put(groupActions.postRequestSuccess());
+  } catch (error) {
+    yield put(groupActions.postRequestFailure(error));
+  }
+}
+function* deleteRequestSaga(action: PayloadAction<groupAPI.joinReqLeaderRequestType>) {
+  try {
+    yield call(groupAPI.deleteRequest, action.payload);
+    yield put(groupActions.deleteRequestSuccess());
+  } catch (error) {
+    yield put(groupActions.deleteRequestFailure(error));
+  }
+}
 
 export default function* groupSaga() {
   yield takeLatest(groupActions.getGroups, getGroupsSaga);
@@ -334,4 +403,7 @@ export default function* groupSaga() {
   yield takeLatest(groupActions.createCert, createCertSaga);
   yield takeLatest(groupActions.getCerts, getCertsSaga);
   yield takeLatest(groupActions.deleteCert, deleteCertSaga);
+  yield takeLatest(groupActions.getRequests, getRequestsSaga);
+  yield takeLatest(groupActions.postRequest, postRequestSaga);
+  yield takeLatest(groupActions.deleteRequest, deleteRequestSaga);
 }

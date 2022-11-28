@@ -93,8 +93,9 @@ const GroupDetail = () => {
         ) : (
           <GroupPlace>{`장소: 장소 없음`}</GroupPlace>
         )}
+        {group_detail.free ? <GroupFree>자유가입 O</GroupFree> : <GroupFree>자유가입 X</GroupFree>}
       </GroupDetailHeader>
-      <div style={{ display: 'flex', gap: '15px', paddingLeft: '50%', paddingTop: '15px' }}>
+      <div style={{ display: 'flex', gap: '15px', paddingLeft: '40%', paddingTop: '15px' }}>
         {member_status === 'group_leader' && (
           <div style={{ display: 'flex', gap: '15px' }}>
             <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/cert`)}>
@@ -105,6 +106,9 @@ const GroupDetail = () => {
             </Button>
             <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/member`)}>
               Member
+            </Button>
+            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/joinReq`)}>
+              Join Req
             </Button>
             <Button className={done ? 'end' : 'ing'} onClick={deleteOnClick}>
               Delete
@@ -131,6 +135,13 @@ const GroupDetail = () => {
           <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
             <Button className={done ? 'disabled' : 'ing'} onClick={joinOnClick} disabled={done}>
               Join
+            </Button>
+          </div>
+        )}
+        {member_status === 'request_member' && (
+          <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
+            <Button className="disabled" disabled={done}>
+              Pending
             </Button>
           </div>
         )}
@@ -219,7 +230,7 @@ const Wrapper = styled.div`
 
 const GroupDetailHeader = styled.div`
   width: 100%;
-  height: 245px;
+  height: 285px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -248,6 +259,12 @@ const GroupNumber = styled.div`
 `;
 
 const GroupPlace = styled.div`
+  font-size: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  margin-bottom: 20px;
+`;
+
+const GroupFree = styled.div`
   font-size: 20px;
   font-family: 'Noto Sans KR', sans-serif;
   margin-bottom: 20px;

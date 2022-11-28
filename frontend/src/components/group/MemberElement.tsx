@@ -11,6 +11,7 @@ export interface IProps {
   level: number;
   leader: boolean;
   myself: boolean;
+  request: boolean;
 }
 
 export const MemberElement = (props: IProps) => {
@@ -29,6 +30,26 @@ export const MemberElement = (props: IProps) => {
       navigate(`/group/detail/${group_id}`);
     }
   };
+  const postRequestClick = () => {
+    if (group_id) {
+      dispatch(
+        groupActions.postRequest({
+          group_id: group_id,
+          username: props.username,
+        }),
+      );
+    }
+  };
+  const deleteRequestClick = () => {
+    if (group_id) {
+      dispatch(
+        groupActions.deleteRequest({
+          group_id: group_id,
+          username: props.username,
+        }),
+      );
+    }
+  };
 
   return (
     <MemberElementWrapper>
@@ -38,8 +59,18 @@ export const MemberElement = (props: IProps) => {
         <MemberElementLine>Cert_days: {props.cert_days}</MemberElementLine>
         <MemberElementLine>Level: {props.level}</MemberElementLine>
       </MemberElementLineWrapper>
-      {props.leader && !props.myself && (
-        <Button1 style={{ fontSize: '15px' }} content="그룹장 위임" clicked={leaderChangeClick} />
+      {props.leader && !props.myself && !props.request && (
+        <Button1 content="그룹장 위임" style={{ fontSize: '15px' }} clicked={leaderChangeClick} />
+      )}
+      {props.leader && props.request && (
+        <div>
+          <Button style={{ fontSize: '15px' }} onClick={postRequestClick}>
+            승인
+          </Button>
+          <Button className="remove" style={{ fontSize: '15px' }} onClick={deleteRequestClick}>
+            삭제
+          </Button>
+        </div>
       )}
     </MemberElementWrapper>
   );
@@ -77,4 +108,31 @@ const MemberElementLineWrapper = styled.div`
 const MemberElementLine = styled.div`
   font-size: 18px;
   font-family: IBMPlexSansThaiLooped;
+`;
+
+const Button = styled.button`
+  width: 50px;
+  height: 40px;
+  border: 0;
+  margin: 3px;
+  border-radius: 5px;
+  background-color: #349c66;
+  color: white;
+  font-size: 20px;
+  font-family: FugazOne;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  &:hover {
+    background-color: #3bb978;
+  }
+
+  &&.disabled {
+    color: black;
+    background-color: silver;
+    cursor: default;
+  }
+
+  &&.remove {
+    background-color: #f29886;
+  }
 `;
