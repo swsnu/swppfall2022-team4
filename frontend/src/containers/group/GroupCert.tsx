@@ -37,11 +37,7 @@ const GroupCert = () => {
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
     let selected_day = 0;
-    if (day < 7) {
-      selected_day = day + 1;
-    } else {
-      selected_day = 0; // 일요일
-    }
+    if (day < 7) selected_day = day + 1;
     return selected_day;
   }
   const clickDate = (year: number, month: number, d: number) => {

@@ -417,8 +417,6 @@ def join_permission(request, group_id):
                     "level": req.level,
                 })
             return JsonResponse({"requests": result}, safe=False)
-        except Group.DoesNotExist:
-            return HttpResponseNotFound()
         except Exception:
             return HttpResponseBadRequest()
 
@@ -439,8 +437,6 @@ def join_permission(request, group_id):
             gr_obj.save()
             join_obj.save()
             return HttpResponse(status=204)
-        except Group.DoesNotExist:
-            return HttpResponseNotFound()
         except Exception:
             return HttpResponseBadRequest()
 
@@ -455,7 +451,5 @@ def join_permission(request, group_id):
             join_obj.members.remove(req_user)
             join_obj.save()
             return HttpResponse(status=204)
-        except Group.DoesNotExist:
-            return HttpResponseNotFound()
         except Exception:
             return HttpResponseBadRequest()
