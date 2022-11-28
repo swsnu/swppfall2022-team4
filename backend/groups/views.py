@@ -375,3 +375,59 @@ def group_cert(request, group_id, year, month, specific_date):
             )
         response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
+    else:
+        req_data = json.loads(request.body.decode())
+        gr_obj = Group.objects.get(id=int(group_id))
+        fit = gr_obj.goal.get(workout_type_id=req_data["fitelement_id"])
+        
+        try:
+            removed_cert = (
+                GroupCert.objects.filter(member=request.user.id)
+                .filter(date=datetime(year, month, specific_date).date())
+                .get(group=group_id)
+            )
+        except Exception:
+            return HttpResponseBadRequest()
+
+        if removed_cert.fit_element.count() == 0:
+            return HttpResponseBadRequest()
+        elif len(cert) == 1:
+            removed_cert.delete()
+        else:
+            removed_cert.fit_element.remove(fit)
+        
+        certs = GroupCert.objects.filter(group=group_id).filter(
+            date=datetime(year, month, specific_date).date()
+        )
+
+        result = []
+        for single_cert in certs:
+            return_goal = []
+            goals = single_cert.fit_element.values()
+            for goal in goals:
+                workout_tag = Tag.objects.get(pk=goal['workout_type_id'])
+                return_goal.append(
+                    {
+                        "id": goal['workout_type_id'],
+                        "type": goal['type'],
+                        "weight": goal['weight'],
+                        "rep": goal['rep'],
+                        "set": goal['set'],
+                        "time": goal['time'],
+                        "workout_type": workout_tag.tag_name,
+                        "category": workout_tag.tag_class.class_name,
+                    }
+                )
+            result.append(
+                {
+                    "member": {
+                        "username": single_cert.member.username,
+                        "nickname": single_cert.member.nickname,
+                        "image": single_cert.member.image,
+                    },
+                    "certs": return_goal,
+                    "did": single_cert.did(),
+                }
+            )
+        response_dict = {"all_certs": result}
+        return JsonResponse(response_dict, status=200)
