@@ -147,6 +147,8 @@ const postGroupRequest: groupAPI.postGroupRequestType = {
   lat: 31,
   lng: 126,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const leaderChangeRequest: groupAPI.leaderChangeRequestType = {

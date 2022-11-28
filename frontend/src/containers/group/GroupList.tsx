@@ -187,6 +187,7 @@ const GroupList = () => {
               start_date={groupListOrdered.start_date}
               end_date={groupListOrdered.end_date}
               member_number={groupListOrdered.member_number}
+              prime_tag={groupListOrdered.prime_tag}
               clicked={() => navigate(`/group/detail/${groupListOrdered.id}/`)}
             />
           ))}

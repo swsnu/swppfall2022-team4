@@ -20,6 +20,11 @@ export const getPosts = async (payload: getPostsRequestType) => {
   const response = await client.get<getPostsResponseType>(link);
   return response.data;
 };
+export const getGroupPosts = async (payload: getGroupPostsRequestType) => {
+  const link = `/api/group/${payload.group_id}/post/`;
+  const response = await client.get(link);
+  return response.data;
+};
 export const getPostsMain = async () => {
   const response = await client.get<getPostsResponseType>(`/api/post/main/hot/`);
   return response.data;
@@ -66,6 +71,10 @@ export type getPostsRequestType = {
   tags: TagVisual[];
 };
 
+export type getGroupPostsRequestType = {
+  group_id: string;
+};
+
 export type getPostsResponseType = {
   page: number;
   page_size: number;
@@ -85,6 +94,7 @@ export type createPostRequestType = {
   tags: TagVisual[];
   images: string[];
   prime_tag: TagVisual | undefined;
+  group_id?: string;
 };
 
 export const updatePostDetail = async (payload: postIdentifyingType) => {

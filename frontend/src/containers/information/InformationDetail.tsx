@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { infoActions } from 'store/slices/information';
@@ -7,9 +7,10 @@ import NotFound from 'components/common/NotFound';
 import { useNavigate, useParams } from 'react-router-dom';
 import { timeAgoFormat } from 'utils/datetime';
 import { Youtube } from 'store/apis/information';
-import SearchBar from 'components/common/SearchBar';
 import { ArticleItemCompact } from 'components/post/ArticleItem';
 import { ScrollShadow } from 'components/common/ScrollShadow';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-regular-svg-icons';
 
 interface InfoPageYoutubeIprops {
   youtube: Youtube;
@@ -17,18 +18,18 @@ interface InfoPageYoutubeIprops {
 
 const InformationDetail = () => {
   const { name } = useParams<{ name: string }>();
-  const [search, setSearch] = useState(name ? name : '');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { info } = useSelector(({ info }: RootState) => ({
     info: info,
   }));
   useEffect(() => {
-    dispatch(
-      infoActions.getInformation({
-        information_name: search,
-      }),
-    );
+    if (name)
+      dispatch(
+        infoActions.getInformation({
+          information_name: name,
+        }),
+      );
   }, []);
   const InfoPageYoutubeItem = ({ youtube }: InfoPageYoutubeIprops) => (
     <YoutubeItem
@@ -47,33 +48,24 @@ const InformationDetail = () => {
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <TopElementWrapperWithoutPadding>
-          <SearchBar
-            onSubmit={e => {
-              e.preventDefault();
-              if (info.contents?.basic.name !== search)
-                dispatch(
-                  infoActions.getInformation({
-                    information_name: search,
-                  }),
-                );
-              navigate(`/information/${search}`);
-            }}
-            onClear={() => {
-              setSearch('');
-              navigate(`/information`);
-            }}
-            search={search}
-            setSearch={setSearch}
-          />
-        </TopElementWrapperWithoutPadding>
+        <TopElementWrapper>
+          <span onClick={() => navigate('/information')}>◀︎</span>
+          <span>{name}</span>
+          <span
+            data-testid="postFuncScrap"
+            // onClick={() => postFuncOnClick(FuncType.Scrap)}
+            // color={post.scraped ? FuncType.Scrap : FuncType.None}
+          >
+            <FontAwesomeIcon icon={faStar} />
+          </span>
+        </TopElementWrapper>
 
         {info.error === 'NOTFOUND' && <NotFound />}
         {info.error === 'NOTERROR' && (
           <SectionWrapper>
             <SectionSubWrapper>
               <BasicItemWrapper>
-                <span>1</span>
+                <span>Tagged Group</span>
               </BasicItemWrapper>
               <ArticleItemWrapper>
                 {info.contents?.posts.map(post => (
@@ -98,7 +90,7 @@ const InformationDetail = () => {
 };
 
 const PostPageWrapper = styled.div`
-  background-color: #d7efe3;
+  background-color: var(--fit-green-back);
   width: 100%;
   height: 100%;
   min-height: 100vh;
@@ -122,8 +114,10 @@ const PostContentWrapper = styled.div`
   }
 `;
 
-const TopElementWrapperWithoutPadding = styled.div`
+const TopElementWrapper = styled.div`
   margin: 40px 0px 15px 0px;
+  padding: 15px 25px;
+  border-radius: 20px;
   width: 100%;
   background-color: #ffffff;
 `;
@@ -136,6 +130,7 @@ const SectionWrapper = styled.div`
   width: 100%;
   min-height: 600px;
   height: 70vh;
+  /* border-radius: 15px; */
 `;
 
 const SectionSubWrapper = styled.div`
@@ -149,14 +144,16 @@ const SectionSubWrapper = styled.div`
 const BasicItemWrapper = styled.div`
   width: 100%;
   padding: 15px 20px;
-  border: 1px solid black;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
   background-color: #ffffff;
 `;
 
 const ArticleItemWrapper = styled.div`
   width: 100%;
   padding: 15px 20px;
-  border: 1px solid black;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
   background-color: #ffffff;
 `;
 
@@ -169,7 +166,8 @@ const YoutubeItemWrapper = styled(ScrollShadow)`
 
   width: 100%;
   padding: 15px 10px;
-  border: 1px solid black;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
   background-color: #ffffff;
   overflow-y: auto;
   &::-webkit-scrollbar {

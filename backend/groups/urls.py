@@ -1,11 +1,24 @@
 from django.urls import path
-from . import views
+from groups.views import (
+    general_group,
+    group_detail,
+    group_members,
+    group_member_check,
+    group_leader_change,
+    group_cert,
+)
+from posts.views import post_group
 
 urlpatterns = [
-    path('', views.general_group, name = "groups"),
-    path('<int:group_id>/', views.group_detail, name = "group"),
-    path('<int:group_id>/member/', views.group_members, name = "group_members"),
-    path('<int:group_id>/mem_check/', views.group_member_check, name = "group_member_check"),
-    path('<int:group_id>/leader_change/', views.group_leader_change, name = "group_leader_change"),
-    path('<int:group_id>/cert/<int:year>/<int:month>/<int:specific_date>/', views.group_cert, name='group_cert')
+    path('', general_group, name="groups"),
+    path('<int:group_id>/', group_detail, name="group"),
+    path('<int:group_id>/member/', group_members, name="group_members"),
+    path('<int:group_id>/post/', post_group, name="group_posts"),
+    path('<int:group_id>/mem_check/', group_member_check, name="group_member_check"),
+    path('<int:group_id>/leader_change/', group_leader_change, name="group_leader_change"),
+    path(
+        '<int:group_id>/cert/<int:year>/<int:month>/<int:specific_date>/',
+        group_cert,
+        name='group_cert',
+    ),
 ]

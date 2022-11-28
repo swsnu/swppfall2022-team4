@@ -12,31 +12,29 @@ export interface IProps {
   time: number | null;
 }
 
-export const FitElement = (props: IProps) => {
-  const get_image = (name: string | null) => {
-    if (name) {
-      const tag_class = ['등운동', '가슴운동', '어깨운동', '하체운동', '복근운동', '팔운동', '유산소', '기타운동'];
-      const image_names = ['back', 'chest', 'deltoid', 'leg', 'abs', 'arm', 'cardio', 'etc'];
-      return image_names[tag_class.indexOf(name)];
-    } else {
-      return 'example';
-    }
-  };
-
-  return (
-    <FitElementLog>
-      <LogCategory className="type3">{props.id}</LogCategory>
-      <LogImage src={require(`assets/images/workout_log/fitelement_category/${get_image(props.category)}.png`)} />
-      <LogCategory className="type">{props.workout_type}</LogCategory>
-      <LogCategory className="type2">{props.weight}</LogCategory>
-      <LogCategory>{props.rep}</LogCategory>
-      <LogCategory>{props.set}</LogCategory>
-      <LogCategory className="type2">
-        <Content>{props.time}</Content>
-      </LogCategory>
-    </FitElementLog>
-  );
+export const get_image = (name: string | null) => {
+  if (name) {
+    const tag_class = ['등운동', '가슴운동', '어깨운동', '하체운동', '복근운동', '팔운동', '유산소', '기타운동'];
+    const image_names = ['back', 'chest', 'deltoid', 'leg', 'abs', 'arm', 'cardio', 'etc'];
+    return image_names[tag_class.indexOf(name)];
+  } else {
+    return 'example';
+  }
 };
+
+export const FitElement = (props: IProps) => (
+  <FitElementLog>
+    <LogCategory className="type3">{props.id}</LogCategory>
+    <LogImage src={require(`assets/images/workout_log/fitelement_category/${get_image(props.category)}.png`)} />
+    <LogCategory className="type">{props.workout_type}</LogCategory>
+    <LogCategory className="type2">{props.weight}</LogCategory>
+    <LogCategory>{props.rep}</LogCategory>
+    <LogCategory>{props.set}</LogCategory>
+    <LogCategory className="type2">
+      <Content>{props.time}</Content>
+    </LogCategory>
+  </FitElementLog>
+);
 
 const FitElementLog = styled.div`
   width: 95%;

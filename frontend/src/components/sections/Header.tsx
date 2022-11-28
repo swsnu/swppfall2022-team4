@@ -210,7 +210,8 @@ export default Header;
 const Wrapper = styled.div`
   width: 100%;
   height: 60px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 10fr 80fr 10fr;
   justify-content: space-between;
   align-items: center;
   background-color: #ffffff;
@@ -255,6 +256,8 @@ const TitleText2 = styled.div`
 
 const CategoryWrapper = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 18px;
   font-weight: 600;
   font-family: NanumSquareR;
@@ -328,6 +331,7 @@ const CategoryIcon = styled(NavLink)`
 
 const IconWrapper = styled.div`
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   gap: 15px;
 `;

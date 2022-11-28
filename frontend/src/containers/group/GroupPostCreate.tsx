@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { postActions } from 'store/slices/post';
 import { tagActions } from 'store/slices/tag';
-import { initialContent, PostContent, PostEditorLayout } from './PostEditorLayout';
+import { initialContent, PostContent, PostEditorLayout } from '../post/PostEditorLayout';
 
-const PostCreate = () => {
+const GroupPostCreate = () => {
+  const { group_id } = useParams<{ group_id: string }>();
   const [postContent, setPostContent] = useState<PostContent>(initialContent);
 
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ const PostCreate = () => {
   const postCreateStatus = useSelector(({ post }: RootState) => post.postCreate);
   const cancelOnClick = () => {
     // alert('are you sure?');
-    navigate('/post');
+    navigate(`/group/detail/${group_id}/post`);
     //TODO;
   };
   useEffect(() => {
@@ -23,7 +24,7 @@ const PostCreate = () => {
   }, []);
   useEffect(() => {
     if (postCreateStatus.status) {
-      navigate(`/post/${postCreateStatus.post_id}`);
+      navigate(`/group/detail/${group_id}/post/${postCreateStatus.post_id}`);
       dispatch(postActions.stateRefresh());
       dispatch(tagActions.clearTagState());
     }
@@ -34,6 +35,7 @@ const PostCreate = () => {
         postActions.createPost({
           ...postContent,
           author_name: user.username,
+          group_id: group_id,
         }),
       );
     }
@@ -46,4 +48,4 @@ const PostCreate = () => {
   });
 };
 
-export default PostCreate;
+export default GroupPostCreate;

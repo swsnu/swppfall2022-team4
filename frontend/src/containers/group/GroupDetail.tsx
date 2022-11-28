@@ -10,6 +10,7 @@ import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { FitElement } from 'components/fitelement/FitElement';
+import { TagBubble } from 'components/tag/tagbubble';
 
 const GroupDetail = () => {
   const dispatch = useDispatch();
@@ -90,6 +91,7 @@ const GroupDetail = () => {
           <div style={{ display: 'flex', gap: '15px' }}>
             <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
             <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
             <Button1 content="Delete" clicked={() => dispatch(groupActions.deleteGroup(group_id))} />
           </div>
         )}
@@ -97,6 +99,7 @@ const GroupDetail = () => {
           <div style={{ display: 'flex', gap: '15px' }}>
             <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
             <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
             <Button1 content="Leave" clicked={exitOnClick} />
           </div>
         )}
@@ -110,6 +113,21 @@ const GroupDetail = () => {
           <GroupAboutNickname>{group_detail.group_leader.nickname}</GroupAboutNickname>
         </div>
         <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
+        <div>
+          <TagBubbleWrapper>
+            {group_detail.tags.map(tags => {
+              return (
+                <TagBubble
+                  key={tags.id}
+                  color={tags.color}
+                  isPrime={group_detail.prime_tag && tags.id === group_detail.prime_tag.id}
+                >
+                  {tags.name}
+                </TagBubble>
+              );
+            })}
+          </TagBubbleWrapper>
+        </div>
       </GroupAboutWrapper>
 
       {group_detail.lat && group_detail.lng && (
@@ -253,6 +271,15 @@ const GroupAboutDescription = styled.div`
   border-radius: 20px;
   padding: 20px;
   line-height: normal;
+`;
+
+const TagBubbleWrapper = styled.div`
+  display: flex;
+  margin-left: 10px;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const GroupDetailWrapper = styled.div`

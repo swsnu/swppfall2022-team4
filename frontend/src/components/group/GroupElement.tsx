@@ -1,3 +1,5 @@
+import { TagBubble } from 'components/tag/tagbubble';
+import { TagVisual } from 'store/apis/tag';
 import styled from 'styled-components';
 
 export interface IProps {
@@ -8,6 +10,7 @@ export interface IProps {
   end_date: string | null;
   member_number: number;
   address: string | null;
+  prime_tag: TagVisual | undefined;
   clicked: React.MouseEventHandler<HTMLDivElement>;
 }
 
@@ -24,13 +27,18 @@ export const GroupElement = (props: IProps) => {
       <GroupElementLine>현재인원 : {props.member_number}</GroupElementLine>
       <GroupElementLine>시작일 : {props.start_date ?? '기한없음'}</GroupElementLine>
       <GroupElementLine>마감일 : {props.end_date ?? '기한없음'}</GroupElementLine>
+      {props.prime_tag ? (
+        <TagBubble color={props.prime_tag.color}>{props.prime_tag.name}</TagBubble>
+      ) : (
+        <TagBubble color={'#dbdbdb'}>None</TagBubble>
+      )}
     </GroupElementWrapper>
   );
 };
 
 const GroupElementWrapper = styled.div`
   width: calc(33.3% - 20px);
-  height: 270px;
+  height: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
