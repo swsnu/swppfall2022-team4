@@ -85,6 +85,10 @@ export const initialState: PreloadedState<RootState> = {
       all_certs: [],
       error: null,
     },
+    reqMembers: {
+      requests: [],
+      error: null,
+    },
   },
   tag: {
     tagList: null,

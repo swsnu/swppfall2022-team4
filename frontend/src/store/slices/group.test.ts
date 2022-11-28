@@ -64,6 +64,8 @@ const group1: groupApi.Group = {
   start_date: '2019-01-01',
   end_date: '2019-12-31',
   member_number: 3,
+  free: true,
+  my_group: 'group_leader',
   lat: 31,
   lng: 126,
   address: 'jeju',
@@ -76,6 +78,8 @@ const group2: groupApi.Group = {
   start_date: '2019-01-01',
   end_date: '2019-12-31',
   member_number: 3,
+  free: true,
+  my_group: 'group_leader',
   lat: 31,
   lng: 126,
   address: 'jeju',
@@ -88,6 +92,7 @@ const memcert1: groupApi.MemberCert = {
     image: 'image',
   },
   certs: [fitelement1],
+  did: true,
 };
 
 //request
@@ -117,7 +122,7 @@ const getCertsRequest: groupApi.getCertsRequestType = {
   specific_date: 12,
 };
 
-const createCertRequest: groupApi.createCertRequestType = {
+const createCertRequest: groupApi.certRequestType = {
   group_id: '1',
   year: 2022,
   month: 9,

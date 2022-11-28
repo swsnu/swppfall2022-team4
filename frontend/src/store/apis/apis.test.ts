@@ -161,7 +161,7 @@ const getCertsRequest: groupAPI.getCertsRequestType = {
   specific_date: 12,
 };
 
-const createCertRequest: groupAPI.createCertRequestType = {
+const createCertRequest: groupAPI.certRequestType = {
   group_id: '1',
   year: 2022,
   month: 12,
