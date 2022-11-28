@@ -9,6 +9,42 @@ from workouts.models import FitElement
 from datetime import datetime
 
 
+def return_cert(certs):
+    result=[]
+    for single_cert in certs:
+        return_goal = []
+        goals = single_cert.fit_element.values()
+        for goal in goals:
+            workout_tag = Tag.objects.get(pk=goal['workout_type_id'])
+            return_goal.append(
+                {
+                    "id": goal['workout_type_id'],
+                    "type": goal['type'],
+                    "weight": goal['weight'],
+                    "rep": goal['rep'],
+                    "set": goal['set'],
+                    "time": goal['time'],
+                    "workout_type": workout_tag.tag_name,
+                    "category": workout_tag.tag_class.class_name,
+                }
+            )
+    result.append(
+        {
+            "member": {
+                "username": single_cert.member.username,
+                "nickname": single_cert.member.nickname,
+                "image": single_cert.member.image,
+            },
+            "certs": return_goal,
+            "did": single_cert.did(),
+        }
+    )
+    return result
+
+def is_gr_leader(gr_obj, request):
+    if gr_obj.group_leader.username != request.user.username:
+        return HttpResponse(status=403)
+
 @require_http_methods(['GET', 'POST'])
 def general_group(request):
     """
@@ -23,8 +59,6 @@ def general_group(request):
                 my_group = "group_leader"
             elif gr_obj.members.filter(username=request.user.username):
                 my_group = "group_member"
-            else:
-                my_group = "not_member"
             result.append({
                 "id": gr_obj.id,
                 "group_name": gr_obj.group_name,
@@ -296,35 +330,7 @@ def group_cert(request, group_id, year, month, specific_date):
         if len(certs) == 0:
             return JsonResponse({"all_certs": []}, status=200)
         else:
-            result = []
-            for single_cert in certs:
-                return_goal = []
-                goals = single_cert.fit_element.values()
-                for goal in goals:
-                    workout_tag = Tag.objects.get(pk=goal['workout_type_id'])
-                    return_goal.append(
-                        {
-                            "id": goal['workout_type_id'],
-                            "type": goal['type'],
-                            "weight": goal['weight'],
-                            "rep": goal['rep'],
-                            "set": goal['set'],
-                            "time": goal['time'],
-                            "workout_type": workout_tag.tag_name,
-                            "category": workout_tag.tag_class.class_name,
-                        }
-                    )
-                result.append(
-                    {
-                        "member": {
-                            "username": single_cert.member.username,
-                            "nickname": single_cert.member.nickname,
-                            "image": single_cert.member.image,
-                        },
-                        "certs": return_goal,
-                        "did": single_cert.did(),
-                    }
-                )
+            result = return_cert(certs)
             response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
     elif request.method == "POST":
@@ -357,36 +363,7 @@ def group_cert(request, group_id, year, month, specific_date):
         certs = GroupCert.objects.filter(group=group_id).filter(
             date=datetime(year, month, specific_date).date()
         )
-
-        result = []
-        for single_cert in certs:
-            return_goal = []
-            goals = single_cert.fit_element.values()
-            for goal in goals:
-                workout_tag = Tag.objects.get(pk=goal['workout_type_id'])
-                return_goal.append(
-                    {
-                        "id": goal['workout_type_id'],
-                        "type": goal['type'],
-                        "weight": goal['weight'],
-                        "rep": goal['rep'],
-                        "set": goal['set'],
-                        "time": goal['time'],
-                        "workout_type": workout_tag.tag_name,
-                        "category": workout_tag.tag_class.class_name,
-                    }
-                )
-            result.append(
-                {
-                    "member": {
-                        "username": single_cert.member.username,
-                        "nickname": single_cert.member.nickname,
-                        "image": single_cert.member.image,
-                    },
-                    "certs": return_goal,
-                    "did": single_cert.did(),
-                }
-            )
+        result = return_cert(certs)
         response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
     elif request.method == "DELETE":
@@ -413,36 +390,7 @@ def group_cert(request, group_id, year, month, specific_date):
         certs = GroupCert.objects.filter(group=group_id).filter(
             date=datetime(year, month, specific_date).date()
         )
-
-        result = []
-        for single_cert in certs:
-            return_goal = []
-            goals = single_cert.fit_element.values()
-            for goal in goals:
-                workout_tag = Tag.objects.get(pk=goal['workout_type_id'])
-                return_goal.append(
-                    {
-                        "id": goal['workout_type_id'],
-                        "type": goal['type'],
-                        "weight": goal['weight'],
-                        "rep": goal['rep'],
-                        "set": goal['set'],
-                        "time": goal['time'],
-                        "workout_type": workout_tag.tag_name,
-                        "category": workout_tag.tag_class.class_name,
-                    }
-                )
-            result.append(
-                {
-                    "member": {
-                        "username": single_cert.member.username,
-                        "nickname": single_cert.member.nickname,
-                        "image": single_cert.member.image,
-                    },
-                    "certs": return_goal,
-                    "did": single_cert.did(),
-                }
-            )
+        result = return_cert(certs)
         response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
 
@@ -458,8 +406,7 @@ def join_permission(request, group_id):
         try:
             gr_obj = Group.objects.get(id=int(group_id))
             join_obj = JoinRequest.objects.get(group=gr_obj)
-            if gr_obj.group_leader.username != request.user.username:
-                return HttpResponse(status=403)
+            is_gr_leader(gr_obj, request)
             result = []
             for req in join_obj.members.all():
                 result.append(
@@ -482,8 +429,7 @@ def join_permission(request, group_id):
             gr_obj = Group.objects.get(id=int(group_id))
             join_obj = JoinRequest.objects.get(group=gr_obj)
 
-            if gr_obj.group_leader.username != request.user.username:
-                return HttpResponse(status=403)
+            is_gr_leader(gr_obj, request)
             if gr_obj.member_number == gr_obj.number:
                 return HttpResponseBadRequest()
 
@@ -505,8 +451,7 @@ def join_permission(request, group_id):
             gr_obj = Group.objects.get(id=int(group_id))
             join_obj = JoinRequest.objects.get(group=gr_obj)
 
-            if gr_obj.group_leader.username != request.user.username:
-                return HttpResponse(status=403)
+            is_gr_leader(gr_obj, request)
             join_obj.members.remove(req_user)
             join_obj.save()
             return HttpResponse(status=204)
