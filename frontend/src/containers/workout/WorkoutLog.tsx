@@ -784,11 +784,11 @@ const WorkoutImageWrapper = styled.div`
   }
   &:hover button {
     display: block;
-    width: 60px;
-    height: 30px;
+    width: 40px;
+    height: 20px;
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 20%;
+    left: 85%;
     margin-left: -30px;
     margin-top: -15px;
   }
