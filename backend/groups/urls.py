@@ -6,6 +6,7 @@ from groups.views import (
     group_member_check,
     group_leader_change,
     group_cert,
+    join_permission,
 )
 from posts.views import post_group
 

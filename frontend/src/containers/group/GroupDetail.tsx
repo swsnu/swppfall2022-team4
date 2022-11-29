@@ -12,6 +12,7 @@ import { FitElement } from 'components/fitelement/FitElement';
 import GroupButton1 from 'components/group/GroupButton1';
 import GroupButton2 from 'components/group/GroupButton2';
 import { TagBubble } from 'components/tag/tagbubble';
+import Button1 from 'components/common/buttons/Button1';
 
 const GroupDetail = () => {
   const dispatch = useDispatch();
