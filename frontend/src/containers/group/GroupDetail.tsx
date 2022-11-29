@@ -9,6 +9,8 @@ import { Map, MapMarker } from 'react-kakao-maps-sdk';
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { FitElement } from 'components/fitelement/FitElement';
+import GroupButton1 from 'components/group/GroupButton1';
+import GroupButton2 from 'components/group/GroupButton2';
 
 const GroupDetail = () => {
   const dispatch = useDispatch();
@@ -98,51 +100,29 @@ const GroupDetail = () => {
       <div style={{ display: 'flex', gap: '15px', paddingLeft: '40%', paddingTop: '15px' }}>
         {member_status === 'group_leader' && (
           <div style={{ display: 'flex', gap: '15px' }}>
-            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/cert`)}>
-              Cert
-            </Button>
-            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/chat/${group_id}`)}>
-              Chat
-            </Button>
-            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/member`)}>
-              Member
-            </Button>
-            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/joinReq`)}>
-              Join Req
-            </Button>
-            <Button className={done ? 'end' : 'ing'} onClick={deleteOnClick}>
-              Delete
-            </Button>
+            <GroupButton2 content="Cert" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/chat/${group_id}`)} />
+            <GroupButton2 content="Member" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <GroupButton2 content="Join Req" end={done} clicked={() => navigate(`/group/detail/${group_id}/joinReq`)} />
+            <GroupButton2 content="Delete" end={done} clicked={deleteOnClick} />
           </div>
         )}
         {member_status === 'group_member' && (
           <div style={{ display: 'flex', gap: '15px' }}>
-            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/cert`)}>
-              Cert
-            </Button>
-            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/chat/${group_id}`)}>
-              Chat
-            </Button>
-            <Button className={done ? 'end' : 'ing'} onClick={() => navigate(`/group/detail/${group_id}/member`)}>
-              Member
-            </Button>
-            <Button className={done ? 'end' : 'ing'} onClick={exitOnClick}>
-              Leave
-            </Button>
+            <GroupButton2 content="Cert" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/chat/${group_id}`)} />
+            <GroupButton2 content="Member" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <GroupButton2 content="Leave" end={done} clicked={exitOnClick} />
           </div>
         )}
         {member_status === 'not_member' && (
           <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
-            <Button className={done ? 'disabled' : 'ing'} onClick={joinOnClick} disabled={done}>
-              Join
-            </Button>
+            <GroupButton1 content="Join" clicked={joinOnClick} disable={done} />
           </div>
         )}
         {member_status === 'request_member' && (
           <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
-            <Button className="disabled" disabled={done}>
-              Pending
-            </Button>
+            <GroupButton1 content="Pending" clicked={joinOnClick} disable={done} />
           </div>
         )}
       </div>
@@ -160,10 +140,10 @@ const GroupDetail = () => {
         <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
       </GroupAboutWrapper>
 
-      {group_detail.lat && group_detail.lng && (
+      {group_detail.lat && group_detail.lng && group_detail.address && (
         <GroupAboutWrapper>
           <GroupAboutText>Place</GroupAboutText>
-          <GroupDetailDate>장소 : {group_detail.address || '주소명을 불러오지 못했습니다.'}</GroupDetailDate>
+          <GroupDetailDate>장소 : {group_detail.address}</GroupDetailDate>
           <Map // 로드뷰를 표시할 Container
             center={{
               lat: group_detail.lat,
@@ -176,7 +156,7 @@ const GroupDetail = () => {
             level={3}
           >
             <MapMarker position={{ lat: group_detail.lat, lng: group_detail.lng }}>
-              {group_detail.address && <div style={{ color: '#000' }}>{group_detail.address}</div>}
+              <div style={{ color: '#000' }}>{group_detail.address}</div>
             </MapMarker>
           </Map>
         </GroupAboutWrapper>
@@ -314,17 +294,6 @@ const GroupAboutDescription = styled.div`
   line-height: normal;
 `;
 
-const GroupDetailWrapper = styled.div`
-  width: 80%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 15px 50px 15px;
-  border-bottom: 1px solid #727272;
-  margin-bottom: 40px;
-`;
-
 const GroupSpecificationWrapper = styled.div`
   width: 80%;
   height: 100%;
@@ -352,33 +321,6 @@ const GoalListWrapper = styled.div`
 const GroupDetailDate = styled.div`
   font-size: 18px;
   margin: 5px 0;
-`;
-
-const Button = styled.button`
-  width: 120px;
-  height: 45px;
-  border: 0;
-  border-radius: 5px;
-  background-color: #349c66;
-  color: white;
-  font-size: 20px;
-  font-family: FugazOne;
-  cursor: pointer;
-  transition: background-color 0.15s linear;
-  &:hover {
-    background-color: #3bb978;
-  }
-
-  &&.end {
-    color: black;
-    background-color: silver;
-  }
-
-  &&.disabled {
-    color: black;
-    background-color: silver;
-    cursor: default;
-  }
 `;
 
 export default GroupDetail;
