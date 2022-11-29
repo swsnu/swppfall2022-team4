@@ -55,7 +55,7 @@ const setup = () => {
 describe('setup test', () => {
   it('init1', () => {
     setup();
-    const back = screen.getByText('Back');
+    const back = screen.getByText('Cancel');
     fireEvent.click(back);
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group');
@@ -120,7 +120,7 @@ describe('setup test', () => {
   it('Get fit types', () => {
     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
     setup();
-    expect(screen.getAllByRole('option').length).toBe(2);
+    expect(screen.getAllByRole('option').length).toBe(4); // Tag Option Added
     const addBtn = screen.getByText('추가');
     fireEvent.click(addBtn);
     expect(alertMock).toHaveBeenCalledTimes(1);

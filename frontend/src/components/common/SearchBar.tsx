@@ -32,6 +32,7 @@ const SearchForm = styled.form`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  border-radius: 14px;
 `;
 
 const SearchInput = styled.input`

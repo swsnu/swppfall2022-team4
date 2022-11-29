@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import Router from 'react-router-dom';
 import { rootReducer } from 'store';
 import InformationDetail from './InformationDetail';
-import userEvent from '@testing-library/user-event';
 import { simplePosts } from 'store/slices/post.test';
 import { Youtube } from 'store/apis/information';
 import { act } from 'react-dom/test-utils';
@@ -81,15 +80,6 @@ describe('[InformationDetail Page]', () => {
         payload: getInfoSuccessResponse,
       });
     });
-
-    // Search
-    const searchInput = screen.getByPlaceholderText('Search keyword');
-    fireEvent.submit(searchInput);
-    const searchClearBtn = screen.getByText('Clear');
-    fireEvent.click(searchClearBtn);
-    expect(searchInput).toHaveValue('');
-    userEvent.type(searchInput, 'sssss');
-    fireEvent.submit(searchInput);
 
     const youtubeItem = screen.getByText('wha!');
     fireEvent.click(youtubeItem);

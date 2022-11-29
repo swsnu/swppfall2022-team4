@@ -120,6 +120,23 @@ const editImageRequest: workoutAPI.editImageRequestType = {
   specific_date: 1,
 };
 
+const editIndexRequest: workoutAPI.editIndexRequestType = {
+  username: 'user',
+  log_index: [1],
+  year: 2022,
+  month: 10,
+  specific_date: 1,
+};
+
+const deleteImageRequest: workoutAPI.deleteImageRequestType = {
+  username: 'user',
+  image: 'profile-default.png',
+  year: 2022,
+  month: 10,
+  specific_date: 1,
+  delete: true,
+};
+
 const getCalendarInfoRequest: workoutAPI.getCalendarInfoRequestType = {
   username: 'user',
   year: 2022,
@@ -382,6 +399,36 @@ describe('slices - workout', () => {
         .hasFinalState({
           ...initialState,
           imageSuccess: 'test.png',
+        })
+        .silentRun();
+    });
+    test('editIndex', () => {
+      return expectSaga(workoutLogSaga)
+        .withReducer(workoutLogSlice.reducer)
+        .provide([[call(workoutAPI.editIndex, editIndexRequest), { log_index: [1, 2] }]])
+        .put({ type: 'workoutlog/editIndexSuccess', payload: { log_index: [1, 2] } })
+        .dispatch({
+          type: 'workoutlog/editIndex',
+          payload: editIndexRequest,
+        })
+        .hasFinalState({
+          ...initialState,
+          indexSuccess: [1, 2],
+        })
+        .silentRun();
+    });
+    test('deleteImage', () => {
+      return expectSaga(workoutLogSaga)
+        .withReducer(workoutLogSlice.reducer)
+        .provide([[call(workoutAPI.deleteImage, deleteImageRequest), { image: 'test.jpg' }]])
+        .put({ type: 'workoutlog/deleteImageSuccess', payload: { image: 'test.jpg' } })
+        .dispatch({
+          type: 'workoutlog/deleteImage',
+          payload: deleteImageRequest,
+        })
+        .hasFinalState({
+          ...initialState,
+          deleteImageSuccess: 'test.jpg',
         })
         .silentRun();
     });

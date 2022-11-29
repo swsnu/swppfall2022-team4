@@ -1,6 +1,7 @@
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { TagBubbleCompact } from 'components/tag/tagbubble';
+import { UserBadge } from 'components/user/UserBadge';
 import { Post } from 'store/apis/post';
 import styled from 'styled-components';
 import { timeAgoFormat } from 'utils/datetime';
@@ -28,9 +29,10 @@ export const ArticleItemDefault = ({ post, onClick }: IpropsArticleItem) => (
       <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
     )}
     <PostTitle>
-      {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
+      {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}{' '}
+      <PostItemCommentNum>[{post.comments_num}]</PostItemCommentNum>
     </PostTitle>
-    <span>{post.author.nickname}</span>
+    <UserBadge nickname={post.author.nickname} level={post.author.level} />
     <span>{post.like_num - post.dislike_num}</span>
     <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
   </ArticleItem>
@@ -44,7 +46,8 @@ export const ArticleItemCompact = ({ post, onClick }: IpropsArticleItem) => (
       <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
     )}
     <PostTitle>
-      {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />} <span>[{post.comments_num}]</span>
+      {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}{' '}
+      <PostItemCommentNum>[{post.comments_num}]</PostItemCommentNum>
     </PostTitle>
     <span>{post.author.nickname}</span>
   </ArticleItemComp>
@@ -66,16 +69,17 @@ const ArticleItemGridCompact = styled.div`
 
 const ArticleHeaderWrapper = styled(ArticleItemGrid)`
   padding: 10px 10px 10px 10px;
+  height: 35px;
   font-size: 14px;
   width: 100%;
   border-bottom: 1px solid black;
 `;
 
 const ArticleItem = styled(ArticleItemGrid)`
-  padding: 8px 10px 8px 10px;
+  padding: 10px 10px 10px 10px;
   font-size: 14px;
   width: 100%;
-  border-bottom: 1px solid black;
+  border-bottom: 0.2px solid var(--fit-support-gray-bright);
   cursor: pointer;
   background-color: #ffffff;
 `;
@@ -91,4 +95,8 @@ const ArticleItemComp = styled(ArticleItemGridCompact)`
 const PostTitle = styled.span`
   word-wrap: break-word;
   word-break: break-all;
+`;
+
+const PostItemCommentNum = styled.span`
+  color: var(--fit-green-text);
 `;

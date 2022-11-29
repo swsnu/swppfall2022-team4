@@ -4,10 +4,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'index';
 import { tagActions } from 'store/slices/tag';
 import { postActions } from 'store/slices/post';
-import { initialContent, PostContent, PostEditorLayout } from './PostEditorLayout';
+import { initialContent, PostContent, PostEditorLayout } from '../post/PostEditorLayout';
 
-const PostEdit = () => {
-  const { id } = useParams<{ id: string }>();
+const GroupPostEdit = () => {
+  const { group_id, post_id } = useParams<{ group_id: string; post_id: string }>();
 
   const [postContent, setPostContent] = useState<PostContent>(initialContent);
 
@@ -18,10 +18,10 @@ const PostEdit = () => {
   }));
   useEffect(() => {
     dispatch(tagActions.getTags());
-    if (id) {
+    if (post_id) {
       dispatch(
         postActions.updatePostDetail({
-          post_id: id,
+          post_id,
         }),
       );
     }
@@ -40,7 +40,7 @@ const PostEdit = () => {
   }, [post]);
   useEffect(() => {
     if (postEditStatus) {
-      navigate(`/post/${id}`);
+      navigate(`/group/detail/${group_id}/post/${post_id}`);
       dispatch(postActions.stateRefresh());
       dispatch(tagActions.clearTagState());
     }
@@ -50,15 +50,15 @@ const PostEdit = () => {
 
   const cancelOnClick = () => {
     // alert('are you sure?');
-    navigate(`/post/${id}`);
+    navigate(`/group/detail/${group_id}/post/${post_id}`);
     //TODO;
   };
   const confirmOnClick = () => {
-    if (user && id) {
+    if (user && post_id) {
       dispatch(
         postActions.editPost({
           ...postContent,
-          post_id: id,
+          post_id,
         }),
       );
     }
@@ -71,4 +71,4 @@ const PostEdit = () => {
   });
 };
 
-export default PostEdit;
+export default GroupPostEdit;

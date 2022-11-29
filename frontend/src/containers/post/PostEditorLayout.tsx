@@ -1,41 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDice, faImage } from '@fortawesome/free-solid-svg-icons';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
 import { RootState } from 'index';
-import { TagClass, TagVisual } from 'store/apis/tag';
-import { tagActions } from 'store/slices/tag';
+import { TagVisual } from 'store/apis/tag';
 import client from 'store/apis/client';
-import { BlueBigActiveBtn, GreenBigBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
-import {
-  ColumnCenterFlex,
-  ColumnFlex,
-  PostContentWrapper,
-  PostPageWrapper,
-  RowCenterFlex,
-} from 'components/post/layout';
+import { BlueBigActiveBtn, RedBigBtn, RedSmallBtn } from 'components/post/button';
+import { ColumnCenterFlex, PostContentWrapper, PostPageWrapper } from 'components/post/layout';
 import { notificationSuccess } from 'utils/sendNotification';
-import { TagBubble, TagBubbleWithFunc, TagBubbleX } from 'components/tag/tagbubble';
-import { getRandomHex } from 'utils/color';
-
-interface IPropsColorButton {
-  color?: string;
-}
+import TagSelector from 'components/tag/TagSelector';
 
 interface IPropsCharNum {
   isFull: boolean;
 }
 
-const DEFAULT_OPTION = '$NONE$';
-const NEW_OPTION = '$NEW$';
-const SEARCH_OPTION = '$SEARCH$';
-
 const TITLE_CHAR_LIMIT = 60;
 const CONTENT_CHAR_LIMIT = 800;
 const CONTENT_IMAGE_LIMIT = 5;
-export const TAG_CLASS_LIMIT = 14;
-export const TAG_NAME_LIMIT = 12;
 
 export interface PostContent {
   title: string;
@@ -61,31 +43,12 @@ interface IPropsPostEditor {
 }
 
 export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, confirmOnClick }: IPropsPostEditor) => {
-  const dispatch = useDispatch();
   const { tagList, tagSearch, tagCreate } = useSelector(({ tag }: RootState) => ({
     tagList: tag.tagList,
     tagSearch: tag.tagSearch,
     tagCreate: tag.tagCreate,
   }));
 
-  const [tagInput, setTagInput] = useState(''); // Tag creation name input
-  const [tagClassInput, setTagClassInput] = useState(''); // Tag Class creation name input
-  const [tagSearchInput, setTagSearchInput] = useState(''); // Tag search input
-
-  const [tagClassSelect, setTagClassSelect] = useState(DEFAULT_OPTION); // Tag Class select value
-  const [tagSelect, setTagSelect] = useState(DEFAULT_OPTION); // Tag select value
-
-  const [tagRandColor, setTagRandColor] = useState(''); // Random Color for Tag Class creation
-  const [tagUpdate, setTagUpdate] = useState(0);
-
-  const [currentTagClass, setCurrentTagClass] = useState<TagClass | null>(null);
-
-  useEffect(() => {
-    dispatch(tagActions.getTags());
-  }, [tagUpdate]);
-  useEffect(() => {
-    setTagRandColor(getRandomHex());
-  }, []);
   useEffect(() => {
     if (tagCreate) {
       setPostContent(state => ({
@@ -135,20 +98,13 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
   };
 
   // Event Handlers ------------------------------------------------------------------
-  const tagOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const tagId = e.target.options[e.target.selectedIndex].value;
-    const tagName = e.target.options[e.target.selectedIndex].text;
-    setTagSelect(tagId);
-    if (tagId !== NEW_OPTION && currentTagClass) {
-      if (postContent.tags.length === 0) setPrimeTag({ id: tagId, name: tagName, color: currentTagClass.color });
-      setSelectedTags(s => {
-        if (s.filter(item => item.id == tagId).length === 0)
-          return [...s, { id: tagId, name: tagName, color: currentTagClass.color }];
-        else return s;
-      });
+  const tagOnChange = (tag: TagVisual) => {
+    if (postContent.tags.length === 0) setPrimeTag(tag);
 
-      setTagSelect(DEFAULT_OPTION);
-    }
+    setSelectedTags(s => {
+      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
+      else return s;
+    });
   };
   const searchedTagOnClick = (tag: TagVisual) => {
     setSelectedTags(s => {
@@ -162,233 +118,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
       setPrimeTag(undefined);
     }
   };
-  const primeTagOnRemove = () => {
-    setPrimeTag(undefined);
-  };
-
-  const tagNames = () => {
-    if (tagClassSelect === NEW_OPTION) {
-      return (
-        <TagClassFuncWrapper>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <TagInput
-              placeholder="카테고리 이름"
-              value={tagClassInput}
-              onChange={e => {
-                const charInput = e.target.value;
-                if (charInput.length <= TAG_CLASS_LIMIT) setTagClassInput(charInput);
-              }}
-            ></TagInput>
-            <TagCharNum isFull={tagClassInput.length >= TAG_CLASS_LIMIT}>
-              {tagClassInput.length} / {TAG_CLASS_LIMIT}
-            </TagCharNum>
-          </div>
-          <TagClassColorWrapper>
-            <TagClassColorLabel>색상:</TagClassColorLabel>
-            <ColorCircle color={tagRandColor}></ColorCircle>
-            <RandColorBtn data-testid="randColorDice" onClick={() => setTagRandColor(getRandomHex())}>
-              <FontAwesomeIcon size="xl" icon={faDice} />
-            </RandColorBtn>
-          </TagClassColorWrapper>
-          <GreenBigBtn
-            disabled={tagClassInput === ''}
-            onClick={() => {
-              dispatch(
-                tagActions.createTagClass({
-                  name: tagClassInput,
-                  color: tagRandColor,
-                }),
-              );
-              dispatch(tagActions.getTags());
-              setTagClassInput('');
-              setTagUpdate(Date.now());
-            }}
-          >
-            분류 생성
-          </GreenBigBtn>
-        </TagClassFuncWrapper>
-      );
-    }
-    if (tagClassSelect === SEARCH_OPTION) {
-      return (
-        <TagClassFuncWrapper>
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              dispatch(
-                tagActions.searchTag({
-                  class_name: '',
-                  tag_name: tagSearchInput,
-                }),
-              );
-            }}
-          >
-            <TagInput
-              placeholder="태그 이름"
-              value={tagSearchInput}
-              onChange={e => {
-                dispatch(tagActions.searchTagClear());
-                setTagSearchInput(e.target.value);
-              }}
-            ></TagInput>
-            <GreenBigBtn data-testid="tagSearchBtn" disabled={tagSearchInput === ''}>
-              검색
-            </GreenBigBtn>
-          </form>
-          {tagSearchInput !== '' && tagSearch && (
-            <TagBubbleWrapper>
-              {tagSearch.map(tag => {
-                return (
-                  <TagBubble
-                    data-testid={`searchedTag-${tag.id}`}
-                    key={tag.id}
-                    color={tag.color}
-                    onClick={() => searchedTagOnClick(tag)}
-                  >
-                    {tag.name}
-                  </TagBubble>
-                );
-              })}
-            </TagBubbleWrapper>
-          )}
-        </TagClassFuncWrapper>
-      );
-    }
-    const tagTarget = tagList?.filter(tagClass => tagClass.id === currentTagClass?.id);
-    if (tagTarget && tagTarget.length > 0) {
-      return (
-        <TagSubWrapper>
-          <TagSelect data-testid="tagSelect" value={tagSelect} onChange={tagOnChange}>
-            <option disabled value={DEFAULT_OPTION}>
-              - 태그 이름 -
-            </option>
-            {tagList
-              ?.filter(tagClass => tagClass.id === currentTagClass?.id)[0]
-              .tags.map(tag => {
-                return (
-                  <option value={tag.id} key={tag.id}>
-                    {tag.name}
-                  </option>
-                );
-              })}
-            {currentTagClass?.class_type === 'general' && <option value={NEW_OPTION}> - 태그 만들기 - </option>}
-            {currentTagClass?.class_type === 'workout' && <option disabled>[운동] 메인 페이지에서만 생성 가능</option>}
-            {currentTagClass?.class_type === 'place' && <option disabled>[장소] 장소 탭에서만 생성 가능</option>}
-          </TagSelect>
-          {tagSelect === NEW_OPTION && (
-            <TagClassFuncWrapper>
-              {/* 태그 만들기 */}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <TagInput
-                  placeholder="생성할 태그 이름"
-                  value={tagInput}
-                  onChange={e => {
-                    const charInput = e.target.value;
-                    if (charInput.length <= TAG_NAME_LIMIT) setTagInput(charInput);
-                  }}
-                ></TagInput>
-                <TagCharNum isFull={tagInput.length >= TAG_NAME_LIMIT}>
-                  {tagInput.length} / {TAG_NAME_LIMIT}
-                </TagCharNum>
-              </div>
-              <GreenBigBtn
-                disabled={tagInput === ''}
-                onClick={() => {
-                  dispatch(
-                    tagActions.createTag({
-                      name: tagInput,
-                      classId: (currentTagClass as TagClass).id,
-                    }),
-                  );
-
-                  dispatch(tagActions.getTags());
-                  setTagInput('');
-                  setTagUpdate(Date.now());
-                }}
-              >
-                생성
-              </GreenBigBtn>
-            </TagClassFuncWrapper>
-          )}
-        </TagSubWrapper>
-      );
-    }
-  };
-  const selectedTagsComponent = (
-    <TagBubbleWrapper>
-      {postContent.tags.map(tag => {
-        return (
-          <TagBubbleWithFunc key={tag.id} color={tag.color}>
-            <ClickableSpan data-testid={`selectedTag-${tag.id}`} onClick={() => setPrimeTag(tag)}>
-              {tag.name}
-            </ClickableSpan>
-            <TagBubbleX testId="tagBubbleXBtn" onClick={() => tagOnRemove(tag.id)} />
-          </TagBubbleWithFunc>
-        );
-      })}
-    </TagBubbleWrapper>
-  );
-  const primeTagComponent = (
-    <PrimeTagDivWrapper>
-      {postContent.prime_tag ? (
-        <TagBubbleWithFunc color={postContent.prime_tag.color}>
-          {postContent.prime_tag.name}
-          <TagBubbleX testId="selectedPrimeTagRemove" onClick={primeTagOnRemove} />
-        </TagBubbleWithFunc>
-      ) : (
-        <PrimeTagNotSpecified>Not specified</PrimeTagNotSpecified>
-      )}
-    </PrimeTagDivWrapper>
-  );
-  const TagPanel = (
-    <TagWrapper>
-      <TagWrapperIn>
-        <TagTitle>태그 설정</TagTitle>
-        <TagSelect
-          data-testid="tagClassSelect"
-          key={tagUpdate}
-          value={tagClassSelect}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-            const targetValue = e.target.options[e.target.selectedIndex].value;
-            setTagSelect(DEFAULT_OPTION);
-            setTagClassSelect(targetValue);
-            setTagSearchInput('');
-            dispatch(tagActions.searchTagClear());
-            setCurrentTagClass(tagList ? tagList.filter(tagClass => tagClass.id.toString() === targetValue)[0] : null);
-          }}
-        >
-          <option value={DEFAULT_OPTION} disabled>
-            - 카테고리 -
-          </option>
-          {tagList?.map(tagClass => {
-            return (
-              <option data-testid={`tagClassSelect-${tagClass.id}`} value={tagClass.id} key={tagClass.id}>
-                {tagClass.class_name}
-              </option>
-            );
-          })}
-          <option data-testid="tagClassSelect-search" value={SEARCH_OPTION}>
-            {' '}
-            - 태그 검색 -{' '}
-          </option>
-          <option data-testid="tagClassSelect-create" value={NEW_OPTION}>
-            {' '}
-            - 태그 카테고리 생성 -{' '}
-          </option>
-        </TagSelect>
-        {tagNames()}
-      </TagWrapperIn>
-      {selectedTagsComponent}
-    </TagWrapper>
-  );
-  const PrimeTagPanel = (
-    <PrimeTagWrapper>
-      <TagWrapperIn>
-        <TagTitle>대표 태그</TagTitle>
-      </TagWrapperIn>
-      {primeTagComponent}
-    </PrimeTagWrapper>
-  );
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const uploadPostImage = async (e: any) => {
@@ -485,10 +214,18 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               </BlueBigActiveBtn>
             </CreateBtnWrapper>
           </ContentWrapper>
-          <div>
-            {TagPanel}
-            {PrimeTagPanel}
-          </div>
+          <TagSelector
+            tagContent={{
+              tags: postContent.tags,
+              primeTag: postContent.prime_tag,
+              tagList,
+              tagSearch,
+            }}
+            tagOnChange={tagOnChange}
+            tagOnRemove={tagOnRemove}
+            searchedTagOnClick={searchedTagOnClick}
+            setPrimeTag={setPrimeTag}
+          />
         </Main_SideWrapper>
       </PostContentWrapper>
     </PostPageWrapper>
@@ -501,113 +238,6 @@ const TopElementWrapperWithoutPadding = styled.div`
   background-color: var(--fit-white);
   position: relative;
 `;
-
-const ClickableSpan = styled.div`
-  cursor: pointer;
-`;
-
-const TagClassColorWrapper = styled(RowCenterFlex)``;
-
-const TagClassColorLabel = styled.span`
-  font-size: 14px;
-  text-align: center;
-`;
-
-const TagClassFuncWrapper = styled(ColumnFlex)`
-  width: 100%;
-  > form {
-    display: flex;
-    flex-direction: column;
-    > input {
-      width: auto;
-    }
-    > button {
-      width: auto;
-    }
-  }
-`;
-
-const TagBubbleWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: flex-end;
-  padding: 8px 5px;
-`;
-
-const TagTitle = styled.span`
-  margin: 10px 0px;
-  font-size: 18px;
-  text-align: center;
-  width: 100%;
-`;
-
-const TagWrapperIn = styled(ColumnFlex)`
-  width: 100%;
-  justify-content: flex-start;
-  background-color: var(--fit-white);
-`;
-
-const TagWrapper = styled(ColumnFlex)`
-  justify-content: space-between;
-  background-color: var(--fit-white);
-  width: 100%;
-  height: 60%;
-  overflow-y: auto;
-`;
-
-const PrimeTagDivWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding: 8px 5px;
-`;
-
-const PrimeTagNotSpecified = styled.span`
-  text-align: center;
-  font-size: 12px;
-`;
-const PrimeTagWrapper = styled(ColumnFlex)`
-  justify-content: space-between;
-  background-color: var(--fit-white);
-  margin-top: 15px;
-  height: fit-content;
-`;
-
-const TagInput = styled.input`
-  padding: 5px 8px;
-  margin: 6px 10px;
-`;
-
-const TagSelect = styled.select`
-  padding: 5px 8px;
-  margin: 6px 10px;
-`;
-
-const ColorCircle = styled.button<IPropsColorButton>`
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: none;
-  margin: 5px 15px;
-  ${({ color }) =>
-    color &&
-    `
-      background: ${color};
-    `}
-`;
-
-const RandColorBtn = styled.button`
-  background: none;
-  border: none;
-  &:active {
-    color: var(--fit-green-small-btn1);
-  }
-`;
-
-const TagSubWrapper = styled(ColumnFlex)``;
 
 const CreateBtnWrapper = styled.div`
   width: 100%;
@@ -646,19 +276,6 @@ const ContentCharNum = styled.span<IPropsCharNum>`
   position: absolute;
   right: 10px;
   bottom: 3px;
-  color: var(--fit-support-gray);
-  ${({ isFull }) =>
-    isFull &&
-    `
-      color: var(--fit-red-neg-hover);
-    `}
-`;
-
-const TagCharNum = styled.span<IPropsCharNum>`
-  width: 100%;
-  text-align: right;
-  padding-right: 10px;
-  font-size: 12px;
   color: var(--fit-support-gray);
   ${({ isFull }) =>
     isFull &&

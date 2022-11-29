@@ -4,8 +4,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
-import PostCreate from './PostCreate';
-
+import GroupPostCreate from './GroupPostCreate';
+import Router from 'react-router-dom';
 import * as postAPI from '../../store/apis/post';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
@@ -90,7 +90,7 @@ const setup = () => {
   });
   render(
     <Provider store={store}>
-      <PostCreate />
+      <GroupPostCreate />
     </Provider>,
   );
   return store;
@@ -99,7 +99,7 @@ const setupWithoutUser = () => {
   const store = configureStore({ reducer: rootReducer });
   render(
     <Provider store={store}>
-      <PostCreate />
+      <GroupPostCreate />
     </Provider>,
   );
   return store;
@@ -107,6 +107,7 @@ const setupWithoutUser = () => {
 
 describe('[PostCreate Page]', () => {
   test('basic rendering', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -119,19 +120,22 @@ describe('[PostCreate Page]', () => {
     expect(mockNavigate).toBeCalledTimes(0);
   });
   test('write cancle button', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     setup();
     const cancelBtn = screen.getByText('취소');
     fireEvent.click(cancelBtn);
     expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith('/post');
+    expect(mockNavigate).toBeCalledWith('/group/detail/1/post');
   });
   test('write confirm button', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     setup();
     const confirmBtn = screen.getByText('완료');
     fireEvent.click(confirmBtn); // cannot click.
     expect(mockDispatch).toBeCalledTimes(1); // getTags
   });
   test('write confirm button after typing', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     setup();
     const confirmBtn = screen.getByText('완료');
     const titleInput = screen.getByPlaceholderText('제목');
@@ -147,12 +151,14 @@ describe('[PostCreate Page]', () => {
         author_name: 'username',
         tags: [],
         images: [],
+        group_id: '1',
         prime_tag: undefined,
       },
       type: 'post/createPost',
     });
   });
   test('write confirm button after typing (undefined user)', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     setupWithoutUser();
     const confirmBtn = screen.getByText('완료');
     const titleInput = screen.getByPlaceholderText('제목');
@@ -163,6 +169,7 @@ describe('[PostCreate Page]', () => {
     expect(mockDispatch).toBeCalledTimes(1);
   });
   test('post creation success', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -175,12 +182,13 @@ describe('[PostCreate Page]', () => {
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/clearTagState' });
 
     expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith(`/post/${createPostResponse.post_id}`);
+    expect(mockNavigate).toBeCalledWith(`/group/detail/1/post/${createPostResponse.post_id}`);
   });
 });
 
 describe('[PostEditor Page - Tag]', () => {
   test('set tag', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -217,6 +225,7 @@ describe('[PostEditor Page - Tag]', () => {
     expect((tagClassOption2 as HTMLOptionElement).selected).toBeTruthy();
   });
   test('remove prime tag', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -244,6 +253,7 @@ describe('[PostEditor Page - Tag]', () => {
     fireEvent.click(primeTag);
   });
   test('remove tag which is not prime tag', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -266,6 +276,7 @@ describe('[PostEditor Page - Tag]', () => {
     fireEvent.click(selectedTagRemove[1]);
   });
   test('image upload', async () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     setup();
     const mockClientGet = jest.fn();
     client.post = mockClientGet.mockImplementation(() => Promise.resolve({ data: { title: 'image' } }));
@@ -284,6 +295,7 @@ describe('[PostEditor Page - Tag]', () => {
     fireEvent.click(deleteImageBtn);
   });
   test('image upload error', async () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const alertMock = jest.fn();
     global.alert = alertMock.mockImplementation(() => null);
     setup();
@@ -301,6 +313,7 @@ describe('[PostEditor Page - Tag]', () => {
     expect(alertMock).toBeCalledWith('이미지 업로드 오류');
   });
   test('image upload error ENV', async () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     process.env = {
       ...originalEnv,
       REACT_APP_API_IMAGE_UPLOAD: undefined,
@@ -324,6 +337,7 @@ describe('[PostEditor Page - Tag]', () => {
     expect(deleteImageBtn).toBeInTheDocument();
   });
   test('search tag', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -355,6 +369,7 @@ describe('[PostEditor Page - Tag]', () => {
     fireEvent.click(searchedTag); // Duplicated tag
   });
   test('create tag', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -386,8 +401,8 @@ describe('[PostEditor Page - Tag]', () => {
     });
   });
   test('select tag class when tagList is null', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     setup();
-
     const tagClassOption = screen.getByRole('option', { name: '- 태그 검색 -' }); // Tag Class
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();

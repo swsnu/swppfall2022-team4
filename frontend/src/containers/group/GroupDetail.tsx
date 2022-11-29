@@ -11,6 +11,7 @@ import Loading from 'components/common/Loading';
 import { FitElement } from 'components/fitelement/FitElement';
 import GroupButton1 from 'components/group/GroupButton1';
 import GroupButton2 from 'components/group/GroupButton2';
+import { TagBubble } from 'components/tag/tagbubble';
 
 const GroupDetail = () => {
   const dispatch = useDispatch();
@@ -103,6 +104,7 @@ const GroupDetail = () => {
             <GroupButton2 content="Cert" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
             <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/chat/${group_id}`)} />
             <GroupButton2 content="Member" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
             <GroupButton2 content="Join Req" end={done} clicked={() => navigate(`/group/detail/${group_id}/joinReq`)} />
             <GroupButton2 content="Delete" end={done} clicked={deleteOnClick} />
           </div>
@@ -112,6 +114,7 @@ const GroupDetail = () => {
             <GroupButton2 content="Cert" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
             <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/chat/${group_id}`)} />
             <GroupButton2 content="Member" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
             <GroupButton2 content="Leave" end={done} clicked={exitOnClick} />
           </div>
         )}
@@ -138,6 +141,21 @@ const GroupDetail = () => {
           <GroupAboutNickname>{group_detail.group_leader.nickname}</GroupAboutNickname>
         </div>
         <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
+        <div>
+          <TagBubbleWrapper>
+            {group_detail.tags.map(tags => {
+              return (
+                <TagBubble
+                  key={tags.id}
+                  color={tags.color}
+                  isPrime={group_detail.prime_tag && tags.id === group_detail.prime_tag.id}
+                >
+                  {tags.name}
+                </TagBubble>
+              );
+            })}
+          </TagBubbleWrapper>
+        </div>
       </GroupAboutWrapper>
 
       {group_detail.lat && group_detail.lng && group_detail.address && (
@@ -292,6 +310,26 @@ const GroupAboutDescription = styled.div`
   border-radius: 20px;
   padding: 20px;
   line-height: normal;
+`;
+
+const TagBubbleWrapper = styled.div`
+  display: flex;
+  margin-left: 10px;
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const GroupDetailWrapper = styled.div`
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 15px 50px 15px;
+  border-bottom: 1px solid #727272;
+  margin-bottom: 40px;
 `;
 
 const GroupSpecificationWrapper = styled.div`

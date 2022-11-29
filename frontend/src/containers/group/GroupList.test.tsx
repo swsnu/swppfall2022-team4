@@ -21,6 +21,8 @@ const groupListResponse: groupApi.Group[] = [
     lat: null,
     lng: null,
     address: null,
+    tags: [],
+    prime_tag: undefined,
   },
   {
     id: 2,
@@ -34,6 +36,8 @@ const groupListResponse: groupApi.Group[] = [
     lat: null,
     lng: null,
     address: null,
+    tags: [],
+    prime_tag: undefined,
   },
   {
     id: 3,
@@ -47,6 +51,8 @@ const groupListResponse: groupApi.Group[] = [
     lat: 31,
     lng: 126,
     address: 'place',
+    tags: [],
+    prime_tag: undefined,
   },
 ];
 

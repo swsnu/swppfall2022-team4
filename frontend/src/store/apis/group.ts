@@ -1,4 +1,5 @@
 import client from './client';
+import { TagVisual } from './tag';
 import { userType } from './user';
 
 export const getGroups = async () => {
@@ -85,6 +86,8 @@ export type Group = {
   address: string | null;
   free: boolean;
   my_group: string;
+  tags: TagVisual[];
+  prime_tag: TagVisual | undefined;
 };
 
 export type Fitelement = {
@@ -149,6 +152,8 @@ export type postGroupRequestType = {
   lng: number | null;
   address: string | null;
   goal: FitelementRequestType[];
+  tags: TagVisual[];
+  prime_tag: TagVisual | undefined;
 };
 
 export type postGroupResponseType = {
@@ -169,6 +174,8 @@ export type getGroupDetailResponseType = {
   lat: number | null;
   lng: number | null;
   address: string | null;
+  tags: TagVisual[];
+  prime_tag: TagVisual | undefined;
 };
 
 export type checkGroupMemberResponseType = {

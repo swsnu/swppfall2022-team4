@@ -14,6 +14,7 @@ describe('<GroupElement />', () => {
         end_date={'2019-12-31'}
         address={'봉천동'}
         free={true}
+        prime_tag={undefined}
       />,
     );
     screen.getByText('test');
@@ -34,6 +35,7 @@ describe('<GroupElement />', () => {
         end_date={null}
         address={'청룡동'}
         free={true}
+        prime_tag={undefined}
       />,
     );
     screen.getByText('test');
@@ -54,6 +56,7 @@ describe('<GroupElement />', () => {
         end_date={'2019-12-31'}
         address={'서울특별시 관악구 봉천동 875-4 대천에이스빌 505호'}
         free={true}
+        prime_tag={undefined}
       />,
     );
     screen.getByText('test');

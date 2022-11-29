@@ -24,7 +24,8 @@ export const ColumnCenterFlex = styled.div`
 export const PostPageWrapper = styled(ColumnCenterFlex)`
   background-color: var(--fit-green-back);
   width: 100%;
-  height: 100%;
+  height: fit-content;
+  overflow-y: visible;
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
@@ -33,10 +34,11 @@ export const PostPageWrapper = styled(ColumnCenterFlex)`
 // Used in PostMain.tsx, PostDetail.tsx
 export const PostContentWrapper = styled(ColumnCenterFlex)`
   width: 100%;
-  height: 100%;
+  height: fit-content;
+  overflow-y: visible;
   min-height: 100vh;
   max-width: 1200px;
-
+  margin-bottom: 100px;
   @media all and (max-width: 650px) {
     width: 100%;
   }
@@ -46,6 +48,7 @@ export const PostContentWrapper = styled(ColumnCenterFlex)`
     margin: 40px 0px 15px 0px;
     width: 100%;
     background-color: var(--fit-white);
+    border-radius: 15px;
   }
 
   > div:nth-child(2) {
@@ -55,9 +58,8 @@ export const PostContentWrapper = styled(ColumnCenterFlex)`
     row-gap: 10px;
     column-gap: 10px;
     width: 100%;
-    height: 80vh;
-    min-height: 640px;
-    margin-bottom: 50px;
+    height: fit-content;
+    min-height: 875px;
 
     > div:first-child {
       /* MainContent */

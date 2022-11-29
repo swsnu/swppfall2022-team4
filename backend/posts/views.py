@@ -10,6 +10,7 @@ from math import ceil
 from posts.models import Post, PostImage
 from users.models import User
 from tags.models import Tag, TagClass
+from groups.models import Group
 from django.db.models import Count
 
 from comments.views import prepare_comment_response
@@ -101,7 +102,7 @@ def post_home(request):
         offset = (query_args["page_num"] - 1) * query_args["page_size"]
         limit = query_args["page_num"] * query_args["page_size"]
 
-        posts = Post.objects.all()
+        posts = Post.objects.filter(in_group=None)
 
         if query_args["keyword"]:
             filter_args = {}
@@ -138,10 +139,16 @@ def post_home(request):
                 if ("prime_tag" in data.keys() and data["prime_tag"])
                 else None
             )
+            group = Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
 
             created_post = Post.objects.create(
-                author=author, title=data["title"], content=data["content"], prime_tag=prime_tag
+                author=author,
+                title=data["title"],
+                content=data["content"],
+                prime_tag=prime_tag,
+                in_group=group,
             )
+
             for tag in data["tags"]:
                 tag = Tag.objects.get(pk=tag["id"])
                 created_post.tags.add(tag)
@@ -154,6 +161,23 @@ def post_home(request):
             # data should have user, post info.
         except (KeyError, json.JSONDecodeError, User.DoesNotExist, Tag.DoesNotExist):
             return HttpResponseBadRequest()
+
+
+@require_http_methods(["GET", "PUT", "DELETE"])
+def post_group(request, group_id):
+    if request.method == "GET":
+        group = Group.objects.get(pk=group_id)
+        posts = Post.objects.filter(in_group=group)
+        posts_serial = prepare_posts_response(posts)
+
+        # Total page number calculation.
+        response = JsonResponse(
+            {
+                "posts": posts_serial,
+            },
+            status=200,
+        )
+        return response
 
 
 @require_http_methods(["GET", "PUT", "DELETE"])

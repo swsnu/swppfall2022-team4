@@ -147,6 +147,8 @@ const postGroupRequest: groupAPI.postGroupRequestType = {
   lat: 31,
   lng: 126,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const leaderChangeRequest: groupAPI.leaderChangeRequestType = {
@@ -249,6 +251,36 @@ const addFitElementsRequest: workoutAPI.addFitElementsRequestType = {
 const createRoutineWithFitElementsRequest: workoutAPI.createRoutineWithFitElementsRequestType = {
   username: 'user',
   fitelements: [],
+};
+
+const deleteFitElementRequest: workoutAPI.deleteFitElementRequestType = {
+  username: 'user',
+  fitelement_id: 0,
+};
+
+const editImageRequest: workoutAPI.editImageRequestType = {
+  year: 2022,
+  month: 10,
+  specific_date: 2,
+  username: 'user',
+  image: 'test.jpg',
+};
+
+const editIndexRequest: workoutAPI.editIndexRequestType = {
+  year: 2022,
+  month: 10,
+  specific_date: 2,
+  username: 'user',
+  log_index: [1],
+};
+
+const deleteImageRequest: workoutAPI.deleteImageRequestType = {
+  year: 2022,
+  month: 10,
+  specific_date: 2,
+  username: 'user',
+  image: 'test.jpg',
+  delete: true,
 };
 
 describe('API TEST', () => {
@@ -479,6 +511,32 @@ describe('API TEST', () => {
       const result = await workoutAPI.getSpecificRoutineFitElements(getSpecificRoutineFitElementsRequest);
       expect(result).toStrictEqual([{ data: '/api/fitelement/0/' }]);
     });
+    test('deleteFitelement', async () => {
+      const result = await workoutAPI.deleteFitElement(deleteFitElementRequest);
+      expect(result).toBe(`/api/fitelement/0/?&username=${deleteFitElementRequest.username}`);
+    });
+    test('editImage', async () => {
+      const result = await workoutAPI.editImage(editImageRequest);
+      expect(result).toBe(
+        `/api/fitelement/dailylog/${editImageRequest.year}/${editImageRequest.month}/${editImageRequest.specific_date}/?&username=${editImageRequest.username}`,
+      );
+    });
+    test('editIndex', async () => {
+      const result = await workoutAPI.editIndex(editIndexRequest);
+      expect(result).toBe(
+        `/api/fitelement/dailylog/${editIndexRequest.year}/${editIndexRequest.month}/${editIndexRequest.specific_date}/?&username=${editIndexRequest.username}`,
+      );
+    });
+    test('deleteImage', async () => {
+      const result = await workoutAPI.deleteImage(deleteImageRequest);
+      expect(result).toBe(
+        `/api/fitelement/dailylog/${deleteImageRequest.year}/${deleteImageRequest.month}/${deleteImageRequest.specific_date}/?&username=${deleteImageRequest.username}`,
+      );
+    });
+    test('getfitelementtypes', async () => {
+      const result = await workoutAPI.getFitelementTypes();
+      expect(result).toBe('/api/fitelement/type/')
+    })
   });
 });
 

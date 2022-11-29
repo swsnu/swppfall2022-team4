@@ -214,9 +214,39 @@ export const initialState: PreloadedState<RootState> = {
       calories: 0,
       category: '',
     },
-    fitelement_types: [],
+    fitelement_types: [
+      {
+        id: 0,
+        class_name: '등운동',
+        class_type: '데드리프트',
+        color: '#FFFFFF',
+        tags: [
+          {
+            id: '0',
+            name: '데드리프트',
+            color: '#FFFFFF',
+          },
+        ],
+      },
+      {
+        id: 1,
+        class_name: '유산소',
+        class_type: '수영',
+        color: '#FFFFFF',
+        tags: [
+          {
+            id: '1',
+            name: '수영',
+            color: '#FFFFFF',
+          },
+        ],
+      },
+    ],
     imageSuccess: '',
     memoSuccess: '',
+    create_routine_id: null,
+    deleteImageSuccess: '',
+    indexSuccess: [],
   },
 };
 

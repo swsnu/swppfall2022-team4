@@ -69,6 +69,8 @@ const group1: groupApi.Group = {
   lat: 31,
   lng: 126,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const group2: groupApi.Group = {
@@ -83,6 +85,8 @@ const group2: groupApi.Group = {
   lat: 31,
   lng: 126,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const memcert1: groupApi.MemberCert = {
@@ -108,6 +112,8 @@ const postGroupRequest: groupApi.postGroupRequestType = {
   lat: 30,
   lng: 127,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const leaderChangeRequest: groupApi.leaderChangeRequestType = {
@@ -161,6 +167,8 @@ const getGroupDetailResponse: groupApi.getGroupDetailResponseType = {
   lat: 30,
   lng: 127,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const getCertsResponse: groupApi.getCertsResponseType = {

@@ -236,6 +236,18 @@ export const postSlice = createSlice({
     clearFilterTag: state => {
       state.filterTag = [];
     },
+    // groupPosts ---------------------------------------------------------------------------
+    getGroupPosts: (state, action: PayloadAction<postAPI.getGroupPostsRequestType>) => {
+      state.postList.posts = null;
+      state.postList.error = null;
+    },
+    getGroupPostsSuccess: (state, { payload }) => {
+      state.postList.posts = payload.posts;
+    },
+    getGroupPostsFailure: (state, { payload }) => {
+      state.postList.error = payload;
+      alert(payload.response?.data.message);
+    },
     // utils --------------------------------------------------------------------------------
     stateRefresh: state => {
       state.postCreate.status = false;
@@ -308,6 +320,14 @@ function* getPostsSaga(action: PayloadAction<postAPI.getPostsRequestType>) {
     yield put(postActions.getPostsSuccess(response));
   } catch (error) {
     yield put(postActions.getPostsFailure(error));
+  }
+}
+function* getGroupPostsSaga(action: PayloadAction<postAPI.getGroupPostsRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(postAPI.getGroupPosts, action.payload);
+    yield put(postActions.getGroupPostsSuccess(response));
+  } catch (error) {
+    yield put(postActions.getGroupPostsFailure(error));
   }
 }
 function* getRecentCommentsSaga() {
@@ -414,6 +434,7 @@ export default function* postSaga() {
   yield takeLatest(postActions.getPostsMain, getPostsMainSaga);
 
   yield takeLatest(postActions.getPosts, getPostsSaga);
+  yield takeLatest(postActions.getGroupPosts, getGroupPostsSaga);
   yield takeLatest(postActions.getRecentComments, getRecentCommentsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
   yield takeLatest(postActions.updatePostDetail, updatePostDetailSaga);
