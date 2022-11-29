@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from groups.models import Group, GroupCert
+from groups.models import Group, GroupCert, JoinRequest
 from users.models import User
 from workouts.models import FitElement
 from tags.models import Tag, TagClass
@@ -61,6 +61,8 @@ class GroupTestCase(TestCase):
         )
         gr1.members.set([user1, user2])
         gr1.goal.add(fit1)
+        JoinRequest.objects.create(group=gr1)
+
         gr2 = Group.objects.create(
             group_name='group2',
             group_leader=user2,
@@ -73,6 +75,8 @@ class GroupTestCase(TestCase):
         )
         gr2.members.set([user1, user2])
         gr2.goal.add(fit1)
+        JoinRequest.objects.create(group=gr2)
+
         gr3 = Group.objects.create(
             group_name='group3',
             group_leader=user2,
@@ -85,6 +89,7 @@ class GroupTestCase(TestCase):
         )
         gr3.members.set([user2])
         gr3.goal.add(fit1)
+        JoinRequest.objects.create(group=gr3)
         cert1 = GroupCert.objects.create(
             group=gr1, member=user1, date=datetime(2019, 12, 12).date()
         )

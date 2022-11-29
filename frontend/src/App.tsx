@@ -39,6 +39,7 @@ import GroupDetail from 'containers/group/GroupDetail';
 import GroupCreate from 'containers/group/GroupCreate';
 import GroupMembers from 'containers/group/GroupMembers';
 import GroupCert from 'containers/group/GroupCert';
+import GroupJoinReq from 'containers/group/GroupJoinReq';
 import { KakaoLoginCallback } from 'containers/user/SocialLoginCallback';
 import GroupChat from 'containers/group/GroupChat';
 import InformationDetail from 'containers/information/InformationDetail';
@@ -172,6 +173,7 @@ const InsideComponent = () => {
                 <Route path="" element={<GroupList />} />
                 <Route path="detail/:group_id" element={<GroupDetail />} />
                 <Route path="detail/:group_id/member" element={<GroupMembers />} />
+                <Route path="detail/:group_id/joinReq" element={<GroupJoinReq />} />
                 <Route path="detail/:group_id/post" element={<GroupPosts />} />
                 <Route path="detail/:group_id/post/create" element={<GroupPostCreate />} />
                 <Route path="detail/:group_id/post/:post_id" element={<GroupPostDetail />} />

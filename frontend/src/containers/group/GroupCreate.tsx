@@ -92,7 +92,8 @@ const GroupCreate = () => {
         time: wtime,
       };
       setGoalList([...goal_list, goal]);
-      setWorkoutType('');
+      setWorkoutCategory('back');
+      setWorkoutType(null);
       setWeight(null);
       setRep(null);
       setSet(null);

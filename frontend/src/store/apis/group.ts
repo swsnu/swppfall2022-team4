@@ -34,24 +34,43 @@ export const exitGroup = async (payload: string) => {
   const response = await client.delete(`/api/group/${payload}/member/`);
   return response.data;
 };
-
 export const leaderChange = async (payload: leaderChangeRequestType) => {
   const response = await client.post(`/api/group/${payload.group_id}/leader_change/`, payload);
   return response.data;
 };
-
 export const getCerts = async (payload: getCertsRequestType) => {
   const response = await client.get<getCertsResponseType>(
     `/api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`,
   );
   return response.data;
 };
-
-export const createCert = async (payload: createCertRequestType) => {
+export const createCert = async (payload: certRequestType) => {
   const response = await client.post<getCertsResponseType>(
     `/api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`,
     payload,
   );
+  return response.data;
+};
+export const deleteCert = async (payload: certRequestType) => {
+  console.log('groupApi.deleteCert');
+  console.log(payload);
+  const response = await client.delete<getCertsResponseType>(
+    `/api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`,
+    { data: payload },
+  );
+  console.log(response);
+  return response.data;
+};
+export const getRequests = async (payload: string) => {
+  const response = await client.get<getJoinReqResponseType>(`/api/group/${payload}/join_permission/`);
+  return response.data;
+};
+export const postRequest = async (payload: joinReqLeaderRequestType) => {
+  const response = await client.post(`/api/group/${payload.group_id}/join_permission/`, payload);
+  return response.data;
+};
+export const deleteRequest = async (payload: joinReqLeaderRequestType) => {
+  const response = await client.delete(`/api/group/${payload.group_id}/join_permission/`, { data: payload });
   return response.data;
 };
 
@@ -65,6 +84,8 @@ export type Group = {
   lat: number | null;
   lng: number | null;
   address: string | null;
+  free: boolean;
+  my_group: string;
   tags: TagVisual[];
   prime_tag: TagVisual | undefined;
 };
@@ -98,6 +119,13 @@ export type Member = {
   level: number;
 };
 
+export type MemberReq = {
+  id: number;
+  username: string;
+  image: string;
+  level: number;
+};
+
 export type MemberCert = {
   member: {
     username: string;
@@ -105,6 +133,7 @@ export type MemberCert = {
     image: string;
   };
   certs: Fitelement[];
+  did: boolean;
 };
 
 export type getGroupsResponseType = {
@@ -162,7 +191,7 @@ export type leaderChangeRequestType = {
   username: string;
 };
 
-export type createCertRequestType = {
+export type certRequestType = {
   group_id: string;
   year: number;
   month: number;
@@ -179,4 +208,13 @@ export type getCertsRequestType = {
 
 export type getCertsResponseType = {
   all_certs: MemberCert[];
+};
+
+export type getJoinReqResponseType = {
+  requests: MemberReq[];
+};
+
+export type joinReqLeaderRequestType = {
+  group_id: string;
+  username: string;
 };

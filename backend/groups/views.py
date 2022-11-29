@@ -2,11 +2,49 @@ import json
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from json.decoder import JSONDecodeError
-from groups.models import Group, GroupCert
+from groups.models import Group, GroupCert, JoinRequest
 from users.models import User
 from tags.models import Tag, TagClass
 from workouts.models import FitElement
 from datetime import datetime
+
+
+def return_cert(certs):
+    result = []
+    for single_cert in certs:
+        return_goal = []
+        goals = single_cert.fit_element.values()
+        for goal in goals:
+            workout_tag = Tag.objects.get(pk=goal['workout_type_id'])
+            return_goal.append(
+                {
+                    "id": goal['workout_type_id'],
+                    "type": goal['type'],
+                    "weight": goal['weight'],
+                    "rep": goal['rep'],
+                    "set": goal['set'],
+                    "time": goal['time'],
+                    "workout_type": workout_tag.tag_name,
+                    "category": workout_tag.tag_class.class_name,
+                }
+            )
+        result.append(
+            {
+                "member": {
+                    "username": single_cert.member.username,
+                    "nickname": single_cert.member.nickname,
+                    "image": single_cert.member.image,
+                },
+                "certs": return_goal,
+                "did": single_cert.did(),
+            }
+        )
+    return result
+
+
+def is_gr_leader(gr_obj, request):
+    if gr_obj.group_leader.username != request.user.username:
+        return HttpResponse(status=403)
 
 
 @require_http_methods(['GET', 'POST'])
@@ -16,30 +54,38 @@ def general_group(request):
     POST : create group
     """
     if request.method == 'GET':
-        group_list = list(
-            Group.objects.all().values(
-                'id',
-                'group_name',
-                'number',
-                'start_date',
-                'end_date',
-                'member_number',
-                'lat',
-                'lng',
-                'address',
-                'prime_tag',
+        result = []
+        for gr_obj in Group.objects.all():
+            my_group = "not_member"
+            if gr_obj.group_leader.username == request.user.username:
+                my_group = "group_leader"
+            elif gr_obj.members.filter(username=request.user.username):
+                my_group = "group_member"
+            result.append(
+                {
+                    "id": gr_obj.id,
+                    "group_name": gr_obj.group_name,
+                    "number": gr_obj.number,
+                    "start_date": gr_obj.start_date,
+                    "end_date": gr_obj.end_date,
+                    "member_number": gr_obj.member_number,
+                    "free": gr_obj.free,
+                    "lat": gr_obj.lat,
+                    "lng": gr_obj.lng,
+                    "address": gr_obj.address,
+                    "my_group": my_group,
+                    "prime_tag": gr_obj.prime_tag,
+                }
             )
-        )
-
-        for group in group_list:
+        for group in result:
             if group['prime_tag']:
-                prime_tag = Tag.objects.get(pk=group['prime_tag'])
+                prime_tag = group['prime_tag']
                 group["prime_tag"] = {
                     "id": prime_tag.pk,
                     "name": prime_tag.tag_name,
                     "color": prime_tag.tag_class.color,
                 }
-        return JsonResponse({"groups": group_list}, safe=False)
+        return JsonResponse({"groups": result}, safe=False)
 
     else:  ## post
         try:
@@ -70,6 +116,9 @@ def general_group(request):
             group.members.add(request.user)
             group.member_number += 1
             group.save()
+            join_obj = JoinRequest()
+            join_obj.group = group
+            join_obj.save()
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
 
@@ -198,14 +247,18 @@ def group_members(request, group_id):
             if not gr_obj.members.filter(username=request.user.username):
                 return HttpResponse(status=403)
             result = []
-            for i in gr_obj.members.all():
-                cert_days = len(GroupCert.objects.filter(member=i.id))
+            for mem in gr_obj.members.all():
+                certs = GroupCert.objects.filter(group=group_id).filter(member=mem.id)
+                cert_days = 0
+                for single_cert in certs:
+                    if single_cert.did():
+                        cert_days = cert_days + 1
                 result.append(
                     {
-                        "id": i.id,
-                        "username": i.username,
-                        "image": i.image,
-                        "level": i.level,
+                        "id": mem.id,
+                        "username": mem.username,
+                        "image": mem.image,
+                        "level": mem.level,
                         "cert_days": cert_days,
                     }
                 )
@@ -222,10 +275,18 @@ def group_members(request, group_id):
                 return HttpResponseBadRequest()
             if gr_obj.member_number == gr_obj.number:
                 return HttpResponseBadRequest()
-            gr_obj.members.add(user)
-            gr_obj.member_number += 1
-            gr_obj.save()
-            return HttpResponse(status=204)
+            ## 자유가입O
+            if gr_obj.free:
+                gr_obj.members.add(user)
+                gr_obj.member_number += 1
+                gr_obj.save()
+                return HttpResponse(status=204)
+            ## 자유가입X
+            else:
+                join_obj = JoinRequest.objects.get(group=gr_obj)
+                join_obj.members.add(user)
+                join_obj.save()
+                return HttpResponse(status=204)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
         except Exception:
@@ -253,7 +314,10 @@ def group_member_check(request, group_id):
     """
     try:
         gr_obj = Group.objects.get(id=int(group_id))
-        if gr_obj.group_leader.username == request.user.username:
+        join_obj = JoinRequest.objects.get(group=gr_obj)
+        if join_obj.members.filter(username=request.user.username):
+            response_dict = {"member_status": "request_member"}
+        elif gr_obj.group_leader.username == request.user.username:
             response_dict = {"member_status": "group_leader"}
         elif gr_obj.members.filter(username=request.user.username):
             response_dict = {"member_status": "group_member"}
@@ -308,24 +372,13 @@ def group_cert(request, group_id, year, month, specific_date):
         if len(certs) == 0:
             return JsonResponse({"all_certs": []}, status=200)
         else:
-            result = []
-            for single_cert in certs:
-                result.append(
-                    {
-                        "member": {
-                            "username": single_cert.member.username,
-                            "nickname": single_cert.member.nickname,
-                            "image": single_cert.member.image,
-                        },
-                        "certs": list(single_cert.fit_element.values()),
-                    }
-                )
+            result = return_cert(certs)
             response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
     elif request.method == "POST":
         req_data = json.loads(request.body.decode())
         gr_obj = Group.objects.get(id=int(group_id))
-        fit = gr_obj.goal.get(id=req_data["fitelement_id"])
+        fit = gr_obj.goal.get(workout_type_id=req_data["fitelement_id"])
 
         cert = (
             GroupCert.objects.filter(member=request.user.id)
@@ -348,20 +401,99 @@ def group_cert(request, group_id, year, month, specific_date):
             new_cert.save()
             new_cert.fit_element.add(fit)
             new_cert.save()
+
         certs = GroupCert.objects.filter(group=group_id).filter(
             date=datetime(year, month, specific_date).date()
         )
-        result = []
-        for single_cert in certs:
-            result.append(
-                {
-                    "member": {
-                        "username": single_cert.member.username,
-                        "nickname": single_cert.member.nickname,
-                        "image": single_cert.member.image,
-                    },
-                    "certs": list(single_cert.fit_element.values()),
-                }
-            )
+        result = return_cert(certs)
         response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
+    elif request.method == "DELETE":
+        req_data = json.loads(request.body.decode())
+        gr_obj = Group.objects.get(id=int(group_id))
+        fit = gr_obj.goal.get(workout_type_id=req_data["fitelement_id"])
+
+        try:
+            removed_cert = (
+                GroupCert.objects.filter(member=request.user.id)
+                .filter(date=datetime(year, month, specific_date).date())
+                .get(group=group_id)
+            )
+        except Exception:
+            return HttpResponseBadRequest()
+
+        if removed_cert.fit_element.count() == 0:
+            return HttpResponseBadRequest()
+        elif removed_cert.fit_element.count() == 1:
+            removed_cert.delete()
+        else:
+            removed_cert.fit_element.remove(fit)
+
+        certs = GroupCert.objects.filter(group=group_id).filter(
+            date=datetime(year, month, specific_date).date()
+        )
+        result = return_cert(certs)
+        response_dict = {"all_certs": result}
+        return JsonResponse(response_dict, status=200)
+
+
+@require_http_methods(["GET", "POST", "DELETE"])
+def join_permission(request, group_id):
+    """
+    GET : get join requests
+    POST : permit join request
+    DELETE : delete join request
+    """
+
+    if request.method == "GET":
+        try:
+            gr_obj = Group.objects.get(id=int(group_id))
+            join_obj = JoinRequest.objects.get(group=gr_obj)
+            is_gr_leader(gr_obj, request)
+            result = []
+            for req in join_obj.members.all():
+                result.append(
+                    {
+                        "id": req.id,
+                        "username": req.username,
+                        "image": req.image,
+                        "level": req.level,
+                    }
+                )
+            return JsonResponse({"requests": result}, safe=False)
+        except Exception:
+            return HttpResponseBadRequest()
+
+    elif request.method == "POST":
+        try:
+            req_data = json.loads(request.body.decode())
+            req_user = User.objects.get(username=req_data["username"])
+            gr_obj = Group.objects.get(id=int(group_id))
+            join_obj = JoinRequest.objects.get(group=gr_obj)
+
+            is_gr_leader(gr_obj, request)
+            if gr_obj.member_number == gr_obj.number:
+                return HttpResponseBadRequest()
+
+            gr_obj.members.add(req_user)
+            gr_obj.member_number += 1
+            join_obj.members.remove(req_user)
+            gr_obj.save()
+            join_obj.save()
+            return HttpResponse(status=204)
+        except Exception:
+            return HttpResponseBadRequest()
+
+    elif request.method == "DELETE":
+        try:
+            req_data = json.loads(request.body.decode())
+            req_user = User.objects.get(username=req_data["username"])
+            gr_obj = Group.objects.get(id=int(group_id))
+            join_obj = JoinRequest.objects.get(group=gr_obj)
+
+            is_gr_leader(gr_obj, request)
+            join_obj.members.remove(req_user)
+            join_obj.save()
+            return HttpResponse(status=204)
+        except Exception:
+            return HttpResponseBadRequest()

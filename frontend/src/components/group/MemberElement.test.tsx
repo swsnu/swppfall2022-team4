@@ -35,6 +35,8 @@ const setup = () => {
         level={1}
         leader={false}
         myself={true}
+        request={false}
+        is_full={false}
       />
     </Provider>,
   );
@@ -49,7 +51,17 @@ const setup2 = () => {
   });
   render(
     <Provider store={store}>
-      <MemberElement id={1} image={'image'} username={'test'} cert_days={7} level={1} leader={true} myself={false} />
+      <MemberElement
+        id={1}
+        image={'image'}
+        username={'test'}
+        cert_days={7}
+        level={1}
+        leader={true}
+        myself={false}
+        request={false}
+        is_full={false}
+      />
     </Provider>,
   );
   return store;

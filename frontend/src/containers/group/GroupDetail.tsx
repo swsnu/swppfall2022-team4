@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -6,11 +6,13 @@ import { RootState } from 'index';
 import { groupActions } from 'store/slices/group';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
-import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { FitElement } from 'components/fitelement/FitElement';
+import GroupButton1 from 'components/group/GroupButton1';
+import GroupButton2 from 'components/group/GroupButton2';
 import { TagBubble } from 'components/tag/tagbubble';
+import Button1 from 'components/common/buttons/Button1';
 
 const GroupDetail = () => {
   const dispatch = useDispatch();
@@ -22,6 +24,10 @@ const GroupDetail = () => {
   const group_detail_error = useSelector(({ group }: RootState) => group.groupDetail.error);
   const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
   const groupDeleteStatus = useSelector(({ group }: RootState) => group.groupDelete);
+
+  const [done, setDone] = useState(false);
+  const today = new Date();
+  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
   useEffect(() => {
     if (group_id) {
@@ -40,6 +46,7 @@ const GroupDetail = () => {
   useEffect(() => {
     if (group_id && group_detail) {
       dispatch(groupActions.checkMemberStatus(group_id));
+      if (group_detail.end_date && group_detail.end_date < date) setDone(true);
     }
   }, [group_detail]);
   useEffect(() => {
@@ -63,11 +70,17 @@ const GroupDetail = () => {
       dispatch(groupActions.exitGroup(group_id));
     }
   };
+  const deleteOnClick = () => {
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm('삭제하시겠습니까?')) {
+      if (group_id) dispatch(groupActions.deleteGroup(group_id));
+    }
+  };
 
   if (!group_id || !group_detail) return <Loading />;
   return (
     <Wrapper>
-      <GroupDetailHeader>
+      <GroupDetailHeader className={done ? 'end' : 'ing'}>
         <Button4 content="Back" clicked={() => navigate(`/group`)} style={{ alignSelf: 'start' }} />
         <GroupName>{group_detail.group_name}</GroupName>
         {group_detail.start_date ? (
@@ -85,29 +98,46 @@ const GroupDetail = () => {
         ) : (
           <GroupPlace>{`장소: 장소 없음`}</GroupPlace>
         )}
+        {group_detail.free ? <GroupFree>자유가입 O</GroupFree> : <GroupFree>자유가입 X</GroupFree>}
       </GroupDetailHeader>
-      <div style={{ display: 'flex', gap: '15px', paddingLeft: '60%', paddingTop: '15px' }}>
+      <div style={{ display: 'flex', gap: '15px', paddingLeft: '40%', paddingTop: '15px' }}>
         {member_status === 'group_leader' && (
           <div style={{ display: 'flex', gap: '15px' }}>
-            <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
-            <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <GroupButton2 content="Cert" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/chat/${group_id}`)} />
+            <GroupButton2 content="Member" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
             <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
-            <Button1 content="Delete" clicked={() => dispatch(groupActions.deleteGroup(group_id))} />
+            <GroupButton2 content="Join Req" end={done} clicked={() => navigate(`/group/detail/${group_id}/joinReq`)} />
+            <GroupButton2 content="Delete" end={done} clicked={deleteOnClick} />
           </div>
         )}
         {member_status === 'group_member' && (
           <div style={{ display: 'flex', gap: '15px' }}>
-            <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
-            <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <GroupButton2 content="Cert" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/chat/${group_id}`)} />
+            <GroupButton2 content="Member" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
             <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
-            <Button1 content="Leave" clicked={exitOnClick} />
+            <GroupButton2 content="Leave" end={done} clicked={exitOnClick} />
           </div>
         )}
-        {member_status === 'not_member' && <Button1 content="Join" clicked={joinOnClick} />}
+        {member_status === 'not_member' && (
+          <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
+            <GroupButton1 content="Join" clicked={joinOnClick} disable={done} />
+          </div>
+        )}
+        {member_status === 'request_member' && (
+          <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
+            <GroupButton1 content="Pending" clicked={joinOnClick} disable={done} />
+          </div>
+        )}
       </div>
       <GroupAboutWrapper>
         <GroupAboutText>About</GroupAboutText>
-        <ProfileImage src={process.env.REACT_APP_API_IMAGE + group_detail.group_leader.image} alt="profile" />
+        <ProfileImage
+          src={process.env.REACT_APP_API_IMAGE + group_detail.group_leader.image}
+          alt="profile"
+          onClick={() => navigate(`/profile/${group_detail.group_leader.username}`)}
+        />
         <div style={{ display: 'flex' }}>
           <GroupAboutSmallText>그룹장:</GroupAboutSmallText>
           <GroupAboutNickname>{group_detail.group_leader.nickname}</GroupAboutNickname>
@@ -130,10 +160,10 @@ const GroupDetail = () => {
         </div>
       </GroupAboutWrapper>
 
-      {group_detail.lat && group_detail.lng && (
+      {group_detail.lat && group_detail.lng && group_detail.address && (
         <GroupAboutWrapper>
           <GroupAboutText>Place</GroupAboutText>
-          <GroupDetailDate>장소 : {group_detail.address || '주소명을 불러오지 못했습니다.'}</GroupDetailDate>
+          <GroupDetailDate>장소 : {group_detail.address}</GroupDetailDate>
           <Map // 로드뷰를 표시할 Container
             center={{
               lat: group_detail.lat,
@@ -146,7 +176,7 @@ const GroupDetail = () => {
             level={3}
           >
             <MapMarker position={{ lat: group_detail.lat, lng: group_detail.lng }}>
-              {group_detail.address && <div style={{ color: '#000' }}>{group_detail.address}</div>}
+              <div style={{ color: '#000' }}>{group_detail.address}</div>
             </MapMarker>
           </Map>
         </GroupAboutWrapper>
@@ -200,12 +230,16 @@ const Wrapper = styled.div`
 
 const GroupDetailHeader = styled.div`
   width: 100%;
-  height: 245px;
+  height: 285px;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #d7efe3;
   padding: 15px 15px 40px 15px;
+
+  &&.end {
+    background-color: silver;
+  }
 `;
 const GroupName = styled.div`
   font-size: 40px;
@@ -230,6 +264,12 @@ const GroupPlace = styled.div`
   margin-bottom: 20px;
 `;
 
+const GroupFree = styled.div`
+  font-size: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  margin-bottom: 20px;
+`;
+
 const GroupAboutWrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -248,6 +288,7 @@ const GroupAboutText = styled.div`
 const ProfileImage = styled.img`
   width: 80px;
   height: 80px;
+  cursor: pointer;
   border: 2px solid black;
   border-radius: 30px;
   margin-bottom: 15px;
