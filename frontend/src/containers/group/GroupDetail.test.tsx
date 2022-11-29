@@ -203,6 +203,7 @@ describe('setup test', () => {
     screen.getByText('인원수: 3명');
   });
   it('leader status', () => {
+    const confirmMock = jest.spyOn(window, 'confirm').mockImplementation();
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     expect(mockDispatch).toBeCalledWith({ payload: '1', type: 'group/getGroupDetail' });
@@ -225,6 +226,7 @@ describe('setup test', () => {
     expect(mockNavigate).toBeCalledWith('/group/detail/1/member');
 
     fireEvent.click(deleteBtn);
+    expect(confirmMock).toBeCalledWith('삭제하시겠습니까?');
     expect(mockNavigate).toBeCalledTimes(1);
 
     fireEvent.click(CertBtn);

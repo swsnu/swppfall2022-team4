@@ -71,6 +71,7 @@ const GroupDetail = () => {
     }
   };
   const deleteOnClick = () => {
+    // eslint-disable-next-line no-restricted-globals
     if (confirm('삭제하시겠습니까?')) {
       if (group_id) dispatch(groupActions.deleteGroup(group_id));
     }
