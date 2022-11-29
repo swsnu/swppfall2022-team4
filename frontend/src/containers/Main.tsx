@@ -93,6 +93,7 @@ const Main = () => {
       </BannerWrapper>
       <ContentWrapper>
         <WorkoutWrapper>
+          <SectionTitle style={{ marginBottom: '24px' }}>이번 달 칼로리 차트</SectionTitle>
           <WorkoutChartWrapper>
             <WorkoutChart info={calories_map} />
           </WorkoutChartWrapper>

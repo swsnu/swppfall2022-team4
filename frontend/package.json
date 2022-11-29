@@ -24,6 +24,7 @@
     "axios": "^1.1.2",
     "chart.js": "4.0.1",
     "react": "^18.2.0",
+    "react-beautiful-dnd": "13.1.1",
     "react-chartjs-2": "5.0.1",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
@@ -70,6 +71,7 @@
   },
   "devDependencies": {
     "@types/jest": "29.2.2",
+    "@types/react-beautiful-dnd": "13.1.2",
     "@typescript-eslint/eslint-plugin": "5.44.0",
     "@typescript-eslint/parser": "5.44.0",
     "canvas": "2.10.2",

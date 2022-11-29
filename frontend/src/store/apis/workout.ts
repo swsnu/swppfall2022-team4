@@ -108,6 +108,23 @@ export type editImageRequestType = {
   image: string;
 };
 
+export type editIndexRequestType = {
+  year: number;
+  month: number;
+  specific_date: number;
+  username: string;
+  log_index: number[];
+};
+
+export type deleteImageRequestType = {
+  year: number;
+  month: number;
+  specific_date: number;
+  username: string;
+  image: string;
+  delete: true;
+};
+
 export type getCalendarInfoResponseType = {
   fitelements: calendarInfoResponse[];
 };
@@ -158,6 +175,11 @@ export type deleteFitElementRequestType = {
   username: string;
 };
 
+export type exchangeFitElementsRequestType = {
+  fitelement1_id: number;
+  fitelement2_id: number;
+};
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
   const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
   return response.data;
@@ -177,6 +199,22 @@ export const getDailyLog = async (payload: getDailyLogRequestType) => {
 
 export const editImage = async (payload: editImageRequestType) => {
   const response = await client.put<editImageRequestType>(
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
+    payload,
+  );
+  return response.data;
+};
+
+export const editIndex = async (payload: editIndexRequestType) => {
+  const response = await client.put(
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
+    payload,
+  );
+  return response.data;
+};
+
+export const deleteImage = async (payload: deleteImageRequestType) => {
+  const response = await client.put<deleteImageRequestType>(
     `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
     payload,
   );
