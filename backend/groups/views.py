@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 def return_cert(certs):
-    result=[]
+    result = []
     for single_cert in certs:
         return_goal = []
         goals = single_cert.fit_element.values()
@@ -28,22 +28,24 @@ def return_cert(certs):
                     "category": workout_tag.tag_class.class_name,
                 }
             )
-    result.append(
-        {
-            "member": {
-                "username": single_cert.member.username,
-                "nickname": single_cert.member.nickname,
-                "image": single_cert.member.image,
-            },
-            "certs": return_goal,
-            "did": single_cert.did(),
-        }
-    )
+        result.append(
+            {
+                "member": {
+                    "username": single_cert.member.username,
+                    "nickname": single_cert.member.nickname,
+                    "image": single_cert.member.image,
+                },
+                "certs": return_goal,
+                "did": single_cert.did(),
+            }
+        )
     return result
+
 
 def is_gr_leader(gr_obj, request):
     if gr_obj.group_leader.username != request.user.username:
         return HttpResponse(status=403)
+
 
 @require_http_methods(['GET', 'POST'])
 def general_group(request):
@@ -59,23 +61,25 @@ def general_group(request):
                 my_group = "group_leader"
             elif gr_obj.members.filter(username=request.user.username):
                 my_group = "group_member"
-            result.append({
-                "id": gr_obj.id,
-                "group_name": gr_obj.group_name,
-                "number": gr_obj.number,
-                "start_date": gr_obj.start_date,
-                "end_date": gr_obj.end_date,
-                "member_number": gr_obj.member_number,
-                "free": gr_obj.free,
-                "lat": gr_obj.lat,
-                "lng": gr_obj.lng,
-                "address": gr_obj.address,
-                "my_group": my_group,
-                "prime_tag": gr_obj.prime_tag,
-            })
+            result.append(
+                {
+                    "id": gr_obj.id,
+                    "group_name": gr_obj.group_name,
+                    "number": gr_obj.number,
+                    "start_date": gr_obj.start_date,
+                    "end_date": gr_obj.end_date,
+                    "member_number": gr_obj.member_number,
+                    "free": gr_obj.free,
+                    "lat": gr_obj.lat,
+                    "lng": gr_obj.lng,
+                    "address": gr_obj.address,
+                    "my_group": my_group,
+                    "prime_tag": gr_obj.prime_tag,
+                }
+            )
         for group in result:
             if group['prime_tag']:
-                prime_tag = Tag.objects.get(pk=group['prime_tag'])
+                prime_tag = group['prime_tag']
                 group["prime_tag"] = {
                     "id": prime_tag.pk,
                     "name": prime_tag.tag_name,
@@ -245,10 +249,10 @@ def group_members(request, group_id):
             result = []
             for mem in gr_obj.members.all():
                 certs = GroupCert.objects.filter(group=group_id).filter(member=mem.id)
-                cert_days=0
+                cert_days = 0
                 for single_cert in certs:
                     if single_cert.did():
-                        cert_days = cert_days+1
+                        cert_days = cert_days + 1
                 result.append(
                     {
                         "id": mem.id,
@@ -432,6 +436,7 @@ def group_cert(request, group_id, year, month, specific_date):
         response_dict = {"all_certs": result}
         return JsonResponse(response_dict, status=200)
 
+
 @require_http_methods(["GET", "POST", "DELETE"])
 def join_permission(request, group_id):
     """
@@ -448,12 +453,13 @@ def join_permission(request, group_id):
             result = []
             for req in join_obj.members.all():
                 result.append(
-                {
-                    "id": req.id,
-                    "username": req.username,
-                    "image": req.image,
-                    "level": req.level,
-                })
+                    {
+                        "id": req.id,
+                        "username": req.username,
+                        "image": req.image,
+                        "level": req.level,
+                    }
+                )
             return JsonResponse({"requests": result}, safe=False)
         except Exception:
             return HttpResponseBadRequest()
