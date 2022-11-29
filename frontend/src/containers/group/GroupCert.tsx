@@ -42,6 +42,9 @@ const GroupCert = () => {
   }
   const clickDate = (year: number, month: number, d: number) => {
     setDate(new Date(year, month, d));
+    setSelectedYear(year);
+    setSelectedMonth(month);
+    setSelectedDay(d);
     if (group_id) {
       const dayilycert: getCertsRequestType = {
         group_id: group_id,
@@ -189,12 +192,6 @@ const GroupCert = () => {
                     let day_type = 'future_day';
                     if (year === selected_year && month === selected_month && d === selected_date) {
                       day_type = 'selected_day';
-                    } else if (year > today.getFullYear()) {
-                      day_type = 'future_day';
-                    } else if (year === today.getFullYear() && month > today.getMonth()) {
-                      day_type = 'future_day';
-                    } else if (year === today.getFullYear() && month === today.getMonth() && d > today.getDate()) {
-                      day_type = 'future_day';
                     } else if (year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) {
                       day_type = 'today';
                     } else if (d > 0 && d <= days[month] && calendarInfo.length > 0) {
