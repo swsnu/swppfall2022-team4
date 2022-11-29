@@ -297,7 +297,7 @@ const WorkoutLog = () => {
         specific_date: day,
       };
       dispatch(workoutLogActions.editImage(editImageConfig));
-      let input = document.getElementById('FileInput_DailyLog') as HTMLInputElement;
+      const input = document.getElementById('FileInput_DailyLog') as HTMLInputElement;
       input.value = '';
     } catch (error) {
       alert('이미지 업로드 오류');
@@ -523,8 +523,8 @@ const WorkoutLog = () => {
                       />
                       <FileInput
                         type="file"
-                          accept="image/*"
-                          data-testid="dailylog_upload"
+                        accept="image/*"
+                        data-testid="dailylog_upload"
                         id="FileInput_DailyLog"
                         onChange={onChangeDailyLogImage}
                       />

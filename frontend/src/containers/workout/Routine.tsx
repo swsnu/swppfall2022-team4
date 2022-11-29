@@ -56,7 +56,7 @@ const Routine = () => {
       );
     }
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [routine_id, routines, deleteFitElementStatus ]);
+  }, [routine_id, routines, deleteFitElementStatus]);
 
   return (
     <Wrapper>
@@ -88,7 +88,7 @@ const Routine = () => {
           ) : (
             <RoutineHeader>
               <LogHeader className="title">{selected_routine.name}</LogHeader>
-                <LogHeader>
+              <LogHeader>
                 <LogCategory className="type3"></LogCategory>
                 <LogCategory className="type">종류</LogCategory>
                 <LogCategory className="type2">강도</LogCategory>
@@ -227,7 +227,7 @@ const LogCategory = styled.div`
   &&.type2 {
     width: 20%;
   }
-  &&.type3{
+  &&.type3 {
     width: 15%;
   }
 `;
