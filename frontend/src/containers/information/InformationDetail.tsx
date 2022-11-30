@@ -9,8 +9,7 @@ import { timeAgoFormat } from 'utils/datetime';
 import { Youtube } from 'store/apis/information';
 import { ArticleItemCompact } from 'components/post/ArticleItem';
 import { ScrollShadow } from 'components/common/ScrollShadow';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-regular-svg-icons';
+import { get_image } from 'components/fitelement/FitElement';
 
 interface InfoPageYoutubeIprops {
   youtube: Youtube;
@@ -48,17 +47,15 @@ const InformationDetail = () => {
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <TopElementWrapper>
+        <InfoDetailHeader>
           <span onClick={() => navigate('/information')}>◀︎</span>
+          <img
+            src={require(`assets/images/workout_log/fitelement_category/${get_image(
+              info.contents?.basic.class_name,
+            )}.png`)}
+          />
           <span>{name}</span>
-          <span
-            data-testid="postFuncScrap"
-            // onClick={() => postFuncOnClick(FuncType.Scrap)}
-            // color={post.scraped ? FuncType.Scrap : FuncType.None}
-          >
-            <FontAwesomeIcon icon={faStar} />
-          </span>
-        </TopElementWrapper>
+        </InfoDetailHeader>
 
         {info.error === 'NOTFOUND' && <NotFound />}
         {info.error === 'NOTERROR' && (
@@ -114,12 +111,29 @@ const PostContentWrapper = styled.div`
   }
 `;
 
-const TopElementWrapper = styled.div`
+const InfoDetailHeader = styled.div`
   margin: 40px 0px 15px 0px;
-  padding: 15px 25px;
+  padding: 10px 25px;
   border-radius: 20px;
   width: 100%;
   background-color: #ffffff;
+  display: flex;
+  align-items: center;
+
+  > span:first-child {
+    margin-top: 3px;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  > img {
+    max-width: 36px;
+    margin-left: 12px;
+  }
+  > span:last-child {
+    margin-left: 12px;
+    margin-top: 3px;
+    font-size: 24px;
+  }
 `;
 
 const SectionWrapper = styled.div`

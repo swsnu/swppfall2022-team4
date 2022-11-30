@@ -77,7 +77,7 @@ def information_detail(request, information_name):
             target.save()
         return JsonResponse(
             {
-                "basic": {"name": information_name},
+                "basic": {"name": information_name, 'class_name': target.tag.tag_class.class_name},
                 "posts": prepare_posts_response(target.tag.tagged_posts.filter(in_group=None)),
                 "youtubes": list(target.youtube.all().values()),
                 "articles": 'ho',

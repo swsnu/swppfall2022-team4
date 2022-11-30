@@ -12,7 +12,7 @@ export interface IProps {
   time: number | null;
 }
 
-export const get_image = (name: string | null) => {
+export const get_image = (name: string | null | undefined) => {
   if (name) {
     const tag_class = ['등운동', '가슴운동', '어깨운동', '하체운동', '복근운동', '팔운동', '유산소', '기타운동'];
     const image_names = ['back', 'chest', 'deltoid', 'leg', 'abs', 'arm', 'cardio', 'etc'];

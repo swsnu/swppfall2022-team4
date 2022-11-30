@@ -9,6 +9,7 @@ export interface InformationState {
   contents: {
     basic: {
       name: string;
+      class_name: string;
     };
     posts: Post[];
     youtubes: infoAPI.Youtube[];
