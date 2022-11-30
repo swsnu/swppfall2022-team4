@@ -60,7 +60,7 @@ export const WorkoutChart = (props: IProps) => {
           text: '일자',
           font: {
             size: 15,
-            family: 'IBMPlexSansThaiLooped',
+            family: 'Noto Sans KR',
           },
         },
       },
@@ -70,7 +70,7 @@ export const WorkoutChart = (props: IProps) => {
           text: '칼로리',
           font: {
             size: 15,
-            family: 'IBMPlexSansThaiLooped',
+            family: 'Noto Sans KR',
           },
         },
         min: 0,
