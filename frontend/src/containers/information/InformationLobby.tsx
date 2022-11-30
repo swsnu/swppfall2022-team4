@@ -23,6 +23,10 @@ const InformationLobby = () => {
     dispatch(tagActions.getTags());
   }, []);
 
+  useEffect(() => {
+    if (info.error !== 'NotFound') navigate(`/information/${search}`);
+  }, [info.contents]);
+
   return (
     <PostPageWrapper>
       <PostContentWrapper>
@@ -30,13 +34,6 @@ const InformationLobby = () => {
           <SearchBar
             onSubmit={e => {
               e.preventDefault();
-              if (info.contents?.basic.name !== search)
-                dispatch(
-                  infoActions.getInformation({
-                    information_name: search,
-                  }),
-                );
-              navigate(`/information/${search}`);
             }}
             onClear={() => {
               setSearch('');
@@ -50,6 +47,7 @@ const InformationLobby = () => {
           <SectionItemWrapper>
             {tagList?.map(tagClass => {
               return (
+                (tagClass.tags.map(tag => tag.name.includes(search)).includes(true) || search == '') &&
                 tagClass.class_type === 'workout' && (
                   <WorkoutClassWrapper key={tagClass.id}>
                     <WorkoutClassTitleWrapper>
@@ -63,14 +61,16 @@ const InformationLobby = () => {
                     <WorkoutClassTagWrapper>
                       {tagClass.tags.map(tag => {
                         return (
-                          <TagBubble
-                            style={{ cursor: 'pointer' }}
-                            key={tag.id}
-                            color={tag.color}
-                            onClick={() => navigate(`/information/${tag.name}`)}
-                          >
-                            {tag.name}
-                          </TagBubble>
+                          (tag.name.includes(search) || search === '') && (
+                            <TagBubble
+                              style={{ cursor: 'pointer' }}
+                              key={tag.id}
+                              color={tag.color}
+                              onClick={() => navigate(`/information/${tag.name}`)}
+                            >
+                              {tag.name}
+                            </TagBubble>
+                          )
                         );
                       })}
                     </WorkoutClassTagWrapper>

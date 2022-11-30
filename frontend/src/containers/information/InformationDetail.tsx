@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { infoActions } from 'store/slices/information';
 import { RootState } from 'index';
-import NotFound from 'components/common/NotFound';
 import { useNavigate, useParams } from 'react-router-dom';
 import { timeAgoFormat } from 'utils/datetime';
 import { Youtube } from 'store/apis/information';
@@ -57,7 +56,6 @@ const InformationDetail = () => {
           <span>{name}</span>
         </InfoDetailHeader>
 
-        {info.error === 'NOTFOUND' && <NotFound />}
         {info.error === 'NOTERROR' && (
           <SectionWrapper>
             <SectionSubWrapper>
