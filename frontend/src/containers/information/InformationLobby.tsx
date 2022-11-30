@@ -48,10 +48,6 @@ const InformationLobby = () => {
 
         <SectionWrapper>
           <SectionItemWrapper>
-            <span>즐겨찾기</span>
-            <br />
-          </SectionItemWrapper>
-          <SectionItemWrapper>
             {tagList?.map(tagClass => {
               return (
                 tagClass.class_type === 'workout' && (
@@ -126,11 +122,6 @@ const TagClassImg = styled.img`
 `;
 
 const SectionWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr;
-  row-gap: 10px;
-  column-gap: 10px;
   width: 100%;
   min-height: 875px;
   max-height: 875px;
@@ -142,10 +133,16 @@ const SectionItemWrapper = styled(ScrollShadow)`
   border: 1px solid var(--fit-support-gray-bright);
   border-radius: 20px;
   background-color: #ffffff;
-  height: 875px;
   overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
   &::-webkit-scrollbar {
     display: none;
+  }
+  > div:last-child,
+  > div:nth-last-child(2) {
+    margin-bottom: 10px;
   }
 `;
 
@@ -153,8 +150,9 @@ const WorkoutClassWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 `;
+
 const WorkoutClassTitleWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -171,6 +169,6 @@ const WorkoutClassTitleWrapper = styled.div`
 const WorkoutClassTagWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  row-gap: 5px;
+  row-gap: 8px;
 `;
 export default InformationLobby;
