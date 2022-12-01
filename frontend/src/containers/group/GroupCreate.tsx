@@ -474,7 +474,7 @@ const GroupCreate = () => {
                         onChange={e => setKeyword(e.target.value)}
                         placeholder="장소 검색"
                       />
-                      {clickedAddress && <div>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>}
+                      {clickedAddress && <div>{`그룹 장소를 " ${clickedAddress}" 으로 합니다.`}</div>}
                       <Map // 로드뷰를 표시할 Container
                         center={{
                           lat: currentLocation.center.lat || 37.480966,
