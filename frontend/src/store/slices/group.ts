@@ -93,7 +93,6 @@ export const groupSlice = createSlice({
     getGroupsFailure: (state, { payload }) => {
       state.groupList.groups = null;
       state.groupList.error = payload;
-      alert(payload.response?.data.message);
     },
     createGroup: (state, action: PayloadAction<groupAPI.postGroupRequestType>) => {
       state.groupCreate.group_id = null;

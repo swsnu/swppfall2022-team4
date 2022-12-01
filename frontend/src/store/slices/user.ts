@@ -105,7 +105,6 @@ export const userSlice = createSlice({
       state.loading = false;
       state.profile = null;
       state.profileError = payload;
-      alert(payload.response?.data.message);
     },
     editProfile: (state, action: PayloadAction<{ username: string; data: userAPI.editProfileRequestType }>) => {
       state.loading = true;
