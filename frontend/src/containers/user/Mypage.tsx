@@ -273,7 +273,7 @@ const Mypage = () => {
                           clicked={() => navigate(`/profile/${user.username}`)}
                         />
                       ))}
-                      {profile.information.follower.length === 0 && <NoFollowText>팔로잉이 없습니다.</NoFollowText>}
+                      {profile.information.following.length === 0 && <NoFollowText>팔로잉이 없습니다.</NoFollowText>}
                     </>
                   </FollowUserWrapper>
                 </FollowContentWrapper>
