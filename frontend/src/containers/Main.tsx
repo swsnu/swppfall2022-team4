@@ -93,7 +93,7 @@ const Main = () => {
       </BannerWrapper>
       <ContentWrapper>
         <WorkoutWrapper>
-          <SectionTitle style={{ marginBottom: '24px' }}>이번 달 칼로리 차트</SectionTitle>
+          <SectionTitle style={{ marginBottom: '12px', fontSize: '24px' }}>이번 달 칼로리 차트</SectionTitle>
           <WorkoutChartWrapper>
             <WorkoutChart info={calories_map} />
           </WorkoutChartWrapper>
@@ -105,7 +105,9 @@ const Main = () => {
                   src={require(`assets/images/workout_log/fitelement_category/${get_image(x.data.category)}.png`)}
                 />
                 <FitElementCategory>{x.data.workout_type}</FitElementCategory>
-                <FitElementContent>{`${x.data.weight} / ${x.data.rep} / ${x.data.set} / ${x.data.time}`}</FitElementContent>
+                <FitElementContent>
+                  {`${x.data.weight || '-'} / ${x.data.rep || '-'} / ${x.data.set || '-'} / ${x.data.time || '-'}`}
+                </FitElementContent>
               </FitElementItemWrapper>
             ))}
             {fitElements.length === 0 && <NoFitElementsText>운동 기록이 없습니다.</NoFitElementsText>}
@@ -214,6 +216,12 @@ const Wrapper = styled.div`
   @media all and (max-width: 700px) {
     flex-direction: column;
   }
+
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 `;
 const BannerWrapper = styled.div`
   width: 100%;
@@ -263,7 +271,7 @@ const ContentWrapper = styled.div`
 `;
 const WorkoutWrapper = styled.div`
   width: calc(50% - 20px);
-  height: 860px;
+  height: 890px;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -275,14 +283,14 @@ const WorkoutWrapper = styled.div`
 `;
 const RightWrapper = styled.div`
   width: calc(50% - 20px);
-  height: 860px;
+  height: 890px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 `;
 const SectionItemWrapper = styled.div`
   width: 100%;
-  height: 420px;
+  height: 435px;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -318,6 +326,7 @@ const LinkText = styled.div`
 
 const WorkoutChartWrapper = styled.div`
   width: 100%;
+  max-width: 500px;
   min-height: 290px;
   padding-bottom: 18px;
   margin-bottom: 24px;
