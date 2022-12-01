@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import Button1 from 'components/common/buttons/Button1';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { groupActions } from 'store/slices/group';
+import { RootState } from 'index';
 export interface IProps {
   id: number;
   image: string;
@@ -19,9 +20,25 @@ export const MemberElement = (props: IProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { group_id } = useParams<{ group_id: string }>();
+  const user = useSelector(({ user }: RootState) => user.user);
+  const socket = useSelector(({ chat }: RootState) => chat.socket);
 
   const leaderChangeClick = () => {
     if (group_id) {
+      if (user && socket) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'group',
+              info: props.username,
+              content: `그룹장을 위임받았습니다.`,
+              image: user.image,
+              link: `/group/detail/${group_id}/`,
+            },
+          }),
+        );
+      }
       dispatch(
         groupActions.leaderChange({
           group_id: group_id,
@@ -33,6 +50,20 @@ export const MemberElement = (props: IProps) => {
   };
   const postRequestClick = () => {
     if (group_id) {
+      if (user && socket) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'group',
+              info: props.username,
+              content: `그룹 참여가 승인되었습니다!`,
+              image: user.image,
+              link: `/group/detail/${group_id}/`,
+            },
+          }),
+        );
+      }
       dispatch(
         groupActions.postRequest({
           group_id: group_id,
@@ -43,6 +74,20 @@ export const MemberElement = (props: IProps) => {
   };
   const deleteRequestClick = () => {
     if (group_id) {
+      if (user && socket) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'group',
+              info: props.username,
+              content: `그룹 참여가 거절되었습니다.`,
+              image: user.image,
+              link: `/group/detail/${group_id}/`,
+            },
+          }),
+        );
+      }
       dispatch(
         groupActions.deleteRequest({
           group_id: group_id,
