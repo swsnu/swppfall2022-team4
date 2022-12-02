@@ -53,15 +53,17 @@ export const MemberElement = (props: IProps) => {
   };
 
   return (
-    <MemberElementWrapper>
+    <MemberElementWrapper className={props.myself ? 'myself' : 'others'}>
       <ProfileImage
         src={process.env.REACT_APP_API_IMAGE + props.image}
         alt="profile"
         onClick={() => navigate(`/profile/${props.username}`)}
       />
       <MemberElementLineWrapper>
-        <MemberElementLine style={{ fontWeight: '600' }}>{props.username}</MemberElementLine>
-        {props.cert_days != null && <MemberElementLine>Cert_days: {props.cert_days}</MemberElementLine>}
+        <MemberElementLine style={{ fontWeight: '600' }}>
+          {props.leader && props.myself ? '👑 ' + props.username : props.username}
+        </MemberElementLine>
+        {props.cert_days != null && <CertElementLine>{props.cert_days} 일째 인증 중!</CertElementLine>}
         <MemberElementLine>Level: {props.level}</MemberElementLine>
       </MemberElementLineWrapper>
       {props.leader && !props.myself && !props.request && (
@@ -99,6 +101,10 @@ const MemberElementWrapper = styled.div`
   background-color: #e4fff1;
   box-shadow: 1px 1px 1px 1px #d4eee0;
   padding: 15px;
+
+  &&.myself {
+    background-color: #5bc88f;
+  }
 `;
 const ProfileImage = styled.img`
   width: 80px;
@@ -119,6 +125,10 @@ const MemberElementLineWrapper = styled.div`
 const MemberElementLine = styled.div`
   font-size: 18px;
   font-family: IBMPlexSansThaiLooped;
+`;
+const CertElementLine = styled.div`
+  font-size: 18px;
+  font-family: FugazOne;
 `;
 
 const Button = styled.button`

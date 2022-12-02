@@ -139,8 +139,8 @@ const GroupDetail = () => {
           onClick={() => navigate(`/profile/${group_detail.group_leader.username}`)}
         />
         <div style={{ display: 'flex' }}>
-          <GroupAboutSmallText>그룹장:</GroupAboutSmallText>
-          <GroupAboutNickname>{group_detail.group_leader.nickname}</GroupAboutNickname>
+          <GroupAboutSmallText>그룹장 👑 :</GroupAboutSmallText>
+          <GroupAboutNickname>{group_detail.group_leader.username}</GroupAboutNickname>
         </div>
         <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
         <div>
