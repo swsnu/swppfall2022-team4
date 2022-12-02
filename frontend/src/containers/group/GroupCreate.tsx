@@ -123,6 +123,8 @@ const GroupCreate = () => {
       return;
     } else if (description === '') {
       alert('그룹에 대한 설명을 작성해야 합니다.');
+    } else if (place && clickedAddress === '') {
+      alert('그룹에 대한 장소를 설정해야 합니다.');
       return;
     }
 
