@@ -76,7 +76,7 @@ export const ArticleItemCompact = ({ post, onClick }: IpropsArticleItem) => (
       {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}{' '}
       <PostItemCommentNum>[{post.comments_num}]</PostItemCommentNum>
     </PostTitle>
-    <span>{post.author.nickname}</span>
+    <UserBadge nickname={post.author.nickname} level={post.author.level} />
   </ArticleItemComp>
 );
 

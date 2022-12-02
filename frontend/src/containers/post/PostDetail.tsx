@@ -816,11 +816,11 @@ export const CommentFuncWrapper = styled.div`
 export const handleFuncBtnColor = (color: string) => {
   switch (color) {
     case FuncType.Like:
-      return '#ff0000';
+      return '#dc6868';
     case FuncType.Dislike:
-      return '#0000ff';
+      return '#7878be';
     case FuncType.Scrap:
-      return '#dddd00';
+      return '#ebeb00';
     default:
       return '#dddddd';
   }

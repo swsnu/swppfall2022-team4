@@ -41,6 +41,7 @@ def prepare_comment_response(comment, is_detail=False, username=''):
     if is_detail:
         response["liked"] = comment.liker.all().filter(username=username).exists()
         response["disliked"] = comment.disliker.all().filter(username=username).exists()
+        response["post_title"] = comment.post.title
     return response
 
 

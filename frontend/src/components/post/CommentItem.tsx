@@ -1,13 +1,11 @@
 import { Comment } from 'store/apis/comment';
 import styled from 'styled-components';
 import {
-  CommentContent,
   CommentContentWrapper,
   FuncBtn,
   CommentFuncNumIndicator,
   CommentFuncTimeIndicator,
   FuncType,
-  IPropsComment,
 } from 'containers/post/PostDetail';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -29,7 +27,7 @@ export const CommentItemHeader = () => (
 );
 
 export const CommentItemMyPage = ({ comment, onClick }: IpropsCommentItem) => (
-  <CommentItem key={comment.comment_id} isChild={comment.parent_comment !== null} onClick={onClick}>
+  <CommentItem key={comment.comment_id} onClick={onClick}>
     {comment.parent_comment !== null ? (
       <CommentChildIndicator>
         <FontAwesomeIcon icon={faArrowRight} />
@@ -38,7 +36,14 @@ export const CommentItemMyPage = ({ comment, onClick }: IpropsCommentItem) => (
       <div></div>
     )}
     <CommentContentWrapper>
-      <CommentContent>{comment.content}</CommentContent>
+      <CommentContent>
+        <span>{comment.content}</span>
+        {comment.parent_comment !== null ? (
+          <span>'{comment.post_title}' 제목의 글에 작성한 답글이에요.</span>
+        ) : (
+          <span>'{comment.post_title}' 제목의 글에 작성한 댓글이에요.</span>
+        )}
+      </CommentContent>
     </CommentContentWrapper>
     <CommentFuncWrapper>
       <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
@@ -69,27 +74,35 @@ const CommentHeaderWrapper = styled(CommentItemGrid)`
   border-bottom: 1px solid black;
 `;
 
-const CommentItem = styled(CommentItemGrid)<IPropsComment>`
+const CommentItem = styled(CommentItemGrid)`
   padding: 8px 30px;
-  font-size: 14px;
+  font-size: 12px;
   width: 100%;
   border-bottom: 1px solid gray;
   cursor: pointer;
-  /* ${({ isChild }) =>
-    isChild &&
-    `
-    padding-left: 30px;
-  `} */
   background-color: #ffffff;
 `;
+
+const CommentContent = styled.div`
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  > span:last-child {
+    font-size: 10px;
+    width: 100%;
+    color: var(--fit-support-gray);
+    margin-top: 5px;
+  }
+`;
+
 const CommentChildIndicator = styled.div`
   margin-right: 12px;
 `;
 
 const CommentFuncWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  width: 40%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 `;
