@@ -181,7 +181,7 @@ const GroupList = () => {
       <UnderSearch>
         <div style={{ paddingLeft: '30px' }}>
           {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
-          {currentAddressName && <div>{`유저의 위치는 ${currentAddressName} 입니다`}</div>}
+          <div>{currentAddressName ? `유저의 위치는 ${currentAddressName} 입니다` : `위치를 불러오는 중입니다.`}</div>
         </div>
         <div style={{ display: 'flex', paddingRight: '30px' }}>
           <SortButton onClick={orderRecentClicked} style={recent ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
