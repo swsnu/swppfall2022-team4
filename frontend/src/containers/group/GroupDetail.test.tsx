@@ -226,7 +226,7 @@ describe('setup test', () => {
     expect(mockNavigate).toBeCalledWith('/group/detail/1/member');
 
     fireEvent.click(deleteBtn);
-    expect(confirmMock).toBeCalledWith('삭제하시겠습니까?');
+    expect(confirmMock).toBeCalledWith('정말 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
     expect(mockNavigate).toBeCalledTimes(1);
 
     fireEvent.click(CertBtn);
