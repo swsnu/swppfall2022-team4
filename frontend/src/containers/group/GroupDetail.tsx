@@ -66,13 +66,13 @@ const GroupDetail = () => {
     }
   };
   const exitOnClick = () => {
-    if (group_id) {
-      dispatch(groupActions.exitGroup(group_id));
+    if (confirm('정말 그룹을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 업습니다.?')) {
+      if (group_id) dispatch(groupActions.exitGroup(group_id));
     }
   };
   const deleteOnClick = () => {
     // eslint-disable-next-line no-restricted-globals
-    if (confirm('삭제하시겠습니까?')) {
+    if (confirm('정말 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 업습니다.')) {
       if (group_id) dispatch(groupActions.deleteGroup(group_id));
     }
   };
