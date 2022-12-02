@@ -127,7 +127,7 @@ const GroupDetail = () => {
         )}
         {member_status === 'request_member' && (
           <div style={{ display: 'flex', gap: '15px', paddingLeft: '160%' }}>
-            <GroupButton1 content="Pending" clicked={joinOnClick} disable={done} />
+            <GroupButton1 content="Pending" clicked={joinOnClick} disable={true} />
           </div>
         )}
       </div>
