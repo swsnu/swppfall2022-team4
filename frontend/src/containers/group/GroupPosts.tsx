@@ -8,21 +8,24 @@ import { BlueBigBtn } from 'components/post/button';
 import { PostContentWrapper, PostPageWrapper } from 'components/post/layout';
 import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { ArticleHeader, ArticleItemDefault } from 'components/post/ArticleItem';
+import { groupActions } from 'store/slices/group';
+import { TagBubble } from 'components/tag/tagbubble';
 
 const GroupPosts = () => {
   const { group_id } = useParams<{ group_id: string }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { postList } = useSelector(({ post, tag, user }: RootState) => ({
+  const { postList, group } = useSelector(({ post, user, group }: RootState) => ({
     postList: post.postList.posts,
-    tagList: tag.tagList,
     user: user.user,
+    group: group.groupDetail.group,
   }));
 
   // If user is not belong to this group...
   useEffect(() => {
     if (group_id) {
+      dispatch(groupActions.getGroupDetail(group_id));
       dispatch(
         postActions.getGroupPosts({
           group_id,
@@ -34,7 +37,19 @@ const GroupPosts = () => {
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <div></div>
+        <div>
+          Group Post Header
+          <span>이름 {group?.group_name}</span>
+          <span>주소 {group?.address}</span>
+          <span>설명 {group?.description}</span>
+          <span>
+            {group?.tags.map(tag => (
+              <TagBubble key={tag.id} color={tag.color}>
+                {tag.name}
+              </TagBubble>
+            ))}
+          </span>
+        </div>
         <div>
           <ArticleListWrapper className={`${postList?.length == 20 && 'full'}`}>
             <ArticleHeader />

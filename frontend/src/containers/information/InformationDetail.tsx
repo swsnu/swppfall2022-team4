@@ -63,8 +63,8 @@ const InformationDetail = () => {
             <SectionSubWrapper>
               <BasicItemWrapper>
                 {info.contents?.groups.length !== 0 ? (
-                  info.contents?.groups.map(group => (
-                    <GroupItemWrapper key={group.id} onClick={() => navigate(`/group/detail/${group.id}`)}>
+                  info.contents?.groups.map((group, index) => (
+                    <GroupItemWrapper key={index} onClick={() => navigate(`/group/detail/${group.id}`)}>
                       <GroupName>
                         <span>{group.group_name}</span>
                         {group.prime_tag ? (

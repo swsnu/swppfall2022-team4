@@ -37,11 +37,10 @@ interface IPropsTagSelector {
   setTagContent?: (value: React.SetStateAction<TagContent>) => void;
   tagOnChange: (tag: TagVisual) => void;
   tagOnRemove: (tagId: string) => void;
-  searchedTagOnClick: (tag: TagVisual) => void;
   setPrimeTag: (prime_tag: TagVisual | undefined) => void;
 }
 
-const TagSelector = ({ tagContent, tagOnChange, tagOnRemove, searchedTagOnClick, setPrimeTag }: IPropsTagSelector) => {
+const TagSelector = ({ tagContent, tagOnChange, tagOnRemove, setPrimeTag }: IPropsTagSelector) => {
   const dispatch = useDispatch();
 
   const [tagInput, setTagInput] = useState(''); // Tag creation name input
@@ -125,7 +124,7 @@ const TagSelector = ({ tagContent, tagOnChange, tagOnRemove, searchedTagOnClick,
                     data-testid={`searchedTag-${tag.id}`}
                     key={tag.id}
                     color={tag.color}
-                    onClick={() => searchedTagOnClick(tag)}
+                    onClick={() => tagOnChange(tag)}
                   >
                     {tag.name}
                   </TagBubble>

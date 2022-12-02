@@ -106,12 +106,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
       else return s;
     });
   };
-  const searchedTagOnClick = (tag: TagVisual) => {
-    setSelectedTags(s => {
-      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
-      else return s;
-    });
-  };
   const tagOnRemove = (tagId: string) => {
     setSelectedTags(s => s.filter(item => item.id != tagId));
     if (postContent.prime_tag && postContent.prime_tag.id == tagId) {
@@ -223,7 +217,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             }}
             tagOnChange={tagOnChange}
             tagOnRemove={tagOnRemove}
-            searchedTagOnClick={searchedTagOnClick}
             setPrimeTag={setPrimeTag}
           />
         </Main_SideWrapper>
