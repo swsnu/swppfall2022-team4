@@ -9,6 +9,8 @@ import { Youtube } from 'store/apis/information';
 import { ArticleItemCompact } from 'components/post/ArticleItem';
 import { ScrollShadow } from 'components/common/ScrollShadow';
 import { get_image } from 'components/fitelement/FitElement';
+import { BsFillPersonFill } from 'react-icons/bs';
+import { TagBubble } from 'components/tag/tagbubble';
 
 interface InfoPageYoutubeIprops {
   youtube: Youtube;
@@ -60,16 +62,47 @@ const InformationDetail = () => {
           <SectionWrapper>
             <SectionSubWrapper>
               <BasicItemWrapper>
-                <span>Tagged Group</span>
+                {info.contents?.groups.length !== 0 ? (
+                  info.contents?.groups.map(group => (
+                    <GroupItemWrapper key={group.id} onClick={() => navigate(`/group/detail/${group.id}`)}>
+                      <GroupName>
+                        <span>{group.group_name}</span>
+                        {group.prime_tag ? (
+                          <TagBubble color={group.prime_tag.color}>{group.prime_tag.name}</TagBubble>
+                        ) : (
+                          <TagBubble color={'#dbdbdb'}>None</TagBubble>
+                        )}
+                      </GroupName>
+                      <GroupSmallWrapper>
+                        <div style={{ display: 'flex' }}>
+                          <BsFillPersonFill />
+                          <div
+                            style={{ fontSize: '15px', fontFamily: 'Noto Sans KR' }}
+                          >{`멤버 ${group.member_number}명`}</div>
+                        </div>
+
+                        <div style={{ fontSize: '15px', fontFamily: 'Noto Sans KR' }}>
+                          {group.start_date ? `${group.start_date} ~ ${group.end_date}` : ``}
+                        </div>
+                      </GroupSmallWrapper>
+                    </GroupItemWrapper>
+                  ))
+                ) : (
+                  <EmptyContent>태그된 그룹이 없습니다.</EmptyContent>
+                )}
               </BasicItemWrapper>
               <ArticleItemWrapper>
-                {info.contents?.posts.map(post => (
-                  <ArticleItemCompact
-                    key={post.post_id}
-                    post={post}
-                    onClick={() => navigate(`/post/${post.post_id}`)}
-                  />
-                ))}
+                {info.contents?.posts.length !== 0 ? (
+                  info.contents?.posts.map(post => (
+                    <ArticleItemCompact
+                      key={post.post_id}
+                      post={post}
+                      onClick={() => navigate(`/post/${post.post_id}`)}
+                    />
+                  ))
+                ) : (
+                  <EmptyContent>태그된 게시물이 없습니다.</EmptyContent>
+                )}
               </ArticleItemWrapper>
             </SectionSubWrapper>
             <YoutubeItemWrapper>
@@ -263,6 +296,61 @@ const YoutubeTitle = styled.span`
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
   white-space: normal;
+`;
+
+const EmptyContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: var(--fit-support-gray);
+`;
+
+const GroupItemWrapper = styled.div`
+  background-color: #f5fffd;
+  width: 100%;
+  height: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-family: NanumSquareR;
+  border: 1px solid #dbdbdb;
+  border-radius: 15px;
+  padding: 10px;
+  transition: border 0.15s linear;
+  cursor: pointer;
+  &:hover {
+    border: 1px solid #757575;
+  }
+`;
+const GroupName = styled.div`
+  width: 100%;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: normal;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > button {
+    margin-left: 12px;
+  }
+`;
+const GroupSmallWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  svg {
+    color: #2da782;
+    margin-right: 3px;
+  }
 `;
 
 export default InformationDetail;

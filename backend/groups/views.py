@@ -8,6 +8,39 @@ from tags.models import Tag, TagClass
 from workouts.models import FitElement
 from datetime import datetime
 
+def prepare_groups_response(groups, user):
+    result = []
+    for gr_obj in groups:
+        my_group = "not_member"
+        if gr_obj.group_leader.username == user.username:
+            my_group = "group_leader"
+        elif gr_obj.members.filter(username=user.username):
+            my_group = "group_member"
+        result.append(
+            {
+                "id": gr_obj.id,
+                "group_name": gr_obj.group_name,
+                "number": gr_obj.number,
+                "start_date": gr_obj.start_date,
+                "end_date": gr_obj.end_date,
+                "member_number": gr_obj.member_number,
+                "free": gr_obj.free,
+                "lat": gr_obj.lat,
+                "lng": gr_obj.lng,
+                "address": gr_obj.address,
+                "my_group": my_group,
+                "prime_tag": gr_obj.prime_tag,
+            }
+        )
+    for group in result:
+        if group['prime_tag']:
+            prime_tag = group['prime_tag']
+            group["prime_tag"] = {
+                "id": prime_tag.pk,
+                "name": prime_tag.tag_name,
+                "color": prime_tag.tag_class.color,
+            }
+    return result
 
 def return_cert(certs):
     result = []
@@ -54,37 +87,7 @@ def general_group(request):
     POST : create group
     """
     if request.method == 'GET':
-        result = []
-        for gr_obj in Group.objects.all():
-            my_group = "not_member"
-            if gr_obj.group_leader.username == request.user.username:
-                my_group = "group_leader"
-            elif gr_obj.members.filter(username=request.user.username):
-                my_group = "group_member"
-            result.append(
-                {
-                    "id": gr_obj.id,
-                    "group_name": gr_obj.group_name,
-                    "number": gr_obj.number,
-                    "start_date": gr_obj.start_date,
-                    "end_date": gr_obj.end_date,
-                    "member_number": gr_obj.member_number,
-                    "free": gr_obj.free,
-                    "lat": gr_obj.lat,
-                    "lng": gr_obj.lng,
-                    "address": gr_obj.address,
-                    "my_group": my_group,
-                    "prime_tag": gr_obj.prime_tag,
-                }
-            )
-        for group in result:
-            if group['prime_tag']:
-                prime_tag = group['prime_tag']
-                group["prime_tag"] = {
-                    "id": prime_tag.pk,
-                    "name": prime_tag.tag_name,
-                    "color": prime_tag.tag_class.color,
-                }
+        result = prepare_groups_response(Group.objects.all(), request.user)
         return JsonResponse({"groups": result}, safe=False)
 
     else:  ## post
