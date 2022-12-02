@@ -67,7 +67,7 @@ const GroupDetail = () => {
     }
   };
   const exitOnClick = () => {
-    if (confirm('정말 그룹을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.?')) {
+    if (confirm('정말 그룹을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
       if (group_id) dispatch(groupActions.exitGroup(group_id));
     }
   };
@@ -197,7 +197,6 @@ const GroupDetail = () => {
             <div style={{ paddingLeft: '12%' }}>Time</div>
           </FitHeader>
           {group_detail.goal.map((goal, index) => {
-            console.log(goal);
             return (
               <FitElement
                 key={index}
