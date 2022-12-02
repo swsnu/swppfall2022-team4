@@ -104,7 +104,7 @@ const GroupDetail = () => {
         {member_status === 'group_leader' && (
           <div style={{ display: 'flex', gap: '15px' }}>
             <GroupButton2 content="Cert" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
-            <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/chat/${group_id}`)} />
+            <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/group/chat/${group_id}`)} />
             <GroupButton2 content="Member" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
             <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
             <GroupButton2 content="Join Req" end={done} clicked={() => navigate(`/group/detail/${group_id}/joinReq`)} />
@@ -114,7 +114,7 @@ const GroupDetail = () => {
         {member_status === 'group_member' && (
           <div style={{ display: 'flex', gap: '15px' }}>
             <GroupButton2 content="Cert" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
-            <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/chat/${group_id}`)} />
+            <GroupButton2 content="Chat" end={done} clicked={() => navigate(`/group/chat/${group_id}`)} />
             <GroupButton2 content="Member" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
             <Button1 content="Post" clicked={() => navigate(`/group/detail/${group_id}/post`)} />
             <GroupButton2 content="Leave" end={done} clicked={exitOnClick} />
