@@ -56,6 +56,7 @@ const GroupCert = () => {
       dispatch(groupActions.getCerts(dayilycert));
     }
     if (str_today < year + '-' + (month + 1) + '-' + d) setFuture(true);
+    else setFuture(false);
   };
   const setGoal = (id: number) => {
     if (group_detail) {
