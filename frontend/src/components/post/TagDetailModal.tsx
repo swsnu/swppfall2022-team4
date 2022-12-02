@@ -249,16 +249,18 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                       <ModalDescriptionSection>
                         <span>태그로 설정한 글의 개수 순위입니다.</span>
                       </ModalDescriptionSection>
-                      <TagClassSection>
+                      <TagRankingSection>
                         {popularTags?.map((tag, index) => (
                           <TagRankingItem key={index}>
                             <span>{index + 1} 위</span>
-                            <TagBubble key={tag.id} color={tag.color}>
-                              {tag.name} | 글 {tag.posts} 개
-                            </TagBubble>
+                            <div>
+                              <TagBubble key={tag.id} color={tag.color}>
+                                {tag.name} | 글 {tag.posts} 개
+                              </TagBubble>
+                            </div>
                           </TagRankingItem>
                         ))}
-                      </TagClassSection>
+                      </TagRankingSection>
                     </ColumnCenterFlex>
                   ),
                 }[type]
@@ -367,7 +369,7 @@ const ModalDescriptionSection = styled.div`
   margin-top: 5px;
   padding: 0px 20px 10px 20px;
 
-  > span {
+  span {
     font-size: 15px;
     text-align: left;
   }
@@ -404,6 +406,34 @@ const TagClassSection = styled.div`
     min-height: 40px;
     flex-direction: row;
     overflow-x: auto;
+  }
+`;
+
+const TagRankingSection = styled.div`
+  display: flex;
+  width: 1000px;
+  flex-direction: column;
+  align-items: flex-start;
+  > div:first-child {
+    border-top: 0.2px solid var(--fit-support-gray-bright);
+  }
+`;
+const TagRankingItem = styled.div`
+  display: grid;
+  grid-template-columns: 10fr 80fr;
+  align-items: center;
+  justify-content: space-around;
+  border-bottom: 0.2px solid var(--fit-support-gray-bright);
+  width: 100%;
+  padding: 15px 10px 15px 100px;
+  > span:first-child {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  > div:last-child {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 `;
 
@@ -452,13 +482,6 @@ const Divdiv = styled.div`
 const ModalCloseBtn = styled.div`
   width: fit-content;
   cursor: pointer;
-`;
-
-const TagRankingItem = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 5px 10px;
 `;
 
 const CategoryWrapper = styled.div`
