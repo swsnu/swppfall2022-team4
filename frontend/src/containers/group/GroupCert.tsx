@@ -8,8 +8,9 @@ import { groupActions } from 'store/slices/group';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
 import Loading from 'components/common/Loading';
-import { certRequestType, Fitelement, getCertsRequestType } from 'store/apis/group';
+import { certRequestType, Fitelement, getCertsRequestType, MemberCert } from 'store/apis/group';
 import Button4 from 'components/common/buttons/Button4';
+import { all } from 'redux-saga/effects';
 
 const GroupCert = () => {
   const dispatch = useDispatch();
@@ -65,14 +66,28 @@ const GroupCert = () => {
   const submitCert = () => {
     if (group_id && selectedGoal) {
       setDate(new Date(selected_year, selected_month, selected_date));
-      const createCertRequest: certRequestType = {
-        group_id: group_id,
-        fitelement_id: selectedGoal.id,
-        year: selected_year,
-        month: selected_month + 1,
-        specific_date: selected_date,
-      };
-      dispatch(groupActions.createCert(createCertRequest));
+      //check already
+      let submit = true;
+      all_certs?.forEach(m => {
+        if (m.member.username == user.user?.username) {
+          m.certs.forEach(id => {
+            if (id.id == selectedGoal.id) {
+              alert('이미 인증된 목표입니다.');
+              submit = false;
+            }
+          });
+        }
+      });
+      if (submit) {
+        const createCertRequest: certRequestType = {
+          group_id: group_id,
+          fitelement_id: selectedGoal.id,
+          year: selected_year,
+          month: selected_month + 1,
+          specific_date: selected_date,
+        };
+        dispatch(groupActions.createCert(createCertRequest));
+      }
     }
   };
   const deleteCert = (id: number) => {
