@@ -54,7 +54,11 @@ export const MemberElement = (props: IProps) => {
 
   return (
     <MemberElementWrapper>
-      <ProfileImage src={process.env.REACT_APP_API_IMAGE + props.image} alt="profile" />
+      <ProfileImage
+        src={process.env.REACT_APP_API_IMAGE + props.image}
+        alt="profile"
+        onClick={() => navigate(`/profile/${props.username}`)}
+      />
       <MemberElementLineWrapper>
         <MemberElementLine style={{ fontWeight: '600' }}>{props.username}</MemberElementLine>
         {props.cert_days != null && <MemberElementLine>Cert_days: {props.cert_days}</MemberElementLine>}
@@ -103,6 +107,7 @@ const ProfileImage = styled.img`
   border-radius: 10px;
   margin-right: 15px;
   background-color: #ffffff;
+  cursor: pointer;
 `;
 
 const MemberElementLineWrapper = styled.div`
