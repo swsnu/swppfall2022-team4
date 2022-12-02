@@ -513,11 +513,14 @@ const GroupCreate = () => {
                         ))}
                       </Map>
                       <div style={{ paddingTop: '15px', fontFamily: 'FugazOne' }}>
-                        {currentLocation.isLoading && <div>{'현위치를 불러오는 중입니다.'}</div>}
                         {currentLocation.errMsg && (
                           <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>
                         )}
-                        {currentLocation.center.lat && <div>{`현위치를 성공적으로 불렀습니다.`}</div>}
+                        <div>
+                          {currentLocation.isLoading
+                            ? '현위치를 불러오는 중입니다.'
+                            : '현위치를 성공적으로 불렀습니다.'}
+                        </div>
                       </div>
                     </>
                   )}
