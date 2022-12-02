@@ -153,6 +153,7 @@ export const groupSlice = createSlice({
       state.groupMembers.error = null;
     },
     getGroupMembersFailure: (state, { payload }) => {
+      state.groupMembers.members = null;
       state.groupMembers.error = payload;
     },
     joinGroup: (state, action: PayloadAction<string>) => {

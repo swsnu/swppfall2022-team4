@@ -158,4 +158,15 @@ describe('setup test', () => {
     });
     screen.getByText('username');
   });
+  it('loading', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupMembersFailure',
+        payload: null,
+      });
+    });
+    screen.getByText('FITogether');
+  });
 });
