@@ -27,7 +27,8 @@ const GroupDetail = () => {
 
   const [done, setDone] = useState(false);
   const today = new Date();
-  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  const date =
+    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
   useEffect(() => {
     if (group_id) {

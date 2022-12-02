@@ -17,7 +17,8 @@ export interface IProps {
 
 export const GroupElement = (props: IProps) => {
   const today = new Date();
-  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  const date =
+    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
   return (
     <GroupElementWrapper className={props.end_date && props.end_date < date ? 'end' : 'ing'} onClick={props.clicked}>

@@ -10,7 +10,6 @@ import { workoutLogActions } from 'store/slices/workout';
 import Loading from 'components/common/Loading';
 import { certRequestType, Fitelement, getCertsRequestType, MemberCert } from 'store/apis/group';
 import Button4 from 'components/common/buttons/Button4';
-import { all } from 'redux-saga/effects';
 
 const GroupCert = () => {
   const dispatch = useDispatch();
@@ -33,7 +32,8 @@ const GroupCert = () => {
   const [selectedGoal, setSelectedGoal] = useState<Fitelement | null>(null);
   const [done, setDone] = useState(false);
   const [future, setFuture] = useState(false);
-  const str_today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  const str_today =
+    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();

@@ -8,6 +8,7 @@ import GroupDetail from './GroupDetail';
 import * as groupApi from '../../store/apis/group';
 import { userType } from '../../store/apis/user';
 import Router from 'react-router-dom';
+import { TagVisual } from 'store/apis/tag';
 
 const user1: userType = {
   username: 'test',
@@ -15,11 +16,17 @@ const user1: userType = {
   image: 'image',
 };
 
+const single_tag: TagVisual = {
+  id: '1',
+  name: '데드리프트',
+  color: '#dbdbdb'
+}
+
 const fitelement1: groupApi.Fitelement = {
   id: 1,
   type: 'goal',
   workout_type: '실외 걷기',
-  category: 'etc',
+  category: '가슴운동',
   weight: 20,
   rep: 10,
   set: 10,
@@ -36,33 +43,15 @@ const groupDetailResponse: groupApi.getGroupDetailResponseType = {
   group_leader: user1,
   member_number: 3,
   description: 'test',
-  goal: [],
-  lat: null,
-  lng: null,
-  address: null,
-  tags: [],
-  prime_tag: undefined,
-};
-
-const placeDetailResponse: groupApi.getGroupDetailResponseType = {
-  group_id: 1,
-  group_name: 'group_name',
-  number: 10,
-  start_date: '2019-01-01',
-  end_date: '2019-01-01',
-  free: true,
-  group_leader: user1,
-  member_number: 3,
-  description: 'test',
-  goal: [],
+  goal: [fitelement1],
   lat: 31,
   lng: 126,
   address: '봉천동',
-  tags: [],
-  prime_tag: undefined,
+  tags: [single_tag],
+  prime_tag: single_tag,
 };
 
-const nullResponse1: groupApi.getGroupDetailResponseType = {
+const nullResponse: groupApi.getGroupDetailResponseType = {
   group_id: 1,
   group_name: 'group_name',
   number: 3,
@@ -72,30 +61,12 @@ const nullResponse1: groupApi.getGroupDetailResponseType = {
   group_leader: user1,
   member_number: 3,
   description: 'test',
-  goal: [],
+  goal: [fitelement1],
   lat: null,
   lng: null,
   address: null,
-  tags: [],
-  prime_tag: undefined,
-};
-
-const nullResponse2: groupApi.getGroupDetailResponseType = {
-  group_id: 1,
-  group_name: 'group_name',
-  number: null,
-  start_date: '2019-01-01',
-  end_date: '2019-12-31',
-  free: true,
-  group_leader: user1,
-  member_number: 3,
-  description: 'test',
-  goal: [],
-  lat: null,
-  lng: null,
-  address: null,
-  tags: [],
-  prime_tag: undefined,
+  tags: [single_tag],
+  prime_tag: single_tag,
 };
 
 const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {
@@ -172,7 +143,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailSuccess',
-        payload: placeDetailResponse,
+        payload: groupDetailResponse,
       });
     });
     screen.getByText('Place');
@@ -184,7 +155,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailSuccess',
-        payload: nullResponse1,
+        payload: nullResponse,
       });
     });
     screen.getByText('기간 없음');
@@ -197,7 +168,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailSuccess',
-        payload: nullResponse2,
+        payload: nullResponse,
       });
     });
     screen.getByText('인원수: 3명');
@@ -210,7 +181,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailSuccess',
-        payload: nullResponse1,
+        payload: nullResponse,
       });
       store.dispatch({
         type: 'group/checkMemberStatusSuccess',
@@ -241,7 +212,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailSuccess',
-        payload: nullResponse1,
+        payload: nullResponse,
       });
       store.dispatch({
         type: 'group/checkMemberStatusSuccess',
@@ -271,7 +242,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailSuccess',
-        payload: nullResponse2,
+        payload: nullResponse,
       });
       store.dispatch({
         type: 'group/checkMemberStatusSuccess',
@@ -291,7 +262,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailSuccess',
-        payload: nullResponse1,
+        payload: nullResponse,
       });
       store.dispatch({
         type: 'group/checkMemberStatusSuccess',
