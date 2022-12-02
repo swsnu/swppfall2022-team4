@@ -479,7 +479,7 @@ const LogBody = styled.div`
   align-items: start;
   font-weight: normal;
   max-height: 62vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 `;
 
 const TitleWrapper = styled.div`
