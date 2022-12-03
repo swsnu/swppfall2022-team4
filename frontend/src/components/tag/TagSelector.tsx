@@ -281,6 +281,7 @@ const TagWrapperIn = styled(ColumnFlex)`
   width: 100%;
   justify-content: flex-start;
   background-color: var(--fit-white);
+  border-radius: 15px;
 `;
 
 const TagWrapper = styled(ColumnFlex)`
@@ -290,6 +291,7 @@ const TagWrapper = styled(ColumnFlex)`
   height: 60%;
   max-height: 480px;
   overflow-y: auto;
+  border-radius: 15px;
 `;
 
 const PrimeTagDivWrapper = styled.div`
@@ -309,6 +311,7 @@ const PrimeTagWrapper = styled(ColumnFlex)`
   background-color: var(--fit-white);
   margin-top: 15px;
   height: fit-content;
+  border-radius: 15px;
 `;
 
 const TagInput = styled.input`
