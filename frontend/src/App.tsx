@@ -45,7 +45,6 @@ import GroupChat from 'containers/group/GroupChat';
 import InformationDetail from 'containers/information/InformationDetail';
 import GroupPosts from 'containers/group/GroupPosts';
 import GroupPostDetail from 'containers/group/GroupPostDetail';
-import GroupPostCreate from 'containers/group/GroupPostCreate';
 import GroupPostEdit from 'containers/group/GroupPostEdit';
 
 const GlobalStyles = createGlobalStyle`
@@ -175,7 +174,7 @@ const InsideComponent = () => {
                 <Route path="detail/:group_id/member" element={<GroupMembers />} />
                 <Route path="detail/:group_id/joinReq" element={<GroupJoinReq />} />
                 <Route path="detail/:group_id/post" element={<GroupPosts />} />
-                <Route path="detail/:group_id/post/create" element={<GroupPostCreate />} />
+                <Route path="detail/:group_id/post/create" element={<PostCreate />} />
                 <Route path="detail/:group_id/post/:post_id" element={<GroupPostDetail />} />
                 <Route path="detail/:group_id/post/:post_id/edit" element={<GroupPostEdit />} />
                 <Route path="create" element={<GroupCreate />} />

@@ -54,6 +54,8 @@ import {
   TagBubbleWrapper,
   UserAvatar,
 } from 'containers/post/PostDetail';
+import { RoutineInfo } from 'components/post/RoutineInfo';
+import { GroupInfo } from 'components/post/GroupInfo';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -523,19 +525,23 @@ const GroupPostDetail = () => {
                     </PostWritterWrapper>
                   </ArticleTitleWrapper>
                   <ArticleBodyContent>{post.content}</ArticleBodyContent>
+                  <RoutineInfo routine={post.routine} />
                   <ContentImageSection>
-                    {post.images?.map((img, index) => (
-                      <PostUploadedImageWrapper key={index}>
-                        <img
-                          src={process.env.REACT_APP_API_IMAGE + img}
-                          onClick={() => {
-                            setActiveImage(img);
-                            setImageModalOpen(true);
-                          }}
-                          data-testid="postImage"
-                        />
-                      </PostUploadedImageWrapper>
-                    ))}
+                    {post.images?.length !== 0 && <span>이미지</span>}
+                    <div>
+                      {post.images?.map((img, index) => (
+                        <PostUploadedImageWrapper key={index}>
+                          <img
+                            src={process.env.REACT_APP_API_IMAGE + img}
+                            onClick={() => {
+                              setActiveImage(img);
+                              setImageModalOpen(true);
+                            }}
+                            data-testid="postImage"
+                          />
+                        </PostUploadedImageWrapper>
+                      ))}
+                    </div>
                   </ContentImageSection>
                   <ArticleBodyFooter>
                     <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
@@ -597,7 +603,10 @@ const GroupPostDetail = () => {
               <LoadingWithoutMinHeight />
             )}
           </ArticleDetailWrapper>
-          <div>{PostAuthorPanel}</div>
+          <div>
+            {PostAuthorPanel}
+            <GroupInfo group={post?.group} navigate={navigate} />
+          </div>
         </div>
       </PostContentWrapper>
       {ImageDetailModal({
