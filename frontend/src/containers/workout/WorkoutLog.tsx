@@ -608,7 +608,6 @@ const WorkoutLog = () => {
               </DateWrapper>
               <AnyButton onClick={() => routineClick()}>루틴</AnyButton>
               <AnyButton
-                className="disable-type"
                 disabled={
                   isCopy
                     ? copy_date.getFullYear() === selected_year &&
@@ -623,13 +622,11 @@ const WorkoutLog = () => {
                 불러오기
               </AnyButton>
               <AnyButton
-                className="disable-type"
                 disabled={(dailyLog.fit_element === null || dailyLog.fit_element.length) === 0 ? true : false}
                 onClick={() => copyDailyLog()}
               >
                 내보내기
               </AnyButton>
-              <AnyButton>저장</AnyButton>
               <AnyButton onClick={() => addRoutineClick()}>루틴추가</AnyButton>
             </LogUpper>
             <Frame className="right">
@@ -1166,7 +1163,7 @@ const AnyButton = styled.button`
     height: 20px;
   }
 
-  &&.disable-type {
+  &:disabled {
     background-color: #d7efe3;
     cursor: default;
   }
