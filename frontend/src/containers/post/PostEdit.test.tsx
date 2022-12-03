@@ -72,7 +72,7 @@ describe('[PostEdit Page]', () => {
         payload: simplePosts[0],
       });
     });
-    expect(mockDispatch).toBeCalledTimes(2); // getTags, updatePostDetail
+    expect(mockDispatch).toBeCalledTimes(4); // getTags, updatePostDetail, getRoutine, getGroups
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
     expect(mockNavigate).toBeCalledTimes(0);
@@ -96,7 +96,7 @@ describe('[PostEdit Page]', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: undefined });
     setup();
 
-    expect(mockDispatch).toBeCalledTimes(1);
+    expect(mockDispatch).toBeCalledTimes(3); // updatePostDetail, getRoutine, getGroups
     expect(mockDispatch).not.toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
   });
   test('edit cancle button', () => {
@@ -112,7 +112,7 @@ describe('[PostEdit Page]', () => {
     setup();
     const confirmBtn = screen.getByText('완료');
     fireEvent.click(confirmBtn); // cannot click.
-    expect(mockDispatch).toBeCalledTimes(2); // getTags, updatePostDetail
+    expect(mockDispatch).toBeCalledTimes(4); // getTags, updatePostDetail, getRoutine, getGroups
   });
   test('edit confirm button after typing', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
@@ -127,7 +127,7 @@ describe('[PostEdit Page]', () => {
     userEvent.clear(contentInput);
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
-    expect(mockDispatch).toBeCalledTimes(3);
+    expect(mockDispatch).toBeCalledTimes(5); // getTags, getRoutine, getGroups, editPost, updatePostDetail
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });
     expect(mockDispatch).toBeCalledWith({
       payload: {
@@ -153,7 +153,7 @@ describe('[PostEdit Page]', () => {
     userEvent.type(titleInput, 'Rullu');
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
-    expect(mockDispatch).toBeCalledTimes(1);
+    expect(mockDispatch).toBeCalledTimes(3); // getTags, getRoutine, getGroups
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });
     expect(mockDispatch).not.toBeCalledWith({
       payload: {
@@ -178,7 +178,7 @@ describe('[PostEdit Page]', () => {
         payload: undefined,
       });
     });
-    expect(mockDispatch).toBeCalledTimes(4);
+    expect(mockDispatch).toBeCalledTimes(6); // getTags, updatePostDetail, stateRefresh, clearTagState, getRoutine, getGroups
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'post/stateRefresh' });
