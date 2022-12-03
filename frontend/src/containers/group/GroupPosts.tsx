@@ -10,6 +10,7 @@ import { LoadingWithoutMinHeight } from 'components/common/Loading';
 import { ArticleHeader, ArticleItemDefault } from 'components/post/ArticleItem';
 import { groupActions } from 'store/slices/group';
 import { TagBubble } from 'components/tag/tagbubble';
+import Button4 from 'components/common/buttons/Button4';
 
 const GroupPosts = () => {
   const { group_id } = useParams<{ group_id: string }>();
@@ -38,17 +39,22 @@ const GroupPosts = () => {
     <PostPageWrapper>
       <PostContentWrapper>
         <div>
-          Group Post Header
-          <span>이름 {group?.group_name}</span>
-          <span>주소 {group?.address}</span>
-          <span>설명 {group?.description}</span>
-          <span>
-            {group?.tags.map(tag => (
-              <TagBubble key={tag.id} color={tag.color}>
-                {tag.name}
-              </TagBubble>
-            ))}
-          </span>
+          <GroupInfoHeader>
+            <span>{group?.group_name}</span>
+            <span>{group?.address}</span>
+            <span>
+              {group?.tags.map(tag => (
+                <TagBubble key={tag.id} color={tag.color}>
+                  {tag.name}
+                </TagBubble>
+              ))}
+            </span>
+            <Button4
+              content="Back"
+              clicked={() => navigate(`/group/detail/${group_id}/`)}
+              style={{ alignSelf: 'start' }}
+            />
+          </GroupInfoHeader>
         </div>
         <div>
           <ArticleListWrapper className={`${postList?.length == 20 && 'full'}`}>
@@ -92,4 +98,26 @@ const ArticleListWrapper = styled.div`
   }
 `;
 
+const GroupInfoHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 30px;
+  position: relative;
+
+  > span:first-child {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  > span:nth-child(2) {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  > button {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+  }
+`;
 export default GroupPosts;
