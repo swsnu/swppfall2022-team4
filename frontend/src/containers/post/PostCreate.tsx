@@ -38,7 +38,6 @@ const PostCreate = () => {
   }, [postCreateStatus]);
   const confirmOnClick = () => {
     if (user) {
-      console.log(postContent);
       dispatch(
         postActions.createPost({
           ...postContent,

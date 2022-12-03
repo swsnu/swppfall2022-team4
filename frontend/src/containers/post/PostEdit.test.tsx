@@ -137,6 +137,8 @@ describe('[PostEdit Page]', () => {
         tags: [],
         images: [],
         prime_tag: undefined,
+        routine: '',
+        group: '',
       },
       type: 'post/editPost',
     });
@@ -160,6 +162,8 @@ describe('[PostEdit Page]', () => {
         content: 'Ralla',
         tags: [],
         prime_tag: undefined,
+        routine: '',
+        group: '',
       },
       type: 'post/editPost',
     });

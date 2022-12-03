@@ -58,7 +58,7 @@ const setup = () => {
   return store;
 };
 
-describe('[PostEdit Page]', () => {
+describe('[Group - PostEdit Page]', () => {
   test('basic rendering', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1', post_id: '1' });
     const store = setup();
@@ -137,6 +137,8 @@ describe('[PostEdit Page]', () => {
         tags: [],
         images: [],
         prime_tag: undefined,
+        routine: '',
+        group: '',
       },
       type: 'post/editPost',
     });
@@ -160,6 +162,8 @@ describe('[PostEdit Page]', () => {
         content: 'Ralla',
         tags: [],
         prime_tag: undefined,
+        routine: '',
+        group: '',
       },
       type: 'post/editPost',
     });

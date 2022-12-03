@@ -105,7 +105,7 @@ const setupWithoutUser = () => {
   return store;
 };
 
-describe('[PostCreate Page]', () => {
+describe('[Group - PostCreate Page]', () => {
   test('basic rendering', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
@@ -153,6 +153,8 @@ describe('[PostCreate Page]', () => {
         images: [],
         group_id: '1',
         prime_tag: undefined,
+        routine: '',
+        group: '',
       },
       type: 'post/createPost',
     });

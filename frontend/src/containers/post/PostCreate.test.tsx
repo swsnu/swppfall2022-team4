@@ -114,7 +114,7 @@ describe('[PostCreate Page]', () => {
         payload: getTagsResponse,
       });
     });
-    expect(mockDispatch).toBeCalledTimes(1); // getTags
+    expect(mockDispatch).toBeCalledTimes(3); // getTags, getRoutine, getGroups
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });
     expect(mockNavigate).toBeCalledTimes(0);
   });
@@ -129,7 +129,7 @@ describe('[PostCreate Page]', () => {
     setup();
     const confirmBtn = screen.getByText('완료');
     fireEvent.click(confirmBtn); // cannot click.
-    expect(mockDispatch).toBeCalledTimes(1); // getTags
+    expect(mockDispatch).toBeCalledTimes(3); // getTags
   });
   test('write confirm button after typing', () => {
     setup();
@@ -139,7 +139,7 @@ describe('[PostCreate Page]', () => {
     userEvent.type(titleInput, 'Rullu');
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
-    expect(mockDispatch).toBeCalledTimes(2);
+    expect(mockDispatch).toBeCalledTimes(4);
     expect(mockDispatch).toBeCalledWith({
       payload: {
         title: 'Rullu',
@@ -148,6 +148,8 @@ describe('[PostCreate Page]', () => {
         tags: [],
         images: [],
         prime_tag: undefined,
+        routine: '',
+        group: '',
       },
       type: 'post/createPost',
     });
@@ -160,7 +162,7 @@ describe('[PostCreate Page]', () => {
     userEvent.type(titleInput, 'Rullu');
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
-    expect(mockDispatch).toBeCalledTimes(1);
+    expect(mockDispatch).toBeCalledTimes(3);
   });
   test('post creation success', () => {
     const store = setup();
@@ -170,7 +172,7 @@ describe('[PostCreate Page]', () => {
         payload: createPostResponse,
       });
     });
-    expect(mockDispatch).toBeCalledTimes(3);
+    expect(mockDispatch).toBeCalledTimes(5);
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'post/stateRefresh' });
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/clearTagState' });
 

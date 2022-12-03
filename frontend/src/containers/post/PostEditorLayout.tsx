@@ -215,7 +215,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             <ContentRoutineSection>
               <SectionTitle>루틴</SectionTitle>
               <select
-                data-testid="tagSelect"
+                data-testid="routineSelect"
                 value={postContent.routine}
                 onChange={e => {
                   const targetValue = e.target.options[e.target.selectedIndex].value;
@@ -237,7 +237,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             <ContentGroupSection>
               <SectionTitle>그룹</SectionTitle>
               <select
-                data-testid="tagSelect"
+                data-testid="groupSelect"
                 value={postContent.group}
                 onChange={e => {
                   const targetValue = e.target.options[e.target.selectedIndex].value;
