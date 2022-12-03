@@ -202,6 +202,15 @@ describe('slices - posts', () => {
       [postActions.toggleCommentReply(createCommentReplyRequest), initialState],
       [postActions.toggleCommentEdit(editCommentRequest), initialState],
       [postActions.resetPost(), initialState],
+      [postActions.getGroupPosts({ group_id: '1' }), initialState],
+      [
+        postActions.getGroupPostsSuccess({ posts: 'data' }),
+        { ...initialState, postList: { ...initialState.postList, posts: 'data' } },
+      ],
+      [
+        postActions.getGroupPostsFailure('error'),
+        { ...initialState, postList: { ...initialState.postList, error: 'error' } },
+      ],
     ])('reducer', (action, state) => {
       const store = configureStore({
         reducer: rootReducer,
@@ -257,6 +266,21 @@ describe('slices - posts', () => {
         .hasFinalState({
           ...initialState,
           main: getPostsResponse.posts,
+        })
+        .silentRun();
+    });
+    test('getGroupPosts', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.getGroupPosts, { group_id: '1' }), { posts: 'data' }]])
+        .put({ type: 'post/getGroupPostsSuccess', payload: { posts: 'data' } })
+        .dispatch({ type: 'post/getGroupPosts', payload: { group_id: '1' } })
+        .hasFinalState({
+          ...initialState,
+          postList: {
+            ...initialState.postList,
+            posts: 'data',
+          },
         })
         .silentRun();
     });
@@ -428,6 +452,24 @@ describe('slices - posts', () => {
         .put({ type: 'post/getPostsMainFailure', payload: simpleError })
         .dispatch({ type: 'post/getPostsMain' })
         .hasFinalState(initialState)
+        .silentRun();
+    });
+    test('getGroupPosts', () => {
+      return expectSaga(postSaga)
+        .withReducer(postSlice.reducer)
+        .provide([[call(postAPI.getGroupPosts, { group_id: '1' }), throwError(simpleError)]])
+        .put({ type: 'post/getGroupPostsFailure', payload: simpleError })
+        .dispatch({ type: 'post/getGroupPosts', payload: { group_id: '1' } })
+        .hasFinalState({
+          ...initialState,
+          postList: {
+            posts: null,
+            pageNum: null,
+            pageSize: null,
+            pageTotal: null,
+            error: simpleError,
+          },
+        })
         .silentRun();
     });
     test('getPosts', () => {
