@@ -281,7 +281,7 @@ const LeftWrapper = styled.div`
   display: flex;
   margin-left: 30px;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   background-color: #ffffff;
 `;
@@ -293,24 +293,19 @@ const RightWrapper = styled.div`
   margin-right: 30px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
 `;
 
 const Frame = styled.div`
   width: 90%;
+  height: 100%;
   border: 1px solid black;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  &&.right {
-    height: 90%;
-    justify-content: center;
-    min-height: 70.2vh;
-  }
 `;
 
 const RoutineListWrapper = styled.div`
@@ -325,9 +320,11 @@ const RoutineListWrapper = styled.div`
 `;
 
 const LogWrapper = styled.div`
+  overflow: auto;
   width: 100%;
   height: 100%;
-  min-height: 80vh;
+  min-height: 70vh;
+  max-height: 70vh;
   display: flex;
   flex-direction: column;
   justify-content: start;
