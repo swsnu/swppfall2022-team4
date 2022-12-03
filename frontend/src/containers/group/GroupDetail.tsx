@@ -19,6 +19,8 @@ const GroupDetail = () => {
   const navigate = useNavigate();
 
   const { group_id } = useParams<{ group_id: string }>();
+  const user = useSelector(({ user }: RootState) => user.user);
+  const socket = useSelector(({ chat }: RootState) => chat.socket);
   const groupActionStatus = useSelector(({ group }: RootState) => group.groupAction.status);
   const group_detail = useSelector(({ group }: RootState) => group.groupDetail.group);
   const group_detail_error = useSelector(({ group }: RootState) => group.groupDetail.error);
@@ -62,11 +64,39 @@ const GroupDetail = () => {
     if (group_detail?.number == group_detail?.member_number) {
       alert('정원이 모두 찬 그룹입니다.');
     } else if (group_id) {
+      if (user && socket && group_detail) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'group',
+              info: group_detail.group_leader.username,
+              content: `${user.nickname}님이 내 그룹에 참여를 신청했습니다.`,
+              image: user.image,
+              link: `/group/detail/${group_id}/`,
+            },
+          }),
+        );
+      }
       dispatch(groupActions.joinGroup(group_id));
     }
   };
   const exitOnClick = () => {
     if (group_id) {
+      if (user && socket && group_detail) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'group',
+              info: group_detail.group_leader.username,
+              content: `${user.nickname}님이 내 그룹에서 탈퇴했습니다.`,
+              image: user.image,
+              link: `/group/detail/${group_id}/`,
+            },
+          }),
+        );
+      }
       dispatch(groupActions.exitGroup(group_id));
     }
   };

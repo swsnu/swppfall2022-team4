@@ -21,6 +21,7 @@ const GroupList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const user = useSelector((rootState: RootState) => rootState.user.user);
   const groupList = useSelector((rootState: RootState) => rootState.group.groupList.groups);
 
   const [groupListOrdered, setGroupListOrdered] = useState<Group[] | null>(null);
@@ -166,6 +167,7 @@ const GroupList = () => {
     }
   };
 
+  if (!user) return <div>no user</div>;
   if (!groupListOrdered) return <Loading />;
   return (
     <Wrapper>
@@ -179,24 +181,43 @@ const GroupList = () => {
         />
       </SearchWrapper>
       <UnderSearch>
-        <div style={{ paddingLeft: '30px' }}>
+        <div>
           {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
-          {currentAddressName && <div>{`유저의 위치는 ${currentAddressName} 입니다`}</div>}
+          {currentAddressName && (
+            <div style={{ fontSize: '18px', fontFamily: 'NanumSquareR' }}>
+              {`${user.nickname}님의 현위치는 "${currentAddressName}" 입니다.`}
+            </div>
+          )}
         </div>
-        <div style={{ display: 'flex', paddingRight: '30px' }}>
-          <SortButton onClick={orderRecentClicked} style={recent ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+        <div style={{ display: 'flex' }}>
+          <SortButton
+            onClick={orderRecentClicked}
+            style={recent ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
             최신순
           </SortButton>
-          <SortButton onClick={orderOldClicked} style={old ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+          <SortButton
+            onClick={orderOldClicked}
+            style={old ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
             오래된순
           </SortButton>
-          <SortButton onClick={orderCloseClicked} style={close ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+          <SortButton
+            onClick={orderCloseClicked}
+            style={close ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
             가까운순
           </SortButton>
-          <SortButton onClick={freeGroupClicked} style={freeGroup ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+          <SortButton
+            onClick={freeGroupClicked}
+            style={freeGroup ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
             자유가입
           </SortButton>
-          <SortButton onClick={myGroupClicked} style={mygroup ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+          <SortButton
+            onClick={myGroupClicked}
+            style={mygroup ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
             나의그룹
           </SortButton>
         </div>
@@ -277,7 +298,9 @@ const GroupListWrapper = styled.div`
 const SortButton = styled.div`
   cursor: pointer;
   padding: 5px;
-  font-size: 16px;
+  font-size: 17px;
+  font-family: 'Noto Sans KR';
+  color: #606060;
 `;
 
 const UnderSearch = styled.div`

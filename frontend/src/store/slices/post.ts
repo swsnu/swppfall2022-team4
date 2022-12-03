@@ -98,7 +98,6 @@ export const postSlice = createSlice({
     },
     getPostsMainFailure: (state, { payload }) => {
       state.main = null;
-      alert(payload.response?.data.message);
     },
 
     getPosts: (state, action: PayloadAction<postAPI.getPostsRequestType>) => {

@@ -151,7 +151,6 @@ describe('[Mypage Page]', () => {
     });
 
     test('notfound', () => {
-      const mockAlert = jest.spyOn(global, 'alert').mockImplementation(msg => msg);
       const store = setup();
       act(() => {
         store.dispatch({
@@ -159,7 +158,6 @@ describe('[Mypage Page]', () => {
           payload: { response: { status: 404, data: { message: 'error' } } },
         });
       });
-      expect(mockAlert).toBeCalledTimes(1);
       expect(mockNavigate).toBeCalledTimes(1);
     });
 

@@ -161,6 +161,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # info : 대상 username
                 target.append(data["info"])
 
+            elif data["category"] == "group":
+                # info : 대상 username
+                target.append(data["info"])
+
             else:
                 pass
 
