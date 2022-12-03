@@ -45,7 +45,6 @@ import GroupChat from 'containers/group/GroupChat';
 import InformationDetail from 'containers/information/InformationDetail';
 import GroupPosts from 'containers/group/GroupPosts';
 import GroupPostDetail from 'containers/group/GroupPostDetail';
-import GroupPostEdit from 'containers/group/GroupPostEdit';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -162,7 +161,7 @@ const InsideComponent = () => {
                 <Route path="" element={<PostMain />} />
                 <Route path="create" element={<PostCreate />} />
                 <Route path=":id" element={<PostDetail />} />
-                <Route path=":id/edit" element={<PostEdit />} />
+                <Route path=":post_id/edit" element={<PostEdit />} />
               </Route>
 
               <Route path="workout" element={<WorkoutLog />} />
@@ -176,7 +175,7 @@ const InsideComponent = () => {
                 <Route path="detail/:group_id/post" element={<GroupPosts />} />
                 <Route path="detail/:group_id/post/create" element={<PostCreate />} />
                 <Route path="detail/:group_id/post/:post_id" element={<GroupPostDetail />} />
-                <Route path="detail/:group_id/post/:post_id/edit" element={<GroupPostEdit />} />
+                <Route path="detail/:group_id/post/:post_id/edit" element={<PostEdit />} />
                 <Route path="create" element={<GroupCreate />} />
                 <Route path="detail/:group_id/cert" element={<GroupCert />} />
                 <Route path="chat/:group_id" element={<GroupChat />} />

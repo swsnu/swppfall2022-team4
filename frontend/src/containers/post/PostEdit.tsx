@@ -9,7 +9,7 @@ import { workoutLogActions } from 'store/slices/workout';
 import { groupActions } from 'store/slices/group';
 
 const PostEdit = () => {
-  const { id } = useParams<{ id: string }>();
+  const { group_id, post_id } = useParams<{ group_id: string; post_id: string }>();
 
   const [postContent, setPostContent] = useState<PostContent>(initialContent);
 
@@ -26,10 +26,10 @@ const PostEdit = () => {
       }),
     );
     dispatch(groupActions.getGroups());
-    if (id) {
+    if (post_id) {
       dispatch(
         postActions.updatePostDetail({
-          post_id: id,
+          post_id,
         }),
       );
     }
@@ -50,7 +50,8 @@ const PostEdit = () => {
   }, [post]);
   useEffect(() => {
     if (postEditStatus) {
-      navigate(`/post/${id}`);
+      if (group_id) navigate(`/group/detail/${group_id}/post/${post_id}`);
+      else navigate(`/post/${post_id}`);
       dispatch(postActions.stateRefresh());
       dispatch(tagActions.clearTagState());
     }
@@ -60,15 +61,16 @@ const PostEdit = () => {
 
   const cancelOnClick = () => {
     // alert('are you sure?');
-    navigate(`/post/${id}`);
+    if (group_id) navigate(`/group/detail/${group_id}/post/${post_id}`);
+    else navigate(`/post/${post_id}`);
     //TODO;
   };
   const confirmOnClick = () => {
-    if (user && id) {
+    if (user && post_id) {
       dispatch(
         postActions.editPost({
           ...postContent,
-          post_id: id,
+          post_id,
         }),
       );
     }

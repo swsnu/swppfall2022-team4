@@ -23,7 +23,6 @@ const PostCreate = () => {
     //TODO;
   };
   useEffect(() => {
-    console.log(group_id);
     dispatch(tagActions.getTags());
     dispatch(
       workoutLogActions.getRoutine({

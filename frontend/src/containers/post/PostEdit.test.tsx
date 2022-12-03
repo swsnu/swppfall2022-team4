@@ -60,7 +60,7 @@ const setup = () => {
 
 describe('[PostEdit Page]', () => {
   test('basic rendering', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -81,7 +81,7 @@ describe('[PostEdit Page]', () => {
   });
   test('basic rendering with images', () => {
     // Second post for has image
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '2' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '2' });
     const store = setup();
     act(() => {
       store.dispatch({
@@ -93,14 +93,14 @@ describe('[PostEdit Page]', () => {
     screen.getByDisplayValue('Second Post');
   });
   test('basic rendering with invalid id', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: undefined });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: undefined });
     setup();
 
     expect(mockDispatch).toBeCalledTimes(3); // updatePostDetail, getRoutine, getGroups
     expect(mockDispatch).not.toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
   });
   test('edit cancle button', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     setup();
     const cancelBtn = screen.getByText('취소');
     fireEvent.click(cancelBtn);
@@ -108,14 +108,14 @@ describe('[PostEdit Page]', () => {
     expect(mockNavigate).toBeCalledWith('/post/1');
   });
   test('edit confirm button', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     setup();
     const confirmBtn = screen.getByText('완료');
     fireEvent.click(confirmBtn); // cannot click.
     expect(mockDispatch).toBeCalledTimes(4); // getTags, updatePostDetail, getRoutine, getGroups
   });
   test('edit confirm button after typing', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     setup();
     const confirmBtn = screen.getByText('완료');
     const titleInput = screen.getByPlaceholderText('제목');
@@ -145,7 +145,7 @@ describe('[PostEdit Page]', () => {
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
   });
   test('edit confirm button after typing with invalid id', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: undefined });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: undefined });
     setup();
     const confirmBtn = screen.getByText('완료');
     const titleInput = screen.getByPlaceholderText('제목');
@@ -170,7 +170,7 @@ describe('[PostEdit Page]', () => {
     expect(mockDispatch).not.toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
   });
   test('post edit success', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = setup();
     act(() => {
       store.dispatch({
