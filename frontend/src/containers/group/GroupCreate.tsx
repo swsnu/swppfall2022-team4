@@ -645,6 +645,7 @@ const MapSearchInput = styled.input`
   border: none;
   border-bottom: 2px solid #929292;
   padding-bottom: 0px;
+  margin-bottom: 10px;
 `;
 
 const CreateCheck = styled.input`
