@@ -7,7 +7,7 @@ import { groupActions } from 'store/slices/group';
 
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
-import { MemberElement } from 'components/group/MemberElement';
+import { JoinReqElement } from 'components/group/JoinReqElement';
 
 const GroupJoinReq = () => {
   const dispatch = useDispatch();
@@ -46,16 +46,12 @@ const GroupJoinReq = () => {
       </TitleWrapper>
 
       {memberList.map((me, index) => (
-        <MemberElement
+        <JoinReqElement
           key={index}
           id={me.id}
           image={me.image}
           username={me.username}
-          cert_days={null}
           level={me.level}
-          leader={true}
-          myself={false}
-          request={true}
           is_full={group_detail?.number == group_detail?.member_number}
         />
       ))}
