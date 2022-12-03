@@ -92,7 +92,6 @@ def prepare_post_response(post, is_detail, username):
                     "author": routine_single.author.id,  # id or name
                     "name": routine_single.name,
                     "fitelements": prepare_fitelements_list(routine_single.fit_element.all()),
-                    # ex. {'id': 25, 'workout_type_id': 60, 'type': 'log', 'author_id': 5, 'period': None, 'weight': 1, 'rep': 1, 'set': 2, 'time': 2, 'date': None}
                 }
         except Routine.DoesNotExist:
             pass
@@ -193,10 +192,16 @@ def post_home(request):
             return HttpResponseBadRequest()
 
 
-@require_http_methods(["GET", "PUT", "DELETE"])
+@require_http_methods(["GET"])
 def post_group(request, group_id):
     if request.method == "GET":
         group = Group.objects.get(pk=group_id)
+
+        try:
+            group.members.get(username=request.user.username)
+        except User.DoesNotExist:
+            return HttpResponseNotFound()
+
         posts = Post.objects.filter(in_group=group)
         posts_serial = prepare_posts_response(posts)
 
@@ -221,6 +226,13 @@ def post_detail(request, query_id):
         try:
             post_id = int(query_id)
             post_obj = Post.objects.get(pk=post_id)
+
+            if post_obj.in_group:
+                try:
+                    post_obj.in_group.members.get(username=request.user.username)
+                except User.DoesNotExist:
+                    return HttpResponseNotFound()
+
             return JsonResponse(
                 prepare_post_response(post_obj, True, request.user.username), status=200
             )
