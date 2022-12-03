@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { Post } from 'store/apis/post';
 import { simpleUserInfo } from 'store/slices/post.test';
-import { ArticleItemCompact, ArticleItemDefault } from './ArticleItem';
+import { ArticleHeader, ArticleItemMyPage, ArticleItemCompact, ArticleItemDefault } from './ArticleItem';
 
 beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
@@ -31,5 +31,11 @@ describe('[ArticleItem Component]', () => {
   });
   test('basic rendering of ArticleItemDefault', () => {
     render(<ArticleItemDefault post={testMockPost[0]} onClick={onClickMock} />);
+  });
+  test('basic rendering of ArticleItemMyPage', () => {
+    render(<ArticleItemMyPage post={testMockPost[0]} onClick={onClickMock} />);
+  });
+  test('basic rendering of ArticleHeader', () => {
+    render(<ArticleHeader />);
   });
 });
