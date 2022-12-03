@@ -291,8 +291,10 @@ def daily_log(request, year, month, specific_date):
                 "images": [],
             }
             return JsonResponse(daily_log_dict_return, safe=False, status=200)
-
-        index_list = json.loads(daily_log_single[0].log_index)
+        if not daily_log_single[0].log_index == None:
+            index_list = json.loads(daily_log_single[0].log_index)
+        else:
+            index_list = []
 
         daily_log_dict_return = {
             "author": daily_log_single[0].author.id,
