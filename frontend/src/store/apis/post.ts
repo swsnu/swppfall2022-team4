@@ -1,4 +1,6 @@
+import { RoutineTypeInPost } from 'store/slices/workout';
 import client from './client';
+import { Group } from './group';
 import { TagVisual } from './tag';
 
 // Used in createPostRequest, deletePostRequest, getPostComment
@@ -62,6 +64,8 @@ export type Post = {
   disliked?: boolean;
   scraped?: boolean;
   images?: string[];
+  routine?: RoutineTypeInPost;
+  group?: Group;
 };
 
 export type getPostsRequestType = {

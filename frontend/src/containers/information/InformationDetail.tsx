@@ -76,9 +76,11 @@ const InformationDetail = () => {
                       <GroupSmallWrapper>
                         <div style={{ display: 'flex' }}>
                           <BsFillPersonFill />
-                          <div
-                            style={{ fontSize: '15px', fontFamily: 'Noto Sans KR' }}
-                          >{`멤버 ${group.member_number}명`}</div>
+                          <div style={{ fontSize: '15px', fontFamily: 'Noto Sans KR' }}>
+                            {group.number
+                              ? `멤버 ${group.member_number}명 / ${group.number}명`
+                              : `멤버 ${group.member_number}명`}
+                          </div>
                         </div>
 
                         <div style={{ fontSize: '15px', fontFamily: 'Noto Sans KR' }}>
@@ -321,6 +323,7 @@ const GroupItemWrapper = styled.div`
   border-radius: 15px;
   padding: 10px;
   transition: border 0.15s linear;
+  margin-bottom: 10px;
   cursor: pointer;
   &:hover {
     border: 1px solid #757575;

@@ -25,6 +25,8 @@ import ImageDetailModal from 'components/post/ImageDetailModal';
 import { chatActions } from 'store/slices/chat';
 import SearchBar from 'components/common/SearchBar';
 import { ScrollShadow } from 'components/common/ScrollShadow';
+import { GroupInfo } from 'components/post/GroupInfo';
+import { RoutineInfo } from 'components/post/RoutineInfo';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -525,19 +527,23 @@ const PostDetail = () => {
                     </PostWritterWrapper>
                   </ArticleTitleWrapper>
                   <ArticleBodyContent>{post.content}</ArticleBodyContent>
+                  <RoutineInfo routine={post.routine} />
                   <ContentImageSection>
-                    {post.images?.map((img, index) => (
-                      <PostUploadedImageWrapper key={index}>
-                        <img
-                          src={process.env.REACT_APP_API_IMAGE + img}
-                          onClick={() => {
-                            setActiveImage(img);
-                            setImageModalOpen(true);
-                          }}
-                          data-testid="postImage"
-                        />
-                      </PostUploadedImageWrapper>
-                    ))}
+                    {post.images?.length !== 0 && <span>이미지</span>}
+                    <div>
+                      {post.images?.map((img, index) => (
+                        <PostUploadedImageWrapper key={index}>
+                          <img
+                            src={process.env.REACT_APP_API_IMAGE + img}
+                            onClick={() => {
+                              setActiveImage(img);
+                              setImageModalOpen(true);
+                            }}
+                            data-testid="postImage"
+                          />
+                        </PostUploadedImageWrapper>
+                      ))}
+                    </div>
                   </ContentImageSection>
                   <ArticleBodyFooter>
                     <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
@@ -599,7 +605,10 @@ const PostDetail = () => {
               <LoadingWithoutMinHeight />
             )}
           </ArticleDetailWrapper>
-          <div>{PostAuthorPanel}</div>
+          <div>
+            {PostAuthorPanel}
+            <GroupInfo group={post?.group} navigate={navigate} />
+          </div>
         </div>
       </PostContentWrapper>
       {ImageDetailModal({
@@ -902,13 +911,25 @@ export const PostPanelWrapper = styled(ColumnCenterFlex)`
 // Image Content Section
 export const ContentImageSection = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+  flex-direction: column;
   width: 100%;
-  height: fit-content;
-  position: relative;
-  background-color: var(--fit-white);
-  padding: 8px 10px;
+  padding: 0px 15px;
+  > span:first-child {
+    /* 태그된 루틴 */
+    font-size: 14px;
+    color: var(--fit-support-gray);
+    margin-bottom: 10px;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+    height: fit-content;
+    position: relative;
+    background-color: var(--fit-white);
+  }
 `;
 
 export const PostUploadedImageWrapper = styled.div`
