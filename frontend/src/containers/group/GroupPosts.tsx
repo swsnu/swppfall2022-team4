@@ -37,7 +37,7 @@ const GroupPosts = () => {
 
   return (
     <PostPageWrapper>
-      <PostContentWrapper>
+      <GroupPostContentWrapper>
         <div>
           <GroupInfoHeader>
             <span>{group?.group_name}</span>
@@ -49,11 +49,7 @@ const GroupPosts = () => {
                 </TagBubble>
               ))}
             </span>
-            <Button4
-              content="Back"
-              clicked={() => navigate(`/group/detail/${group_id}/`)}
-              style={{ alignSelf: 'start' }}
-            />
+            <Button4 content="" clicked={() => navigate(`/group/detail/${group_id}/`)} style={{ alignSelf: 'start' }} />
           </GroupInfoHeader>
         </div>
         <div>
@@ -77,7 +73,7 @@ const GroupPosts = () => {
             <BlueBigBtn onClick={() => navigate(`/group/detail/${group_id}/post/create`)}>글 쓰기</BlueBigBtn>
           </div>
         </div>
-      </PostContentWrapper>
+      </GroupPostContentWrapper>
     </PostPageWrapper>
   );
 };
@@ -111,7 +107,8 @@ const GroupInfoHeader = styled.div`
     margin-bottom: 12px;
   }
   > span:nth-child(2) {
-    font-size: 16px;
+    color: var(--fit-support-gray);
+    font-size: 14px;
     margin-bottom: 12px;
   }
   > button {
@@ -119,5 +116,9 @@ const GroupInfoHeader = styled.div`
     left: 20px;
     top: 15px;
   }
+`;
+
+const GroupPostContentWrapper = styled(PostContentWrapper)`
+  margin-bottom: 0px;
 `;
 export default GroupPosts;
