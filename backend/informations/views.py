@@ -8,7 +8,8 @@ from django.views.decorators.http import require_http_methods
 from googleapiclient.discovery import build
 from informations.models import Information, YoutubeContent
 from posts.views import prepare_posts_response
-from groups.views import prepare_groups_response
+from groups.views import prepare_compact_groups_response
+
 
 def youtube_search(query, max_result=25):
     youtube = build("youtube", "v3", developerKey=os.environ.get("YOUTUBE_KEY"))
@@ -75,8 +76,8 @@ def information_detail(request, information_name):
             information_update(target)
             target.updated = datetime.datetime.now()
             target.save()
-        
-        result = prepare_groups_response(target.tag.tagged_groups.all(), request.user)
+
+        result = prepare_compact_groups_response(target.tag.tagged_groups.all())
 
         return JsonResponse(
             {

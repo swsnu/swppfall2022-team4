@@ -11,9 +11,13 @@ from posts.models import Post, PostImage
 from users.models import User
 from tags.models import Tag, TagClass
 from groups.models import Group
+from workouts.models import Routine
 from django.db.models import Count
 
+
 from comments.views import prepare_comment_response
+from groups.views import prepare_compact_group_response
+from workouts.views import prepare_fitelements_list
 
 
 def add_exp(username, exp):
@@ -75,6 +79,22 @@ def prepare_post_response(post, is_detail, username):
         for image in list(post.images.all().values()):
             image_response.append(image["image"])
         response["images"] = image_response
+
+        try:
+            response["group"] = prepare_compact_group_response(post.group)
+        except Group.DoesNotExist:
+            pass
+        try:
+            routine_single = post.routine
+            response["routine"] = {
+                "id": routine_single.id,
+                "author": routine_single.author.id,  # id or name
+                "name": routine_single.name,
+                "fitelements": prepare_fitelements_list(routine_single.fit_element.all()),
+                # ex. {'id': 25, 'workout_type_id': 60, 'type': 'log', 'author_id': 5, 'period': None, 'weight': 1, 'rep': 1, 'set': 2, 'time': 2, 'date': None}
+            }
+        except Routine.DoesNotExist:
+            pass
 
     return response
 

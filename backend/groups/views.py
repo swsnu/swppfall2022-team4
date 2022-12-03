@@ -8,6 +8,60 @@ from tags.models import Tag, TagClass
 from workouts.models import FitElement
 from datetime import datetime
 
+
+def prepare_compact_group_response(group):
+    if group:
+        result = {
+            "id": group.id,
+            "group_name": group.group_name,
+            "number": group.number,
+            "start_date": group.start_date,
+            "end_date": group.end_date,
+            "member_number": group.member_number,
+            "free": group.free,
+            "address": group.address,
+            "prime_tag": group.prime_tag,
+        }
+
+        if result['prime_tag']:
+            prime_tag = result['prime_tag']
+            result["prime_tag"] = {
+                "id": prime_tag.pk,
+                "name": prime_tag.tag_name,
+                "color": prime_tag.tag_class.color,
+            }
+        return result
+    else:
+        return None
+
+
+def prepare_compact_groups_response(groups):
+    result = []
+    for gr_obj in groups:
+        result.append(
+            {
+                "id": gr_obj.id,
+                "group_name": gr_obj.group_name,
+                "number": gr_obj.number,
+                "start_date": gr_obj.start_date,
+                "end_date": gr_obj.end_date,
+                "member_number": gr_obj.member_number,
+                "free": gr_obj.free,
+                "address": gr_obj.address,
+                "prime_tag": gr_obj.prime_tag,
+            }
+        )
+    for group in result:
+        if group['prime_tag']:
+            prime_tag = group['prime_tag']
+            group["prime_tag"] = {
+                "id": prime_tag.pk,
+                "name": prime_tag.tag_name,
+                "color": prime_tag.tag_class.color,
+            }
+    return result
+
+
 def prepare_groups_response(groups, user):
     result = []
     for gr_obj in groups:
@@ -41,6 +95,7 @@ def prepare_groups_response(groups, user):
                 "color": prime_tag.tag_class.color,
             }
     return result
+
 
 def return_cert(certs):
     result = []
