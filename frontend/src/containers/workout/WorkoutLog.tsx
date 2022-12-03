@@ -854,7 +854,7 @@ const Frame = styled.div`
   }
 
   &&.memo {
-    min-height: 120px;
+    min-height: 100px;
   }
 `;
 
@@ -1039,7 +1039,7 @@ const DayContent = styled.div<{ visibility_boolean: boolean }>`
 const MemoWrapper = styled.div`
   width: 100%;
   height: 20%;
-  min-height: 100px;
+  min-height: 30px;
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
