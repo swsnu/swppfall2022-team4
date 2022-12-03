@@ -7,12 +7,11 @@ export interface IProps {
   id: number;
   image: string;
   username: string;
-  cert_days: number | null;
+  cert_days: number;
   level: number;
+  is_leader: boolean;
   leader: boolean;
   myself: boolean;
-  request: boolean;
-  is_full: boolean;
 }
 
 export const MemberElement = (props: IProps) => {
@@ -31,26 +30,6 @@ export const MemberElement = (props: IProps) => {
       navigate(`/group/detail/${group_id}`);
     }
   };
-  const postRequestClick = () => {
-    if (group_id) {
-      dispatch(
-        groupActions.postRequest({
-          group_id: group_id,
-          username: props.username,
-        }),
-      );
-    }
-  };
-  const deleteRequestClick = () => {
-    if (group_id) {
-      dispatch(
-        groupActions.deleteRequest({
-          group_id: group_id,
-          username: props.username,
-        }),
-      );
-    }
-  };
 
   return (
     <MemberElementWrapper className={props.myself ? 'myself' : 'others'}>
@@ -61,28 +40,13 @@ export const MemberElement = (props: IProps) => {
       />
       <MemberElementLineWrapper>
         <MemberElementLine style={{ fontWeight: '600' }}>
-          {props.leader && props.myself ? '👑 ' + props.username : props.username}
+          {props.is_leader ? '👑 ' + props.username : props.username}
         </MemberElementLine>
-        {props.cert_days != null && <CertElementLine>{props.cert_days} 일째 인증 중!</CertElementLine>}
+        <CertElementLine>{props.cert_days} 일째 인증 중!</CertElementLine>
         <MemberElementLine>Level: {props.level}</MemberElementLine>
       </MemberElementLineWrapper>
-      {props.leader && !props.myself && !props.request && (
+      {props.leader && !props.myself && (
         <Button1 content="그룹장 위임" style={{ fontSize: '15px' }} clicked={leaderChangeClick} />
-      )}
-      {props.leader && props.request && (
-        <div>
-          <Button
-            className={props.is_full ? 'disabled' : 'ing'}
-            style={{ fontSize: '15px' }}
-            onClick={postRequestClick}
-            disabled={props.is_full}
-          >
-            승인
-          </Button>
-          <Button className="remove" style={{ fontSize: '15px' }} onClick={deleteRequestClick}>
-            삭제
-          </Button>
-        </div>
       )}
     </MemberElementWrapper>
   );

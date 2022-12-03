@@ -25,68 +25,77 @@ const setup = () => {
     type: 'user/setUser',
     payload: { username: 'username', nickname: 'nickname', image: 'image' },
   });
-  render(
-    <Provider store={store}>
-      <MemberElement
-        id={1}
-        image={'image'}
-        username={'username'}
-        cert_days={7}
-        level={1}
-        leader={false}
-        myself={true}
-        request={false}
-        is_full={false}
-      />
-    </Provider>,
-  );
-  return store;
-};
-
-const setup2 = () => {
-  const store = configureStore({ reducer: rootReducer });
-  store.dispatch({
-    type: 'user/setUser',
-    payload: { username: 'username', nickname: 'nickname', image: 'image' },
-  });
-  render(
-    <Provider store={store}>
-      <MemberElement
-        id={1}
-        image={'image'}
-        username={'test'}
-        cert_days={7}
-        level={1}
-        leader={true}
-        myself={false}
-        request={false}
-        is_full={false}
-      />
-    </Provider>,
-  );
   return store;
 };
 
 describe('<MemberElement/>', () => {
-  it('should render without errors1', () => {
-    setup();
+  it('not leader & myself', () => {
+    const store = setup();
+    render(
+      <Provider store={store}>
+        <MemberElement
+          id={1}
+          image={'image'}
+          username={'username'}
+          cert_days={7}
+          level={1}
+          is_leader={false}
+          leader={false}
+          myself={true}
+        />
+      </Provider>,
+    );
     screen.getByText('username');
+    screen.getByText('7 일째 인증 중!');
     screen.getByText('Level: 1');
+
+    const profile = screen.getByAltText('profile');
+    fireEvent.click(profile);
+    expect(mockNavigate).toBeCalledWith('/profile/username');
   });
-  it('should render without errors2', () => {
+  it('leader & not myself', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
-    setup2();
-    screen.getByText('test');
-    screen.getByText('Level: 1');
-    const change = screen.getByText('그룹장 위임');
-    fireEvent.click(change);
+    const store = setup();
+    render(
+      <Provider store={store}>
+        <MemberElement
+          id={1}
+          image={'image'}
+          username={'username'}
+          cert_days={7}
+          level={1}
+          is_leader={false}
+          leader={true}
+          myself={false}
+        />
+      </Provider>,
+    );
+
+    const leaderChangeBtn = screen.getByText('그룹장 위임');
+    fireEvent.click(leaderChangeBtn);
     expect(mockDispatch).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledWith('/group/detail/1');
   });
-  it('should render without errors3', () => {
+  it('group id failure', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: undefined });
-    setup2();
-    const change = screen.getByText('그룹장 위임');
-    fireEvent.click(change);
+    const store = setup();
+    render(
+      <Provider store={store}>
+        <MemberElement
+          id={1}
+          image={'image'}
+          username={'username'}
+          cert_days={7}
+          level={1}
+          is_leader={false}
+          leader={true}
+          myself={false}
+        />
+      </Provider>,
+    );
+
+    const leaderChangeBtn = screen.getByText('그룹장 위임');
+    fireEvent.click(leaderChangeBtn);
   });
 });
