@@ -339,7 +339,7 @@ const FitElementWrapper = styled.div`
   height: 380px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   background-color: #f7f7f7;
   border-radius: 10px;
@@ -363,7 +363,8 @@ const FitElementItemWrapper = styled.div`
   display: flex;
   padding: 10px 20px;
   background-color: #ffffff;
-  box-shadow: 0.5px 0.5px 2px #494949;
+  box-shadow: 0px 0px 2px #999999;
+  border-radius: 5px;
   align-items: center;
   justify-content: space-between;
 `;
