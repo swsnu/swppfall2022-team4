@@ -86,13 +86,14 @@ def prepare_post_response(post, is_detail, username):
             pass
         try:
             routine_single = post.routine
-            response["routine"] = {
-                "id": routine_single.id,
-                "author": routine_single.author.id,  # id or name
-                "name": routine_single.name,
-                "fitelements": prepare_fitelements_list(routine_single.fit_element.all()),
-                # ex. {'id': 25, 'workout_type_id': 60, 'type': 'log', 'author_id': 5, 'period': None, 'weight': 1, 'rep': 1, 'set': 2, 'time': 2, 'date': None}
-            }
+            if routine_single is not None:
+                response["routine"] = {
+                    "id": routine_single.id,
+                    "author": routine_single.author.id,  # id or name
+                    "name": routine_single.name,
+                    "fitelements": prepare_fitelements_list(routine_single.fit_element.all()),
+                    # ex. {'id': 25, 'workout_type_id': 60, 'type': 'log', 'author_id': 5, 'period': None, 'weight': 1, 'rep': 1, 'set': 2, 'time': 2, 'date': None}
+                }
         except Routine.DoesNotExist:
             pass
 
