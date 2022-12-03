@@ -22,15 +22,15 @@ def add_exp(username, exp):
 
 def prepare_fitelements_list(fitelements):
     result = []
-    for fe in fitelements:
+    for fit_elem in fitelements:
         result.append(
             {
-                "workout_type": fe.workout_type.tag_class.class_name,
-                "workout_name": fe.workout_type.tag_name,
-                "weight": fe.weight,
-                "rep": fe.rep,
-                "set": fe.set,
-                "time": fe.time,
+                "workout_type": fit_elem.workout_type.tag_class.class_name,
+                "workout_name": fit_elem.workout_type.tag_name,
+                "weight": fit_elem.weight,
+                "rep": fit_elem.rep,
+                "set": fit_elem.set,
+                "time": fit_elem.time,
             }
         )
     return result

@@ -162,10 +162,8 @@ def post_home(request):
             in_group = (
                 Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
             )
-            routine = (
-                Routine.objects.get(pk=data["routine"]) if (data["routine"] is not '') else None
-            )
-            group = Group.objects.get(pk=data["group"]) if (data["group"] is not '') else None
+            routine = Routine.objects.get(pk=data["routine"]) if (data["routine"] != '') else None
+            group = Group.objects.get(pk=data["group"]) if (data["group"] != '') else None
 
             created_post = Post.objects.create(
                 author=author,
@@ -187,8 +185,7 @@ def post_home(request):
 
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
-        except (KeyError, json.JSONDecodeError, User.DoesNotExist, Tag.DoesNotExist) as e:
-            print(e)
+        except (KeyError, json.JSONDecodeError, User.DoesNotExist, Tag.DoesNotExist):
             return HttpResponseBadRequest()
 
 
@@ -271,11 +268,9 @@ def post_detail(request, query_id):
 
             # Routine & Group
             post_obj.routine = (
-                Routine.objects.get(pk=data["routine"]) if (data["routine"] is not '') else None
+                Routine.objects.get(pk=data["routine"]) if (data["routine"] != '') else None
             )
-            post_obj.group = (
-                Group.objects.get(pk=data["group"]) if (data["group"] is not '') else None
-            )
+            post_obj.group = Group.objects.get(pk=data["group"]) if (data["group"] != '') else None
 
             post_obj.save()
             return JsonResponse({"message": "success"}, status=200)
