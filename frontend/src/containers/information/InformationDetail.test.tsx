@@ -97,6 +97,58 @@ const setup = () => {
   return store;
 };
 
+test('render1', () => {
+  jest.spyOn(Router, 'useParams').mockReturnValue({ name: 'Deadlift' });
+  const store = setup();
+  act(() => {
+    store.dispatch({
+      type: 'info/getInformationSuccess',
+      payload: { ...getInfoSuccessResponse, groups: [] },
+    });
+  });
+});
+test('render2', () => {
+  jest.spyOn(Router, 'useParams').mockReturnValue({ name: 'Deadlift' });
+  const store = setup();
+  act(() => {
+    store.dispatch({
+      type: 'info/getInformationSuccess',
+      payload: {
+        ...getInfoSuccessResponse,
+        groups: [
+          {
+            group_id: 1,
+            group_name: 'group_name',
+            number: null,
+            start_date: null,
+            end_date: '2019-01-01',
+            free: true,
+            group_leader: user1,
+            member_number: 3,
+            description: 'test',
+            goal: [],
+            lat: null,
+            lng: null,
+            address: null,
+            tags: [],
+            prime_tag: { id: '1', name: '1', color: '1', posts: 1, calories: 1 },
+          },
+        ],
+      },
+    });
+  });
+});
+test('render3', () => {
+  jest.spyOn(Router, 'useParams').mockReturnValue({ name: 'Deadlift' });
+  const store = setup();
+  act(() => {
+    store.dispatch({
+      type: 'info/getInformationSuccess',
+      payload: { ...getInfoSuccessResponse, posts: [] },
+    });
+  });
+});
+
 describe('[InformationDetail Page]', () => {
   test('basic rendering', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ name: 'Deadlift' });
@@ -113,6 +165,8 @@ describe('[InformationDetail Page]', () => {
 
     const postItem = screen.getByText('First Post');
     fireEvent.click(postItem);
+
+    fireEvent.click(screen.getByText('◀︎'));
   });
   test('basic rendering when params undefined & Info error', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ name: undefined });
