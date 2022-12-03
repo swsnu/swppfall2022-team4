@@ -622,7 +622,13 @@ const WorkoutLog = () => {
               >
                 불러오기
               </AnyButton>
-              <AnyButton onClick={() => copyDailyLog()}>내보내기</AnyButton>
+              <AnyButton
+                className="disable-type"
+                disabled={(dailyLog.fit_element === null || dailyLog.fit_element.length) === 0 ? true : false}
+                onClick={() => copyDailyLog()}
+              >
+                내보내기
+              </AnyButton>
               <AnyButton>저장</AnyButton>
               <AnyButton onClick={() => addRoutineClick()}>루틴추가</AnyButton>
             </LogUpper>
