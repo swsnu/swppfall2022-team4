@@ -251,6 +251,8 @@ def routine(request, routine_id):
     """
     if request.method == "GET":
         if Routine.objects.filter(id=routine_id).exists():
+            username = request.GET.get("username")
+            user = User.objects.get(username=username)
             routine_single = Routine.objects.get(id=routine_id)
             return_json = {
                 "id": routine_single.id,
@@ -261,6 +263,17 @@ def routine(request, routine_id):
                 ),
             }
             return JsonResponse(return_json, safe=False, status=201)
+        else:
+            return HttpResponseBadRequest()
+    elif request.method == "PUT":
+        username = request.GET.get("username")
+        user = User.objects.get(username=username)
+        req_data = json.loads(request.body.decode())
+        if Routine.objects.filter(id=routine_id).exists():
+            routine_single = Routine.objects.get(id=routine_id, author=user)
+            routine_single.name = req_data["title"]
+            routine_single.save()
+            return JsonResponse({"id": routine_id, "content": req_data["title"]}, safe=False, status=201)
         else:
             return HttpResponseBadRequest()
 
