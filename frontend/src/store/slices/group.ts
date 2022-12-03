@@ -229,6 +229,7 @@ export const groupSlice = createSlice({
       state.reqMembers.error = null;
     },
     getRequestsFailure: (state, { payload }) => {
+      state.reqMembers.requests = null;
       state.reqMembers.error = payload;
     },
     postRequest: (state, action: PayloadAction<groupAPI.joinReqLeaderRequestType>) => {

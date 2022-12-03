@@ -15,15 +15,12 @@ const GroupJoinReq = () => {
 
   const { group_id } = useParams<{ group_id: string }>();
   const memberList = useSelector((rootState: RootState) => rootState.group.reqMembers.requests);
-  const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
-  const user = useSelector(({ user }: RootState) => user.user);
   const groupActionStatus = useSelector(({ group }: RootState) => group.groupAction.status);
   const group_detail = useSelector(({ group }: RootState) => group.groupDetail.group);
 
   useEffect(() => {
     if (group_id) {
       dispatch(groupActions.getRequests(group_id));
-      dispatch(groupActions.checkMemberStatus(group_id));
       dispatch(groupActions.getGroupDetail(group_id));
     }
     return () => {
@@ -35,7 +32,6 @@ const GroupJoinReq = () => {
     if (groupActionStatus && group_id) {
       dispatch(groupActions.stateRefresh());
       dispatch(groupActions.getRequests(group_id));
-      dispatch(groupActions.checkMemberStatus(group_id));
       dispatch(groupActions.getGroupDetail(group_id));
     }
   }, [groupActionStatus]);
@@ -57,8 +53,8 @@ const GroupJoinReq = () => {
           username={me.username}
           cert_days={null}
           level={me.level}
-          leader={member_status === 'group_leader' ? true : false}
-          myself={user?.username === me.username ? true : false}
+          leader={true}
+          myself={false}
           request={true}
           is_full={group_detail?.number == group_detail?.member_number}
         />
