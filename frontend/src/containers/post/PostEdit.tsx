@@ -5,6 +5,8 @@ import { RootState } from 'index';
 import { tagActions } from 'store/slices/tag';
 import { postActions } from 'store/slices/post';
 import { initialContent, PostContent, PostEditorLayout } from './PostEditorLayout';
+import { workoutLogActions } from 'store/slices/workout';
+import { groupActions } from 'store/slices/group';
 
 const PostEdit = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +20,12 @@ const PostEdit = () => {
   }));
   useEffect(() => {
     dispatch(tagActions.getTags());
+    dispatch(
+      workoutLogActions.getRoutine({
+        username: user?.username!,
+      }),
+    );
+    dispatch(groupActions.getGroups());
     if (id) {
       dispatch(
         postActions.updatePostDetail({
@@ -35,6 +43,8 @@ const PostEdit = () => {
         tags: post.tags,
         prime_tag: post.prime_tag,
         images: post.images ? post.images : [],
+        routine: post.routine?.id ? post.routine.id.toString() : '',
+        group: post.group?.id ? post.group.id.toString() : '',
       }));
     }
   }, [post]);

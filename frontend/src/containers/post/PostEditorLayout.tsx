@@ -393,7 +393,7 @@ const PostImageBtn = styled(ColumnCenterFlex)`
   background-color: var(--fit-disabled-gray);
   padding: 10px 10px;
   border-radius: 15px;
-  margin: 5px 5px;
+  margin: 5px 0px;
   cursor: pointer;
   svg {
     font-size: 32px;
@@ -438,9 +438,10 @@ const PostUploadedImageWrapper = styled.div`
 `;
 
 const PostUploadedImage = styled.img`
-  width: 130px;
-  height: 130px;
+  width: 120px;
+  height: 120px;
   background-color: var(--fit-disabled-gray);
+  border: 2px solid black;
   border-radius: 15px;
   object-fit: cover;
 `;

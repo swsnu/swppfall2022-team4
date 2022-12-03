@@ -160,13 +160,13 @@ def post_home(request):
                 if ("prime_tag" in data.keys() and data["prime_tag"])
                 else None
             )
-            in_group = Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
+            in_group = (
+                Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
+            )
             routine = (
                 Routine.objects.get(pk=data["routine"]) if (data["routine"] is not '') else None
             )
-            group = (
-                Group.objects.get(pk=data["group"]) if (data["group"] is not '') else None
-            )
+            group = Group.objects.get(pk=data["group"]) if (data["group"] is not '') else None
 
             created_post = Post.objects.create(
                 author=author,
@@ -175,7 +175,7 @@ def post_home(request):
                 prime_tag=prime_tag,
                 in_group=in_group,
                 routine=routine,
-                group=group
+                group=group,
             )
 
             for tag in data["tags"]:
@@ -256,6 +256,14 @@ def post_detail(request, query_id):
             for image in post_obj.images.all():
                 if image.image not in data["images"]:
                     image.delete()
+
+            # Routine & Group
+            post_obj.routine = (
+                Routine.objects.get(pk=data["routine"]) if (data["routine"] is not '') else None
+            )
+            post_obj.group = (
+                Group.objects.get(pk=data["group"]) if (data["group"] is not '') else None
+            )
 
             post_obj.save()
             return JsonResponse({"message": "success"}, status=200)
