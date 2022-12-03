@@ -160,14 +160,22 @@ def post_home(request):
                 if ("prime_tag" in data.keys() and data["prime_tag"])
                 else None
             )
-            group = Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
+            in_group = Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
+            routine = (
+                Routine.objects.get(pk=data["routine"]) if (data["routine"] is not '') else None
+            )
+            group = (
+                Group.objects.get(pk=data["group"]) if (data["group"] is not '') else None
+            )
 
             created_post = Post.objects.create(
                 author=author,
                 title=data["title"],
                 content=data["content"],
                 prime_tag=prime_tag,
-                in_group=group,
+                in_group=in_group,
+                routine=routine,
+                group=group
             )
 
             for tag in data["tags"]:
@@ -180,7 +188,8 @@ def post_home(request):
 
             return JsonResponse({"post_id": str(created_post.pk)}, status=201)
             # data should have user, post info.
-        except (KeyError, json.JSONDecodeError, User.DoesNotExist, Tag.DoesNotExist):
+        except (KeyError, json.JSONDecodeError, User.DoesNotExist, Tag.DoesNotExist) as e:
+            print(e)
             return HttpResponseBadRequest()
 
 

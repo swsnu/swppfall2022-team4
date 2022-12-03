@@ -19,12 +19,16 @@ const TITLE_CHAR_LIMIT = 60;
 const CONTENT_CHAR_LIMIT = 800;
 const CONTENT_IMAGE_LIMIT = 5;
 
+const DEFAULT_OPTION = '$NONE$';
+
 export interface PostContent {
   title: string;
   content: string;
   tags: TagVisual[];
   prime_tag: TagVisual | undefined;
   images: string[];
+  routine: string;
+  group: string;
 }
 
 export const initialContent: PostContent = {
@@ -33,6 +37,8 @@ export const initialContent: PostContent = {
   tags: [],
   prime_tag: undefined,
   images: [],
+  routine: '',
+  group: '',
 };
 
 interface IPropsPostEditor {
@@ -43,10 +49,12 @@ interface IPropsPostEditor {
 }
 
 export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, confirmOnClick }: IPropsPostEditor) => {
-  const { tagList, tagSearch, tagCreate } = useSelector(({ tag }: RootState) => ({
+  const { tagList, tagSearch, tagCreate, routine, groups } = useSelector(({ tag, workout_log, group }: RootState) => ({
     tagList: tag.tagList,
     tagSearch: tag.tagSearch,
     tagCreate: tag.tagCreate,
+    routine: workout_log.routine,
+    groups: group.groupList.groups,
   }));
 
   useEffect(() => {
@@ -95,6 +103,18 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
       images: removedArray,
     }));
     notificationSuccess('Image', '이미지 삭제에 성공했어요!');
+  };
+  const setRoutines = (routine_value: string) => {
+    setPostContent(state => ({
+      ...state,
+      routine: routine_value,
+    }));
+  };
+  const setGroups = (group_value: string) => {
+    setPostContent(state => ({
+      ...state,
+      group: group_value,
+    }));
   };
 
   // Event Handlers ------------------------------------------------------------------
@@ -194,9 +214,48 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             </ContentImageSection>
             <ContentRoutineSection>
               <SectionTitle>루틴</SectionTitle>
+              <select
+                data-testid="tagSelect"
+                value={postContent.routine}
+                onChange={e => {
+                  const targetValue = e.target.options[e.target.selectedIndex].value;
+                  setRoutines(targetValue !== DEFAULT_OPTION ? targetValue : '');
+                }}
+              >
+                <option value={DEFAULT_OPTION}>- 루틴 선택 안함 -</option>
+                {routine.map(rout => {
+                  return (
+                    rout.id && (
+                      <option value={rout.id} key={rout.id}>
+                        {rout.name}
+                      </option>
+                    )
+                  );
+                })}
+              </select>
             </ContentRoutineSection>
             <ContentGroupSection>
               <SectionTitle>그룹</SectionTitle>
+              <select
+                data-testid="tagSelect"
+                value={postContent.group}
+                onChange={e => {
+                  const targetValue = e.target.options[e.target.selectedIndex].value;
+                  setGroups(targetValue !== DEFAULT_OPTION ? targetValue : '');
+                }}
+              >
+                <option value={DEFAULT_OPTION}>- 그룹 선택 안함 -</option>
+                {groups &&
+                  groups.map(group => {
+                    return (
+                      group.id && (
+                        <option value={group.id} key={group.id}>
+                          {group.group_name}
+                        </option>
+                      )
+                    );
+                  })}
+              </select>
             </ContentGroupSection>
             <CreateBtnWrapper>
               <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
