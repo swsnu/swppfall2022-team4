@@ -52,13 +52,10 @@ export const createCert = async (payload: certRequestType) => {
   return response.data;
 };
 export const deleteCert = async (payload: certRequestType) => {
-  console.log('groupApi.deleteCert');
-  console.log(payload);
   const response = await client.delete<getCertsResponseType>(
     `/api/group/${payload.group_id}/cert/${payload.year}/${payload.month}/${payload.specific_date}/`,
     { data: payload },
   );
-  console.log(response);
   return response.data;
 };
 export const getRequests = async (payload: string) => {

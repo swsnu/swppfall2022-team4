@@ -79,6 +79,7 @@ export const initialState: PreloadedState<RootState> = {
     },
     groupMembers: {
       members: [],
+      group_leader: null,
       error: null,
     },
     groupCerts: {
