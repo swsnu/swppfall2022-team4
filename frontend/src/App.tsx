@@ -44,7 +44,6 @@ import { KakaoLoginCallback } from 'containers/user/SocialLoginCallback';
 import GroupChat from 'containers/group/GroupChat';
 import InformationDetail from 'containers/information/InformationDetail';
 import GroupPosts from 'containers/group/GroupPosts';
-import GroupPostDetail from 'containers/group/GroupPostDetail';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -160,7 +159,7 @@ const InsideComponent = () => {
               <Route path="post/*">
                 <Route path="" element={<PostMain />} />
                 <Route path="create" element={<PostCreate />} />
-                <Route path=":id" element={<PostDetail />} />
+                <Route path=":post_id" element={<PostDetail />} />
                 <Route path=":post_id/edit" element={<PostEdit />} />
               </Route>
 
@@ -174,7 +173,7 @@ const InsideComponent = () => {
                 <Route path="detail/:group_id/joinReq" element={<GroupJoinReq />} />
                 <Route path="detail/:group_id/post" element={<GroupPosts />} />
                 <Route path="detail/:group_id/post/create" element={<PostCreate />} />
-                <Route path="detail/:group_id/post/:post_id" element={<GroupPostDetail />} />
+                <Route path="detail/:group_id/post/:post_id" element={<PostDetail />} />
                 <Route path="detail/:group_id/post/:post_id/edit" element={<PostEdit />} />
                 <Route path="create" element={<GroupCreate />} />
                 <Route path="detail/:group_id/cert" element={<GroupCert />} />
