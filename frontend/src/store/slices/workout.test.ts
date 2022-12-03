@@ -173,6 +173,7 @@ const createRoutineWithFitElementsRequest: workoutAPI.createRoutineWithFitElemen
 };
 
 describe('slices - workout', () => {
+  jest.spyOn(console, 'warn').mockImplementation();
   describe('saga success', () => {
     test.each([
       [workoutLogActions.editMemo(editMemoRequest), initialState],
