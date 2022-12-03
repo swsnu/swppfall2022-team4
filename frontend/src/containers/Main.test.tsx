@@ -115,6 +115,33 @@ describe('[Main Page]', () => {
     expect(screen.getByText('group_name')).toBeInTheDocument();
   });
 
+  test('workoutlog2', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'workoutlog/getFitElementsSuccess',
+        payload: [
+          {
+            data: {
+              id: 1,
+              author: 1,
+              type: 'log',
+              workout_type: '실내 걷기',
+              category: null,
+              period: null,
+              weight: 234,
+              rep: 22,
+              set: 3,
+              time: 3,
+              date: '2022-11-27',
+            },
+          },
+        ],
+      });
+    });
+    expect(screen.getByText('실내 걷기')).toBeInTheDocument();
+  });
+
   test('post', () => {
     const store = setup();
     act(() => {
