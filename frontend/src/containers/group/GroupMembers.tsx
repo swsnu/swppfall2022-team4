@@ -15,6 +15,7 @@ const GroupMembers = () => {
 
   const { group_id } = useParams<{ group_id: string }>();
   const memberList = useSelector((rootState: RootState) => rootState.group.groupMembers.members);
+  const group_leader = useSelector((rootState: RootState) => rootState.group.groupMembers.group_leader);
   const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
   const user = useSelector(({ user }: RootState) => user.user);
 
@@ -45,10 +46,9 @@ const GroupMembers = () => {
           username={me.username}
           cert_days={me.cert_days}
           level={me.level}
+          is_leader={me.username === group_leader ? true : false}
           leader={member_status === 'group_leader' ? true : false}
           myself={user?.username === me.username ? true : false}
-          request={false}
-          is_full={false}
         />
       ))}
     </Wrapper>

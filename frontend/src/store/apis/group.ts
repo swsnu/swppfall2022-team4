@@ -184,6 +184,7 @@ export type checkGroupMemberResponseType = {
 
 export type getGroupMembersResponseType = {
   members: Member[];
+  group_leader: string;
 };
 
 export type leaderChangeRequestType = {

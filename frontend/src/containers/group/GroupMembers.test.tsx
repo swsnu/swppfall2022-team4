@@ -34,6 +34,7 @@ const mem3: groupApi.Member = {
 
 const membersResponse: groupApi.getGroupMembersResponseType = {
   members: [mem1, mem2, mem3],
+  group_leader: 'test1'
 };
 
 const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {
@@ -82,7 +83,7 @@ describe('setup test', () => {
       });
     });
     screen.getByText('그룹 멤버');
-    screen.getByText('test1');
+    screen.getByText('👑 test1');
   });
   it('btn', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });

@@ -28,6 +28,7 @@ interface GroupState {
   };
   groupMembers: {
     members: groupAPI.Member[] | null;
+    group_leader: string | null;
     error: AxiosError | null;
   };
   groupCerts: {
@@ -64,6 +65,7 @@ export const initialState: GroupState = {
   },
   groupMembers: {
     members: [],
+    group_leader: null,
     error: null,
   },
   groupCerts: {
@@ -141,14 +143,17 @@ export const groupSlice = createSlice({
     },
     getGroupMembers: (state, action: PayloadAction<string>) => {
       state.groupMembers.members = null;
+      state.groupMembers.group_leader = null;
       state.groupMembers.error = null;
     },
     getGroupMembersSuccess: (state, { payload }) => {
       state.groupMembers.members = payload.members;
+      state.groupMembers.group_leader = payload.group_leader;
       state.groupMembers.error = null;
     },
     getGroupMembersFailure: (state, { payload }) => {
       state.groupMembers.members = null;
+      state.groupMembers.group_leader = null;
       state.groupMembers.error = payload;
     },
     joinGroup: (state, action: PayloadAction<string>) => {

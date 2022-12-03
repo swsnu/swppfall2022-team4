@@ -262,7 +262,7 @@ def group_members(request, group_id):
                         "cert_days": cert_days,
                     }
                 )
-            return JsonResponse({"members": result}, safe=False)
+            return JsonResponse({"members": result, "group_leader": gr_obj.group_leader.username}, safe=False)
         except Group.DoesNotExist:
             return HttpResponseNotFound()
         except Exception:
