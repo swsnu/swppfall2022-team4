@@ -209,7 +209,7 @@ const GroupCreate = () => {
       map.setBounds(bounds);
     }
     const ps = new kakao.maps.services.Places();
-    ps.keywordSearch(keyword, (data, status, _) => {
+    ps.keywordSearch(keyword, (data, status) => {
       if (status === kakao.maps.services.Status.OK) {
         const bounds = new kakao.maps.LatLngBounds();
         const psResults = [];

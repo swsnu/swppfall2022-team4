@@ -271,7 +271,7 @@ const GroupCert = () => {
               </LogHeader>
               <LogBody>
                 {all_certs &&
-                  all_certs.map((item, _) => (
+                  all_certs.map(item => (
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <ProfileImage src={process.env.REACT_APP_API_IMAGE + item.member.image} alt="profile" />
