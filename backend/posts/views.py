@@ -233,6 +233,9 @@ def post_detail(request, query_id):
             post_id = int(query_id)
             post_obj = Post.objects.get(pk=post_id)
 
+            if post_obj.author.username != request.user.username:
+                return HttpResponseBadRequest()
+
             post_obj.title = data["title"]
             post_obj.content = data["content"]
             tags = data["tags"]
@@ -274,6 +277,9 @@ def post_detail(request, query_id):
         try:
             post_id = int(query_id)
             post_obj = Post.objects.get(pk=post_id)
+
+            if post_obj.author.username != request.user.username:
+                return HttpResponseBadRequest()
 
             post_obj.delete()
             return JsonResponse({"message": "success"}, status=200)

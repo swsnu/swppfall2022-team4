@@ -73,7 +73,6 @@ const PostEdit = () => {
   const cancelOnClick = () => {
     // alert('are you sure?');
     navigate(POST_DETAIL);
-    //TODO;
   };
   const confirmOnClick = () => {
     if (user && post_id) {

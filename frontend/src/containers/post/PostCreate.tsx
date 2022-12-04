@@ -20,7 +20,6 @@ const PostCreate = () => {
     // alert('are you sure?');
     if (group_id) navigate(`/group/detail/${group_id}/post`);
     else navigate('/post');
-    //TODO;
   };
   useEffect(() => {
     dispatch(tagActions.getTags());
