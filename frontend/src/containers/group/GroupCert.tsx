@@ -8,7 +8,7 @@ import { groupActions } from 'store/slices/group';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
 import Loading from 'components/common/Loading';
-import { certRequestType, Fitelement, getCertsRequestType, MemberCert } from 'store/apis/group';
+import { certRequestType, Fitelement, getCertsRequestType } from 'store/apis/group';
 import Button4 from 'components/common/buttons/Button4';
 
 const GroupCert = () => {
@@ -271,7 +271,7 @@ const GroupCert = () => {
               </LogHeader>
               <LogBody>
                 {all_certs &&
-                  all_certs.map((item, index) => (
+                  all_certs.map((item, _) => (
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <ProfileImage src={process.env.REACT_APP_API_IMAGE + item.member.image} alt="profile" />

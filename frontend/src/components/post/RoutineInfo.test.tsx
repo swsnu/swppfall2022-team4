@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { RoutineTypeInPost } from 'store/slices/workout';
 import { RoutineInfo } from './RoutineInfo';
 

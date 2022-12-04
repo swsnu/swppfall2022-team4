@@ -111,30 +111,3 @@ const CertElementLine = styled.div`
   font-size: 18px;
   font-family: FugazOne;
 `;
-
-const Button = styled.button`
-  width: 50px;
-  height: 40px;
-  border: 0;
-  margin: 3px;
-  border-radius: 5px;
-  background-color: #349c66;
-  color: white;
-  font-size: 20px;
-  font-family: FugazOne;
-  cursor: pointer;
-  transition: background-color 0.15s linear;
-  &:hover {
-    background-color: #3bb978;
-  }
-
-  &&.disabled {
-    color: black;
-    background-color: silver;
-    cursor: default;
-  }
-
-  &&.remove {
-    background-color: #f29886;
-  }
-`;

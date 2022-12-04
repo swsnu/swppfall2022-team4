@@ -3,7 +3,6 @@ import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as groupApi from '../apis/group';
 import groupSaga, { initialState, groupSlice } from './group';
-import { userType } from 'store/apis/user';
 
 const simpleError = new Error('error!');
 

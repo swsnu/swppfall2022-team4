@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, getAllByTestId } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import { MemoryRouter, Route, Routes } from 'react-router';

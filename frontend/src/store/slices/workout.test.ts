@@ -4,7 +4,6 @@ import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import { rootReducer } from '../index';
 import * as workoutAPI from '../apis/workout';
-import { TagClass } from 'store/apis/tag';
 import workoutLogSaga, { initialState, workoutLogSlice, workoutLogActions } from './workout';
 
 afterAll(() => jest.restoreAllMocks());
@@ -44,11 +43,6 @@ const createWorkoutLogResponse: workoutAPI.createWorkoutLogResponseType = {
 };
 
 const getFitElementsRequest: workoutAPI.getFitElementsRequestType = {
-  fitelements: [0],
-};
-
-// eslint-disable-next-line no-unused-vars
-const getSpecificRoutineFitElementsRequest: workoutAPI.getSpecificRoutineFitElementsRequestType = {
   fitelements: [0],
 };
 
@@ -97,11 +91,6 @@ const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
 
 const createDailyLogResponse: workoutAPI.createDailyLogResponseType = {
   dailylog_date: '2022-10-01',
-};
-
-// eslint-disable-next-line no-unused-vars
-const getDailyFitElementsRequest: workoutAPI.getDailyFitElementsRequestType = {
-  fitelements: [],
 };
 
 const editMemoRequest: workoutAPI.editMemoRequestType = {

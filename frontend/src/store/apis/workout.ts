@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { List } from 'reselect/es/types';
 import client from './client';
 import { TagClass } from 'store/apis/tag';

@@ -2,7 +2,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import { MemoryRouter, Route, Routes } from 'react-router';
-import { IProps as ElementProps } from '../../components/fitelement/FitElement';
 import Routine from './Routine';
 import { initialState, getMockStore } from 'test-utils/mock';
 import userEvent from '@testing-library/user-event';
