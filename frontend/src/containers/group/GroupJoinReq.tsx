@@ -44,17 +44,20 @@ const GroupJoinReq = () => {
         <Title>멤버 승인 요청</Title>
         <div style={{ width: '136px' }} />
       </TitleWrapper>
-
-      {memberList.map((me, index) => (
-        <JoinReqElement
-          key={index}
-          id={me.id}
-          image={me.image}
-          username={me.username}
-          level={me.level}
-          is_full={group_detail?.number == group_detail?.member_number}
-        />
-      ))}
+      {memberList.length != 0 ? (
+        memberList.map((me, index) => (
+          <JoinReqElement
+            key={index}
+            id={me.id}
+            image={me.image}
+            username={me.username}
+            level={me.level}
+            is_full={group_detail?.number == group_detail?.member_number}
+          />
+        ))
+      ) : (
+        <EmptyWrapper>Empty!</EmptyWrapper>
+      )}
     </Wrapper>
   );
 };
@@ -91,4 +94,10 @@ const Title = styled.div`
   @media all and (max-width: 560px) {
     display: none;
   }
+`;
+const EmptyWrapper = styled.div`
+  font-size: 40px;
+  margin-top: 20%;
+  font-family: 'Press Start 2P', cursive;
+  color: #9b9b9b;
 `;
