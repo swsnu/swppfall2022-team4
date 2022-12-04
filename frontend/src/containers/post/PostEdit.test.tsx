@@ -48,7 +48,21 @@ const setup = () => {
   const store = configureStore({ reducer: rootReducer });
   store.dispatch({
     type: 'user/setUser',
-    payload: { username: 'username', nickname: 'nickname', image: 'image' },
+    payload: { username: 'KJY', nickname: 'nickname', image: 'image' }, // KJY is the author of the simplePosts[0]
+  });
+  render(
+    <Provider store={store}>
+      <PostEdit />
+    </Provider>,
+  );
+  return store;
+};
+
+const setupOthers = () => {
+  const store = configureStore({ reducer: rootReducer });
+  store.dispatch({
+    type: 'user/setUser',
+    payload: { username: 'Not KJY', nickname: 'nickname', image: 'image' }, // KJY is the author of the simplePosts[0]
   });
   render(
     <Provider store={store}>
@@ -78,6 +92,28 @@ describe('[PostEdit Page]', () => {
     expect(mockNavigate).toBeCalledTimes(0);
 
     screen.getByDisplayValue('First Post');
+  });
+  test('basic rendering for invalid author', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
+    const store = setupOthers();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: simplePosts[0],
+      });
+    });
+    expect(mockNavigate).toBeCalledTimes(1);
+  });
+  test('basic rendering(backend error)', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailFailure',
+        payload: 'ERROR',
+      });
+    });
+    expect(mockNavigate).toBeCalledTimes(1);
   });
   test('basic rendering with images', () => {
     // Second post for has image

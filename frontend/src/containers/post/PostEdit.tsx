@@ -7,6 +7,7 @@ import { postActions } from 'store/slices/post';
 import { initialContent, PostContent, PostEditorLayout } from './PostEditorLayout';
 import { workoutLogActions } from 'store/slices/workout';
 import { groupActions } from 'store/slices/group';
+import { notificationFailure } from 'utils/sendNotification';
 
 const PostEdit = () => {
   const { group_id, post_id } = useParams<{ group_id: string; post_id: string }>();
@@ -47,7 +48,11 @@ const PostEdit = () => {
     }
   }, [postStatus]);
   useEffect(() => {
-    if (post) {
+    if (post && user) {
+      if (post.author.username !== user.username) {
+        notificationFailure('Post', '글을 불러올 수 없어요.');
+        navigate(POST_ERROR);
+      }
       setPostContent(state => ({
         ...state,
         title: post.title,
