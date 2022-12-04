@@ -5,29 +5,54 @@ import { RootState } from 'index';
 import { tagActions } from 'store/slices/tag';
 import { postActions } from 'store/slices/post';
 import { initialContent, PostContent, PostEditorLayout } from './PostEditorLayout';
+import { workoutLogActions } from 'store/slices/workout';
+import { groupActions } from 'store/slices/group';
+import { notificationFailure } from 'utils/sendNotification';
 
 const PostEdit = () => {
-  const { id } = useParams<{ id: string }>();
+  const { group_id, post_id } = useParams<{ group_id: string; post_id: string }>();
 
   const [postContent, setPostContent] = useState<PostContent>(initialContent);
 
-  const { post, postEditStatus, user } = useSelector(({ post, user }: RootState) => ({
+  const POST_DETAIL = group_id ? `/group/detail/${group_id}/post/${post_id}` : `/post/${post_id}`;
+  const POST_ERROR = `/`;
+
+  const { post, postEditStatus, user, postStatus } = useSelector(({ post, user }: RootState) => ({
     post: post.postDetail.post,
     postEditStatus: post.postEdit,
     user: user.user,
+    postStatus: post.postDetail.error,
   }));
   useEffect(() => {
     dispatch(tagActions.getTags());
-    if (id) {
+    dispatch(
+      workoutLogActions.getRoutine({
+        username: user?.username!,
+      }),
+    );
+    dispatch(groupActions.getGroups());
+    if (post_id) {
       dispatch(
         postActions.updatePostDetail({
-          post_id: id,
+          post_id,
         }),
       );
     }
+    return () => {
+      dispatch(postActions.stateRefresh());
+    };
   }, []);
   useEffect(() => {
-    if (post) {
+    if (postStatus !== null) {
+      navigate(POST_ERROR);
+    }
+  }, [postStatus]);
+  useEffect(() => {
+    if (post && user) {
+      if (post.author.username !== user.username) {
+        notificationFailure('Post', '글을 불러올 수 없어요.');
+        navigate(POST_ERROR);
+      }
       setPostContent(state => ({
         ...state,
         title: post.title,
@@ -35,12 +60,14 @@ const PostEdit = () => {
         tags: post.tags,
         prime_tag: post.prime_tag,
         images: post.images ? post.images : [],
+        routine: post.routine?.id ? post.routine.id.toString() : '',
+        group: post.group?.id ? post.group.id.toString() : '',
       }));
     }
   }, [post]);
   useEffect(() => {
     if (postEditStatus) {
-      navigate(`/post/${id}`);
+      navigate(POST_DETAIL);
       dispatch(postActions.stateRefresh());
       dispatch(tagActions.clearTagState());
     }
@@ -50,15 +77,14 @@ const PostEdit = () => {
 
   const cancelOnClick = () => {
     // alert('are you sure?');
-    navigate(`/post/${id}`);
-    //TODO;
+    navigate(POST_DETAIL);
   };
   const confirmOnClick = () => {
-    if (user && id) {
+    if (user && post_id) {
       dispatch(
         postActions.editPost({
           ...postContent,
-          post_id: id,
+          post_id,
         }),
       );
     }

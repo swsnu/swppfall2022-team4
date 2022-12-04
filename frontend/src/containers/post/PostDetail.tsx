@@ -25,6 +25,8 @@ import ImageDetailModal from 'components/post/ImageDetailModal';
 import { chatActions } from 'store/slices/chat';
 import SearchBar from 'components/common/SearchBar';
 import { ScrollShadow } from 'components/common/ScrollShadow';
+import { GroupInfo } from 'components/post/GroupInfo';
+import { RoutineInfo } from 'components/post/RoutineInfo';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -42,7 +44,7 @@ interface IPropsFuncBtn {
 }
 
 const PostDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { group_id, post_id } = useParams<{ group_id: string; post_id: string }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -54,6 +56,12 @@ const PostDetail = () => {
   const [replyActivated, setReplyActivated] = useState(false);
   const [editActivated, setEditActivated] = useState(false);
 
+  // Navigation Links ----------------------------------------------------------------
+  const POST_MAIN = group_id ? `/group/detail/${group_id}/post` : '/post';
+  const POST_DETAIL = group_id ? `/group/detail/${group_id}/post/${post_id}` : `/post/${post_id}`;
+  const POST_CREATE = group_id ? `/group/detail/${group_id}/post/create` : '/post/create';
+  const POST_EDIT = group_id ? `/group/detail/${group_id}/post/${post_id}/edit` : `/post/${post_id}/edit`;
+  const POST_ERROR = `/`;
   // --- Modal Configurations --------------------------------------------------------
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
@@ -105,21 +113,25 @@ const PostDetail = () => {
   // --- Modal Configurations End --------------------------------------------------------
 
   const user = useSelector(({ user }: RootState) => user.user);
-  const { socket, post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus, chatroomId } = useSelector(
-    ({ chat, post }: RootState) => ({
+  const { socket, post, postComment, postDeleteStatus, postFuncStatus, postStatus, commentFuncStatus, chatroomId } =
+    useSelector(({ chat, post }: RootState) => ({
       socket: chat.socket,
       post: post.postDetail.post,
       postComment: post.postComment.comments,
       postDeleteStatus: post.postDelete,
       postFuncStatus: post.postFunc,
+      postStatus: post.postDetail.error,
       commentFuncStatus: post.postComment.commentFunc,
       chatroomId: chat.create.id,
-    }),
-  );
-
+    }));
+  useEffect(() => {
+    if (postStatus !== null) {
+      navigate(POST_ERROR);
+    }
+  }, [postStatus]);
   useEffect(() => {
     return () => {
-      dispatch(postActions.resetPost());
+      dispatch(postActions.stateRefresh());
       dispatch(chatActions.resetCreate());
     };
   }, []);
@@ -129,19 +141,19 @@ const PostDetail = () => {
     }
   }, [navigate, chatroomId]);
   useEffect(() => {
-    if (id) {
+    if (post_id) {
       dispatch(
         postActions.updatePostDetail({
-          post_id: id,
+          post_id,
         }),
       );
     }
   }, [postFuncStatus]);
   useEffect(() => {
-    if (id) {
+    if (post_id) {
       dispatch(
         postActions.getPostComment({
-          post_id: id,
+          post_id,
         }),
       );
     }
@@ -151,17 +163,17 @@ const PostDetail = () => {
   }, [postComment]); // This looks disposable, but it makes the action smoothly.
   useEffect(() => {
     if (postDeleteStatus) {
-      navigate('/post');
+      navigate(POST_MAIN);
       dispatch(postActions.stateRefresh());
     }
   }, [postDeleteStatus]);
 
   // type_str : { 'like', 'dislike', 'scrap' }
   const postFuncOnClick = (type_str: string) => {
-    if (id) {
+    if (post_id) {
       dispatch(
         postActions.postFunc({
-          post_id: id,
+          post_id,
           func_type: type_str,
         }),
       );
@@ -179,11 +191,11 @@ const PostDetail = () => {
             category: 'postFunc',
             info: {
               me: user.username,
-              post: id,
+              post: post_id,
             },
             content: `${user.nickname}님이 내 글에 ${funcTypeToStr(type_str)} 눌렀습니다.`,
             image: user.image,
-            link: `/post/${id}`,
+            link: POST_DETAIL,
           },
         }),
       );
@@ -217,7 +229,7 @@ const PostDetail = () => {
             },
             content: `${user.nickname}님이 내 댓글에 ${pair(type_str)} 눌렀습니다.`,
             image: user.image,
-            link: `/post/${id}`,
+            link: POST_DETAIL,
           },
         }),
       );
@@ -225,22 +237,22 @@ const PostDetail = () => {
   };
 
   const postDeleteOnClick = () => {
-    if (id) {
+    if (post_id) {
       dispatch(
         postActions.deletePost({
-          post_id: id,
+          post_id,
         }),
       );
     }
   };
 
   const commentCreateOnClick = (parent_comment: string | null) => {
-    if (user && id) {
+    if (user && post_id) {
       dispatch(
         postActions.createComment({
           content: parent_comment ? commentReplyInput : commentInput,
           author_name: user.username,
-          post_id: id,
+          post_id,
           parent_comment: parent_comment ? parent_comment : 'none',
         }),
       );
@@ -253,14 +265,14 @@ const PostDetail = () => {
               category: 'comment',
               info: {
                 me: user.username,
-                post: id,
+                post: post_id,
                 comment: parent_comment,
               },
               content: `${user.nickname}님이 ${parent_comment ? '답글' : '댓글'}을 남겼습니다. "${
                 parent_comment ? commentReplyInput : commentInput
               }"`,
               image: user.image,
-              link: `/post/${id}`,
+              link: POST_DETAIL,
             },
           }),
         );
@@ -268,7 +280,7 @@ const PostDetail = () => {
 
       dispatch(
         postActions.getPostComment({
-          post_id: id,
+          post_id,
         }),
       );
       setCommentInput('');
@@ -309,7 +321,7 @@ const PostDetail = () => {
   };
 
   const commentDeleteOnClick = (target_id: string) => {
-    if (target_id && id) {
+    if (target_id && post_id) {
       dispatch(
         postActions.deleteComment({
           comment_id: target_id,
@@ -317,7 +329,7 @@ const PostDetail = () => {
       );
       dispatch(
         postActions.getPostComment({
-          post_id: id,
+          post_id,
         }),
       );
     }
@@ -448,12 +460,12 @@ const PostDetail = () => {
     );
   };
 
-  const CreateBtn = <BlueBigBtn onClick={() => navigate('/post/create')}>글 쓰기</BlueBigBtn>;
+  const CreateBtn = <BlueBigBtn onClick={() => navigate(POST_CREATE)}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
     user?.username == post?.author.username ? (
       <PostPanelWrapper>
         {CreateBtn}
-        <BlueBigBtn onClick={() => navigate(`/post/${id}/edit`)}>글 편집</BlueBigBtn>
+        <BlueBigBtn onClick={() => navigate(POST_EDIT)}>글 편집</BlueBigBtn>
         <BlueBigBtn onClick={postDeleteOnClick}>글 삭제</BlueBigBtn>
       </PostPanelWrapper>
     ) : (
@@ -470,27 +482,29 @@ const PostDetail = () => {
     <PostPageWrapper>
       <PostContentWrapper>
         <div>
-          <SearchBar
-            onSubmit={e => {
-              e.preventDefault();
-              navigate(`/post`);
-              dispatch(
-                postActions.postSearch({
-                  search_keyword: search,
-                }),
-              );
-            }}
-            onClear={() => {
-              setSearch('');
-              dispatch(
-                postActions.postSearch({
-                  search_keyword: '',
-                }),
-              );
-            }}
-            search={search}
-            setSearch={setSearch}
-          />
+          {!group_id && (
+            <SearchBar
+              onSubmit={e => {
+                e.preventDefault();
+                navigate(POST_MAIN);
+                dispatch(
+                  postActions.postSearch({
+                    search_keyword: search,
+                  }),
+                );
+              }}
+              onClear={() => {
+                setSearch('');
+                dispatch(
+                  postActions.postSearch({
+                    search_keyword: '',
+                  }),
+                );
+              }}
+              search={search}
+              setSearch={setSearch}
+            />
+          )}
         </div>
         <div>
           <ArticleDetailWrapper id="articleDetailWrapper">
@@ -498,7 +512,7 @@ const PostDetail = () => {
               <ArticleItem>
                 <div>
                   <ArticleTitleWrapper>
-                    <ArticleBackBtn onClick={() => navigate('/post')}>◀︎</ArticleBackBtn>
+                    <ArticleBackBtn onClick={() => navigate(POST_MAIN)}>◀︎</ArticleBackBtn>
                     <ArticleTitle>{post.title}</ArticleTitle>
                     <PostWritterWrapper>
                       <PostWritterLeftWrapper>
@@ -525,19 +539,23 @@ const PostDetail = () => {
                     </PostWritterWrapper>
                   </ArticleTitleWrapper>
                   <ArticleBodyContent>{post.content}</ArticleBodyContent>
+                  <RoutineInfo routine={post.routine} />
                   <ContentImageSection>
-                    {post.images?.map((img, index) => (
-                      <PostUploadedImageWrapper key={index}>
-                        <img
-                          src={process.env.REACT_APP_API_IMAGE + img}
-                          onClick={() => {
-                            setActiveImage(img);
-                            setImageModalOpen(true);
-                          }}
-                          data-testid="postImage"
-                        />
-                      </PostUploadedImageWrapper>
-                    ))}
+                    {post.images?.length !== 0 && <span>이미지</span>}
+                    <div>
+                      {post.images?.map((img, index) => (
+                        <PostUploadedImageWrapper key={index}>
+                          <img
+                            src={process.env.REACT_APP_API_IMAGE + img}
+                            onClick={() => {
+                              setActiveImage(img);
+                              setImageModalOpen(true);
+                            }}
+                            data-testid="postImage"
+                          />
+                        </PostUploadedImageWrapper>
+                      ))}
+                    </div>
                   </ContentImageSection>
                   <ArticleBodyFooter>
                     <CommentNumIndicator>댓글 {post.comments_num}</CommentNumIndicator>
@@ -599,7 +617,10 @@ const PostDetail = () => {
               <LoadingWithoutMinHeight />
             )}
           </ArticleDetailWrapper>
-          <div>{PostAuthorPanel}</div>
+          <div>
+            {PostAuthorPanel}
+            <GroupInfo group={post?.group} navigate={navigate} />
+          </div>
         </div>
       </PostContentWrapper>
       {ImageDetailModal({
@@ -816,11 +837,11 @@ export const CommentFuncWrapper = styled.div`
 export const handleFuncBtnColor = (color: string) => {
   switch (color) {
     case FuncType.Like:
-      return '#ff0000';
+      return '#dc6868';
     case FuncType.Dislike:
-      return '#0000ff';
+      return '#7878be';
     case FuncType.Scrap:
-      return '#dddd00';
+      return '#ebeb00';
     default:
       return '#dddddd';
   }
@@ -902,13 +923,25 @@ export const PostPanelWrapper = styled(ColumnCenterFlex)`
 // Image Content Section
 export const ContentImageSection = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+  flex-direction: column;
   width: 100%;
-  height: fit-content;
-  position: relative;
-  background-color: var(--fit-white);
-  padding: 8px 10px;
+  padding: 0px 15px;
+  > span:first-child {
+    /* 태그된 루틴 */
+    font-size: 14px;
+    color: var(--fit-support-gray);
+    margin-bottom: 10px;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+    height: fit-content;
+    position: relative;
+    background-color: var(--fit-white);
+  }
 `;
 
 export const PostUploadedImageWrapper = styled.div`

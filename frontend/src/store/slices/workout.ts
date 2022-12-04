@@ -27,6 +27,21 @@ export type RoutineType = {
   fitelements: Fitelement[];
 };
 
+export type FitelementDirect = {
+  workout_type: string | null;
+  workout_name: string | null;
+  weight: number | null;
+  rep: number | null;
+  set: number | null;
+  time: number | null;
+};
+
+export type RoutineTypeInPost = {
+  id: number | null;
+  name: string;
+  fitelements: FitelementDirect[];
+};
+
 export interface WorkoutLogState {
   error: AxiosError | null;
   workout_log: {

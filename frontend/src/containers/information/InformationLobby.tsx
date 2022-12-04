@@ -23,6 +23,10 @@ const InformationLobby = () => {
     dispatch(tagActions.getTags());
   }, []);
 
+  useEffect(() => {
+    if (info.error !== 'NotFound') navigate(`/information/${search}`);
+  }, [info.contents]);
+
   return (
     <PostPageWrapper>
       <PostContentWrapper>
@@ -30,13 +34,6 @@ const InformationLobby = () => {
           <SearchBar
             onSubmit={e => {
               e.preventDefault();
-              if (info.contents?.basic.name !== search)
-                dispatch(
-                  infoActions.getInformation({
-                    information_name: search,
-                  }),
-                );
-              navigate(`/information/${search}`);
             }}
             onClear={() => {
               setSearch('');
@@ -48,12 +45,9 @@ const InformationLobby = () => {
 
         <SectionWrapper>
           <SectionItemWrapper>
-            <span>즐겨찾기</span>
-            <br />
-          </SectionItemWrapper>
-          <SectionItemWrapper>
             {tagList?.map(tagClass => {
               return (
+                (tagClass.tags.map(tag => tag.name.includes(search)).includes(true) || search == '') &&
                 tagClass.class_type === 'workout' && (
                   <WorkoutClassWrapper key={tagClass.id}>
                     <WorkoutClassTitleWrapper>
@@ -67,14 +61,16 @@ const InformationLobby = () => {
                     <WorkoutClassTagWrapper>
                       {tagClass.tags.map(tag => {
                         return (
-                          <TagBubble
-                            style={{ cursor: 'pointer' }}
-                            key={tag.id}
-                            color={tag.color}
-                            onClick={() => navigate(`/information/${tag.name}`)}
-                          >
-                            {tag.name}
-                          </TagBubble>
+                          (tag.name.includes(search) || search === '') && (
+                            <TagBubble
+                              style={{ cursor: 'pointer' }}
+                              key={tag.id}
+                              color={tag.color}
+                              onClick={() => navigate(`/information/${tag.name}`)}
+                            >
+                              {tag.name}
+                            </TagBubble>
+                          )
                         );
                       })}
                     </WorkoutClassTagWrapper>
@@ -126,11 +122,6 @@ const TagClassImg = styled.img`
 `;
 
 const SectionWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr;
-  row-gap: 10px;
-  column-gap: 10px;
   width: 100%;
   min-height: 875px;
   max-height: 875px;
@@ -142,10 +133,16 @@ const SectionItemWrapper = styled(ScrollShadow)`
   border: 1px solid var(--fit-support-gray-bright);
   border-radius: 20px;
   background-color: #ffffff;
-  height: 875px;
   overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
   &::-webkit-scrollbar {
     display: none;
+  }
+  > div:last-child,
+  > div:nth-last-child(2) {
+    margin-bottom: 10px;
   }
 `;
 
@@ -153,8 +150,9 @@ const WorkoutClassWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 `;
+
 const WorkoutClassTitleWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -171,6 +169,6 @@ const WorkoutClassTitleWrapper = styled.div`
 const WorkoutClassTagWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  row-gap: 5px;
+  row-gap: 8px;
 `;
 export default InformationLobby;

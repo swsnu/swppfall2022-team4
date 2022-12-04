@@ -376,6 +376,10 @@ describe('API TEST', () => {
       const result = await postAPI.getPosts(getPostsRequest);
       expect(result).toBe(`/api/post/?page=1&pageSize=15`);
     });
+    test('getPosts with group', async () => {
+      const result = await postAPI.getGroupPosts({ group_id: '1' });
+      expect(result).toBe(`/api/group/1/post/`);
+    });
     test('searchPosts', async () => {
       const result = await postAPI.getPosts(searchPostsRequest);
       expect(result).toBe(`/api/post/?page=1&pageSize=15&search=test`);
@@ -540,8 +544,8 @@ describe('API TEST', () => {
     });
     test('getfitelementtypes', async () => {
       const result = await workoutAPI.getFitelementTypes();
-      expect(result).toBe('/api/fitelement/type/')
-    })
+      expect(result).toBe('/api/fitelement/type/');
+    });
   });
 });
 

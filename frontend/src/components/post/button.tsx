@@ -60,7 +60,7 @@ export const BlueBigBtn = styled(BlueBtnBlueprint)`
 
 export const RedBigBtn = styled(RedBtnBlueprint)`
   padding: 8px 80px;
-  border-radius: 30px;
+  border-radius: 15px;
   width: auto;
   height: fit-content;
 `;
@@ -68,7 +68,7 @@ export const RedBigBtn = styled(RedBtnBlueprint)`
 export const BlueBigActiveBtn = styled(BlueBigBtn)`
   padding: 8px 80px;
   margin: 0px 0px 10px 30px;
-  border-radius: 30px;
+  border-radius: 15px;
   width: auto;
   height: fit-content;
 `;

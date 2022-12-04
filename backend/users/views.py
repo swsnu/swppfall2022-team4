@@ -140,7 +140,7 @@ def profile(request, user_id):
 
     if request.method == 'GET':
         posts_serial = prepare_posts_response(user.posts.all())
-        comments_serial = prepare_comments_response(user.comments.all())
+        comments_serial = prepare_comments_response(user.comments.all(), is_detail=True, username=user_id)
         scraps_serial = prepare_posts_response(user.scraped_posts.all())
 
         follower_datas = user.follower.all()

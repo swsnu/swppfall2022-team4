@@ -30,6 +30,7 @@ export type Comment = {
 
   liked?: boolean;
   disliked?: boolean;
+  post_title?: string;
 };
 
 export type getPostCommentResponseType = {

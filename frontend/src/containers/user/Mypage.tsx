@@ -5,35 +5,23 @@ import { AiOutlineEdit } from 'react-icons/ai';
 import { BsChatDots } from 'react-icons/bs';
 import { FaHeart, FaHeartBroken } from 'react-icons/fa';
 import styled from 'styled-components';
-import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
 import { chatActions } from 'store/slices/chat';
-import { dateDiff, timeAgoFormat } from 'utils/datetime';
+import { dateDiff } from 'utils/datetime';
 
 import Loading from 'components/common/Loading';
 import Button3 from 'components/common/buttons/Button3';
-import {
-  CommentContent,
-  CommentContentWrapper,
-  FuncBtn,
-  CommentFuncNumIndicator,
-  CommentFuncTimeIndicator,
-  CommentFuncWrapper,
-  FuncType,
-  IPropsComment,
-} from 'containers/post/PostDetail';
 import UserItem from 'components/user/UserItem';
-import { Comment } from 'store/apis/comment';
-import { ArticleItemDefault } from 'components/post/ArticleItem';
+import {
+  ArticleHeader,
+  ArticleItemDefault,
+  ArticleItemMyPage,
+  ArticleItemMyPageHeader,
+} from 'components/post/ArticleItem';
 import { ScrollShadow } from 'components/common/ScrollShadow';
-
-interface MyPageCommentIprops {
-  comment: Comment;
-}
+import { CommentItemHeader, CommentItemMyPage } from 'components/post/CommentItem';
 
 const CATEGORY = ['게시글', '댓글', '스크랩', '팔로잉'];
 
@@ -90,34 +78,6 @@ const Mypage = () => {
       }
     }
   };
-
-  const MyPageCommentItem = ({ comment }: MyPageCommentIprops) => (
-    <CommentItem
-      key={comment.comment_id}
-      isChild={comment.parent_comment !== null}
-      onClick={() => navigate(`/post/${comment.post_id}`)}
-    >
-      {comment.parent_comment !== null && (
-        <CommentChildIndicator>
-          <FontAwesomeIcon icon={faArrowRight} />
-        </CommentChildIndicator>
-      )}
-      <CommentContentWrapper>
-        <CommentContent>{comment.content}</CommentContent>
-      </CommentContentWrapper>
-      <CommentFuncWrapper>
-        <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
-          <FontAwesomeIcon icon={faThumbsUp} />
-        </FuncBtn>
-        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-        <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
-          <FontAwesomeIcon icon={faThumbsDown} />
-        </FuncBtn>
-        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-        <CommentFuncTimeIndicator> {timeAgoFormat(new Date(), new Date(comment.created))} </CommentFuncTimeIndicator>
-      </CommentFuncWrapper>
-    </CommentItem>
-  );
 
   if (!user || !username) return <div>no user</div>;
   if (loading || !profile) return <Loading />;
@@ -213,8 +173,9 @@ const Mypage = () => {
                     <FollowCountText>게시글</FollowCountText>
                     <FollowCountNumber>{profile.information.post.length}</FollowCountNumber>
                   </FollowCountWrapper>
+                  <ArticleItemMyPageHeader />
                   {profile.information.post.map(post => (
-                    <ArticleItemDefault
+                    <ArticleItemMyPage
                       key={post.post_id}
                       post={post}
                       onClick={() => navigate(`/post/${post.post_id}`)}
@@ -228,8 +189,13 @@ const Mypage = () => {
                     <FollowCountText>댓글</FollowCountText>
                     <FollowCountNumber>{profile.information.comment.length}</FollowCountNumber>
                   </FollowCountWrapper>
+                  <CommentItemHeader />
                   {profile.information.comment.map(comment => (
-                    <MyPageCommentItem key={comment.comment_id} comment={comment} />
+                    <CommentItemMyPage
+                      key={comment.comment_id}
+                      comment={comment}
+                      onClick={() => navigate(`/post/${comment.post_id}`)}
+                    />
                   ))}
                 </ProfileContentWrapper>
               ),
@@ -239,6 +205,7 @@ const Mypage = () => {
                     <FollowCountText>스크랩</FollowCountText>
                     <FollowCountNumber>{profile.information.scrap.length}</FollowCountNumber>
                   </FollowCountWrapper>
+                  <ArticleHeader />
                   {profile.information.scrap.map(post => (
                     <ArticleItemDefault
                       key={post.post_id}
@@ -633,25 +600,7 @@ const ProfileContentWrapper = styled.div`
   }
   background-color: #f5f5f5;
 `;
-const CommentItem = styled.div<IPropsComment>`
-  padding: 5px 30px;
-  font-size: 14px;
-  display: flex;
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  border-bottom: 1px solid gray;
-  cursor: pointer;
-  ${({ isChild }) =>
-    isChild &&
-    `
-    padding-left: 30px;
-  `}
-  background-color:#ffffff;
-`;
-const CommentChildIndicator = styled.div`
-  margin-right: 12px;
-`;
+
 const FollowContentWrapper = styled.div`
   width: 100%;
   min-height: 551.3px;

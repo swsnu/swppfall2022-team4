@@ -271,6 +271,89 @@ const GroupDetail = () => {
           </>
         )}
       </SideWrapper>
+      </div>
+      <GroupAboutWrapper>
+        <GroupAboutText>About</GroupAboutText>
+        <ProfileImage
+          src={process.env.REACT_APP_API_IMAGE + group_detail.group_leader.image}
+          alt="profile"
+          onClick={() => navigate(`/profile/${group_detail.group_leader.username}`)}
+        />
+        <div style={{ display: 'flex' }}>
+          <GroupAboutSmallText>그룹장:</GroupAboutSmallText>
+          <GroupAboutNickname>{group_detail.group_leader.nickname}</GroupAboutNickname>
+        </div>
+        <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
+        <div>
+          <span>
+            {group_detail.tags.map(tags => {
+              return (
+                <TagBubble
+                  key={tags.id}
+                  color={tags.color}
+                  isPrime={group_detail.prime_tag && tags.id === group_detail.prime_tag.id}
+                >
+                  {tags.name}
+                </TagBubble>
+              );
+            })}
+          </span>
+        </div>
+      </GroupAboutWrapper>
+
+      {group_detail.lat && group_detail.lng && group_detail.address && (
+        <GroupAboutWrapper>
+          <GroupAboutText>Place</GroupAboutText>
+          <GroupDetailDate>장소 : {group_detail.address}</GroupDetailDate>
+          <Map // 로드뷰를 표시할 Container
+            center={{
+              lat: group_detail.lat,
+              lng: group_detail.lng,
+            }}
+            style={{
+              width: '60%',
+              height: '350px',
+            }}
+            level={3}
+          >
+            <MapMarker position={{ lat: group_detail.lat, lng: group_detail.lng }}>
+              <div style={{ color: '#000' }}>{group_detail.address}</div>
+            </MapMarker>
+          </Map>
+        </GroupAboutWrapper>
+      )}
+
+      <GroupSpecificationWrapper>
+        <GroupAboutText>Specification</GroupAboutText>
+        <GroupDetailDate>시작일 : {group_detail.start_date ?? '기한없음'}</GroupDetailDate>
+        <GroupDetailDate>마감일 : {group_detail.end_date ?? '기한없음'}</GroupDetailDate>
+        <GoalListWrapper>
+          <FitHeader>
+            <div style={{ paddingLeft: '5%' }}>WorkoutCategory</div>
+            <div style={{ paddingLeft: '6%' }}>WorkoutType</div>
+            <div style={{ paddingLeft: '16%' }}>Weight</div>
+            <div style={{ paddingLeft: '12%' }}>Rep</div>
+            <div style={{ paddingLeft: '8%' }}>Set</div>
+            <div style={{ paddingLeft: '12%' }}>Time</div>
+          </FitHeader>
+          {group_detail.goal.map((goal, index) => {
+            console.log(goal);
+            return (
+              <FitElement
+                key={index}
+                id={index + 1}
+                type={goal.type}
+                workout_type={goal.workout_type}
+                category={goal.category}
+                weight={goal.weight}
+                rep={goal.rep}
+                set={goal.set}
+                time={goal.time}
+              />
+            );
+          })}
+        </GoalListWrapper>
+      </GroupSpecificationWrapper>
     </Wrapper>
   );
 };
@@ -411,6 +494,26 @@ const TagBubbleWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+`;
+const GroupDetailWrapper = styled.div`
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 15px 50px 15px;
+  border-bottom: 1px solid #727272;
+  margin-bottom: 40px;
+`;
+
+const GroupSpecificationWrapper = styled.div`
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 15px 50px 15px;
+  margin-bottom: 40px;
 `;
 
 const FitHeader = styled.div`
