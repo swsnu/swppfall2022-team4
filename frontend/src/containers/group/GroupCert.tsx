@@ -250,8 +250,7 @@ const GroupCert = () => {
                 <option disabled>목표를 지정하세요</option>
                 {group_detail.goal.map((goal, index) => (
                   <option key={index} value={index}>
-                    type: {goal.workout_type} category: {goal.category} rep: {goal.rep} set: {goal.set} time:
-                    {goal.time}
+                    {`종류 : ${goal.workout_type} 강도 : ${goal.rep} 반복 : ${goal.set} 시간 : ${goal.time}`}
                   </option>
                 ))}
               </select>
@@ -261,12 +260,14 @@ const GroupCert = () => {
             </LogUpper>
             <Frame className="right">
               <LogHeader>
+                <div style={{ marginRight: '20px' }}></div>
                 <LogCategory>부위</LogCategory>
                 <LogCategory className="type">종류</LogCategory>
                 <LogCategory>강도</LogCategory>
                 <LogCategory>반복</LogCategory>
-                <LogCategory className="type2">세트</LogCategory>
-                <LogCategory className="type2">시간(분)</LogCategory>
+                <LogCategory className="type">세트</LogCategory>
+                <LogCategory className="type">시간(분)</LogCategory>
+                <div style={{ marginRight: '40px' }}></div>
               </LogHeader>
               <LogBody>
                 {all_certs &&
@@ -449,7 +450,7 @@ const LogUpper = styled.div`
   min-height: 10vh;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-around;
 `;
 
 const LogWrapper = styled.div`
@@ -484,6 +485,10 @@ const LogCategory = styled.div`
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
   color: black;
+
+  .type && {
+    padding-left: 10px;
+  }
 `;
 
 const LogBody = styled.div`
