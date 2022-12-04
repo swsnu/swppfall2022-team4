@@ -152,14 +152,26 @@ const GroupDetail = () => {
                 level={3}
               >
                 <MapMarker position={{ lat: group_detail.lat, lng: group_detail.lng }}>
-                  <div style={{ color: '#000' }}>{group_detail.address}</div>
+                  <div
+                    style={{
+                      fontSize: '13px',
+                      backgroundColor: 'white',
+                      padding: '3px',
+                      textAlign: 'center',
+                      borderRadius: '4px',
+                      fontFamily: 'NanumSquareR',
+                      border: '1px solid',
+                    }}
+                  >
+                    {group_detail.address}
+                  </div>
                 </MapMarker>
               </Map>
             </GroupContentWrapper2>
           </GroupWrapper>
         )}
 
-        <GroupWrapper>
+        <GroupWrapper2>
           <GroupContentWrapper1>
             <GroupAboutText>Goal</GroupAboutText>
             <GroupDetailDate>시작일 : {group_detail.start_date ?? '기한없음'}</GroupDetailDate>
@@ -192,7 +204,7 @@ const GroupDetail = () => {
               })}
             </GoalListWrapper>
           </GroupContentWrapper2>
-        </GroupWrapper>
+        </GroupWrapper2>
       </MainWrapper>
       <SideWrapper>
         {member_status === 'group_leader' && (
@@ -298,6 +310,12 @@ const GroupWrapper = styled.div`
   align-items: center;
   border-bottom: 1px solid #727272;
 `;
+const GroupWrapper2 = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+`;
 const GroupContentWrapper = styled.div`
   width: 50%;
   height: 100%;
@@ -382,6 +400,11 @@ const GoalListWrapper = styled.div`
 const GroupDetailDate = styled.div`
   font-size: 18px;
   margin: 5px 0;
+`;
+
+const markerWrapper = styled.div`
+  font-size: 12px;
+  text-align; center;
 `;
 
 export default GroupDetail;

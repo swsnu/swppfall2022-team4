@@ -477,7 +477,9 @@ const GroupCreate = () => {
                         onChange={e => setKeyword(e.target.value)}
                         placeholder="장소 검색"
                       />
-                      {clickedAddress && <div>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>}
+                      {clickedAddress && (
+                        <div style={{ marginTop: '10px' }}>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>
+                      )}
                       <Map // 로드뷰를 표시할 Container
                         center={{
                           lat: currentLocation.center.lat || 37.480966,
@@ -511,7 +513,21 @@ const GroupCreate = () => {
                               setClickedPosition({ lat: marker.position.lat, lng: marker.position.lng });
                             }}
                           >
-                            {markerInfo === marker.content && <div style={{ color: '#000' }}>{marker.content}</div>}
+                            {markerInfo === marker.content && (
+                              <div
+                                style={{
+                                  fontSize: '13px',
+                                  backgroundColor: 'white',
+                                  padding: '3px',
+                                  textAlign: 'center',
+                                  borderRadius: '4px',
+                                  fontFamily: 'NanumSquareR',
+                                  border: '1px solid',
+                                }}
+                              >
+                                {marker.content}
+                              </div>
+                            )}
                           </MapMarker>
                         ))}
                       </Map>
