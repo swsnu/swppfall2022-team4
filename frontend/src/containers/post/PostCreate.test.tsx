@@ -2,6 +2,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
+import Router from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import PostCreate from './PostCreate';
@@ -393,5 +394,58 @@ describe('[PostEditor Page - Tag]', () => {
     const tagClassOption = screen.getByRole('option', { name: '- 태그 검색 -' }); // Tag Class
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+  });
+});
+
+describe('[Group - PostCreate Page]', () => {
+  test('basic rendering', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    setup();
+  });
+  test('write cancle button', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    setup();
+    const cancelBtn = screen.getByText('취소');
+    fireEvent.click(cancelBtn);
+    expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledWith('/group/detail/1/post');
+  });
+  test('write confirm button after typing', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    setup();
+    const confirmBtn = screen.getByText('완료');
+    const titleInput = screen.getByPlaceholderText('제목');
+    const contentInput = screen.getByPlaceholderText('내용');
+    userEvent.type(titleInput, 'Rullu');
+    userEvent.type(contentInput, 'Ralla');
+    fireEvent.click(confirmBtn);
+    expect(mockDispatch).toBeCalledTimes(4);
+    expect(mockDispatch).toBeCalledWith({
+      payload: {
+        title: 'Rullu',
+        content: 'Ralla',
+        author_name: 'username',
+        tags: [],
+        images: [],
+        prime_tag: undefined,
+        routine: '',
+        group: '',
+        group_id: '1',
+      },
+      type: 'post/createPost',
+    });
+  });
+  test('post creation success', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/createPostSuccess',
+        payload: createPostResponse,
+      });
+    });
+
+    expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledWith(`/group/detail/1/post/${createPostResponse.post_id}`);
   });
 });

@@ -11,15 +11,19 @@ import { groupActions } from 'store/slices/group';
 const PostCreate = () => {
   const { group_id } = useParams<{ group_id: string }>();
   const [postContent, setPostContent] = useState<PostContent>(initialContent);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(({ user }: RootState) => user.user);
   const postCreateStatus = useSelector(({ post }: RootState) => post.postCreate);
+  const user = useSelector(({ user }: RootState) => user.user);
+
+  const POST_MAIN = group_id ? `/group/detail/${group_id}/post` : '/post';
+  const POST_DETAIL = group_id
+    ? `/group/detail/${group_id}/post/${postCreateStatus.post_id}`
+    : `/post/${postCreateStatus.post_id}`;
+
   const cancelOnClick = () => {
     // alert('are you sure?');
-    if (group_id) navigate(`/group/detail/${group_id}/post`);
-    else navigate('/post');
+    navigate(POST_MAIN);
   };
   useEffect(() => {
     dispatch(tagActions.getTags());
@@ -32,8 +36,7 @@ const PostCreate = () => {
   }, []);
   useEffect(() => {
     if (postCreateStatus.status) {
-      if (group_id) navigate(`/group/detail/${group_id}/post/${postCreateStatus.post_id}`);
-      else navigate(`/post/${postCreateStatus.post_id}`);
+      navigate(POST_DETAIL);
       dispatch(postActions.stateRefresh());
       dispatch(tagActions.clearTagState());
     }
