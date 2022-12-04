@@ -9,6 +9,15 @@ from workouts.models import FitElement
 from datetime import datetime
 
 
+def add_exp(username, exp):
+    if User.objects.filter(username=username).exists():
+        user = User.objects.get(username=username)
+        temp = user.exp + exp
+        user.exp = temp % 100
+        user.level = user.level + (temp // 100)
+        user.save()
+
+
 def return_cert(certs):
     result = []
     for single_cert in certs:
@@ -408,6 +417,7 @@ def group_cert(request, group_id, year, month, specific_date):
         )
         result = return_cert(certs)
         response_dict = {"all_certs": result}
+        add_exp(request.user.username, 5)
         return JsonResponse(response_dict, status=200)
     elif request.method == "DELETE":
         req_data = json.loads(request.body.decode())

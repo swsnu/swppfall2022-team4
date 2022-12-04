@@ -160,7 +160,13 @@ const Mypage = () => {
           <DateDiffText>일 째</DateDiffText>
           {user.username === profile.username ? (
             <>
-              <Button3 content="프로필 수정" clicked={() => navigate('/edit_profile')} style={{ marginTop: '20px' }} />
+              <EditButtonWrapper>
+                <Button3
+                  content="프로필 수정"
+                  clicked={() => navigate('/edit_profile')}
+                  style={{ marginTop: '20px' }}
+                />
+              </EditButtonWrapper>
               <EditIcon onClick={() => navigate('/edit_profile')} data-testid="editProfileIcon" />
             </>
           ) : (
@@ -273,7 +279,7 @@ const Mypage = () => {
                           clicked={() => navigate(`/profile/${user.username}`)}
                         />
                       ))}
-                      {profile.information.follower.length === 0 && <NoFollowText>팔로잉이 없습니다.</NoFollowText>}
+                      {profile.information.following.length === 0 && <NoFollowText>팔로잉이 없습니다.</NoFollowText>}
                     </>
                   </FollowUserWrapper>
                 </FollowContentWrapper>
@@ -692,4 +698,10 @@ const NoFollowText = styled.div`
   font-family: NanumSquareR;
   height: 150px;
   padding-top: 68px;
+`;
+
+const EditButtonWrapper = styled.div`
+  @media all and (max-width: 600px) {
+    display: none;
+  }
 `;
