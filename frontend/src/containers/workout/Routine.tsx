@@ -91,6 +91,7 @@ const Routine = () => {
             {routines.map((routine, index) => (
               <RoutineName
                 key={index}
+                data-testid="routine_name"
                 className={routine.id === routine_id ? (index === 0 ? 'type2' : 'type1') : ''}
                 onClick={() => routineClick(Number(routine.id))}
               >
@@ -122,7 +123,7 @@ const Routine = () => {
                 <EditButtonWrapper>
                   <AnyButton
                     className="edit-type"
-                    data-testid="memo_cancel_button"
+                    data-testid="title_cancel_button"
                     hidden={!edit_mode}
                     onClick={() => editRoutineTitle('cancel_button')}
                   >

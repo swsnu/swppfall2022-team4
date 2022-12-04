@@ -130,7 +130,22 @@ export const initialState: PreloadedState<RootState> = {
       {
         id: 0,
         name: 'test_routine',
-        fitelements: [],
+        fitelements: [
+          {
+            data: {
+              id: 0,
+              type: 'log',
+              workout_type: '데드리프트',
+              period: null,
+              category: '등운동',
+              weight: null,
+              rep: null,
+              set: null,
+              time: 20,
+              date: null,
+            },
+          },
+        ],
       },
       {
         id: 1,
@@ -202,8 +217,23 @@ export const initialState: PreloadedState<RootState> = {
       },
     ],
     selected_routine: {
-      name: 'test_routine2',
-      fitelements: [],
+      name: 'test_routine',
+      fitelements: [
+        {
+          data: {
+            id: 0,
+            type: 'log',
+            workout_type: '데드리프트',
+            period: null,
+            category: '등운동',
+            weight: null,
+            rep: null,
+            set: null,
+            time: 20,
+            date: null,
+          },
+        },
+      ],
     },
     add_fit_elements: {
       fitelements: [],
@@ -249,8 +279,8 @@ export const initialState: PreloadedState<RootState> = {
     indexSuccess: [],
     edit_routine_success: {
       id: null,
-      content: ''
-    }
+      content: '',
+    },
   },
 };
 

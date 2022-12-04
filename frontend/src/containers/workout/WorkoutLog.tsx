@@ -672,7 +672,7 @@ const WorkoutLog = () => {
                   >
                     <option disabled>종류 선택</option>
                     {fitElementTarget.length === 1 &&
-                      fitElementTarget[0].tags.map((fitelement, index) => (
+                      fitElementTarget[0].tags.map((fitelement, index: number) => (
                         <option data-testid="select-option-type" key={index}>
                           {fitelement.name}
                         </option>
