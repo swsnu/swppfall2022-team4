@@ -291,10 +291,7 @@ export const addFitElements = async (payload: addFitElementsRequestType) => {
 };
 
 export const createRoutineWithFitElements = async (payload: createRoutineWithFitElementsRequestType) => {
-  const response = await client.post<createRoutineWithFitElementsRequestType>(
-    `/api/fitelement/routine/?&username=${payload.username}`,
-    payload,
-  );
+  const response = await client.post(`/api/fitelement/routine/?&username=${payload.username}`, payload);
   return response.data;
 };
 

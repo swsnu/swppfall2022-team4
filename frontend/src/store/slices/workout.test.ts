@@ -248,7 +248,7 @@ describe('slices - workout', () => {
             images: [],
           },
         })
-        .run();
+        .silentRun();
     });
     test('getDailyLog_false', () => {
       return expectSaga(workoutLogSaga)
@@ -274,6 +274,7 @@ describe('slices - workout', () => {
       return expectSaga(workoutLogSaga)
         .withReducer(workoutLogSlice.reducer)
         .provide([[call(workoutAPI.getFitElements, getFitElementsRequest), getFitElementsRequest]])
+        .put({ type: 'workoutlog/getFitElementsSuccess', payload: getFitElementsRequest })
         .dispatch({ type: 'workoutlog/getFitElements', payload: getFitElementsRequest })
         .hasFinalState({
           ...initialState,
@@ -370,6 +371,37 @@ describe('slices - workout', () => {
         })
         .silentRun();
     });
+    test('editRoutineTitle', () => {
+      return expectSaga(workoutLogSaga)
+        .withReducer(workoutLogSlice.reducer)
+        .provide([
+          [
+            call(workoutAPI.editRoutineTitle, {
+              username: 'user',
+              title: 'new_title',
+              routine_id: 1,
+            }),
+            { id: 1, content: 'new_title' },
+          ],
+        ])
+        .put({ type: 'workoutlog/editRoutineTitleSuccess', payload: { id: 1, content: 'new_title' } })
+        .dispatch({
+          type: 'workoutlog/editRoutineTitle',
+          payload: {
+            username: 'user',
+            title: 'new_title',
+            routine_id: 1,
+          },
+        })
+        .hasFinalState({
+          ...initialState,
+          edit_routine_success: {
+            id: 1,
+            content: 'new_title',
+          },
+        })
+        .silentRun();
+    });
     test('editImage', () => {
       return expectSaga(workoutLogSaga)
         .withReducer(workoutLogSlice.reducer)
@@ -453,6 +485,18 @@ describe('slices - workout', () => {
         })
         .silentRun();
     });
+    test('createRoutineWithFitElements', () => {
+      return expectSaga(workoutLogSaga)
+        .withReducer(workoutLogSlice.reducer)
+        .provide([[call(workoutAPI.createRoutineWithFitElements, createRoutineWithFitElementsRequest), { id: 1 }]])
+        .put({ type: 'workoutlog/createRoutineWithFitElementsSuccess', payload: { id: 1 } })
+        .dispatch({ type: 'workoutlog/createRoutineWithFitElements', payload: createRoutineWithFitElementsRequest })
+        .hasFinalState({
+          ...initialState,
+          create_routine_id: 1,
+        })
+        .silentRun();
+    });
     test('getFitElementType', () => {
       return expectSaga(workoutLogSaga)
         .withReducer(workoutLogSlice.reducer)
@@ -511,7 +555,28 @@ describe('slices - workout', () => {
         })
         .silentRun();
     });
-    test('getFitElements', () => {
+    test('getFitElements_failure', () => {
+      return expectSaga(workoutLogSaga)
+        .withReducer(workoutLogSlice.reducer)
+        .provide([[call(workoutAPI.getFitElements, getFitElementsRequest), throwError(simpleError)]])
+        .put({ type: 'workoutlog/getFitElementsFailure', payload: simpleError })
+        .dispatch({ type: 'workoutlog/getFitElements', payload: getFitElementsRequest })
+        .hasFinalState({
+          ...initialState,
+          error: simpleError,
+        })
+        .silentRun();
+    });
+    test('createWorkoutLog', () => {
+      return expectSaga(workoutLogSaga)
+        .withReducer(workoutLogSlice.reducer)
+        .provide([[call(workoutAPI.createWorkoutLog, createWorkoutLogRequest), throwError(simpleError)]])
+        .put({ type: 'workoutlog/createWorkoutLogFailure', payload: simpleError })
+        .dispatch({ type: 'workoutlog/createWorkoutLog', payload: createWorkoutLogRequest })
+        .hasFinalState({ ...initialState, error: simpleError })
+        .silentRun();
+    });
+    test('getDailyLog_failure', () => {
       return expectSaga(workoutLogSaga)
         .withReducer(workoutLogSlice.reducer)
         .provide([[call(workoutAPI.getDailyLog, getDailyLogRequest), throwError(simpleError)]])
@@ -521,15 +586,6 @@ describe('slices - workout', () => {
           ...initialState,
           error: simpleError,
         })
-        .run();
-    });
-    test('createWorkoutLog', () => {
-      return expectSaga(workoutLogSaga)
-        .withReducer(workoutLogSlice.reducer)
-        .provide([[call(workoutAPI.createWorkoutLog, createWorkoutLogRequest), throwError(simpleError)]])
-        .put({ type: 'workoutlog/createWorkoutLogFailure', payload: simpleError })
-        .dispatch({ type: 'workoutlog/createWorkoutLog', payload: createWorkoutLogRequest })
-        .hasFinalState({ ...initialState, error: simpleError })
         .silentRun();
     });
   });

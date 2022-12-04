@@ -273,7 +273,7 @@ def routine(request, routine_id):
             routine_single = Routine.objects.get(id=routine_id, author=user)
             routine_single.name = req_data["title"]
             routine_single.save()
-            return JsonResponse({"id": routine_id, "content": req_data["titlef"]}, safe=False, status=201)
+            return JsonResponse({"id": routine_id, "content": req_data["title"]}, safe=False, status=201)
         else:
             return HttpResponseBadRequest()
 
@@ -419,13 +419,8 @@ def daily_log(request, year, month, specific_date):
                     fitelement_type = Tag.objects.get(tag_name=fitelement.workout_type)
                     new_daily_log.calories += fitelement_type.calories * fitelement.time
                     list_to_store = []
-                    if new_daily_log.log_index:
-                        prev_list = json.loads(new_daily_log.log_index)
-                        prev_list.append(fitelement.id)
-                        new_daily_log.log_index = json.dumps(prev_list)
-                    else:
-                        list_to_store = [fitelement.id]
-                        new_daily_log.log_index = json.dumps(list_to_store)
+                    list_to_store = [fitelement.id]
+                    new_daily_log.log_index = json.dumps(list_to_store)
             new_daily_log.save()
             return JsonResponse(return_json, safe=False, status=200)
 

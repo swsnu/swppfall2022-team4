@@ -275,7 +275,6 @@ export const workoutLogSlice = createSlice({
     },
     createRoutineWithFitElementsSuccess: (state, { payload }) => {
       state.create_routine_id = payload.id;
-      console.log(payload);
     },
     getFitElements: (state, { payload }) => {
       getFitElementsSaga(payload.fitelements);

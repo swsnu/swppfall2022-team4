@@ -225,6 +225,12 @@ const editMemoRequest: workoutAPI.editMemoRequestType = {
   specific_date: 1,
 };
 
+const editRoutineTitleRequest: workoutAPI.editRoutineTitleRequestType = {
+  username: 'user',
+  routine_id: 1,
+  title: 'new_title',
+};
+
 const getCalendarInfoRequest: workoutAPI.getCalendarInfoRequestType = {
   username: 'user',
   year: 2022,
@@ -481,6 +487,12 @@ describe('API TEST', () => {
         `/api/fitelement/dailylog/${editMemoRequest.year}/${editMemoRequest.month}/${editMemoRequest.specific_date}/?&username=${editMemoRequest.username}`,
       );
     });
+    test('editRoutineTitle', async () => {
+      const result = await workoutAPI.editRoutineTitle(editRoutineTitleRequest);
+      expect(result).toBe(
+        `/api/fitelement/routine/${editRoutineTitleRequest.routine_id}/?&username=${editRoutineTitleRequest.username}`,
+      );
+    });
     test('getCalendarInfo', async () => {
       const result = await workoutAPI.getCalendarInfo(getCalendarInfoRequest);
       expect(result).toBe(
@@ -535,8 +547,8 @@ describe('API TEST', () => {
     });
     test('getfitelementtypes', async () => {
       const result = await workoutAPI.getFitelementTypes();
-      expect(result).toBe('/api/fitelement/type/')
-    })
+      expect(result).toBe('/api/fitelement/type/');
+    });
   });
 });
 
