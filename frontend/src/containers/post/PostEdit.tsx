@@ -13,10 +13,14 @@ const PostEdit = () => {
 
   const [postContent, setPostContent] = useState<PostContent>(initialContent);
 
-  const { post, postEditStatus, user } = useSelector(({ post, user }: RootState) => ({
+  const POST_DETAIL = group_id ? `/group/detail/${group_id}/post/${post_id}` : `/post/${post_id}`;
+  const POST_ERROR = `/`;
+
+  const { post, postEditStatus, user, postStatus } = useSelector(({ post, user }: RootState) => ({
     post: post.postDetail.post,
     postEditStatus: post.postEdit,
     user: user.user,
+    postStatus: post.postDetail.error,
   }));
   useEffect(() => {
     dispatch(tagActions.getTags());
@@ -33,7 +37,15 @@ const PostEdit = () => {
         }),
       );
     }
+    return () => {
+      dispatch(postActions.stateRefresh());
+    };
   }, []);
+  useEffect(() => {
+    if (postStatus !== null) {
+      navigate(POST_ERROR);
+    }
+  }, [postStatus]);
   useEffect(() => {
     if (post) {
       setPostContent(state => ({
@@ -50,8 +62,7 @@ const PostEdit = () => {
   }, [post]);
   useEffect(() => {
     if (postEditStatus) {
-      if (group_id) navigate(`/group/detail/${group_id}/post/${post_id}`);
-      else navigate(`/post/${post_id}`);
+      navigate(POST_DETAIL);
       dispatch(postActions.stateRefresh());
       dispatch(tagActions.clearTagState());
     }
@@ -61,8 +72,7 @@ const PostEdit = () => {
 
   const cancelOnClick = () => {
     // alert('are you sure?');
-    if (group_id) navigate(`/group/detail/${group_id}/post/${post_id}`);
-    else navigate(`/post/${post_id}`);
+    navigate(POST_DETAIL);
     //TODO;
   };
   const confirmOnClick = () => {

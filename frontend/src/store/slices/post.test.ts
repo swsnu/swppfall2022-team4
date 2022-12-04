@@ -201,7 +201,6 @@ describe('slices - posts', () => {
       [postActions.stateRefresh(), initialState],
       [postActions.toggleCommentReply(createCommentReplyRequest), initialState],
       [postActions.toggleCommentEdit(editCommentRequest), initialState],
-      [postActions.resetPost(), initialState],
       [postActions.getGroupPosts({ group_id: '1' }), initialState],
       [
         postActions.getGroupPostsSuccess({ posts: 'data' }),

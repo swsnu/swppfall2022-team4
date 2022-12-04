@@ -61,6 +61,7 @@ const PostDetail = () => {
   const POST_DETAIL = group_id ? `/group/detail/${group_id}/post/${post_id}` : `/post/${post_id}`;
   const POST_CREATE = group_id ? `/group/detail/${group_id}/post/create` : '/post/create';
   const POST_EDIT = group_id ? `/group/detail/${group_id}/post/${post_id}/edit` : `/post/${post_id}/edit`;
+  const POST_ERROR = `/`;
   // --- Modal Configurations --------------------------------------------------------
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
@@ -112,21 +113,25 @@ const PostDetail = () => {
   // --- Modal Configurations End --------------------------------------------------------
 
   const user = useSelector(({ user }: RootState) => user.user);
-  const { socket, post, postComment, postDeleteStatus, postFuncStatus, commentFuncStatus, chatroomId } = useSelector(
-    ({ chat, post }: RootState) => ({
+  const { socket, post, postComment, postDeleteStatus, postFuncStatus, postStatus, commentFuncStatus, chatroomId } =
+    useSelector(({ chat, post }: RootState) => ({
       socket: chat.socket,
       post: post.postDetail.post,
       postComment: post.postComment.comments,
       postDeleteStatus: post.postDelete,
       postFuncStatus: post.postFunc,
+      postStatus: post.postDetail.error,
       commentFuncStatus: post.postComment.commentFunc,
       chatroomId: chat.create.id,
-    }),
-  );
-
+    }));
+  useEffect(() => {
+    if (postStatus !== null) {
+      navigate(POST_ERROR);
+    }
+  }, [postStatus]);
   useEffect(() => {
     return () => {
-      dispatch(postActions.resetPost());
+      dispatch(postActions.stateRefresh());
       dispatch(chatActions.resetCreate());
     };
   }, []);

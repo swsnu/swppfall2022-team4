@@ -17,13 +17,22 @@ const GroupPosts = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { postList, group } = useSelector(({ post, user, group }: RootState) => ({
+  const POST_ERROR = `/`;
+
+  const { postList, group, postStatus } = useSelector(({ post, user, group }: RootState) => ({
     postList: post.postList.posts,
+    postStatus: post.postList.error,
     user: user.user,
     group: group.groupDetail.group,
   }));
 
   // If user is not belong to this group...
+  useEffect(() => {
+    if (postStatus !== null) {
+      navigate(POST_ERROR);
+    }
+  }, [postStatus]);
+
   useEffect(() => {
     if (group_id) {
       dispatch(groupActions.getGroupDetail(group_id));
@@ -32,7 +41,12 @@ const GroupPosts = () => {
           group_id,
         }),
       );
+    } else {
+      navigate(POST_ERROR);
     }
+    return () => {
+      dispatch(postActions.stateRefresh());
+    };
   }, []);
 
   return (
