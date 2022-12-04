@@ -371,7 +371,7 @@ describe('API TEST', () => {
       const result = await postAPI.getPosts(getPostsRequest);
       expect(result).toBe(`/api/post/?page=1&pageSize=15`);
     });
-    test('getPosts', async () => {
+    test('getPosts with group', async () => {
       const result = await postAPI.getGroupPosts({ group_id: '1' });
       expect(result).toBe(`/api/group/1/post/`);
     });
