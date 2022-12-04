@@ -11,9 +11,13 @@ from posts.models import Post, PostImage
 from users.models import User
 from tags.models import Tag, TagClass
 from groups.models import Group
+from workouts.models import Routine
 from django.db.models import Count
 
+
 from comments.views import prepare_comment_response
+from groups.views import prepare_compact_group_response
+from workouts.views import prepare_fitelements_list
 
 
 def add_exp(username, exp):
@@ -75,6 +79,16 @@ def prepare_post_response(post, is_detail, username):
         for image in list(post.images.all().values()):
             image_response.append(image["image"])
         response["images"] = image_response
+
+        response["group"] = prepare_compact_group_response(post.group)
+        routine_single = post.routine
+        if routine_single is not None:
+            response["routine"] = {
+                "id": routine_single.id,
+                "author": routine_single.author.id,  # id or name
+                "name": routine_single.name,
+                "fitelements": prepare_fitelements_list(routine_single.fit_element.all()),
+            }
 
     return response
 
@@ -139,14 +153,20 @@ def post_home(request):
                 if ("prime_tag" in data.keys() and data["prime_tag"])
                 else None
             )
-            group = Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
+            in_group = (
+                Group.objects.get(pk=data["group_id"]) if ("group_id" in data.keys()) else None
+            )
+            routine = Routine.objects.get(pk=data["routine"]) if (data["routine"] != '') else None
+            group = Group.objects.get(pk=data["group"]) if (data["group"] != '') else None
 
             created_post = Post.objects.create(
                 author=author,
                 title=data["title"],
                 content=data["content"],
                 prime_tag=prime_tag,
-                in_group=group,
+                in_group=in_group,
+                routine=routine,
+                group=group,
             )
 
             for tag in data["tags"]:
@@ -163,21 +183,25 @@ def post_home(request):
             return HttpResponseBadRequest()
 
 
-@require_http_methods(["GET", "PUT", "DELETE"])
+@require_http_methods(["GET"])
 def post_group(request, group_id):
-    if request.method == "GET":
+    try:
         group = Group.objects.get(pk=group_id)
-        posts = Post.objects.filter(in_group=group)
-        posts_serial = prepare_posts_response(posts)
+        group.members.get(username=request.user.username)
+    except (Group.DoesNotExist, User.DoesNotExist):
+        return HttpResponseNotFound()
 
-        # Total page number calculation.
-        response = JsonResponse(
-            {
-                "posts": posts_serial,
-            },
-            status=200,
-        )
-        return response
+    posts = Post.objects.filter(in_group=group)
+    posts_serial = prepare_posts_response(posts)
+
+    # Total page number calculation.
+    response = JsonResponse(
+        {
+            "posts": posts_serial,
+        },
+        status=200,
+    )
+    return response
 
 
 @require_http_methods(["GET", "PUT", "DELETE"])
@@ -191,6 +215,13 @@ def post_detail(request, query_id):
         try:
             post_id = int(query_id)
             post_obj = Post.objects.get(pk=post_id)
+
+            if post_obj.in_group:
+                try:
+                    post_obj.in_group.members.get(username=request.user.username)
+                except User.DoesNotExist:
+                    return HttpResponseNotFound()
+
             return JsonResponse(
                 prepare_post_response(post_obj, True, request.user.username), status=200
             )
@@ -201,6 +232,9 @@ def post_detail(request, query_id):
             data = json.loads(request.body.decode())
             post_id = int(query_id)
             post_obj = Post.objects.get(pk=post_id)
+
+            if post_obj.author.username != request.user.username:
+                return HttpResponseBadRequest()
 
             post_obj.title = data["title"]
             post_obj.content = data["content"]
@@ -227,6 +261,12 @@ def post_detail(request, query_id):
                 if image.image not in data["images"]:
                     image.delete()
 
+            # Routine & Group
+            post_obj.routine = (
+                Routine.objects.get(pk=data["routine"]) if (data["routine"] != '') else None
+            )
+            post_obj.group = Group.objects.get(pk=data["group"]) if (data["group"] != '') else None
+
             post_obj.save()
             return JsonResponse({"message": "success"}, status=200)
         except Post.DoesNotExist:
@@ -237,6 +277,9 @@ def post_detail(request, query_id):
         try:
             post_id = int(query_id)
             post_obj = Post.objects.get(pk=post_id)
+
+            if post_obj.author.username != request.user.username:
+                return HttpResponseBadRequest()
 
             post_obj.delete()
             return JsonResponse({"message": "success"}, status=200)

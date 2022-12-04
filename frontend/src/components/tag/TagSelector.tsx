@@ -37,11 +37,10 @@ interface IPropsTagSelector {
   setTagContent?: (value: React.SetStateAction<TagContent>) => void;
   tagOnChange: (tag: TagVisual) => void;
   tagOnRemove: (tagId: string) => void;
-  searchedTagOnClick: (tag: TagVisual) => void;
   setPrimeTag: (prime_tag: TagVisual | undefined) => void;
 }
 
-const TagSelector = ({ tagContent, tagOnChange, tagOnRemove, searchedTagOnClick, setPrimeTag }: IPropsTagSelector) => {
+const TagSelector = ({ tagContent, tagOnChange, tagOnRemove, setPrimeTag }: IPropsTagSelector) => {
   const dispatch = useDispatch();
 
   const [tagInput, setTagInput] = useState(''); // Tag creation name input
@@ -125,7 +124,7 @@ const TagSelector = ({ tagContent, tagOnChange, tagOnRemove, searchedTagOnClick,
                     data-testid={`searchedTag-${tag.id}`}
                     key={tag.id}
                     color={tag.color}
-                    onClick={() => searchedTagOnClick(tag)}
+                    onClick={() => tagOnChange(tag)}
                   >
                     {tag.name}
                   </TagBubble>
@@ -282,6 +281,7 @@ const TagWrapperIn = styled(ColumnFlex)`
   width: 100%;
   justify-content: flex-start;
   background-color: var(--fit-white);
+  border-radius: 15px;
 `;
 
 const TagWrapper = styled(ColumnFlex)`
@@ -291,6 +291,7 @@ const TagWrapper = styled(ColumnFlex)`
   height: 60%;
   max-height: 480px;
   overflow-y: auto;
+  border-radius: 15px;
 `;
 
 const PrimeTagDivWrapper = styled.div`
@@ -310,6 +311,7 @@ const PrimeTagWrapper = styled(ColumnFlex)`
   background-color: var(--fit-white);
   margin-top: 15px;
   height: fit-content;
+  border-radius: 15px;
 `;
 
 const TagInput = styled.input`

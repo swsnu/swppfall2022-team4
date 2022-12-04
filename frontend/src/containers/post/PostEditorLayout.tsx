@@ -15,9 +15,15 @@ interface IPropsCharNum {
   isFull: boolean;
 }
 
+interface IPropsContentActive {
+  isActive: boolean;
+}
+
 const TITLE_CHAR_LIMIT = 60;
 const CONTENT_CHAR_LIMIT = 800;
 const CONTENT_IMAGE_LIMIT = 5;
+
+const DEFAULT_OPTION = '$NONE$';
 
 export interface PostContent {
   title: string;
@@ -25,6 +31,8 @@ export interface PostContent {
   tags: TagVisual[];
   prime_tag: TagVisual | undefined;
   images: string[];
+  routine: string;
+  group: string;
 }
 
 export const initialContent: PostContent = {
@@ -33,6 +41,8 @@ export const initialContent: PostContent = {
   tags: [],
   prime_tag: undefined,
   images: [],
+  routine: '',
+  group: '',
 };
 
 interface IPropsPostEditor {
@@ -43,10 +53,12 @@ interface IPropsPostEditor {
 }
 
 export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, confirmOnClick }: IPropsPostEditor) => {
-  const { tagList, tagSearch, tagCreate } = useSelector(({ tag }: RootState) => ({
+  const { tagList, tagSearch, tagCreate, routine, groups } = useSelector(({ tag, workout_log, group }: RootState) => ({
     tagList: tag.tagList,
     tagSearch: tag.tagSearch,
     tagCreate: tag.tagCreate,
+    routine: workout_log.routine,
+    groups: group.groupList.groups,
   }));
 
   useEffect(() => {
@@ -96,17 +108,23 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     }));
     notificationSuccess('Image', '이미지 삭제에 성공했어요!');
   };
+  const setRoutines = (routine_value: string) => {
+    setPostContent(state => ({
+      ...state,
+      routine: routine_value,
+    }));
+  };
+  const setGroups = (group_value: string) => {
+    setPostContent(state => ({
+      ...state,
+      group: group_value,
+    }));
+  };
 
   // Event Handlers ------------------------------------------------------------------
   const tagOnChange = (tag: TagVisual) => {
     if (postContent.tags.length === 0) setPrimeTag(tag);
 
-    setSelectedTags(s => {
-      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
-      else return s;
-    });
-  };
-  const searchedTagOnClick = (tag: TagVisual) => {
     setSelectedTags(s => {
       if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
       else return s;
@@ -160,9 +178,9 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
               if (charInput.length <= TITLE_CHAR_LIMIT) setTitle(charInput);
             }}
           />
-          <CharNumIndicator isFull={postContent.title.length >= TITLE_CHAR_LIMIT}>
+          <TitleCharNum isFull={postContent.title.length >= TITLE_CHAR_LIMIT}>
             {postContent.title.length} / {TITLE_CHAR_LIMIT}
-          </CharNumIndicator>
+          </TitleCharNum>
         </TopElementWrapperWithoutPadding>
         <Main_SideWrapper>
           <ContentWrapper>
@@ -179,6 +197,51 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                 {postContent.content.length} / {CONTENT_CHAR_LIMIT}
               </ContentCharNum>
             </ContentTextWrapper>
+            <ContentRoutineSection>
+              <SectionTitle isActive={postContent.routine !== ''}>루틴</SectionTitle>
+              <OtherContentSelect
+                data-testid="routineSelect"
+                value={postContent.routine}
+                onChange={e => {
+                  const targetValue = e.target.options[e.target.selectedIndex].value;
+                  setRoutines(targetValue !== DEFAULT_OPTION ? targetValue : '');
+                }}
+              >
+                <option value={DEFAULT_OPTION}>- 루틴 선택 안함 -</option>
+                {routine.map(rout => {
+                  return (
+                    rout.id && (
+                      <option value={rout.id} key={rout.id}>
+                        {rout.name}
+                      </option>
+                    )
+                  );
+                })}
+              </OtherContentSelect>
+            </ContentRoutineSection>
+            <ContentGroupSection>
+              <SectionTitle isActive={postContent.group !== ''}>그룹</SectionTitle>
+              <OtherContentSelect
+                data-testid="groupSelect"
+                value={postContent.group}
+                onChange={e => {
+                  const targetValue = e.target.options[e.target.selectedIndex].value;
+                  setGroups(targetValue !== DEFAULT_OPTION ? targetValue : '');
+                }}
+              >
+                <option value={DEFAULT_OPTION}>- 그룹 선택 안함 -</option>
+                {groups &&
+                  groups.map(group => {
+                    return (
+                      group.id && (
+                        <option value={group.id} key={group.id}>
+                          {group.group_name}
+                        </option>
+                      )
+                    );
+                  })}
+              </OtherContentSelect>
+            </ContentGroupSection>
             <ContentImageSection>
               {postContent.images.map((img, index) => (
                 <PostUploadedImageWrapper key={index}>
@@ -198,12 +261,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
                 onChange={uploadPostImage}
               />
             </ContentImageSection>
-            <ContentRoutineSection>
-              <SectionTitle>루틴</SectionTitle>
-            </ContentRoutineSection>
-            <ContentGroupSection>
-              <SectionTitle>그룹</SectionTitle>
-            </ContentGroupSection>
             <CreateBtnWrapper>
               <RedBigBtn onClick={cancelOnClick}>취소</RedBigBtn>
               <BlueBigActiveBtn
@@ -223,7 +280,6 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             }}
             tagOnChange={tagOnChange}
             tagOnRemove={tagOnRemove}
-            searchedTagOnClick={searchedTagOnClick}
             setPrimeTag={setPrimeTag}
           />
         </Main_SideWrapper>
@@ -269,13 +325,13 @@ const ContentTextWrapper = styled.div`
   width: 100%;
   height: 60%;
   position: relative;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid var(--fit-support-gray);
 `;
 
 const ContentCharNum = styled.span<IPropsCharNum>`
   position: absolute;
-  right: 10px;
-  bottom: 3px;
+  right: 12px;
+  bottom: 4px;
   color: var(--fit-support-gray);
   ${({ isFull }) =>
     isFull &&
@@ -290,12 +346,13 @@ const TitleInput = styled.input`
   padding: 8px 30px;
   font-size: 23px;
   border: none;
+  border-radius: 15px;
 `;
 
-const CharNumIndicator = styled.span<IPropsCharNum>`
+const TitleCharNum = styled.span<IPropsCharNum>`
   position: absolute;
-  right: 5px;
-  bottom: 3px;
+  right: 10px;
+  bottom: 4px;
   color: var(--fit-support-gray);
   ${({ isFull }) =>
     isFull &&
@@ -311,6 +368,8 @@ const ContentTextArea = styled.textarea`
   font-size: 20px;
   resize: none;
   border: none;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
 `;
 
 // Image Content Section
@@ -323,17 +382,18 @@ const ContentImageSection = styled.div`
   position: relative;
   background-color: var(--fit-white);
   padding: 8px 10px;
-  border-bottom: 1px solid gray;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 `;
 
 const PostImageBtn = styled(ColumnCenterFlex)`
   justify-content: center;
-  width: 130px;
-  height: 130px;
+  width: 120px;
+  height: 120px;
   background-color: var(--fit-disabled-gray);
   padding: 10px 10px;
   border-radius: 15px;
-  margin: 5px 5px;
+  margin: 5px 0px;
   cursor: pointer;
   svg {
     font-size: 32px;
@@ -344,9 +404,15 @@ const PostImageBtn = styled(ColumnCenterFlex)`
   }
 `;
 
-const SectionTitle = styled.span`
+const SectionTitle = styled.span<IPropsContentActive>`
   width: 100%;
-  font-size: 24px;
+  font-size: 22px;
+  color: var(--fit-support-gray);
+  ${({ isActive }) =>
+    isActive &&
+    `
+      color: var(--fit-green-text);
+    `}
 `;
 
 const PostUploadedImageWrapper = styled.div`
@@ -372,9 +438,10 @@ const PostUploadedImageWrapper = styled.div`
 `;
 
 const PostUploadedImage = styled.img`
-  width: 130px;
-  height: 130px;
+  width: 120px;
+  height: 120px;
   background-color: var(--fit-disabled-gray);
+  border: 2px solid black;
   border-radius: 15px;
   object-fit: cover;
 `;
@@ -387,14 +454,30 @@ const FileInput = styled.input`
 const ContentRoutineSection = styled.div`
   width: 100%;
   height: fit-content;
-  position: relative;
   background-color: var(--fit-white);
-  padding: 8px 10px;
+  padding: 8px 14px;
+
+  display: flex;
+  align-items: center;
+  > span {
+    margin-right: 10px;
+  }
+  border-bottom: 1px solid var(--fit-support-gray);
 `;
 const ContentGroupSection = styled.div`
   width: 100%;
   height: fit-content;
-  position: relative;
   background-color: var(--fit-white);
-  padding: 8px 10px;
+  padding: 8px 14px;
+
+  display: flex;
+  align-items: center;
+  > span {
+    margin-right: 10px;
+  }
+  border-bottom: 1px solid var(--fit-support-gray);
+`;
+
+const OtherContentSelect = styled.select`
+  padding: 4px 14px;
 `;

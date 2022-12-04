@@ -244,12 +244,6 @@ const GroupCreate = () => {
       else return s;
     });
   };
-  const searchedTagOnClick = (tag: TagVisual) => {
-    setSelectedTags(s => {
-      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
-      else return s;
-    });
-  };
   const tagOnRemove = (tagId: string) => {
     setSelectedTags(s => s.filter(item => item.id != tagId));
     if (primeTag && primeTag.id == tagId) {
@@ -539,7 +533,6 @@ const GroupCreate = () => {
             }}
             tagOnChange={tagOnChange}
             tagOnRemove={tagOnRemove}
-            searchedTagOnClick={searchedTagOnClick}
             setPrimeTag={setPrimeTag}
           />
         </Main_SideWrapper>
@@ -652,6 +645,7 @@ const MapSearchInput = styled.input`
   border: none;
   border-bottom: 2px solid #929292;
   padding-bottom: 0px;
+  margin-bottom: 10px;
 `;
 
 const CreateCheck = styled.input`

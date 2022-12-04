@@ -137,7 +137,6 @@ const PostMain = () => {
           {recentCommentPost &&
             recentCommentPost.map(comment => (
               <SideBarCommentItem key={comment.comment_id} onClick={() => navigate(`/post/${comment.post_id}`)}>
-                •
                 <SideBarCommentTitle>
                   {comment.content.length > 12 ? comment.content.slice(0, 12) + '...' : comment.content}
                 </SideBarCommentTitle>
@@ -230,8 +229,9 @@ const SideBarSubtitle = styled.span`
 
 const SideBarCommentItem = styled.div`
   width: 100%;
-  padding: 3px 8px 3px 6px;
+  padding: 5px 8px 5px 20px;
   margin-bottom: 3px;
+  border-bottom: 0.2px solid var(--fit-support-gray-bright);
   cursor: pointer;
 `;
 const SideBarContentWrapper = styled.div`

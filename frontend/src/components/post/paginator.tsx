@@ -15,12 +15,12 @@ export const postPaginator = ({ page, setPage, maxPage }: IProps) => {
   const lastPage = () => setPage(maxPage);
   return (
     <PostPaginatorWrapper>
-      <PageNumber disabled={page < 2} onClick={firstPage}>
+      <PageMover disabled={page < 2} onClick={firstPage}>
         ◀◀
-      </PageNumber>
-      <PageNumber disabled={page < 2} onClick={prevPage}>
+      </PageMover>
+      <PageMover disabled={page < 2} onClick={prevPage}>
         ◀
-      </PageNumber>
+      </PageMover>
       {[...Array(5)]
         .map((_, i) => Math.floor((page - 1) / 5) * 5 + i + 1)
         .map(
@@ -32,12 +32,12 @@ export const postPaginator = ({ page, setPage, maxPage }: IProps) => {
             ),
         )}
 
-      <PageNumber disabled={page >= maxPage} onClick={nextPage}>
+      <PageMover disabled={page >= maxPage} onClick={nextPage}>
         ▶︎
-      </PageNumber>
-      <PageNumber disabled={page >= maxPage} onClick={lastPage}>
+      </PageMover>
+      <PageMover disabled={page >= maxPage} onClick={lastPage}>
         ▶︎▶︎
-      </PageNumber>
+      </PageMover>
 
       <CurrentPageWrapper>현재 페이지 : {page}</CurrentPageWrapper>
     </PostPaginatorWrapper>
@@ -63,10 +63,30 @@ const CurrentPageWrapper = styled.div`
 `;
 
 const PageNumber = styled(BtnBlueprint)`
+  background: var(--fit-white-green);
+  color: var(--fit-black);
+  margin: 0px 8px;
+  padding: 6px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  :disabled {
+    background: var(--fit-green-paginator);
+    color: var(--fit-white);
+    cursor: default;
+    :hover {
+      background: var(--fit-green-paginator);
+    }
+  }
+`;
+
+const PageMover = styled(BtnBlueprint)`
   background: none;
   margin: 0px 8px;
+  padding: 5px 5px;
+  border-radius: 5px;
   cursor: pointer;
-  color: var(--fit-green-text);
+  color: var(--fit-black);
 
   :disabled {
     background: none;

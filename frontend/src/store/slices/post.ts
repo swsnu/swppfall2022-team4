@@ -114,7 +114,7 @@ export const postSlice = createSlice({
     },
     getPostsFailure: (state, { payload }) => {
       state.postList.error = payload;
-      alert(payload.response?.data.message);
+      notificationFailure('Post', '글을 불러올 수 없어요.');
     },
     getRecentComments: state => {
       state.recentComments.comments = null;
@@ -124,7 +124,6 @@ export const postSlice = createSlice({
     },
     getRecentCommentsFailure: (state, { payload }) => {
       state.recentComments.comments = null;
-      alert(payload.response?.data.message);
     },
     // createPost ------------------------------------------------------------------------
     createPost: (state, action: PayloadAction<postAPI.createPostRequestType>) => {
@@ -137,18 +136,19 @@ export const postSlice = createSlice({
     },
     createPostFailure: (state, { payload }) => {
       state.postCreate.status = false;
-      alert(payload.response?.data.message);
+      notificationFailure('Post', '글 쓰기에 실패했어요.');
     },
     // getPostDetail ------------------------------------------------------------------------
     updatePostDetail: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
       // Empty body : for update minimization.
+      state.postDetail.error = null;
     },
     updatePostDetailSuccess: (state, { payload }) => {
       state.postDetail.post = payload;
     },
     updatePostDetailFailure: (state, { payload }) => {
       state.postDetail.error = payload;
-      alert(payload.response?.data.message);
+      notificationFailure('Post', '글을 불러올 수 없어요.');
     },
     // deletePost ------------------------------------------------------------------------
     deletePost: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
@@ -184,7 +184,6 @@ export const postSlice = createSlice({
     },
     getPostCommentFailure: (state, { payload }) => {
       state.postComment.error = payload;
-      alert(payload.response?.data.message);
     },
     // createComment ------------------------------------------------------------------------
     createComment: (state, action: PayloadAction<commentAPI.createCommentRequestType>) => {
@@ -245,7 +244,7 @@ export const postSlice = createSlice({
     },
     getGroupPostsFailure: (state, { payload }) => {
       state.postList.error = payload;
-      alert(payload.response?.data.message);
+      notificationFailure('Post', '글을 불러올 수 없어요.');
     },
     // utils --------------------------------------------------------------------------------
     stateRefresh: state => {
@@ -253,6 +252,9 @@ export const postSlice = createSlice({
       state.postEdit = false;
       state.postDelete = false;
       state.postFunc = false;
+
+      state.postDetail.error = null;
+      state.postDetail.post = null;
     },
     toggleCommentReply: (state, action: PayloadAction<commentAPI.createCommentReplyType>) => {
       if (state.postComment.comments)
@@ -274,9 +276,6 @@ export const postSlice = createSlice({
           }
         });
       }
-    },
-    resetPost: state => {
-      state.postDetail.post = null;
     },
     postFunc: (state, action: PayloadAction<postAPI.postFuncRequestType>) => {
       state.postFunc = false;

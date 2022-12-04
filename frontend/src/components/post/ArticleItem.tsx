@@ -38,6 +38,33 @@ export const ArticleItemDefault = ({ post, onClick }: IpropsArticleItem) => (
   </ArticleItem>
 );
 
+export const ArticleItemMyPageHeader = () => (
+  <ArticleHeaderWrapper>
+    <span>대표태그</span>
+    <span>제목</span>
+    <span>추천수</span>
+    <span>스크랩</span>
+    <span>작성시간</span>
+  </ArticleHeaderWrapper>
+);
+
+export const ArticleItemMyPage = ({ post, onClick }: IpropsArticleItem) => (
+  <ArticleItem data-testid="ArticleItem" key={post.post_id} onClick={onClick}>
+    {post.prime_tag ? (
+      <TagBubbleCompact color={post.prime_tag.color}>{post.prime_tag.name}</TagBubbleCompact>
+    ) : (
+      <TagBubbleCompact color={'#dbdbdb'}>None</TagBubbleCompact>
+    )}
+    <PostTitle>
+      {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}{' '}
+      <PostItemCommentNum>[{post.comments_num}]</PostItemCommentNum>
+    </PostTitle>
+    <span>{post.like_num - post.dislike_num}</span>
+    <span>{post.scrap_num}</span>
+    <span>{timeAgoFormat(new Date(), new Date(post.created))}</span>
+  </ArticleItem>
+);
+
 export const ArticleItemCompact = ({ post, onClick }: IpropsArticleItem) => (
   <ArticleItemComp data-testid="ArticleItem" key={post.post_id} onClick={onClick}>
     {post.prime_tag ? (
@@ -49,7 +76,7 @@ export const ArticleItemCompact = ({ post, onClick }: IpropsArticleItem) => (
       {post.title} {post.has_image && <FontAwesomeIcon icon={faImage} />}{' '}
       <PostItemCommentNum>[{post.comments_num}]</PostItemCommentNum>
     </PostTitle>
-    <span>{post.author.nickname}</span>
+    <UserBadge nickname={post.author.nickname} level={post.author.level} />
   </ArticleItemComp>
 );
 
@@ -88,7 +115,7 @@ const ArticleItemComp = styled(ArticleItemGridCompact)`
   padding: 8px 10px 8px 10px;
   font-size: 14px;
   width: 100%;
-  border-bottom: 1px solid black;
+  border-bottom: 0.2px solid var(--fit-support-gray-bright);
   cursor: pointer;
 `;
 

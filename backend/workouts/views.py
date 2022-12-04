@@ -20,6 +20,22 @@ def add_exp(username, exp):
         user.save()
 
 
+def prepare_fitelements_list(fitelements):
+    result = []
+    for fit_elem in fitelements:
+        result.append(
+            {
+                "workout_type": fit_elem.workout_type.tag_class.class_name,
+                "workout_name": fit_elem.workout_type.tag_name,
+                "weight": fit_elem.weight,
+                "rep": fit_elem.rep,
+                "set": fit_elem.set,
+                "time": fit_elem.time,
+            }
+        )
+    return result
+
+
 @require_http_methods(["POST"])
 def create_fit_element(request):
     """
@@ -57,9 +73,7 @@ def create_fit_element(request):
                 new_daily_log.fit_element.add(new_fit_element)
                 new_daily_log.calories = 0
                 fitelement_type = Tag.objects.get(tag_name=new_fit_element.workout_type)
-                new_daily_log.calories += (
-                    fitelement_type.calories * new_fit_element.time
-                )
+                new_daily_log.calories += fitelement_type.calories * new_fit_element.time
                 list_to_store = [new_fit_element.id]
                 new_daily_log.log_index = json.dumps(list_to_store)
                 new_daily_log.save()
@@ -70,9 +84,7 @@ def create_fit_element(request):
                 )[0]
                 daily_log_single.fit_element.add(new_fit_element)
                 fitelement_type = Tag.objects.get(tag_name=new_fit_element.workout_type)
-                daily_log_single.calories += (
-                    fitelement_type.calories * new_fit_element.time
-                )
+                daily_log_single.calories += fitelement_type.calories * new_fit_element.time
                 list_to_store = []
                 if daily_log_single.log_index:
                     prev_list = json.loads(str(daily_log_single.log_index))
@@ -88,6 +100,7 @@ def create_fit_element(request):
             return JsonResponse({"workout_id": str(new_fit_element.pk)}, status=201)
         except (KeyError, json.JSONDecodeError):
             return HttpResponseBadRequest()
+
 
 @require_http_methods(["GET", "PUT", "DELETE"])
 def fit_element(request, fitelement_id):
@@ -123,9 +136,7 @@ def fit_element(request, fitelement_id):
             daily_logs = DailyLog.objects.filter(author=user)
             if not daily_logs.filter(date=workout.date).exists():
                 workout.delete()
-                return JsonResponse(
-                    {"id": fitelement_id, "message": "success"}, status=200
-                )
+                return JsonResponse({"id": fitelement_id, "message": "success"}, status=200)
             daily_log_single = daily_logs.get(date=workout.date)
             fitelement_type = Tag.objects.get(tag_name=workout.workout_type)
             daily_log_single.calories -= fitelement_type.calories * workout.time
@@ -163,9 +174,7 @@ def get_calendar_info(request, year, month):
                 "calories": 0,
             }
             return_json.append(cal_dict)
-        workouts_all = FitElement.objects.filter(
-            date__gte=this_month, date__lt=next_month
-        )
+        workouts_all = FitElement.objects.filter(date__gte=this_month, date__lt=next_month)
 
         workouts = workouts_all.filter(author=user)
 
@@ -183,9 +192,7 @@ def get_calendar_info(request, year, month):
                 "time": workout.time,
                 "date": workout.date,
             }
-            return_json[int(workout_dict["date"].day) - 1]["workouts"].append(
-                workout_dict
-            )
+            return_json[int(workout_dict["date"].day) - 1]["workouts"].append(workout_dict)
         daily_logs = DailyLog.objects.filter(author=user)
         for i in range(1, calendar.monthrange(year, month)[1]):
             daily_log_single = daily_logs.filter(date=datetime(year, month, i).date())
@@ -216,9 +223,7 @@ def routines(request):
                 "id": routine_single.id,
                 "author": routine_single.author.id,  # id or name
                 "name": routine_single.name,
-                "fitelements": list(
-                    routine_single.fit_element.values_list("id", flat=True)
-                ),
+                "fitelements": list(routine_single.fit_element.values_list("id", flat=True)),
             }
             return_json.append(routine_dict)
         return JsonResponse(return_json, safe=False, status=200)
@@ -256,9 +261,7 @@ def routine(request, routine_id):
                 "id": routine_single.id,
                 "author": routine_single.author.id,  # id or name
                 "name": routine_single.name,
-                "fitelements": list(
-                    routine_single.fit_element.values_list("id", flat=True)
-                ),
+                "fitelements": list(routine_single.fit_element.values_list("id", flat=True)),
             }
             return JsonResponse(return_json, safe=False, status=201)
         else:
@@ -277,9 +280,7 @@ def daily_log(request, year, month, specific_date):
         user = User.objects.get(username=username)
 
         daily_logs = DailyLog.objects.filter(author=user)
-        daily_log_single = daily_logs.filter(
-            date=datetime(year, month, specific_date).date()
-        )
+        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
 
         if len(daily_log_single) == 0:
             daily_log_dict_return = {
@@ -299,9 +300,7 @@ def daily_log(request, year, month, specific_date):
             "memo": daily_log_single[0].memo,
             "date": daily_log_single[0].date,
             "calories": int(daily_log_single[0].calories),
-            "fitelements": list(
-                index_list
-            ),
+            "fitelements": list(index_list),
             "images": list(
                 DailyLogImage.objects.filter(daily_log=daily_log_single[0]).values_list(
                     "image", flat=True
@@ -315,9 +314,7 @@ def daily_log(request, year, month, specific_date):
         username = request.GET.get("username")
         user = User.objects.get(username=username)
         daily_logs = DailyLog.objects.filter(author=user)
-        daily_log_single = daily_logs.filter(
-            date=datetime(year, month, specific_date).date()
-        )
+        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
 
         if len(daily_log_single) == 0:
             req_data = json.loads(request.body.decode())
@@ -334,9 +331,7 @@ def daily_log(request, year, month, specific_date):
         username = request.GET.get("username")
         user = User.objects.get(username=username)
         daily_logs = DailyLog.objects.filter(author=user)
-        daily_log_single = daily_logs.filter(
-            date=datetime(year, month, specific_date).date()
-        )
+        daily_log_single = daily_logs.filter(date=datetime(year, month, specific_date).date())
         req_data = json.loads(request.body.decode())
         return_json = []
         if "delete" in req_data:
@@ -354,13 +349,9 @@ def daily_log(request, year, month, specific_date):
                     calories=0,
                 )
                 new_daily_log.save()
-                DailyLogImage.objects.create(
-                    image=req_data["image"], daily_log=new_daily_log
-                )
+                DailyLogImage.objects.create(image=req_data["image"], daily_log=new_daily_log)
                 return JsonResponse({"image": req_data["image"]}, status=201)
-            DailyLogImage.objects.create(
-                image=req_data["image"], daily_log=daily_log_single[0]
-            )
+            DailyLogImage.objects.create(image=req_data["image"], daily_log=daily_log_single[0])
             return JsonResponse({"image": req_data["image"]}, status=201)
 
         if "memo" in req_data:
@@ -380,7 +371,9 @@ def daily_log(request, year, month, specific_date):
 
         if "log_index" in req_data:
             index_list = json.dumps(req_data["log_index"])
-            DailyLog.objects.filter(date=datetime(year, month, specific_date).date()).update(log_index = index_list)
+            DailyLog.objects.filter(date=datetime(year, month, specific_date).date()).update(
+                log_index=index_list
+            )
             return JsonResponse({"log_index": req_data["log_index"]}, status=201)
         fitelements = req_data["fitelements"]
         if len(daily_log_single) == 0:
@@ -395,9 +388,7 @@ def daily_log(request, year, month, specific_date):
                 if FitElement.objects.filter(id=fitelement_id).exists():
                     fitelement = FitElement.objects.get(id=fitelement_id)
                     fitelement.pk = None
-                    fitelement.date = (
-                        str(year) + "-" + str(month) + "-" + str(specific_date)
-                    )
+                    fitelement.date = str(year) + "-" + str(month) + "-" + str(specific_date)
                     fitelement.save()
                     return_json.append(fitelement.pk)
                     new_daily_log.fit_element.add(fitelement)
@@ -418,16 +409,12 @@ def daily_log(request, year, month, specific_date):
             if FitElement.objects.filter(id=fitelement_id).exists():
                 fitelement = FitElement.objects.get(id=fitelement_id)
                 fitelement.pk = None
-                fitelement.date = (
-                    str(year) + "-" + str(month) + "-" + str(specific_date)
-                )
+                fitelement.date = str(year) + "-" + str(month) + "-" + str(specific_date)
                 fitelement.save()
                 return_json.append(fitelement.pk)
                 daily_log_single[0].fit_element.add(fitelement)
                 fitelement_type = Tag.objects.get(tag_name=fitelement.workout_type)
-                daily_log_single[0].calories += (
-                    fitelement_type.calories * fitelement.time
-                )
+                daily_log_single[0].calories += fitelement_type.calories * fitelement.time
                 list_to_store = []
                 if daily_log_single[0].log_index:
                     prev_list = json.loads(daily_log_single[0].log_index)

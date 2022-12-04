@@ -174,7 +174,7 @@ const GroupDetail = () => {
         </div>
         <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
         <div>
-          <TagBubbleWrapper>
+          <span>
             {group_detail.tags.map(tags => {
               return (
                 <TagBubble
@@ -186,7 +186,7 @@ const GroupDetail = () => {
                 </TagBubble>
               );
             })}
-          </TagBubbleWrapper>
+          </span>
         </div>
       </GroupAboutWrapper>
 
@@ -342,15 +342,6 @@ const GroupAboutDescription = styled.div`
   border-radius: 20px;
   padding: 20px;
   line-height: normal;
-`;
-
-const TagBubbleWrapper = styled.div`
-  display: flex;
-  margin-left: 10px;
-  overflow-x: scroll;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const GroupDetailWrapper = styled.div`

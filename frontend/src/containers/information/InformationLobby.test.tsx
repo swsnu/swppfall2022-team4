@@ -85,7 +85,7 @@ describe('[InformationLobby Page]', () => {
     const searchClearBtn = screen.getByText('Clear');
     fireEvent.click(searchClearBtn);
     expect(searchInput).toHaveValue('');
-    userEvent.type(searchInput, 'sssss');
+    userEvent.type(searchInput, 'interesting');
     fireEvent.submit(searchInput);
 
     const tagBubble = screen.getByText('interesting');

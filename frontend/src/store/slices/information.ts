@@ -4,12 +4,15 @@ import { put, call, takeLatest } from 'redux-saga/effects';
 import * as infoAPI from 'store/apis/information';
 import { Post } from 'store/apis/post';
 import { notificationInfo } from 'utils/sendNotification';
+import { Group } from 'store/apis/group';
 
 export interface InformationState {
   contents: {
     basic: {
       name: string;
+      class_name: string;
     };
+    groups: Group[];
     posts: Post[];
     youtubes: infoAPI.Youtube[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
