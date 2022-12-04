@@ -82,7 +82,7 @@ const GroupDetail = () => {
   return (
     <Wrapper>
       <GroupDetailHeader className={done ? 'end' : 'ing'}>
-        <Button4 content="Back" clicked={() => navigate(`/group`)} style={{ alignSelf: 'start' }} />
+        <Button4 content="" clicked={() => navigate(`/group`)} style={{ alignSelf: 'start' }} />
         <GroupName>{group_detail.group_name}</GroupName>
         {group_detail.start_date ? (
           <GroupDate>{`${group_detail.start_date} ~ ${group_detail.end_date}`}</GroupDate>
