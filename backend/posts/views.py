@@ -80,21 +80,15 @@ def prepare_post_response(post, is_detail, username):
             image_response.append(image["image"])
         response["images"] = image_response
 
-        try:
-            response["group"] = prepare_compact_group_response(post.group)
-        except Group.DoesNotExist:
-            pass
-        try:
-            routine_single = post.routine
-            if routine_single is not None:
-                response["routine"] = {
-                    "id": routine_single.id,
-                    "author": routine_single.author.id,  # id or name
-                    "name": routine_single.name,
-                    "fitelements": prepare_fitelements_list(routine_single.fit_element.all()),
-                }
-        except Routine.DoesNotExist:
-            pass
+        response["group"] = prepare_compact_group_response(post.group)
+        routine_single = post.routine
+        if routine_single is not None:
+            response["routine"] = {
+                "id": routine_single.id,
+                "author": routine_single.author.id,  # id or name
+                "name": routine_single.name,
+                "fitelements": prepare_fitelements_list(routine_single.fit_element.all()),
+            }
 
     return response
 
@@ -191,25 +185,23 @@ def post_home(request):
 
 @require_http_methods(["GET"])
 def post_group(request, group_id):
-    if request.method == "GET":
+    try:
         group = Group.objects.get(pk=group_id)
+        group.members.get(username=request.user.username)
+    except (Group.DoesNotExist, User.DoesNotExist):
+        return HttpResponseNotFound()
 
-        try:
-            group.members.get(username=request.user.username)
-        except User.DoesNotExist:
-            return HttpResponseNotFound()
+    posts = Post.objects.filter(in_group=group)
+    posts_serial = prepare_posts_response(posts)
 
-        posts = Post.objects.filter(in_group=group)
-        posts_serial = prepare_posts_response(posts)
-
-        # Total page number calculation.
-        response = JsonResponse(
-            {
-                "posts": posts_serial,
-            },
-            status=200,
-        )
-        return response
+    # Total page number calculation.
+    response = JsonResponse(
+        {
+            "posts": posts_serial,
+        },
+        status=200,
+    )
+    return response
 
 
 @require_http_methods(["GET", "PUT", "DELETE"])

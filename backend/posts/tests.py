@@ -4,6 +4,8 @@ from users.models import User
 from posts.models import Post, PostImage
 from tags.models import TagClass, Tag
 from comments.models import Comment
+from workouts.models import Routine
+from groups.models import Group
 
 POST_HOME = '/api/post/'
 POST1_EDIT = '/api/post/1/func/'
@@ -47,15 +49,16 @@ class PostTestCase(TestCase):
         tag11 = Tag.objects.create(tag_name="deadlift", tag_class=tag_class1)
         tag12 = Tag.objects.create(tag_name="squat", tag_class=tag_class1)
 
+        routine1 = Routine.objects.create(name="routine1", author=user_me, calories=1)
         post1 = Post.objects.create(
-            author=user_me, title="title", content="content", prime_tag=tag11
+            author=user_me, title="title", content="content", prime_tag=tag11, routine=routine1
         )
         post1.tags.add(tag11)
         post1.tags.add(tag12)
         PostImage.objects.create(image=IMAGE1, post=post1)
         PostImage.objects.create(image="3232.png", post=post1)
 
-        Post.objects.create(author=user_other, title="other", content="otherContent")
+        Post.objects.create(author=user_other, title="other", content="otherContent")  # Post2
 
         comment11 = Comment.objects.create(post=post1, author=user_me, content="Hey")
         Comment.objects.create(
@@ -65,6 +68,25 @@ class PostTestCase(TestCase):
         Comment.objects.create(
             post=post1, author=user_other, content="Reply2", parent_comment=comment13
         )
+
+        group1 = Group.objects.create(
+            group_name="group1", group_leader=user_me, description="group1 description", free=True
+        )  # belonging group
+        group1.members.add(user_me)
+
+        Post.objects.create(
+            author=user_me, title="title3", content="content3", in_group=group1
+        )  # Post3
+
+        group2 = Group.objects.create(
+            group_name="group2",
+            group_leader=user_other,
+            description="group2 description",
+            free=True,
+        )  # NOT belonging group
+        Post.objects.create(
+            author=user_other, title="title4", content="content4", in_group=group2
+        )  # Post4
 
     def ready(self):
         client = Client()
@@ -138,7 +160,13 @@ class PostTestCase(TestCase):
         res = client.get('/api/post/2/')  # without Prime tag
         self.assertEqual(res.status_code, 200)
 
-        res = client.get('/api/post/3/')  # Not found
+        res = client.get('/api/post/3/')  # in Group
+        self.assertEqual(res.status_code, 200)
+
+        res = client.get('/api/post/4/')  # in Not-belonging-Group
+        self.assertEqual(res.status_code, 404)
+
+        res = client.get('/api/post/5/')  # Not found
         self.assertEqual(res.status_code, 404)
 
     def test_post_detail_put(self):
@@ -169,7 +197,7 @@ class PostTestCase(TestCase):
         self.assertEqual(res.status_code, 400)
 
         res = client.put(
-            '/api/post/3/',
+            '/api/post/5/',
             {
                 'prime_tag': {'id': '1'},
                 'tags': [{'id': '1'}],
@@ -190,7 +218,7 @@ class PostTestCase(TestCase):
         res = client.get('/api/post/1/comment/')  # with Prime tag
         self.assertEqual(res.status_code, 200)
 
-        res = client.get('/api/post/3/comment/')  # Not found
+        res = client.get('/api/post/5/comment/')  # Not found
         self.assertEqual(res.status_code, 404)
 
     def test_post_func_put(self):
@@ -267,7 +295,7 @@ class PostTestCase(TestCase):
         self.assertEqual(res.status_code, 400)
 
         res = client.put(
-            '/api/post/3/func/',
+            '/api/post/5/func/',
             {
                 'func_type': 'like',
             },
@@ -290,3 +318,11 @@ class PostTestCase(TestCase):
 
         res = client.get('/api/post/main/hot/')
         self.assertEqual(res.status_code, 200)
+
+    def test_post_main_group(self):
+        client, _ = self.ready()
+
+        res = client.get('/api/group/1/post/')  # Exist Group
+        self.assertEqual(res.status_code, 200)
+        res = client.get('/api/group/2/post/')  # Not Exist Group
+        self.assertEqual(res.status_code, 404)
