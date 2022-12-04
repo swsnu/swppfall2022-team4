@@ -84,6 +84,7 @@ def general_group(request):
                     "id": prime_tag.pk,
                     "name": prime_tag.tag_name,
                     "color": prime_tag.tag_class.color,
+                    "tag_class": prime_tag.tag_class.class_name,
                 }
         return JsonResponse({"groups": result}, safe=False)
 

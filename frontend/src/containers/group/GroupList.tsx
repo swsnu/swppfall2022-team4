@@ -179,11 +179,11 @@ const GroupList = () => {
         />
       </SearchWrapper>
       <UnderSearch>
-        <div style={{ paddingLeft: '30px' }}>
+        <div style={{ paddingLeft: '15px' }}>
           {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
           <div>{currentAddressName ? `유저의 위치는 ${currentAddressName} 입니다` : `위치를 불러오는 중입니다.`}</div>
         </div>
-        <div style={{ display: 'flex', paddingRight: '30px' }}>
+        <div style={{ display: 'flex', paddingRight: '15px' }}>
           <SortButton onClick={orderRecentClicked} style={recent ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
             최신순
           </SortButton>
@@ -202,9 +202,9 @@ const GroupList = () => {
         </div>
       </UnderSearch>
       <Button1
-        content="Create Group"
+        content="그룹 만들기"
         clicked={() => navigate('/group/create')}
-        style={{ width: '180px', alignSelf: 'end', marginRight: '10px' }}
+        style={{ width: '130px', alignSelf: 'end', marginRight: '15px' }}
       />
       <GroupListWrapper>
         {groupListOrdered
