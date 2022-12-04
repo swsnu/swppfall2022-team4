@@ -43,14 +43,14 @@ const GroupCreate = () => {
 
   const [group_name, setGroupName] = useState('');
   const [max_num, setMaxNum] = useState(true);
-  const [group_num, setGroupNum] = useState(0);
+  const [group_num, setGroupNum] = useState(1);
   const [set_date, setSetDate] = useState(true);
   const [start_date, setStartDate] = useState('');
   const [end_date, setEndDate] = useState('');
   const [description, setDescription] = useState('');
   const [free, setFree] = useState(true);
   // goal
-  const [workout_category, setWorkoutCategory] = useState('back');
+  const [workout_category, setWorkoutCategory] = useState('등운동');
   const [workout_type, setWorkoutType] = useState<string | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
   const [rep, setRep] = useState<number | null>(null);
@@ -112,6 +112,8 @@ const GroupCreate = () => {
     if (group_name === '') {
       alert('그룹명을 입력해 주세요.');
       return;
+    } else if (description === '') {
+      alert('그룹에 대한 설명을 작성해야 합니다.');
     } else if (set_date && (start_date === '' || end_date === '')) {
       alert('기간을 설정해 주세요.');
       return;
@@ -121,8 +123,8 @@ const GroupCreate = () => {
     } else if (goal_list.length === 0) {
       alert('목표는 하나 이상이어야 합니다.');
       return;
-    } else if (description === '') {
-      alert('그룹에 대한 설명을 작성해야 합니다.');
+    } else if (place && clickedAddress === '') {
+      alert('그룹에 대한 장소를 설정해야 합니다.');
       return;
     }
 
@@ -307,6 +309,7 @@ const GroupCreate = () => {
                       type="number"
                       disabled={!max_num}
                       value={group_num}
+                      min="1"
                       max="100"
                       onChange={e => setGroupNum(e.target.valueAsNumber)}
                     />
@@ -422,7 +425,7 @@ const GroupCreate = () => {
                   </GoalGridWrapper>
 
                   {goal_list.map((go_obj, index) => (
-                    <GoalGridWrapper className="goals">
+                    <GoalGridWrapper key={index} className="goals">
                       <span className="type3">{index + 1}</span>
                       <GoalGridImg
                         src={require(`assets/images/workout_log/fitelement_category/${get_image(go_obj.category)}.png`)}
@@ -468,7 +471,9 @@ const GroupCreate = () => {
                         onChange={e => setKeyword(e.target.value)}
                         placeholder="장소 검색"
                       />
-                      {clickedAddress && <div>{`그룹 장소를 " ${clickedAddress}" 으로 합니다.`}</div>}
+                      {clickedAddress && (
+                        <div style={{ marginTop: '10px' }}>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>
+                      )}
                       <Map // 로드뷰를 표시할 Container
                         center={{
                           lat: currentLocation.center.lat || 37.480966,
@@ -502,16 +507,33 @@ const GroupCreate = () => {
                               setClickedPosition({ lat: marker.position.lat, lng: marker.position.lng });
                             }}
                           >
-                            {markerInfo === marker.content && <div style={{ color: '#000' }}>{marker.content}</div>}
+                            {markerInfo === marker.content && (
+                              <div
+                                style={{
+                                  fontSize: '13px',
+                                  backgroundColor: 'white',
+                                  padding: '3px',
+                                  textAlign: 'center',
+                                  borderRadius: '4px',
+                                  fontFamily: 'NanumSquareR',
+                                  border: '1px solid',
+                                }}
+                              >
+                                {marker.content}
+                              </div>
+                            )}
                           </MapMarker>
                         ))}
                       </Map>
                       <div style={{ paddingTop: '15px', fontFamily: 'FugazOne' }}>
-                        {currentLocation.isLoading && <div>{'현위치를 불러오는 중입니다.'}</div>}
                         {currentLocation.errMsg && (
                           <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>
                         )}
-                        {currentLocation.center.lat && <div>{`현위치를 성공적으로 불렀습니다.`}</div>}
+                        <div>
+                          {currentLocation.isLoading
+                            ? '현위치를 불러오는 중입니다.'
+                            : '현위치를 성공적으로 불렀습니다.'}
+                        </div>
                       </div>
                     </>
                   )}

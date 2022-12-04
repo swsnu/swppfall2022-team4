@@ -24,6 +24,7 @@ export type TagVisual = {
   color: string;
   posts?: number;
   calories?: number;
+  tag_class?: string;
 };
 
 export type getTagListResponseType = {

@@ -8,12 +8,11 @@ export interface IProps {
   id: number;
   image: string;
   username: string;
-  cert_days: number | null;
+  cert_days: number;
   level: number;
+  is_leader: boolean;
   leader: boolean;
   myself: boolean;
-  request: boolean;
-  is_full: boolean;
 }
 
 export const MemberElement = (props: IProps) => {
@@ -98,30 +97,21 @@ export const MemberElement = (props: IProps) => {
   };
 
   return (
-    <MemberElementWrapper>
-      <ProfileImage src={process.env.REACT_APP_API_IMAGE + props.image} alt="profile" />
+    <MemberElementWrapper className={props.myself ? 'myself' : 'others'}>
+      <ProfileImage
+        src={process.env.REACT_APP_API_IMAGE + props.image}
+        alt="profile"
+        onClick={() => navigate(`/profile/${props.username}`)}
+      />
       <MemberElementLineWrapper>
-        <MemberElementLine style={{ fontWeight: '600' }}>{props.username}</MemberElementLine>
-        {props.cert_days != null && <MemberElementLine>Cert_days: {props.cert_days}</MemberElementLine>}
+        <MemberElementLine style={{ fontWeight: '600' }}>
+          {props.is_leader ? '👑 ' + props.username : props.username}
+        </MemberElementLine>
+        <CertElementLine>{props.cert_days} 일째 인증 중!</CertElementLine>
         <MemberElementLine>Level: {props.level}</MemberElementLine>
       </MemberElementLineWrapper>
-      {props.leader && !props.myself && !props.request && (
+      {props.leader && !props.myself && (
         <Button1 content="그룹장 위임" style={{ fontSize: '15px' }} clicked={leaderChangeClick} />
-      )}
-      {props.leader && props.request && (
-        <div>
-          <Button
-            className={props.is_full ? 'disabled' : 'ing'}
-            style={{ fontSize: '15px' }}
-            onClick={postRequestClick}
-            disabled={props.is_full}
-          >
-            승인
-          </Button>
-          <Button className="remove" style={{ fontSize: '15px' }} onClick={deleteRequestClick}>
-            삭제
-          </Button>
-        </div>
       )}
     </MemberElementWrapper>
   );
@@ -140,6 +130,10 @@ const MemberElementWrapper = styled.div`
   background-color: #e4fff1;
   box-shadow: 1px 1px 1px 1px #d4eee0;
   padding: 15px;
+
+  &&.myself {
+    background-color: #5bc88f;
+  }
 `;
 const ProfileImage = styled.img`
   width: 80px;
@@ -148,6 +142,7 @@ const ProfileImage = styled.img`
   border-radius: 10px;
   margin-right: 15px;
   background-color: #ffffff;
+  cursor: pointer;
 `;
 
 const MemberElementLineWrapper = styled.div`
@@ -159,6 +154,10 @@ const MemberElementLineWrapper = styled.div`
 const MemberElementLine = styled.div`
   font-size: 18px;
   font-family: IBMPlexSansThaiLooped;
+`;
+const CertElementLine = styled.div`
+  font-size: 18px;
+  font-family: FugazOne;
 `;
 
 const Button = styled.button`

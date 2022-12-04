@@ -28,6 +28,7 @@ interface GroupState {
   };
   groupMembers: {
     members: groupAPI.Member[] | null;
+    group_leader: string | null;
     error: AxiosError | null;
   };
   groupCerts: {
@@ -64,6 +65,7 @@ export const initialState: GroupState = {
   },
   groupMembers: {
     members: [],
+    group_leader: null,
     error: null,
   },
   groupCerts: {
@@ -105,7 +107,6 @@ export const groupSlice = createSlice({
     createGroupFailure: (state, { payload }) => {
       state.groupCreate.group_id = null;
       state.groupCreate.error = payload;
-      alert(payload.response?.data.message);
     },
     getGroupDetail: (state, action: PayloadAction<string>) => {
       state.groupDetail.group = null;
@@ -118,7 +119,6 @@ export const groupSlice = createSlice({
     getGroupDetailFailure: (state, { payload }) => {
       state.groupDetail.group = null;
       state.groupDetail.error = payload;
-      alert(payload.response?.data.message);
     },
     deleteGroup: (state, action: PayloadAction<string>) => {
       state.groupDelete = false;
@@ -128,7 +128,6 @@ export const groupSlice = createSlice({
     },
     deleteGroupFailure: (state, { payload }) => {
       state.groupDelete = false;
-      alert(payload.response?.data.message);
     },
     checkMemberStatus: (state, action: PayloadAction<string>) => {
       state.groupMemberStatus.member_status = null;
@@ -141,17 +140,20 @@ export const groupSlice = createSlice({
     checkMemberStatusFailure: (state, { payload }) => {
       state.groupMemberStatus.member_status = null;
       state.groupMemberStatus.error = payload;
-      alert(payload.response?.data.message);
     },
     getGroupMembers: (state, action: PayloadAction<string>) => {
       state.groupMembers.members = null;
+      state.groupMembers.group_leader = null;
       state.groupMembers.error = null;
     },
     getGroupMembersSuccess: (state, { payload }) => {
       state.groupMembers.members = payload.members;
+      state.groupMembers.group_leader = payload.group_leader;
       state.groupMembers.error = null;
     },
     getGroupMembersFailure: (state, { payload }) => {
+      state.groupMembers.members = null;
+      state.groupMembers.group_leader = null;
       state.groupMembers.error = payload;
     },
     joinGroup: (state, action: PayloadAction<string>) => {
@@ -165,7 +167,6 @@ export const groupSlice = createSlice({
     joinGroupFailure: (state, { payload }) => {
       state.groupAction.status = false;
       state.groupAction.error = payload;
-      alert(payload.response?.data.message);
     },
     exitGroup: (state, action: PayloadAction<string>) => {
       state.groupAction.status = false;
@@ -178,7 +179,6 @@ export const groupSlice = createSlice({
     exitGroupFailure: (state, { payload }) => {
       state.groupAction.status = false;
       state.groupAction.error = payload;
-      alert(payload.response?.data.message);
     },
     leaderChange: (state, action: PayloadAction<groupAPI.leaderChangeRequestType>) => {
       state.groupAction.status = false;
@@ -234,6 +234,7 @@ export const groupSlice = createSlice({
       state.reqMembers.error = null;
     },
     getRequestsFailure: (state, { payload }) => {
+      state.reqMembers.requests = null;
       state.reqMembers.error = payload;
     },
     postRequest: (state, action: PayloadAction<groupAPI.joinReqLeaderRequestType>) => {
@@ -260,7 +261,6 @@ export const groupSlice = createSlice({
     deleteRequestFailure: (state, { payload }) => {
       state.groupAction.status = false;
       state.groupAction.error = payload;
-      alert(payload.response?.data.message);
     },
   },
 });

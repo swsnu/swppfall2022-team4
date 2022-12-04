@@ -99,6 +99,20 @@ const memcert1: groupApi.MemberCert = {
   did: true,
 };
 
+const memreq1: groupApi.MemberReq = {
+  id: 1,
+  username: 'req1',
+  image: 'image',
+  level: 1,
+}
+
+const memreq2: groupApi.MemberReq = {
+  id: 2,
+  username: 'req2',
+  image: 'image',
+  level: 2,
+}
+
 //request
 const postGroupRequest: groupApi.postGroupRequestType = {
   group_name: 'test',
@@ -128,13 +142,18 @@ const getCertsRequest: groupApi.getCertsRequestType = {
   specific_date: 12,
 };
 
-const createCertRequest: groupApi.certRequestType = {
+const certRequest: groupApi.certRequestType = {
   group_id: '1',
   year: 2022,
   month: 9,
   specific_date: 12,
   fitelement_id: 1,
 };
+
+const joinLeaderRequest: groupApi.joinReqLeaderRequestType = {
+  group_id: '1',
+  username: 'user',
+}
 
 //response
 const getGroupsResponse: groupApi.getGroupsResponseType = {
@@ -151,6 +170,7 @@ const checkMemberResponse: groupApi.checkGroupMemberResponseType = {
 
 const getGroupMembersResponse: groupApi.getGroupMembersResponseType = {
   members: [member1, member2],
+  group_leader: 'user',
 };
 
 const getGroupDetailResponse: groupApi.getGroupDetailResponseType = {
@@ -174,6 +194,10 @@ const getGroupDetailResponse: groupApi.getGroupDetailResponseType = {
 const getCertsResponse: groupApi.getCertsResponseType = {
   all_certs: [memcert1],
 };
+
+const getRequestsResponse: groupApi.getJoinReqResponseType = {
+  requests: [memreq1, memreq2],
+}
 
 //test
 describe('Group', () => {
@@ -276,6 +300,7 @@ describe('Group', () => {
         ...initialState,
         groupMembers: {
           members: getGroupMembersResponse.members,
+          group_leader: getGroupMembersResponse.group_leader,
           error: null,
         },
       })
@@ -347,12 +372,12 @@ describe('Group', () => {
   it('createCert', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.createCert, createCertRequest), getCertsResponse]])
+      .provide([[call(groupApi.createCert, certRequest), getCertsResponse]])
       .put({
         type: 'group/createCertSuccess',
         payload: getCertsResponse,
       })
-      .dispatch({ type: 'group/createCert', payload: createCertRequest })
+      .dispatch({ type: 'group/createCert', payload: certRequest })
       .hasFinalState({
         ...initialState,
         groupCerts: {
@@ -362,8 +387,80 @@ describe('Group', () => {
       })
       .silentRun();
   });
+  it('deleteCert', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.deleteCert, certRequest), getCertsResponse]])
+      .put({
+        type: 'group/deleteCertSuccess',
+        payload: getCertsResponse,
+      })
+      .dispatch({ type: 'group/deleteCert', payload: certRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: getCertsResponse.all_certs,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
+  it('getRequests', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.getRequests, '1'), getRequestsResponse]])
+      .put({
+        type: 'group/getRequestsSuccess',
+        payload: getRequestsResponse,
+      })
+      .dispatch({ type: 'group/getRequests', payload: '1' })
+      .hasFinalState({
+        ...initialState,
+        reqMembers: {
+          requests: getRequestsResponse.requests,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
+  it('postRequest', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.postRequest, joinLeaderRequest), undefined]])
+      .put({
+        type: 'group/postRequestSuccess',
+        payload: undefined,
+      })
+      .dispatch({ type: 'group/postRequest', payload: joinLeaderRequest })
+      .hasFinalState({
+        ...initialState,
+        groupAction: {
+          status: true,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
+  it('deleteRequest', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.deleteRequest, joinLeaderRequest), undefined]])
+      .put({
+        type: 'group/deleteRequestSuccess',
+        payload: undefined,
+      })
+      .dispatch({ type: 'group/deleteRequest', payload: joinLeaderRequest })
+      .hasFinalState({
+        ...initialState,
+        groupAction: {
+          status: true,
+          error: null,
+        },
+      })
+      .silentRun();
+  });
 });
-//----------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 describe('saga failure', () => {
   it('getGroups', () => {
     return expectSaga(groupSaga)
@@ -447,6 +544,7 @@ describe('saga failure', () => {
         ...initialState,
         groupMembers: {
           members: null,
+          group_leader: null,
           error: simpleError,
         },
       })
@@ -515,13 +613,73 @@ describe('saga failure', () => {
   it('createCert', () => {
     return expectSaga(groupSaga)
       .withReducer(groupSlice.reducer)
-      .provide([[call(groupApi.createCert, createCertRequest), throwError(simpleError)]])
+      .provide([[call(groupApi.createCert, certRequest), throwError(simpleError)]])
       .put({ type: 'group/createCertFailure', payload: simpleError })
-      .dispatch({ type: 'group/createCert', payload: createCertRequest })
+      .dispatch({ type: 'group/createCert', payload: certRequest })
       .hasFinalState({
         ...initialState,
         groupCerts: {
           all_certs: null,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('deleteCert', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.deleteCert, certRequest), throwError(simpleError)]])
+      .put({ type: 'group/deleteCertFailure', payload: simpleError })
+      .dispatch({ type: 'group/deleteCert', payload: certRequest })
+      .hasFinalState({
+        ...initialState,
+        groupCerts: {
+          all_certs: null,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('getRequests', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.getRequests, '1'), throwError(simpleError)]])
+      .put({ type: 'group/getRequestsFailure', payload: simpleError })
+      .dispatch({ type: 'group/getRequests', payload: '1' })
+      .hasFinalState({
+        ...initialState,
+        reqMembers: {
+          requests: null,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('postRequest', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.postRequest, joinLeaderRequest), throwError(simpleError)]])
+      .put({ type: 'group/postRequestFailure', payload: simpleError })
+      .dispatch({ type: 'group/postRequest', payload: joinLeaderRequest })
+      .hasFinalState({
+        ...initialState,
+        groupAction: {
+          status: false,
+          error: simpleError,
+        },
+      })
+      .silentRun();
+  });
+  it('deleteRequest', () => {
+    return expectSaga(groupSaga)
+      .withReducer(groupSlice.reducer)
+      .provide([[call(groupApi.deleteRequest, joinLeaderRequest), throwError(simpleError)]])
+      .put({ type: 'group/deleteRequestFailure', payload: simpleError })
+      .dispatch({ type: 'group/deleteRequest', payload: joinLeaderRequest })
+      .hasFinalState({
+        ...initialState,
+        groupAction: {
+          status: false,
           error: simpleError,
         },
       })

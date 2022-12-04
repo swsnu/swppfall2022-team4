@@ -8,7 +8,7 @@ import { groupActions } from 'store/slices/group';
 import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
 import Loading from 'components/common/Loading';
-import { certRequestType, Fitelement, getCertsRequestType } from 'store/apis/group';
+import { certRequestType, Fitelement, getCertsRequestType, MemberCert } from 'store/apis/group';
 import Button4 from 'components/common/buttons/Button4';
 
 const GroupCert = () => {
@@ -32,7 +32,8 @@ const GroupCert = () => {
   const [selectedGoal, setSelectedGoal] = useState<Fitelement | null>(null);
   const [done, setDone] = useState(false);
   const [future, setFuture] = useState(false);
-  const str_today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  const str_today =
+    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -55,6 +56,7 @@ const GroupCert = () => {
       dispatch(groupActions.getCerts(dayilycert));
     }
     if (str_today < year + '-' + (month + 1) + '-' + d) setFuture(true);
+    else setFuture(false);
   };
   const setGoal = (id: number) => {
     if (group_detail) {
@@ -65,14 +67,28 @@ const GroupCert = () => {
   const submitCert = () => {
     if (group_id && selectedGoal) {
       setDate(new Date(selected_year, selected_month, selected_date));
-      const createCertRequest: certRequestType = {
-        group_id: group_id,
-        fitelement_id: selectedGoal.id,
-        year: selected_year,
-        month: selected_month + 1,
-        specific_date: selected_date,
-      };
-      dispatch(groupActions.createCert(createCertRequest));
+      //check already
+      let submit = true;
+      all_certs?.forEach(m => {
+        if (m.member.username == user.user?.username) {
+          m.certs.forEach(id => {
+            if (id.id == selectedGoal.id) {
+              alert('이미 인증된 목표입니다.');
+              submit = false;
+            }
+          });
+        }
+      });
+      if (submit) {
+        const createCertRequest: certRequestType = {
+          group_id: group_id,
+          fitelement_id: selectedGoal.id,
+          year: selected_year,
+          month: selected_month + 1,
+          specific_date: selected_date,
+        };
+        dispatch(groupActions.createCert(createCertRequest));
+      }
     }
   };
   const deleteCert = (id: number) => {
@@ -127,7 +143,7 @@ const GroupCert = () => {
   return (
     <Wrapper>
       <TitleWrapper>
-        <Button4 content="Back" clicked={() => navigate(`/group/detail/${group_id}/`)} />
+        <Button4 content="" clicked={() => navigate(`/group/detail/${group_id}/`)} />
         <Title>그룹 운동 인증</Title>
         <div style={{ width: '136px' }} />
       </TitleWrapper>
@@ -192,14 +208,14 @@ const GroupCert = () => {
                     let day_type = 'future_day';
                     if (year === selected_year && month === selected_month && d === selected_date) {
                       day_type = 'selected_day';
+                    } else if (year > today.getFullYear()) {
+                      day_type = 'future_day';
+                    } else if (year === today.getFullYear() && month > today.getMonth()) {
+                      day_type = 'future_day';
+                    } else if (year === today.getFullYear() && month === today.getMonth() && d > today.getDate()) {
+                      day_type = 'future_day';
                     } else if (year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) {
                       day_type = 'today';
-                    } else if (d > 0 && d <= days[month] && calendarInfo.length > 0) {
-                      if (calendarInfo[d - 1]?.workouts.length === 0) {
-                        day_type = 'type2';
-                      } else {
-                        day_type = 'type1';
-                      }
                     } else {
                       day_type = 'type2';
                     }
@@ -234,8 +250,7 @@ const GroupCert = () => {
                 <option disabled>목표를 지정하세요</option>
                 {group_detail.goal.map((goal, index) => (
                   <option key={index} value={index}>
-                    type: {goal.workout_type} category: {goal.category} rep: {goal.rep} set: {goal.set} time:
-                    {goal.time}
+                    {`종류 : ${goal.workout_type} 강도 : ${goal.rep} 반복 : ${goal.set} 시간 : ${goal.time}`}
                   </option>
                 ))}
               </select>
@@ -245,12 +260,14 @@ const GroupCert = () => {
             </LogUpper>
             <Frame className="right">
               <LogHeader>
+                <div style={{ marginRight: '20px' }}></div>
                 <LogCategory>부위</LogCategory>
                 <LogCategory className="type">종류</LogCategory>
                 <LogCategory>강도</LogCategory>
                 <LogCategory>반복</LogCategory>
-                <LogCategory className="type2">세트</LogCategory>
-                <LogCategory className="type2">시간(분)</LogCategory>
+                <LogCategory className="type">세트</LogCategory>
+                <LogCategory className="type">시간(분)</LogCategory>
+                <div style={{ marginRight: '40px' }}></div>
               </LogHeader>
               <LogBody>
                 {all_certs &&
@@ -433,7 +450,7 @@ const LogUpper = styled.div`
   min-height: 10vh;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-around;
 `;
 
 const LogWrapper = styled.div`
@@ -468,6 +485,10 @@ const LogCategory = styled.div`
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
   color: black;
+
+  .type && {
+    padding-left: 10px;
+  }
 `;
 
 const LogBody = styled.div`
@@ -479,7 +500,7 @@ const LogBody = styled.div`
   align-items: start;
   font-weight: normal;
   max-height: 62vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 `;
 
 const TitleWrapper = styled.div`

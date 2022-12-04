@@ -34,6 +34,7 @@ const mem3: groupApi.Member = {
 
 const membersResponse: groupApi.getGroupMembersResponseType = {
   members: [mem1, mem2, mem3],
+  group_leader: 'test1'
 };
 
 const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {
@@ -82,7 +83,7 @@ describe('setup test', () => {
       });
     });
     screen.getByText('그룹 멤버');
-    screen.getByText('test1');
+    screen.getByText('👑 test1');
   });
   it('btn', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
@@ -93,10 +94,6 @@ describe('setup test', () => {
         payload: membersResponse,
       });
     });
-    const btn = screen.getByText('Back');
-    fireEvent.click(btn);
-    expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith('/group/detail/1/');
   });
   it('init useEffect', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
@@ -157,5 +154,16 @@ describe('setup test', () => {
       });
     });
     screen.getByText('username');
+  });
+  it('loading', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupMembersFailure',
+        payload: null,
+      });
+    });
+    screen.getByText('FITogether');
   });
 });

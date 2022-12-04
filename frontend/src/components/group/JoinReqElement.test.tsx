@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MemberElement } from './MemberElement';
+import { JoinReqElement } from './JoinReqElement';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
@@ -28,74 +28,76 @@ const setup = () => {
   return store;
 };
 
-describe('<MemberElement/>', () => {
-  it('not leader & myself', () => {
+describe('<JoinReqElement/>', () => {
+  it('not full', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     render(
       <Provider store={store}>
-        <MemberElement
+        <JoinReqElement
           id={1}
           image={'image'}
           username={'username'}
-          cert_days={7}
           level={1}
-          is_leader={false}
-          leader={false}
-          myself={true}
+          is_full={false}
         />
       </Provider>,
     );
     screen.getByText('username');
-    screen.getByText('7 일째 인증 중!');
     screen.getByText('Level: 1');
 
     const profile = screen.getByAltText('profile');
     fireEvent.click(profile);
     expect(mockNavigate).toBeCalledWith('/profile/username');
-  });
-  it('leader & not myself', () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
-    const store = setup();
-    render(
-      <Provider store={store}>
-        <MemberElement
-          id={1}
-          image={'image'}
-          username={'username'}
-          cert_days={7}
-          level={1}
-          is_leader={false}
-          leader={true}
-          myself={false}
-        />
-      </Provider>,
-    );
 
-    const leaderChangeBtn = screen.getByText('그룹장 위임');
-    fireEvent.click(leaderChangeBtn);
+    const approveBtn = screen.getByText('승인');
+    fireEvent.click(approveBtn);
     expect(mockDispatch).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith('/group/detail/1');
+
+    const discardBtn = screen.getByText('삭제');
+    fireEvent.click(discardBtn);
+    expect(mockDispatch).toBeCalledTimes(2);
   });
-  it('group id failure', () => {
+  it('wrong group id', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: undefined });
     const store = setup();
     render(
       <Provider store={store}>
-        <MemberElement
+        <JoinReqElement
           id={1}
           image={'image'}
           username={'username'}
-          cert_days={7}
           level={1}
-          is_leader={false}
-          leader={true}
-          myself={false}
+          is_full={false}
+        />
+      </Provider>,
+    );
+    const approveBtn = screen.getByText('승인');
+    fireEvent.click(approveBtn);
+    const discardBtn = screen.getByText('삭제');
+    fireEvent.click(discardBtn);
+  });
+  it('is full', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    render(
+      <Provider store={store}>
+        <JoinReqElement
+          id={1}
+          image={'image'}
+          username={'username'}
+          level={1}
+          is_full={true}
         />
       </Provider>,
     );
 
-    const leaderChangeBtn = screen.getByText('그룹장 위임');
-    fireEvent.click(leaderChangeBtn);
+    const approveBtn = screen.getByText('승인');
+    fireEvent.click(approveBtn);
+    expect(mockDispatch).toBeCalledTimes(0);
+
+    const discardBtn = screen.getByText('삭제');
+    fireEvent.click(discardBtn);
+    expect(mockDispatch).toBeCalledTimes(1);
   });
 });

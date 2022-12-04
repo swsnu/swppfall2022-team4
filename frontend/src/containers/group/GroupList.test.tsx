@@ -7,6 +7,13 @@ import { rootReducer } from 'store';
 import GroupList from './GroupList';
 import * as groupApi from '../../store/apis/group';
 import userEvent from '@testing-library/user-event';
+import { TagVisual } from 'store/apis/tag';
+
+const single_tag: TagVisual = {
+  id: '1',
+  name: '데드리프트',
+  color: '#dbdbdb'
+}
 
 const groupListResponse: groupApi.Group[] = [
   {
@@ -21,8 +28,8 @@ const groupListResponse: groupApi.Group[] = [
     lat: null,
     lng: null,
     address: null,
-    tags: [],
-    prime_tag: undefined,
+    tags: [single_tag],
+    prime_tag: single_tag,
   },
   {
     id: 2,
@@ -95,7 +102,7 @@ describe('setup test', () => {
       });
     });
 
-    const createGroupBtn = screen.getByText('Create Group');
+    const createGroupBtn = screen.getByText('그룹 만들기');
     fireEvent.click(createGroupBtn);
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group/create');
@@ -128,9 +135,13 @@ describe('setup test', () => {
     const recentBtn = screen.getByText('최신순');
     const oldBtn = screen.getByText('오래된순');
     const closeBtn = screen.getByText('가까운순');
+    const freeBtn = screen.getByText('자유가입');
+    const mygrBtn = screen.getByText('나의그룹');
     fireEvent.click(recentBtn);
     fireEvent.click(oldBtn);
     fireEvent.click(closeBtn);
+    fireEvent.click(freeBtn);
+    fireEvent.click(mygrBtn);
   });
   it('search Input', () => {
     const store = setup();
@@ -144,5 +155,17 @@ describe('setup test', () => {
     });
     const searchInput = screen.getByPlaceholderText('그룹 검색...');
     userEvent.type(searchInput, '2');
+  });
+  it('tag', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'group/getGroupsSuccess',
+        payload: {
+          groups: groupListResponse,
+        },
+      });
+    });
+    screen.getByText('데드리프트');
   });
 });

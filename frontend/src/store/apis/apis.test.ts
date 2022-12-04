@@ -163,13 +163,18 @@ const getCertsRequest: groupAPI.getCertsRequestType = {
   specific_date: 12,
 };
 
-const createCertRequest: groupAPI.certRequestType = {
+const certRequest: groupAPI.certRequestType = {
   group_id: '1',
   year: 2022,
   month: 12,
   specific_date: 12,
   fitelement_id: 1,
 };
+
+const joinReqReqeust: groupAPI.joinReqLeaderRequestType = {
+  group_id: '1',
+  username: 'user',
+}
 
 // Workout dummy.
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {
@@ -591,8 +596,26 @@ describe('Group API TEST', () => {
       expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
     });
     it('createCert', async () => {
-      const res = await groupAPI.createCert(createCertRequest);
+      const res = await groupAPI.createCert(certRequest);
       expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
+    });
+    it('deleteCert', async () => {
+      const res = await groupAPI.deleteCert(certRequest);
+      expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
+    });
+  });
+  describe('Group Join Request', () => {
+    it('getRequests', async () => {
+      const res = await groupAPI.getRequests('1');
+      expect(res).toBe(`/api/group/1/join_permission/`);
+    });
+    it('postRequests', async () => {
+      const res = await groupAPI.postRequest(joinReqReqeust);
+      expect(res).toBe(`/api/group/1/join_permission/`);
+    });
+    it('deleteRequests', async () => {
+      const res = await groupAPI.deleteRequest(joinReqReqeust);
+      expect(res).toBe(`/api/group/1/join_permission/`);
     });
   });
 });
