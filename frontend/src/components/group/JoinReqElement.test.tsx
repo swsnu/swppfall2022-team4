@@ -15,6 +15,7 @@ const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
+  useSelector: () => jest.fn(),
 }));
 beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
@@ -34,13 +35,7 @@ describe('<JoinReqElement/>', () => {
     const store = setup();
     render(
       <Provider store={store}>
-        <JoinReqElement
-          id={1}
-          image={'image'}
-          username={'username'}
-          level={1}
-          is_full={false}
-        />
+        <JoinReqElement id={1} image={'image'} username={'username'} level={1} is_full={false} />
       </Provider>,
     );
     screen.getByText('username');
@@ -63,13 +58,7 @@ describe('<JoinReqElement/>', () => {
     const store = setup();
     render(
       <Provider store={store}>
-        <JoinReqElement
-          id={1}
-          image={'image'}
-          username={'username'}
-          level={1}
-          is_full={false}
-        />
+        <JoinReqElement id={1} image={'image'} username={'username'} level={1} is_full={false} />
       </Provider>,
     );
     const approveBtn = screen.getByText('승인');
@@ -82,13 +71,7 @@ describe('<JoinReqElement/>', () => {
     const store = setup();
     render(
       <Provider store={store}>
-        <JoinReqElement
-          id={1}
-          image={'image'}
-          username={'username'}
-          level={1}
-          is_full={true}
-        />
+        <JoinReqElement id={1} image={'image'} username={'username'} level={1} is_full={true} />
       </Provider>,
     );
 

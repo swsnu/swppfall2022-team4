@@ -19,8 +19,8 @@ const user1: userType = {
 const single_tag: TagVisual = {
   id: '1',
   name: '데드리프트',
-  color: '#dbdbdb'
-}
+  color: '#dbdbdb',
+};
 
 const fitelement1: groupApi.Fitelement = {
   id: 1,
@@ -171,7 +171,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailFailure',
-        payload: {response: {status: 404}},
+        payload: { response: { status: 404 } },
       });
     });
     expect(mockNavigate).toBeCalledWith('/not_found');
@@ -183,7 +183,7 @@ describe('setup test', () => {
     act(() => {
       store.dispatch({
         type: 'group/getGroupDetailFailure',
-        payload: {response: {status: 404}},
+        payload: { response: { status: 404 } },
       });
     });
   });
@@ -197,7 +197,7 @@ describe('setup test', () => {
       });
     });
     screen.getByText('기간 없음');
-    screen.getByText('인원수: 3명')
+    screen.getByText('인원수: 3명');
     screen.getByText('시작일 : 기한없음');
     screen.getByText('마감일 : 기한없음');
   });
@@ -245,7 +245,6 @@ describe('setup test', () => {
 
     fireEvent.click(deleteBtn);
     expect(confirmMock).toBeCalledWith('정말 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
-    
   });
 
   it('member status', () => {
@@ -272,7 +271,7 @@ describe('setup test', () => {
     fireEvent.click(CertBtn);
     expect(mockNavigate).toBeCalledWith('/group/detail/1/cert');
     expect(mockNavigate).toBeCalledTimes(1);
-    
+
     fireEvent.click(ChatBtn);
     expect(mockNavigate).toBeCalledWith('/group/chat/1');
     expect(mockNavigate).toBeCalledTimes(2);
@@ -287,7 +286,6 @@ describe('setup test', () => {
 
     fireEvent.click(leaveBtn);
     expect(confirmMock).toBeCalledWith('정말 그룹을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
-
   });
 
   it('not member status & can join', () => {

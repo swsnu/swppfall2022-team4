@@ -174,7 +174,7 @@ const certRequest: groupAPI.certRequestType = {
 const joinReqReqeust: groupAPI.joinReqLeaderRequestType = {
   group_id: '1',
   username: 'user',
-}
+};
 
 // Workout dummy.
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {

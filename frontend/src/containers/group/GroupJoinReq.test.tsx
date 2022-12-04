@@ -15,31 +15,31 @@ const request1: groupApi.MemberReq = {
   username: 'req1',
   image: 'image',
   level: 1,
-}
+};
 
 const request2: groupApi.MemberReq = {
   id: 2,
   username: 'req2',
   image: 'image',
   level: 1,
-}
+};
 
 const request3: groupApi.MemberReq = {
   id: 3,
   username: 'req3',
   image: 'image',
   level: 1,
-}
+};
 
 const requestsResponse: groupApi.getJoinReqResponseType = {
   requests: [request1, request2, request3],
-}
+};
 
 const single_tag: TagVisual = {
   id: '1',
   name: '데드리프트',
-  color: '#dbdbdb'
-}
+  color: '#dbdbdb',
+};
 
 const user1: userType = {
   username: 'username',
@@ -161,4 +161,4 @@ describe('setup test', () => {
     });
     screen.getByText('FITogether');
   });
-})
+});

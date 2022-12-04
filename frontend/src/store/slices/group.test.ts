@@ -104,14 +104,14 @@ const memreq1: groupApi.MemberReq = {
   username: 'req1',
   image: 'image',
   level: 1,
-}
+};
 
 const memreq2: groupApi.MemberReq = {
   id: 2,
   username: 'req2',
   image: 'image',
   level: 2,
-}
+};
 
 //request
 const postGroupRequest: groupApi.postGroupRequestType = {
@@ -153,7 +153,7 @@ const certRequest: groupApi.certRequestType = {
 const joinLeaderRequest: groupApi.joinReqLeaderRequestType = {
   group_id: '1',
   username: 'user',
-}
+};
 
 //response
 const getGroupsResponse: groupApi.getGroupsResponseType = {
@@ -197,7 +197,7 @@ const getCertsResponse: groupApi.getCertsResponseType = {
 
 const getRequestsResponse: groupApi.getJoinReqResponseType = {
   requests: [memreq1, memreq2],
-}
+};
 
 //test
 describe('Group', () => {

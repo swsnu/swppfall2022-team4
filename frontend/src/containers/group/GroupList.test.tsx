@@ -12,8 +12,8 @@ import { TagVisual } from 'store/apis/tag';
 const single_tag: TagVisual = {
   id: '1',
   name: '데드리프트',
-  color: '#dbdbdb'
-}
+  color: '#dbdbdb',
+};
 
 const groupListResponse: groupApi.Group[] = [
   {

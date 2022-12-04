@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
@@ -34,7 +34,7 @@ const mem3: groupApi.Member = {
 
 const membersResponse: groupApi.getGroupMembersResponseType = {
   members: [mem1, mem2, mem3],
-  group_leader: 'test1'
+  group_leader: 'test1',
 };
 
 const leaderStatusResponse: groupApi.checkGroupMemberResponseType = {

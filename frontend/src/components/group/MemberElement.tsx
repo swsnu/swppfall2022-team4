@@ -47,54 +47,6 @@ export const MemberElement = (props: IProps) => {
       navigate(`/group/detail/${group_id}`);
     }
   };
-  const postRequestClick = () => {
-    if (group_id) {
-      if (user && socket) {
-        socket.send(
-          JSON.stringify({
-            type: 'notification',
-            data: {
-              category: 'group',
-              info: props.username,
-              content: `그룹 참여가 승인되었습니다!`,
-              image: user.image,
-              link: `/group/detail/${group_id}/`,
-            },
-          }),
-        );
-      }
-      dispatch(
-        groupActions.postRequest({
-          group_id: group_id,
-          username: props.username,
-        }),
-      );
-    }
-  };
-  const deleteRequestClick = () => {
-    if (group_id) {
-      if (user && socket) {
-        socket.send(
-          JSON.stringify({
-            type: 'notification',
-            data: {
-              category: 'group',
-              info: props.username,
-              content: `그룹 참여가 거절되었습니다.`,
-              image: user.image,
-              link: `/group/detail/${group_id}/`,
-            },
-          }),
-        );
-      }
-      dispatch(
-        groupActions.deleteRequest({
-          group_id: group_id,
-          username: props.username,
-        }),
-      );
-    }
-  };
 
   return (
     <MemberElementWrapper className={props.myself ? 'myself' : 'others'}>

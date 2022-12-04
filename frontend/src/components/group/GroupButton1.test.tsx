@@ -5,13 +5,11 @@ const onClick = jest.fn();
 beforeEach(() => jest.clearAllMocks());
 
 describe('<GroupButton1 />', () => {
-    it('Should render GroupButton1', () => {
-      render(
-        <GroupButton1 content="content" clicked={onClick} disable={true}/>
-      );
-      const button = screen.getByText('content');
-      expect(button).toBeInTheDocument();
-      fireEvent.click(button);
-      expect(onClick).toHaveBeenCalledTimes(0);
-    });
-})
+  it('Should render GroupButton1', () => {
+    render(<GroupButton1 content="content" clicked={onClick} disable={true} />);
+    const button = screen.getByText('content');
+    expect(button).toBeInTheDocument();
+    fireEvent.click(button);
+    expect(onClick).toHaveBeenCalledTimes(0);
+  });
+});

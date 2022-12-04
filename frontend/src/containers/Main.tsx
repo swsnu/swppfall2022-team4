@@ -110,7 +110,9 @@ const Main = () => {
                 </FitElementContent>
               </FitElementItemWrapper>
             ))}
-            {fitElements.length === 0 && <NoFitElementsText>운동 기록이 없습니다.</NoFitElementsText>}
+            {fitElements.length === 0 && (
+              <NoFitElementsText style={{ marginTop: '178px' }}>운동 기록이 없습니다.</NoFitElementsText>
+            )}
             {fitElements.length > 4 && <ManyFitElementsText>{`외 ${fitElements.length - 4}개`}</ManyFitElementsText>}
           </FitElementWrapper>
           <LinkText onClick={() => navigate('/workout')} style={{ marginTop: '25px' }}>
@@ -173,7 +175,9 @@ const Main = () => {
                       </GroupSmallWrapper>
                     </GroupItemWrapper>
                   ))}
-                  {groups.length === 0 && <NoFitElementsText>그룹이 없습니다.</NoFitElementsText>}
+                  {groups.length === 0 && (
+                    <NoFitElementsText style={{ marginTop: '0px' }}>그룹이 없습니다.</NoFitElementsText>
+                  )}
                 </>
               ) : (
                 <LoadingComponent r="80px" />
