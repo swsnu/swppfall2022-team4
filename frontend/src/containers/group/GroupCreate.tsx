@@ -431,7 +431,7 @@ const GroupCreate = () => {
                   </GoalGridWrapper>
 
                   {goal_list.map((go_obj, index) => (
-                    <GoalGridWrapper className="goals">
+                    <GoalGridWrapper key={index} className="goals">
                       <span className="type3">{index + 1}</span>
                       <GoalGridImg
                         src={require(`assets/images/workout_log/fitelement_category/${get_image(go_obj.category)}.png`)}
