@@ -235,6 +235,7 @@ const GroupList = () => {
           width: '130px',
           alignSelf: 'end',
           marginRight: '15px',
+          fontFamily: 'NanumSquareR',
         }}
       />
       <GroupListWrapper>

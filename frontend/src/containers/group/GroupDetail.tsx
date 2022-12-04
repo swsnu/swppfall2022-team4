@@ -300,7 +300,7 @@ const MainWrapper = styled.div`
   height: 100%;
   margin-left: 60px;
   margin-right: 15px;
-  background-color: #d7efe3;
+  background-color: #eafff5;
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -411,6 +411,7 @@ const GroupAboutDescription = styled.div`
   border-radius: 20px;
   padding: 20px;
   line-height: normal;
+  background-color: #ffffff;
 `;
 
 const TagBubbleWrapper = styled.div`
@@ -432,6 +433,7 @@ const GoalListWrapper = styled.div`
   padding: 10px;
   border: 3px solid #d1d1d1;
   border-radius: 20px;
+  background-color: #ffffff;
 `;
 
 const GroupDetailDate = styled.div`

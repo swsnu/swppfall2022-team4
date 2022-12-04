@@ -26,7 +26,7 @@ const Wrapper = styled.button`
   background-color: #349c66;
   color: white;
   font-size: 20px;
-  font-family: FugazOne;
+  font-family: NanumSquareR;
   cursor: pointer;
   transition: background-color 0.15s linear;
   &:hover {
