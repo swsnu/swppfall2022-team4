@@ -86,6 +86,12 @@ export type editMemoRequestType = {
   specific_date: number;
 };
 
+export type editRoutineTitleRequestType = {
+  username: string;
+  routine_id: number;
+  title: string;
+};
+
 export type getCalendarInfoRequestType = {
   username: string;
   year: number;
@@ -256,6 +262,14 @@ export const editMemo = async (payload: editMemoRequestType) => {
   return response.data;
 };
 
+export const editRoutineTitle = async (payload: editRoutineTitleRequestType) => {
+  const response = await client.put(
+    `/api/fitelement/routine/${payload.routine_id}/?&username=${payload.username}`,
+    payload,
+  );
+  return response.data;
+};
+
 export const getCalendarInfo = async (payload: getCalendarInfoRequestType) => {
   const response = await client.get<getCalendarInfoResponseType>(
     `/api/fitelement/${payload.year}/${payload.month}/?&username=${payload.username}`,
@@ -277,10 +291,7 @@ export const addFitElements = async (payload: addFitElementsRequestType) => {
 };
 
 export const createRoutineWithFitElements = async (payload: createRoutineWithFitElementsRequestType) => {
-  const response = await client.post<createRoutineWithFitElementsRequestType>(
-    `/api/fitelement/routine/?&username=${payload.username}`,
-    payload,
-  );
+  const response = await client.post(`/api/fitelement/routine/?&username=${payload.username}`, payload);
   return response.data;
 };
 

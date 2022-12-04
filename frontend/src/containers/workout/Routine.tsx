@@ -19,6 +19,8 @@ const Routine = () => {
   };
   const user = useSelector(({ user }: RootState) => user);
   const [routine_id, setRoutineId] = useState<number>(-1);
+  const [title, setTitle] = useState('');
+  const [edit_mode, setMode] = useState<boolean>(false);
 
   const defaultRoutineRequest: getRoutineRequestType = {
     username: user.user?.username!,
@@ -31,6 +33,7 @@ const Routine = () => {
 
   const create_routine_id = useSelector((rootState: RootState) => rootState.workout_log.create_routine_id);
   const deleteFitElementStatus = useSelector((rootState: RootState) => rootState.workout_log.fitelementDelete);
+  const edit_routine_success = useSelector((rootState: RootState) => rootState.workout_log.edit_routine_success);
 
   const fitelementDeleteOnClick = (id: number) => {
     dispatch(
@@ -41,12 +44,31 @@ const Routine = () => {
     );
   };
 
+  const editRoutineTitle = (click_type: string) => {
+    if ((edit_mode === false && click_type !== 'complete_button') || click_type === 'edit_button') {
+      setMode(true);
+    } else if (click_type === 'cancel_button') {
+      setTitle(selected_routine.name || '');
+      setMode(false);
+    } else {
+      dispatch(
+        workoutLogActions.editRoutineTitle({
+          username: user.user?.username!,
+          title: title,
+          routine_id: routine_id,
+        }),
+      );
+      setMode(false);
+    }
+  };
+
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [create_routine_id]);
+  }, [create_routine_id, edit_routine_success]);
 
   useEffect(() => {
+    setMode(false);
     if (routine_id !== -1) {
       dispatch(
         workoutLogActions.getSpecificRoutine({
@@ -69,6 +91,7 @@ const Routine = () => {
             {routines.map((routine, index) => (
               <RoutineName
                 key={index}
+                data-testid="routine_name"
                 className={routine.id === routine_id ? (index === 0 ? 'type2' : 'type1') : ''}
                 onClick={() => routineClick(Number(routine.id))}
               >
@@ -87,7 +110,43 @@ const Routine = () => {
             <div></div>
           ) : (
             <RoutineHeader>
-              <LogHeader className="title">{selected_routine.name}</LogHeader>
+              <LogHeader className="title">
+                {edit_mode ? (
+                  <EditInput
+                    defaultValue={selected_routine.name}
+                    data-testid="edit_input"
+                    onChange={e => setTitle(e.target.value)}
+                  />
+                ) : (
+                  selected_routine.name
+                )}
+                <EditButtonWrapper>
+                  <AnyButton
+                    className="edit-type"
+                    data-testid="title_cancel_button"
+                    hidden={!edit_mode}
+                    onClick={() => editRoutineTitle('cancel_button')}
+                  >
+                    취소
+                  </AnyButton>
+                  <AnyButton
+                    className="edit-type"
+                    data-testid="title_edit_button"
+                    hidden={edit_mode}
+                    onClick={() => editRoutineTitle('edit_button')}
+                  >
+                    수정
+                  </AnyButton>
+                  <AnyButton
+                    className="edit-type"
+                    data-testid="title_submit_button"
+                    hidden={!edit_mode}
+                    onClick={() => editRoutineTitle('complete_button')}
+                  >
+                    완료
+                  </AnyButton>
+                </EditButtonWrapper>
+              </LogHeader>
               <LogHeader>
                 <LogCategory className="type3"></LogCategory>
                 <LogCategory className="type">종류</LogCategory>
@@ -168,6 +227,22 @@ const RoutineName = styled.div`
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
   }
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const EditInput = styled.input`
+  height: 50%;
+  width: 30%;
+  padding: 5px 15px 5px 15px;
+  font-size: 18px;
+  font-weight: normal;
+  font-family: IBMPlexSansThaiLooped;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const RoutineHeader = styled.div`
@@ -195,6 +270,7 @@ const LogHeader = styled.div`
   &&.title {
     height: 70%;
     min-height: 10vh;
+    flex-direction: column;
   }
 `;
 
@@ -281,7 +357,7 @@ const LeftWrapper = styled.div`
   display: flex;
   margin-left: 30px;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   background-color: #ffffff;
 `;
@@ -293,24 +369,19 @@ const RightWrapper = styled.div`
   margin-right: 30px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
 `;
 
 const Frame = styled.div`
   width: 90%;
+  height: 100%;
   border: 1px solid black;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  &&.right {
-    height: 90%;
-    justify-content: center;
-    min-height: 70.2vh;
-  }
 `;
 
 const RoutineListWrapper = styled.div`
@@ -325,9 +396,11 @@ const RoutineListWrapper = styled.div`
 `;
 
 const LogWrapper = styled.div`
+  overflow: auto;
   width: 100%;
   height: 100%;
-  min-height: 80vh;
+  min-height: 70vh;
+  max-height: 70vh;
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -362,4 +435,49 @@ const FitElementWrapper = styled.div`
   flex-direction: row;
   border-bottom: 1px solid black;
   align-items: center;
+`;
+
+const AnyButton = styled.button`
+  width: 180px;
+  height: 30px;
+  margin: 5px;
+  background-color: #d7efe3;
+  border: 0;
+  border-radius: 8px;
+  font-family: FugazOne;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+  &:hover {
+    background-color: #3bb978;
+  }
+
+  &&.type1 {
+    width: 120px;
+    height: 20px;
+  }
+
+  &:disabled {
+    background-color: #d7efe3;
+    cursor: default;
+  }
+
+  &&.edit-type {
+    width: 60px;
+    height: 20px;
+  }
+`;
+
+const EditButtonWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: end;
+  justify-content: end;
+  flex-direction: row;
+  font-family: IBMPlexSansThaiLooped;
+  font-size: 14px;
+  font-weight: 600;
+  color: #818281;
 `;

@@ -256,6 +256,8 @@ def routine(request, routine_id):
     """
     if request.method == "GET":
         if Routine.objects.filter(id=routine_id).exists():
+            username = request.GET.get("username")
+            user = User.objects.get(username=username)
             routine_single = Routine.objects.get(id=routine_id)
             return_json = {
                 "id": routine_single.id,
@@ -264,6 +266,17 @@ def routine(request, routine_id):
                 "fitelements": list(routine_single.fit_element.values_list("id", flat=True)),
             }
             return JsonResponse(return_json, safe=False, status=201)
+        else:
+            return HttpResponseBadRequest()
+    elif request.method == "PUT":
+        username = request.GET.get("username")
+        user = User.objects.get(username=username)
+        req_data = json.loads(request.body.decode())
+        if Routine.objects.filter(id=routine_id).exists():
+            routine_single = Routine.objects.get(id=routine_id, author=user)
+            routine_single.name = req_data["title"]
+            routine_single.save()
+            return JsonResponse({"id": routine_id, "content": req_data["title"]}, safe=False, status=201)
         else:
             return HttpResponseBadRequest()
 
@@ -292,8 +305,10 @@ def daily_log(request, year, month, specific_date):
                 "images": [],
             }
             return JsonResponse(daily_log_dict_return, safe=False, status=200)
-
-        index_list = json.loads(daily_log_single[0].log_index)
+        if not daily_log_single[0].log_index is None:
+            index_list = json.loads(daily_log_single[0].log_index)
+        else:
+            index_list = []
 
         daily_log_dict_return = {
             "author": daily_log_single[0].author.id,
@@ -395,13 +410,8 @@ def daily_log(request, year, month, specific_date):
                     fitelement_type = Tag.objects.get(tag_name=fitelement.workout_type)
                     new_daily_log.calories += fitelement_type.calories * fitelement.time
                     list_to_store = []
-                    if new_daily_log.log_index:
-                        prev_list = json.loads(new_daily_log.log_index)
-                        prev_list.append(fitelement.id)
-                        new_daily_log.log_index = json.dumps(prev_list)
-                    else:
-                        list_to_store = [fitelement.id]
-                        new_daily_log.log_index = json.dumps(list_to_store)
+                    list_to_store = [fitelement.id]
+                    new_daily_log.log_index = json.dumps(list_to_store)
             new_daily_log.save()
             return JsonResponse(return_json, safe=False, status=200)
 
