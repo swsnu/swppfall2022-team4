@@ -5,6 +5,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { rootReducer } from 'store';
 import Router from 'react-router-dom';
+import { act } from 'react-dom/test-utils';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -15,13 +16,18 @@ const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
-  useSelector: () => jest.fn(),
 }));
 beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
 const setup = () => {
-  const store = configureStore({ reducer: rootReducer });
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
+  });
   store.dispatch({
     type: 'user/setUser',
     payload: { username: 'username', nickname: 'nickname', image: 'image' },
@@ -46,6 +52,15 @@ describe('<MemberElement/>', () => {
         />
       </Provider>,
     );
+
+    const mockSend = jest.fn();
+    act(() => {
+      store.dispatch({
+        type: 'chat/setSocket',
+        payload: { send: mockSend },
+      });
+    });
+
     screen.getByText('username');
     screen.getByText('7 일째 인증 중!');
     screen.getByText('Level: 1');
@@ -72,6 +87,14 @@ describe('<MemberElement/>', () => {
       </Provider>,
     );
 
+    const mockSend = jest.fn();
+    act(() => {
+      store.dispatch({
+        type: 'chat/setSocket',
+        payload: { send: mockSend },
+      });
+    });
+
     const leaderChangeBtn = screen.getByText('그룹장 위임');
     fireEvent.click(leaderChangeBtn);
     expect(mockDispatch).toBeCalledTimes(1);
@@ -95,6 +118,14 @@ describe('<MemberElement/>', () => {
         />
       </Provider>,
     );
+
+    const mockSend = jest.fn();
+    act(() => {
+      store.dispatch({
+        type: 'chat/setSocket',
+        payload: { send: mockSend },
+      });
+    });
 
     const leaderChangeBtn = screen.getByText('그룹장 위임');
     fireEvent.click(leaderChangeBtn);

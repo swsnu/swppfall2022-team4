@@ -14,7 +14,6 @@ const testMockRoutine: RoutineTypeInPost = {
 describe('[RoutineInfo Component]', () => {
   test('basic rendering of RoutineInfo', () => {
     render(<RoutineInfo routine={testMockRoutine} />);
-    // expect(screen.getByText('종류')).toBeInTheDocument();
   });
   test('X', () => {
     render(<RoutineInfo routine={null} />);

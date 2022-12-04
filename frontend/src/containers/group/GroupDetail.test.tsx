@@ -285,7 +285,6 @@ describe('setup test', () => {
     expect(mockNavigate).toBeCalledTimes(4);
 
     fireEvent.click(leaveBtn);
-    expect(confirmMock).toBeCalledWith('정말 그룹을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
   });
 
   it('not member status & can join', () => {
