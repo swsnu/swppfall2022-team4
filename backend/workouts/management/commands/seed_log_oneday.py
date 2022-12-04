@@ -16,9 +16,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "-n", "--number", type=int, default=0, help="# of logs to create."
         )
-        parser.add_argument(
-            "-i", "--id", type=int, default=1, help="user_id"
-        )
+        parser.add_argument("-i", "--id", type=int, default=1, help="user_id")
         parser.add_argument(
             "-d",
             "--date",
@@ -81,12 +79,27 @@ class Command(BaseCommand):
         except:
             created_daily_logs_ = []
         if len(created_daily_logs_) == 0:
-            specific_daily_log = DailyLog.objects.get(date=specific_date, author_id=user.id).pk
-        
+            specific_daily_log = DailyLog.objects.get(
+                date=specific_date, author_id=user.id
+            ).pk
+
         else:
             specific_daily_log = flatten(list(created_daily_logs_.values()))[0]
 
         daily_log = DailyLog.objects.get(id=specific_daily_log)
+        daily_log.log_index = [
+            x.id
+            for x in FitElement.objects.filter(date=specific_date, author_id=user.id)
+        ]
+        daily_log.calories = sum(
+            [
+                x.workout_type.calories * x.time
+                for x in FitElement.objects.filter(
+                    date=specific_date, author_id=user.id
+                )
+            ]
+        )
+        daily_log.save()
 
         for log in FitElement.objects.filter(
             date=daily_log.date, author_id=daily_log.author.id
