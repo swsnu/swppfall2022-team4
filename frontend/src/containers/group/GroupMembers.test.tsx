@@ -94,10 +94,6 @@ describe('setup test', () => {
         payload: membersResponse,
       });
     });
-    const btn = screen.getByText('Back');
-    fireEvent.click(btn);
-    expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith('/group/detail/1/');
   });
   it('init useEffect', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });

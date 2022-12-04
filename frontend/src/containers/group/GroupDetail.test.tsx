@@ -146,7 +146,7 @@ describe('setup test', () => {
     screen.getAllByText('장소: 봉천동');
     screen.getByText('group_leader');
     screen.getByText('group_description');
-    screen.getByText('Specification');
+    screen.getByText('Goal');
     screen.getByText('시작일 : 2019-01-01');
     screen.getByText('벤치프레스');
   });
@@ -159,15 +159,11 @@ describe('setup test', () => {
         payload: groupDetailResponse,
       });
     });
-    const back = screen.getByText('Back');
-    fireEvent.click(back);
-    expect(mockNavigate).toBeCalledWith('/group');
-    expect(mockNavigate).toBeCalledTimes(1);
 
     const profile = screen.getByAltText('profile');
     fireEvent.click(profile);
     expect(mockNavigate).toBeCalledWith('/profile/group_leader');
-    expect(mockNavigate).toBeCalledTimes(2);
+    expect(mockNavigate).toBeCalledTimes(1);
   });
   it('failure response', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
@@ -220,12 +216,12 @@ describe('setup test', () => {
         payload: leaderStatusResponse,
       });
     });
-    const CertBtn = screen.getByText('Cert');
-    const ChatBtn = screen.getByText('Chat');
-    const memberBtn = screen.getByText('Member');
-    const PostBtn = screen.getByText('Post');
-    const JoinReqBtn = screen.getByText('Join Req');
-    const deleteBtn = screen.getByText('Delete');
+    const CertBtn = screen.getByText('운동 인증');
+    const ChatBtn = screen.getByText('그룹 채팅');
+    const memberBtn = screen.getByText('그룹 멤버');
+    const PostBtn = screen.getByText('커뮤니티');
+    const JoinReqBtn = screen.getByText('멤버 요청');
+    const deleteBtn = screen.getByText('그룹 삭제');
 
     fireEvent.click(CertBtn);
     expect(mockNavigate).toBeCalledWith('/group/detail/1/cert');
@@ -267,11 +263,11 @@ describe('setup test', () => {
         payload: memberStatusResponse,
       });
     });
-    const CertBtn = screen.getByText('Cert');
-    const ChatBtn = screen.getByText('Chat');
-    const memberBtn = screen.getByText('Member');
-    const PostBtn = screen.getByText('Post');
-    const leaveBtn = screen.getByText('Leave');
+    const CertBtn = screen.getByText('운동 인증');
+    const ChatBtn = screen.getByText('그룹 채팅');
+    const memberBtn = screen.getByText('그룹 멤버');
+    const PostBtn = screen.getByText('커뮤니티');
+    const leaveBtn = screen.getByText('그룹 탈퇴');
 
     fireEvent.click(CertBtn);
     expect(mockNavigate).toBeCalledWith('/group/detail/1/cert');
@@ -308,7 +304,7 @@ describe('setup test', () => {
         payload: notmemberStatusResponse,
       });
     });
-    const joinBtn = screen.getByText('Join');
+    const joinBtn = screen.getByText('그룹 가입');
 
     fireEvent.click(joinBtn);
     act(() => {
@@ -333,7 +329,7 @@ describe('setup test', () => {
         payload: notmemberStatusResponse,
       });
     });
-    const joinBtn = screen.getByText('Join');
+    const joinBtn = screen.getByText('그룹 가입');
     fireEvent.click(joinBtn);
 
     act(() => {
@@ -342,7 +338,7 @@ describe('setup test', () => {
         payload: pendingmemberStatusResponse,
       });
     });
-    screen.getByText('가입 수락 대기중...');
+    screen.getByText('승인 대기');
   });
 
   it('not member status & can not join', () => {
@@ -360,7 +356,7 @@ describe('setup test', () => {
         payload: notmemberStatusResponse,
       });
     });
-    const joinBtn = screen.getByText('Join');
+    const joinBtn = screen.getByText('그룹 가입');
 
     fireEvent.click(joinBtn);
     expect(alertMock).toBeCalledWith('정원이 모두 찬 그룹입니다.');

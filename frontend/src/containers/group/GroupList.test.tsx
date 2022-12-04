@@ -102,7 +102,7 @@ describe('setup test', () => {
       });
     });
 
-    const createGroupBtn = screen.getByText('Create Group');
+    const createGroupBtn = screen.getByText('그룹 만들기');
     fireEvent.click(createGroupBtn);
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith('/group/create');

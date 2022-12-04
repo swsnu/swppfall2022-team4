@@ -28,10 +28,9 @@ describe('<GroupElement />', () => {
       />,
     );
     screen.getByText('test');
-    screen.getByText('장소 : 서울시 관악구 봉천동');
-    screen.getByText('최대인원 : 12');
+    screen.getByText('서울시 관악구 봉천동');
     screen.getByText('현재인원 : 10');
-    screen.getByText('자유가입O');
+    screen.getByText('자유가입 O');
     screen.getByText('시작일 : 2022-01-01');
     screen.getByText('마감일 : 2023-12-31');
     screen.getByText('데드리프트');
@@ -51,7 +50,7 @@ describe('<GroupElement />', () => {
         prime_tag={single_tag}
       />,
     );
-    screen.getByText('장소 : 서울특별시 관악구 봉천동 대...');
+    screen.getByText('서울특별시 관악구 봉천동 대...');
   });
   it('all null', () => {
     render(
@@ -69,10 +68,8 @@ describe('<GroupElement />', () => {
       />,
     );
     screen.getByText('test');
-    screen.getByText('장소 : 장소없음');
-    screen.getByText('최대인원 : 제한없음');
     screen.getByText('현재인원 : 10');
-    screen.getByText('자유가입X');
+    screen.getByText('자유가입 X');
     screen.getByText('시작일 : 기한없음');
     screen.getByText('마감일 : 기한없음');
     screen.getByText('None');

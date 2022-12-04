@@ -119,11 +119,6 @@ describe('setup test', () => {
     });
     screen.getByText('req1');
     screen.getAllByText('승인');
-
-    const btn = screen.getByText('Back');
-    fireEvent.click(btn);
-    expect(mockNavigate).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledWith('/group/detail/1/');
   });
   it('action', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
