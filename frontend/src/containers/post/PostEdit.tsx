@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,7 +11,10 @@ import { groupActions } from 'store/slices/group';
 import { notificationFailure } from 'utils/sendNotification';
 
 const PostEdit = () => {
-  const { group_id, post_id } = useParams<{ group_id: string; post_id: string }>();
+  const { group_id, post_id } = useParams<{
+    group_id: string;
+    post_id: string;
+  }>();
 
   const [postContent, setPostContent] = useState<PostContent>(initialContent);
 

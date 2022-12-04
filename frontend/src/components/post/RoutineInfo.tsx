@@ -36,6 +36,7 @@ export const RoutineInfo = ({ routine }: { routine: RoutineTypeInPost | null | u
                       src={require(`assets/images/workout_log/fitelement_category/${get_image(
                         fitelement.workout_type,
                       )}.png`)}
+                      alt="RoutineItems"
                     />
                     <span>{fitelement.workout_type}</span>
                   </div>

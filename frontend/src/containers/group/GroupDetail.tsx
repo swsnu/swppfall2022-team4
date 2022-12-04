@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -61,7 +62,7 @@ const GroupDetail = () => {
   }, [groupDeleteStatus]);
 
   const joinOnClick = () => {
-    if (group_detail?.number == group_detail?.member_number) {
+    if (group_detail?.number === group_detail?.member_number) {
       alert('정원이 모두 찬 그룹입니다.');
     } else if (group_id) {
       if (user && socket && group_detail) {
@@ -102,7 +103,10 @@ const GroupDetail = () => {
   };
   const deleteOnClick = () => {
     // eslint-disable-next-line no-restricted-globals
-    if (confirm('정말 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+    if (
+      // eslint-disable-next-line no-restricted-globals
+      confirm('정말 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')
+    ) {
       if (group_id) dispatch(groupActions.deleteGroup(group_id));
     }
   };
@@ -180,7 +184,12 @@ const GroupDetail = () => {
                 }}
                 level={3}
               >
-                <MapMarker position={{ lat: group_detail.lat, lng: group_detail.lng }}>
+                <MapMarker
+                  position={{
+                    lat: group_detail.lat,
+                    lng: group_detail.lng,
+                  }}
+                >
                   <div
                     style={{
                       fontSize: '13px',

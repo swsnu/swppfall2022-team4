@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,7 +23,6 @@ const PostCreate = () => {
     : `/post/${postCreateStatus.post_id}`;
 
   const cancelOnClick = () => {
-    // alert('are you sure?');
     navigate(POST_MAIN);
   };
   useEffect(() => {

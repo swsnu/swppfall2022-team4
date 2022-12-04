@@ -1,4 +1,5 @@
 /*global kakao*/
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -158,7 +159,7 @@ const GroupList = () => {
   const myGroupClicked = () => {
     if (groupList) {
       const newGroupOrdered: Group[] = [...groupList];
-      setGroupListOrdered(newGroupOrdered.filter(gr_obj => gr_obj.my_group != 'not_member'));
+      setGroupListOrdered(newGroupOrdered.filter(gr_obj => gr_obj.my_group !== 'not_member'));
       setRecent(false);
       setOld(false);
       setClose(false);
@@ -184,7 +185,12 @@ const GroupList = () => {
         <div>
           {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
           {currentAddressName && (
-            <div style={{ fontSize: '18px', fontFamily: 'NanumSquareR' }}>
+            <div
+              style={{
+                fontSize: '18px',
+                fontFamily: 'NanumSquareR',
+              }}
+            >
               {`${user.nickname}님의 현위치는 "${currentAddressName}" 입니다.`}
             </div>
           )}
@@ -225,12 +231,16 @@ const GroupList = () => {
       <Button1
         content="그룹 만들기"
         clicked={() => navigate('/group/create')}
-        style={{ width: '130px', alignSelf: 'end', marginRight: '15px' }}
+        style={{
+          width: '130px',
+          alignSelf: 'end',
+          marginRight: '15px',
+        }}
       />
       <GroupListWrapper>
         {groupListOrdered
           .filter(groupListOrdered => {
-            if (searchTerm == '') {
+            if (searchTerm === '') {
               return groupListOrdered;
             } else {
               return groupListOrdered.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());

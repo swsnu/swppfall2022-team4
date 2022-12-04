@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -67,7 +68,7 @@ const GroupPosts = () => {
           </GroupInfoHeader>
         </div>
         <div>
-          <ArticleListWrapper className={`${postList?.length == 20 && 'full'}`}>
+          <ArticleListWrapper className={`${postList?.length === 20 && 'full'}`}>
             <ArticleHeader />
             {postList ? (
               postList.map(post => {

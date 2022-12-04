@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -44,7 +45,7 @@ const GroupJoinReq = () => {
         <Title>멤버 승인 요청</Title>
         <div style={{ width: '136px' }} />
       </TitleWrapper>
-      {memberList.length != 0 ? (
+      {memberList.length !== 0 ? (
         memberList.map((me, index) => (
           <JoinReqElement
             key={index}
@@ -52,7 +53,7 @@ const GroupJoinReq = () => {
             image={me.image}
             username={me.username}
             level={me.level}
-            is_full={group_detail?.number == group_detail?.member_number}
+            is_full={group_detail?.number === group_detail?.member_number}
           />
         ))
       ) : (

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useOnClickOutside } from 'usehooks-ts';
@@ -44,7 +45,10 @@ interface IPropsFuncBtn {
 }
 
 const PostDetail = () => {
-  const { group_id, post_id } = useParams<{ group_id: string; post_id: string }>();
+  const { group_id, post_id } = useParams<{
+    group_id: string;
+    post_id: string;
+  }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -293,7 +297,11 @@ const PostDetail = () => {
   };
 
   const commentReplyOpenOnClick = (comment: Comment) => {
-    dispatch(postActions.toggleCommentReply({ parent_comment: comment.comment_id }));
+    dispatch(
+      postActions.toggleCommentReply({
+        parent_comment: comment.comment_id,
+      }),
+    );
     setReplyActivated(!replyActivated);
   };
 
@@ -397,7 +405,12 @@ const PostDetail = () => {
                 userInfo: comment.author,
                 navigate,
                 username: user ? user.username : '',
-                clickedChat: () => dispatch(chatActions.createChatroom({ username: comment.author.username })),
+                clickedChat: () =>
+                  dispatch(
+                    chatActions.createChatroom({
+                      username: comment.author.username,
+                    }),
+                  ),
               })}
             </CommentWritterAvatar>
             <CommentWritterText> {comment.author.nickname} </CommentWritterText>
@@ -533,7 +546,12 @@ const PostDetail = () => {
                           userInfo: post.author,
                           navigate,
                           username: user ? user.username : '',
-                          clickedChat: () => dispatch(chatActions.createChatroom({ username: post.author.username })),
+                          clickedChat: () =>
+                            dispatch(
+                              chatActions.createChatroom({
+                                username: post.author.username,
+                              }),
+                            ),
                         })}
                       </PostWritterAvatar>
                     </PostWritterWrapper>

@@ -63,6 +63,7 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
 
   useEffect(() => {
     dispatch(tagActions.getTags());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagClassCreate, tagCreate]);
   useEffect(() => {
     setCreateCategory(-1);
@@ -111,7 +112,11 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                         <TagClassSection>
                           <div>
                             <h1>{newCategoryInput === '' ? '새로운 카테고리' : newCategoryInput}</h1>
-                            <div style={{ backgroundColor: newCategoryColor }}></div>
+                            <div
+                              style={{
+                                backgroundColor: newCategoryColor,
+                              }}
+                            ></div>
                           </div>
                           <NewCategoryForm
                             onSubmit={async e => {
@@ -143,7 +148,7 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                                   {newCategoryInput.length} / {TAG_CLASS_LIMIT}
                                 </TagCharNum>
                               </div>
-                              <GreenBigBtn disabled={newCategoryInput == ''} data-testid="tagModalCategoryCreate">
+                              <GreenBigBtn disabled={newCategoryInput === ''} data-testid="tagModalCategoryCreate">
                                 생성
                               </GreenBigBtn>
                             </div>
@@ -155,14 +160,18 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                         <TagClassSection key={tagClass.id}>
                           <div>
                             <h1>{tagClass.class_name}</h1>
-                            <div style={{ backgroundColor: tagClass.color }}></div>
+                            <div
+                              style={{
+                                backgroundColor: tagClass.color,
+                              }}
+                            ></div>
                           </div>
                           <div>
                             {tagClass.tags.map(tag => (
                               <TagBubble
                                 key={tag.id}
                                 color={
-                                  selected.length > 0 && selected.filter(item => item.id == tag.id).length === 0
+                                  selected.length > 0 && selected.filter(item => item.id === tag.id).length === 0
                                     ? UNSELECTED
                                     : tag.color
                                 }
@@ -177,7 +186,7 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                                   : `${tag.name}`}
                               </TagBubble>
                             ))}
-                            {selected.length == 0 && createCategory !== tagClass.id && (
+                            {selected.length === 0 && createCategory !== tagClass.id && (
                               <TagBubble
                                 color={tagClass.color}
                                 onClick={() => {
@@ -189,7 +198,7 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                               </TagBubble>
                             )}
                           </div>
-                          {selected.length == 0 && createCategory === tagClass.id && (
+                          {selected.length === 0 && createCategory === tagClass.id && (
                             <NewTagFormDiv>
                               <div>
                                 <input
