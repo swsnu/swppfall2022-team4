@@ -145,7 +145,7 @@ const GroupCert = () => {
       <TitleWrapper>
         <Button4 content="" clicked={() => navigate(`/group/detail/${group_id}/`)} />
         <Title>그룹 운동 인증</Title>
-        <div style={{ width: '136px' }} />
+        <div style={{ width: '40px' }} />
       </TitleWrapper>
       <InnerWrapper>
         <LeftWrapper>

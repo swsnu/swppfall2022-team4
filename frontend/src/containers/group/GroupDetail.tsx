@@ -359,7 +359,7 @@ const GroupContentWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: center;
   padding: 40px;
 `;
 const GroupContentWrapper1 = styled.div`

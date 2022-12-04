@@ -43,7 +43,7 @@ const GroupJoinReq = () => {
       <TitleWrapper>
         <Button4 content="" clicked={() => navigate(`/group/detail/${group_id}/`)} />
         <Title>멤버 승인 요청</Title>
-        <div style={{ width: '136px' }} />
+        <div style={{ width: '40px' }} />
       </TitleWrapper>
       {memberList.length !== 0 ? (
         memberList.map((me, index) => (

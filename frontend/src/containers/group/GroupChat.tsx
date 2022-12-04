@@ -58,7 +58,7 @@ const GroupChat = () => {
       <TitleWrapper>
         <Button4 content="" clicked={() => navigate(`/group/detail/${group_id}`)} />
         <Title>Group Chat</Title>
-        <div style={{ width: '136px' }} />
+        <div style={{ width: '40px' }} />
       </TitleWrapper>
       <ChatroomWrapper>
         <ChatWrapper ref={chatRef}>

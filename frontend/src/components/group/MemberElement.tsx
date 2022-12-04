@@ -108,6 +108,6 @@ const MemberElementLine = styled.div`
   font-family: IBMPlexSansThaiLooped;
 `;
 const CertElementLine = styled.div`
-  font-size: 18px;
-  font-family: FugazOne;
+  font-size: 16px;
+  font-family: 'Noto Sans KR';
 `;
