@@ -273,7 +273,7 @@ def routine(request, routine_id):
             routine_single = Routine.objects.get(id=routine_id, author=user)
             routine_single.name = req_data["title"]
             routine_single.save()
-            return JsonResponse({"id": routine_id, "content": req_data["title"]}, safe=False, status=201)
+            return JsonResponse({"id": routine_id, "content": req_data["titlef"]}, safe=False, status=201)
         else:
             return HttpResponseBadRequest()
 
@@ -304,7 +304,7 @@ def daily_log(request, year, month, specific_date):
                 "images": [],
             }
             return JsonResponse(daily_log_dict_return, safe=False, status=200)
-        if not daily_log_single[0].log_index == None:
+        if not daily_log_single[0].log_index is None:
             index_list = json.loads(daily_log_single[0].log_index)
         else:
             index_list = []

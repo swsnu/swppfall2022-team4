@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
+import { Id } from 'react-beautiful-dnd';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { TagClass } from 'store/apis/tag';
 import * as workoutLogAPI from 'store/apis/workout';
@@ -80,6 +81,10 @@ export interface WorkoutLogState {
   create_routine_id: number | null;
   deleteImageSuccess: string;
   indexSuccess: number[];
+  edit_routine_success: {
+    id: number | null;
+    content: string;
+  };
 }
 
 export const initialState: WorkoutLogState = {
@@ -135,6 +140,10 @@ export const initialState: WorkoutLogState = {
   create_routine_id: null,
   deleteImageSuccess: '',
   indexSuccess: [],
+  edit_routine_success: {
+    id: null,
+    content: '',
+  },
 };
 
 export const workoutLogSlice = createSlice({
@@ -201,6 +210,13 @@ export const workoutLogSlice = createSlice({
     },
     editMemoSuccess: (state, { payload }) => {
       state.memoSuccess = payload.memo;
+    },
+    editRoutineTitle: (state, action: PayloadAction<workoutLogAPI.editRoutineTitleRequestType>) => {
+      // Empty function
+    },
+    editRoutineTitleSuccess: (state, { payload }) => {
+      state.edit_routine_success.id = payload.id;
+      state.edit_routine_success.content = payload.content;
     },
     editImage: (state, action: PayloadAction<workoutLogAPI.editImageRequestType>) => {
       // Empty function
@@ -349,6 +365,15 @@ function* editMemoLogSaga(action: PayloadAction<workoutLogAPI.editMemoRequestTyp
   }
 }
 
+function* editRoutineTitleSaga(action: PayloadAction<workoutLogAPI.editRoutineTitleRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.editRoutineTitle, action.payload);
+    yield put(workoutLogActions.editRoutineTitleSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
+}
+
 function* editImageSaga(action: PayloadAction<workoutLogAPI.editImageRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.editImage, action.payload);
@@ -462,4 +487,5 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getFitElementsType, getFitElementTypesSaga);
   yield takeLatest(workoutLogActions.deleteFitElement, deleteFitElementSaga);
   yield takeLatest(workoutLogActions.deleteImage, deleteImageSaga);
+  yield takeLatest(workoutLogActions.editRoutineTitle, editRoutineTitleSaga);
 }

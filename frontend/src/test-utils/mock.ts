@@ -247,6 +247,10 @@ export const initialState: PreloadedState<RootState> = {
     create_routine_id: null,
     deleteImageSuccess: '',
     indexSuccess: [],
+    edit_routine_success: {
+      id: null,
+      content: ''
+    }
   },
 };
 
