@@ -50,7 +50,7 @@ const GroupCreate = () => {
   const [description, setDescription] = useState('');
   const [free, setFree] = useState(true);
   // goal
-  const [workout_category, setWorkoutCategory] = useState('back');
+  const [workout_category, setWorkoutCategory] = useState('등운동');
   const [workout_type, setWorkoutType] = useState<string | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
   const [rep, setRep] = useState<number | null>(null);
