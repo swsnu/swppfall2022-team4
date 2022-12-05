@@ -13,6 +13,8 @@ import userEvent from '@testing-library/user-event';
 
 import { Store } from 'react-notifications-component';
 import client from 'store/apis/client';
+import { RoutineType } from 'store/slices/workout';
+import { Group } from 'store/apis/group';
 
 const originalEnv = process.env;
 
@@ -182,7 +184,7 @@ describe('[PostCreate Page]', () => {
   });
 });
 
-describe('[PostEditor Page - Tag]', () => {
+describe('[PostEditor Page - Tag, Image]', () => {
   test('set tag', () => {
     const store = setup();
     act(() => {
@@ -395,6 +397,282 @@ describe('[PostEditor Page - Tag]', () => {
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
   });
+});
+
+const routineMock: RoutineType[] = [
+  {
+    id: 1,
+    name: 'routine1',
+    fitelements: [],
+  },
+  {
+    id: 2,
+    name: 'routine2',
+    fitelements: [],
+  },
+];
+
+const groupMock: Group[] = [
+  {
+    id: 1,
+    group_name: 'group',
+    number: null,
+    start_date: null,
+    end_date: null,
+    member_number: 3,
+    lat: null,
+    lng: null,
+    address: null,
+    free: false,
+    my_group: 'not mine',
+    tags: [],
+    prime_tag: undefined,
+  },
+  {
+    id: 2,
+    group_name: 'grou2',
+    number: null,
+    start_date: null,
+    end_date: null,
+    member_number: 3,
+    lat: null,
+    lng: null,
+    address: null,
+    free: false,
+    my_group: 'not mine',
+    tags: [],
+    prime_tag: undefined,
+  },
+];
+
+describe('[PostEditor Page - Group, Routine]', () => {
+  test('set tag', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+      store.dispatch({
+        type: 'workoutlog/getRoutineSuccess',
+        payload: routineMock,
+      });
+      store.dispatch({
+        type: 'group/getGroupsSuccess',
+        payload: {
+          groups: groupMock,
+        },
+      });
+    });
+
+    const routineOption = screen.getByRole('option', { name: routineMock[0].name }); // Routine
+    expect((routineOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('routineSelect'), routineOption);
+    expect((routineOption as HTMLOptionElement).selected).toBeTruthy();
+
+    const groupOption = screen.getByRole('option', { name: groupMock[0].group_name }); // Group
+    expect((groupOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('groupSelect'), groupOption);
+    expect((groupOption as HTMLOptionElement).selected).toBeTruthy();
+
+    // const tagOption = screen.getByRole('option', { name: 'interesting' }); // Tag
+    // expect((tagOption as HTMLOptionElement).selected).not.toBeTruthy();
+    // userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption);
+    // expect((tagOption as HTMLOptionElement).selected).not.toBeTruthy(); // Tag Select would be cleared right after selection
+
+    // const selectedTag = screen.getByTestId(`selectedTag-${getTagsResponse.tags[0].id}`);
+    // expect(selectedTag).toBeValid();
+
+    // fireEvent.click(selectedTag); // Prime tag
+
+    // const duplicatedTagOption = screen.getByRole('option', { name: 'interesting' }); // Duplicated Tag
+    // userEvent.selectOptions(screen.getByTestId('tagSelect'), duplicatedTagOption);
+
+    // const selectedTagRemove = screen.getByTestId('tagBubbleXBtn');
+    // fireEvent.click(selectedTagRemove);
+    // const selectedTagAfterRemove = screen.queryByTestId(`selectedTag-${getTagsResponse.tags[0].id}`);
+    // expect(selectedTagAfterRemove).toBeNull();
+
+    // const tagClassOption2 = screen.getByRole('option', { name: 'place' }); // Tag Class
+    // userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption2);
+    // expect((tagClassOption2 as HTMLOptionElement).selected).toBeTruthy();
+  });
+  // test('remove prime tag', () => {
+  //   const store = setup();
+  //   act(() => {
+  //     store.dispatch({
+  //       type: 'tag/getTagsSuccess',
+  //       payload: getTagsResponse,
+  //     });
+  //   });
+
+  //   const tagClassOption = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class
+  //   expect((tagClassOption as HTMLOptionElement).selected).not.toBeTruthy();
+  //   userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
+  //   expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+
+  //   const tagOption = screen.getByRole('option', { name: 'interesting' }); // Tag
+  //   expect((tagOption as HTMLOptionElement).selected).not.toBeTruthy();
+  //   userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption);
+  //   expect((tagOption as HTMLOptionElement).selected).not.toBeTruthy(); // Tag Select would be cleared right after selection
+
+  //   const selectedTag = screen.getByTestId(`selectedTag-${getTagsResponse.tags[0].id}`);
+  //   expect(selectedTag).toBeValid();
+
+  //   fireEvent.click(selectedTag); // Prime tag
+
+  //   const primeTag = screen.getByTestId('selectedPrimeTagRemove');
+  //   fireEvent.click(primeTag);
+  // });
+  // test('remove tag which is not prime tag', () => {
+  //   const store = setup();
+  //   act(() => {
+  //     store.dispatch({
+  //       type: 'tag/getTagsSuccess',
+  //       payload: getTagsResponse,
+  //     });
+  //   });
+
+  //   const tagClassOption3 = screen.getByRole('option', { name: getTagsResponse.tags[2].class_name }); // Tag Class workout
+  //   userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption3);
+  //   const tagClassOption1 = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class general
+  //   userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption1);
+
+  //   const tagOption = screen.getByRole('option', { name: 'interesting' }); // Tag
+  //   userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption);
+  //   const tagOption2 = screen.getByRole('option', { name: 'tag2' });
+  //   userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption2);
+
+  //   const selectedTagRemove = screen.getAllByTestId('tagBubbleXBtn');
+  //   fireEvent.click(selectedTagRemove[1]);
+  // });
+  // test('image upload', async () => {
+  //   setup();
+  //   const mockClientGet = jest.fn();
+  //   client.post = mockClientGet.mockImplementation(() => Promise.resolve({ data: { title: 'image' } }));
+
+  //   const imageUploadBtn = screen.getByText('이미지 추가');
+  //   fireEvent.click(imageUploadBtn);
+
+  //   const blob = new Blob(['hahaha']);
+  //   const file = new File([blob], 'image.jpg');
+  //   const input = screen.getByTestId('postImageUpload');
+
+  //   userEvent.upload(input, file);
+
+  //   const deleteImageBtn = await screen.findByText('삭제');
+  //   expect(deleteImageBtn).toBeInTheDocument();
+  //   fireEvent.click(deleteImageBtn);
+  // });
+  // test('image upload error', async () => {
+  //   const alertMock = jest.fn();
+  //   global.alert = alertMock.mockImplementation(() => null);
+  //   setup();
+  //   const mockClientGet = jest.fn();
+  //   client.post = mockClientGet.mockImplementation(() => Promise.reject({}));
+
+  //   const imageUploadBtn = screen.getByText('이미지 추가');
+  //   fireEvent.click(imageUploadBtn);
+
+  //   const blob = new Blob(['hahaha']);
+  //   const file = new File([blob], 'image.jpg');
+  //   const input = screen.getByTestId('postImageUpload');
+
+  //   await userEvent.upload(input, file);
+  //   expect(alertMock).toBeCalledWith('이미지 업로드 오류');
+  // });
+  // test('image upload error ENV', async () => {
+  //   process.env = {
+  //     ...originalEnv,
+  //     REACT_APP_API_IMAGE_UPLOAD: undefined,
+  //   };
+  //   const alertMock = jest.fn();
+  //   global.alert = alertMock.mockImplementation(() => null);
+  //   setup();
+  //   const mockClientGet = jest.fn();
+  //   client.post = mockClientGet.mockImplementation(() => Promise.resolve({ data: { title: 'image' } }));
+
+  //   const imageUploadBtn = screen.getByText('이미지 추가');
+  //   fireEvent.click(imageUploadBtn);
+
+  //   const blob = new Blob(['hahaha']);
+  //   const file = new File([blob], 'image.jpg');
+  //   const input = screen.getByTestId('postImageUpload');
+
+  //   userEvent.upload(input, file);
+
+  //   const deleteImageBtn = await screen.findByText('삭제');
+  //   expect(deleteImageBtn).toBeInTheDocument();
+  // });
+  // test('search tag', () => {
+  //   const store = setup();
+  //   act(() => {
+  //     store.dispatch({
+  //       type: 'tag/getTagsSuccess',
+  //       payload: getTagsResponse,
+  //     });
+  //   });
+
+  //   const tagClassOption = screen.getByRole('option', { name: '- 태그 검색 -' }); // Tag Search
+  //   userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
+  //   expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+
+  //   const tagSearchInput = screen.getByPlaceholderText('태그 이름');
+  //   userEvent.type(tagSearchInput, 'nt');
+
+  //   const searchTagBtn = screen.getByTestId('tagSearchBtn');
+  //   fireEvent.click(searchTagBtn);
+
+  //   act(() => {
+  //     store.dispatch({
+  //       type: 'tag/searchTagSuccess',
+  //       payload: searchTagsResponse,
+  //     });
+  //   });
+
+  //   const searchedTag = screen.getByTestId(`searchedTag-${getTagsResponse.tags[0].id}`);
+  //   fireEvent.click(searchedTag);
+
+  //   fireEvent.click(searchedTag); // Duplicated tag
+  // });
+  // test('create tag', () => {
+  //   const store = setup();
+  //   act(() => {
+  //     store.dispatch({
+  //       type: 'tag/getTagsSuccess',
+  //       payload: getTagsResponse,
+  //     });
+  //   });
+
+  //   const tagClassOption = screen.getByRole('option', { name: getTagsResponse.tags[0].class_name }); // Tag Class
+  //   userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
+  //   expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+
+  //   const tagOption = screen.getByRole('option', { name: '- 태그 만들기 -' }); // Tag
+  //   userEvent.selectOptions(screen.getByTestId('tagSelect'), tagOption);
+
+  //   const tagNameInput = screen.getByPlaceholderText('생성할 태그 이름');
+  //   userEvent.type(tagNameInput, 'DeadliftDeadliftDeadlift');
+  //   userEvent.clear(tagNameInput);
+  //   userEvent.type(tagNameInput, 'Deadlift');
+
+  //   const tagCreateBtn = screen.getByText('생성');
+  //   fireEvent.click(tagCreateBtn);
+
+  //   act(() => {
+  //     store.dispatch({
+  //       type: 'tag/createTagSuccess',
+  //       payload: { tags: simpleTagVisuals2[0] },
+  //     });
+  //   });
+  // });
+  // test('select tag class when tagList is null', () => {
+  //   setup();
+
+  //   const tagClassOption = screen.getByRole('option', { name: '- 태그 검색 -' }); // Tag Class
+  //   userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
+  //   expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+  // });
 });
 
 describe('[Group - PostCreate Page]', () => {
