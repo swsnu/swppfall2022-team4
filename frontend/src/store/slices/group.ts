@@ -355,10 +355,10 @@ function* getCertsSaga(action: PayloadAction<groupAPI.getCertsRequestType>) {
   }
 }
 function* deleteCertSaga(action: PayloadAction<groupAPI.certRequestType>) {
-  console.log('delete saga');
+  // console.log('delete saga');
   try {
     const response: AxiosResponse = yield call(groupAPI.deleteCert, action.payload);
-    console.log('before put');
+    // console.log('before put');
     yield put(groupActions.deleteCertSuccess(response));
   } catch (error) {
     yield put(groupActions.deleteCertFailure(error));
