@@ -20,7 +20,7 @@ export const GroupElement = (props: IProps) => {
   const date =
     today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
   const image = props.prime_tag?.tag_class ? props.prime_tag.tag_class : null;
-
+  console.log(image);
   let logo = 'example';
   if (props.end_date && props.end_date < date) {
     logo = 'end';
