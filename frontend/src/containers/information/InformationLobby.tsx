@@ -14,9 +14,10 @@ const InformationLobby = () => {
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { info, tagList } = useSelector(({ info, tag }: RootState) => ({
+  const { info, tagList, user } = useSelector(({ info, tag, user }: RootState) => ({
     info: info,
     tagList: tag.tagList,
+    user: user.user,
   }));
   useEffect(() => {
     dispatch(infoActions.initializeInformation());
@@ -24,7 +25,7 @@ const InformationLobby = () => {
   }, []);
 
   useEffect(() => {
-    if (info.error !== 'NotFound') navigate(`/information/${search}`);
+    if (user && info.error !== 'NotFound') navigate(`/information/${search}`);
   }, [info.contents]);
 
   return (
