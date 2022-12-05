@@ -135,21 +135,19 @@ const GroupDetail = () => {
               <GroupPlace>{`장소: 장소 없음`}</GroupPlace>
             )}
             {group_detail.free ? <GroupFree>자유가입 O</GroupFree> : <GroupFree>자유가입 X</GroupFree>}
-            <div>
-              <TagBubbleWrapper>
-                {group_detail.tags.map(tags => {
-                  return (
-                    <TagBubble
-                      key={tags.id}
-                      color={tags.color}
-                      isPrime={group_detail.prime_tag && tags.id === group_detail.prime_tag.id}
-                    >
-                      {tags.name}
-                    </TagBubble>
-                  );
-                })}
-              </TagBubbleWrapper>
-            </div>
+            <span>
+              {group_detail.tags.map(tags => {
+                return (
+                  <TagBubble
+                    key={tags.id}
+                    color={tags.color}
+                    isPrime={group_detail.prime_tag && tags.id === group_detail.prime_tag.id}
+                  >
+                    {tags.name}
+                  </TagBubble>
+                );
+              })}
+            </span>
           </GroupContentWrapper>
           <GroupContentWrapper>
             <ProfileImage
@@ -285,7 +283,7 @@ const GroupDetail = () => {
 
 const Wrapper = styled.div`
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   height: 100%;
   margin-top: 5%;
   min-height: calc(100vh - 60px);
@@ -414,13 +412,6 @@ const GroupAboutDescription = styled.div`
   background-color: #ffffff;
 `;
 
-const TagBubbleWrapper = styled.div`
-  display: flex;
-  overflow-x: scroll;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
 const FitHeader = styled.div`
   width: 100%;
   font-size: 14px;

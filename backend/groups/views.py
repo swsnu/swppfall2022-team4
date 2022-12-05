@@ -29,6 +29,7 @@ def prepare_compact_group_response(group):
                 "id": prime_tag.pk,
                 "name": prime_tag.tag_name,
                 "color": prime_tag.tag_class.color,
+                "tag_class": prime_tag.tag_class.class_name,
             }
         return result
     else:
@@ -38,27 +39,7 @@ def prepare_compact_group_response(group):
 def prepare_compact_groups_response(groups):
     result = []
     for gr_obj in groups:
-        result.append(
-            {
-                "id": gr_obj.id,
-                "group_name": gr_obj.group_name,
-                "number": gr_obj.number,
-                "start_date": gr_obj.start_date,
-                "end_date": gr_obj.end_date,
-                "member_number": gr_obj.member_number,
-                "free": gr_obj.free,
-                "address": gr_obj.address,
-                "prime_tag": gr_obj.prime_tag,
-            }
-        )
-    for group in result:
-        if group['prime_tag']:
-            prime_tag = group['prime_tag']
-            group["prime_tag"] = {
-                "id": prime_tag.pk,
-                "name": prime_tag.tag_name,
-                "color": prime_tag.tag_class.color,
-            }
+        result.append(prepare_compact_group_response(gr_obj))
     return result
 
 
@@ -93,6 +74,7 @@ def prepare_groups_response(groups, user):
                 "id": prime_tag.pk,
                 "name": prime_tag.tag_name,
                 "color": prime_tag.tag_class.color,
+                "tag_class": prime_tag.tag_class.class_name,
             }
     return result
 
@@ -361,7 +343,9 @@ def group_members(request, group_id):
                         "cert_days": cert_days,
                     }
                 )
-            return JsonResponse({"members": result, "group_leader": gr_obj.group_leader.username}, safe=False)
+            return JsonResponse(
+                {"members": result, "group_leader": gr_obj.group_leader.username}, safe=False
+            )
         except Group.DoesNotExist:
             return HttpResponseNotFound()
         except Exception:

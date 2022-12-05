@@ -13,6 +13,8 @@ import userEvent from '@testing-library/user-event';
 
 import { Store } from 'react-notifications-component';
 import client from 'store/apis/client';
+import { RoutineType } from 'store/slices/workout';
+import { Group } from 'store/apis/group';
 
 const originalEnv = process.env;
 
@@ -182,7 +184,7 @@ describe('[PostCreate Page]', () => {
   });
 });
 
-describe('[PostEditor Page - Tag]', () => {
+describe('[PostEditor Page - Tag, Image]', () => {
   test('set tag', () => {
     const store = setup();
     act(() => {
@@ -394,6 +396,84 @@ describe('[PostEditor Page - Tag]', () => {
     const tagClassOption = screen.getByRole('option', { name: '- 태그 검색 -' }); // Tag Class
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+  });
+});
+
+const routineMock: RoutineType[] = [
+  {
+    id: 1,
+    name: 'routine1',
+    fitelements: [],
+  },
+  {
+    id: 2,
+    name: 'routine2',
+    fitelements: [],
+  },
+];
+
+const groupMock: Group[] = [
+  {
+    id: 1,
+    group_name: 'group',
+    number: null,
+    start_date: null,
+    end_date: null,
+    member_number: 3,
+    lat: null,
+    lng: null,
+    address: null,
+    free: false,
+    my_group: 'not mine',
+    tags: [],
+    prime_tag: undefined,
+  },
+  {
+    id: 2,
+    group_name: 'grou2',
+    number: null,
+    start_date: null,
+    end_date: null,
+    member_number: 3,
+    lat: null,
+    lng: null,
+    address: null,
+    free: false,
+    my_group: 'not mine',
+    tags: [],
+    prime_tag: undefined,
+  },
+];
+
+describe('[PostEditor Page - Group, Routine]', () => {
+  test('set tag', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+      store.dispatch({
+        type: 'workoutlog/getRoutineSuccess',
+        payload: routineMock,
+      });
+      store.dispatch({
+        type: 'group/getGroupsSuccess',
+        payload: {
+          groups: groupMock,
+        },
+      });
+    });
+
+    const routineOption = screen.getByRole('option', { name: routineMock[0].name }); // Routine
+    expect((routineOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('routineSelect'), routineOption);
+    expect((routineOption as HTMLOptionElement).selected).toBeTruthy();
+
+    const groupOption = screen.getByRole('option', { name: groupMock[0].group_name }); // Group
+    expect((groupOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('groupSelect'), groupOption);
+    expect((groupOption as HTMLOptionElement).selected).toBeTruthy();
   });
 });
 
