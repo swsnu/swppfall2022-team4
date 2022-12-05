@@ -28,6 +28,7 @@ import SearchBar from 'components/common/SearchBar';
 import { ScrollShadow } from 'components/common/ScrollShadow';
 import { GroupInfo } from 'components/post/GroupInfo';
 import { RoutineInfo } from 'components/post/RoutineInfo';
+import Button4 from 'components/common/buttons/Button4';
 
 export interface IPropsComment {
   isChild?: boolean;
@@ -525,7 +526,7 @@ const PostDetail = () => {
               <ArticleItem>
                 <div>
                   <ArticleTitleWrapper>
-                    <ArticleBackBtn onClick={() => navigate(POST_MAIN)}>◀︎</ArticleBackBtn>
+                    <Button4 content="" clicked={() => navigate(POST_MAIN)} />
                     <ArticleTitle>{post.title}</ArticleTitle>
                     <PostWritterWrapper>
                       <PostWritterLeftWrapper>
@@ -652,7 +653,7 @@ const PostDetail = () => {
   );
 };
 
-export const TagBubbleWrapper = styled.div`
+const TagBubbleWrapper = styled.div`
   display: flex;
   margin-left: 10px;
   overflow-x: scroll;
@@ -661,7 +662,7 @@ export const TagBubbleWrapper = styled.div`
   }
 `;
 
-export const ArticleBodyFooter = styled.div`
+const ArticleBodyFooter = styled.div`
   padding: 10px 20px;
   display: flex;
   justify-content: flex-start;
@@ -669,7 +670,7 @@ export const ArticleBodyFooter = styled.div`
   align-items: center;
 `;
 
-export const ArticleDetailWrapper = styled(ScrollShadow)`
+const ArticleDetailWrapper = styled(ScrollShadow)`
   width: 100%;
   height: 100%;
   background-color: var(--fit-white);
@@ -680,7 +681,7 @@ export const ArticleDetailWrapper = styled(ScrollShadow)`
   }
 `;
 
-export const ArticleItem = styled.div`
+const ArticleItem = styled.div`
   font-size: 14px;
   width: 100%;
   height: fit-content;
@@ -710,7 +711,7 @@ export const ArticleItem = styled.div`
 `;
 
 // Article Title
-export const ArticleTitleWrapper = styled.div`
+const ArticleTitleWrapper = styled.div`
   width: 100%;
   padding: 5px 30px 0px 30px;
   background-color: var(--fit-white);
@@ -722,27 +723,19 @@ export const ArticleTitleWrapper = styled.div`
   margin-bottom: 20px;
 `;
 
-export const ArticleBackBtn = styled.button`
-  margin-right: 30px;
-  font-size: 30px;
-  background: none;
-  border: none;
-  cursor: pointer;
-`;
-
-export const ArticleTitle = styled.h1`
+const ArticleTitle = styled.h1`
   width: fit-content;
   font-size: 24px;
   word-wrap: break-word;
   word-break: break-all;
 `;
 
-export const PostWritterWrapper = styled.div`
+const PostWritterWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
 
-export const PostWritterLeftWrapper = styled.div`
+const PostWritterLeftWrapper = styled.div`
   width: fit-content;
   display: flex;
   flex-direction: column;
@@ -751,7 +744,7 @@ export const PostWritterLeftWrapper = styled.div`
   margin-right: 8px;
 `;
 
-export const PostWritterAvatar = styled(RowCenterFlex)`
+const PostWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -759,18 +752,18 @@ export const PostWritterAvatar = styled(RowCenterFlex)`
   font-size: 8px;
 `;
 
-export const PostWritterText = styled.span`
+const PostWritterText = styled.span`
   width: 100%;
   font-size: 16px;
   margin-bottom: 3px;
 `;
 
-export const PostTimeText = styled.span`
+const PostTimeText = styled.span`
   font-size: 13px;
   margin-bottom: 2px;
 `;
 
-export const ArticleBodyContent = styled.div`
+const ArticleBodyContent = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
@@ -782,16 +775,14 @@ export const ArticleBodyContent = styled.div`
 `;
 
 // Article Comment List
-export const ArticleCommentWrapper = styled.div``;
-
-export const CommentWrapper = styled.div`
+const CommentWrapper = styled.div`
   width: 100%;
   padding: 0px 20px;
 `;
 
-export const CommentReplyWrapper = styled(ColumnFlex)``;
+const CommentReplyWrapper = styled(ColumnFlex)``;
 
-export const CommentItem = styled.div<IPropsComment>`
+const CommentItem = styled.div<IPropsComment>`
   padding: 5px 10px;
   font-size: 14px;
   display: flex;
@@ -807,7 +798,7 @@ export const CommentItem = styled.div<IPropsComment>`
   `}
 `;
 
-export const CommentWritterWrapper = styled(ColumnFlex)`
+const CommentWritterWrapper = styled(ColumnFlex)`
   align-items: center;
   font-size: 8px;
   text-align: center;
@@ -815,14 +806,14 @@ export const CommentWritterWrapper = styled(ColumnFlex)`
   margin-right: 20px;
 `;
 
-export const CommentWritterAvatar = styled(RowCenterFlex)`
+const CommentWritterAvatar = styled(RowCenterFlex)`
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin-bottom: 5px;
 `;
 
-export const UserAvatar = styled.img`
+const UserAvatar = styled.img`
   border: 1px solid black;
   width: 40px;
   height: 40px;
@@ -831,20 +822,20 @@ export const UserAvatar = styled.img`
   object-fit: cover;
 `;
 
-export const CommentWritterText = styled.span`
+const CommentWritterText = styled.span`
   font-size: 12px;
   width: fit-content;
   white-space: nowrap;
 `;
 
-export const CommentRightWrapper = styled(ColumnFlex)`
+const CommentRightWrapper = styled(ColumnFlex)`
   width: 100%;
   height: 100%;
   min-height: 50px;
   justify-content: space-between;
 `;
 
-export const CommentFuncWrapper = styled.div`
+const CommentFuncWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -852,7 +843,7 @@ export const CommentFuncWrapper = styled.div`
   justify-content: flex-end;
 `;
 
-export const handleFuncBtnColor = (color: string) => {
+const handleFuncBtnColor = (color: string) => {
   switch (color) {
     case FuncType.Like:
       return '#dc6868';
@@ -870,7 +861,7 @@ export const FuncBtn = styled.div<IPropsFuncBtn>`
   margin-left: 8px;
 `;
 
-export const FuncBtnWrapper = styled.div`
+const FuncBtnWrapper = styled.div`
   margin-left: 12px;
 `;
 
@@ -881,7 +872,7 @@ export const CommentFuncTimeIndicator = styled.span`
   min-width: 48px;
 `;
 
-export const CommentNumIndicator = styled.span`
+const CommentNumIndicator = styled.span`
   font-size: 15px;
   width: 50px;
   margin-right: 5px;
@@ -899,19 +890,19 @@ export const CommentContentWrapper = styled.div`
   text-align: left;
 `;
 
-export const CommentEditInput = styled.input`
+const CommentEditInput = styled.input`
   text-align: left;
   width: 100%;
   padding: 10px 12px;
   margin-bottom: 6px;
 `;
 
-export const CommentContent = styled.span`
+const CommentContent = styled.span`
   text-align: left;
 `;
 
 // Comment Writing Form
-export const CommentForm = styled.form`
+const CommentForm = styled.form`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -919,7 +910,7 @@ export const CommentForm = styled.form`
   padding: 10px 20px;
 `;
 
-export const CommentReplyForm = styled.form`
+const CommentReplyForm = styled.form`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -929,17 +920,17 @@ export const CommentReplyForm = styled.form`
   border-bottom: 1px solid gray;
 `;
 
-export const CommentInput = styled.input`
+const CommentInput = styled.input`
   width: 90%;
   padding: 10px 12px;
 `;
 
-export const PostPanelWrapper = styled(ColumnCenterFlex)`
+const PostPanelWrapper = styled(ColumnCenterFlex)`
   width: 100%;
 `;
 
 // Image Content Section
-export const ContentImageSection = styled.div`
+const ContentImageSection = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -962,7 +953,7 @@ export const ContentImageSection = styled.div`
   }
 `;
 
-export const PostUploadedImageWrapper = styled.div`
+const PostUploadedImageWrapper = styled.div`
   width: 130px;
   height: 130px;
   border-radius: 15px;

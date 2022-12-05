@@ -11,6 +11,7 @@ import { ScrollShadow } from 'components/common/ScrollShadow';
 import { get_image } from 'components/fitelement/FitElement';
 import { BsFillPersonFill } from 'react-icons/bs';
 import { TagBubble } from 'components/tag/tagbubble';
+import Button4 from 'components/common/buttons/Button4';
 
 interface InfoPageYoutubeIprops {
   youtube: Youtube;
@@ -49,7 +50,7 @@ const InformationDetail = () => {
     <PostPageWrapper>
       <PostContentWrapper>
         <InfoDetailHeader>
-          <span onClick={() => navigate('/information')}>◀︎</span>
+          <Button4 content="" clicked={() => navigate(`/information`)} />
           <img
             src={require(`assets/images/workout_log/fitelement_category/${get_image(
               info.contents?.basic.class_name,
@@ -160,7 +161,7 @@ const InfoDetailHeader = styled.div`
   }
   > img {
     max-width: 36px;
-    margin-left: 12px;
+    margin-left: 4px;
   }
   > span:last-child {
     margin-left: 12px;

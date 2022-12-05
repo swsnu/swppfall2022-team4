@@ -1,11 +1,11 @@
 import { Comment } from 'store/apis/comment';
 import styled from 'styled-components';
 import {
-  CommentContentWrapper,
   FuncBtn,
   CommentFuncNumIndicator,
   CommentFuncTimeIndicator,
   FuncType,
+  CommentContentWrapper,
 } from 'containers/post/PostDetail';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
