@@ -222,7 +222,7 @@ export const postSlice = createSlice({
     // filterTag ---------------------------------------------------------------------------
     toggleFilterTag: (state, action: PayloadAction<postAPI.filterTagRequestType>) => {
       const target = action.payload;
-      if (state.filterTag.filter(item => item.id == target.id).length === 0) {
+      if (state.filterTag.filter(item => item.id === target.id).length === 0) {
         state.filterTag = [...state.filterTag, target];
       } else {
         state.filterTag = state.filterTag.filter(item => item.id !== target.id);

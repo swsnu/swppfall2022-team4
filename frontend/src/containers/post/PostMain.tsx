@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -149,7 +150,7 @@ const PostMain = () => {
   );
 
   const MainContent = (
-    <ArticleListWrapper className={`${postList?.length == 20 && 'full'}`}>
+    <ArticleListWrapper className={`${postList?.length === 20 && 'full'}`}>
       <ArticleHeader />
       {postList ? (
         postList.map(post => {

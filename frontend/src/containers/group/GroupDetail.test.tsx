@@ -248,7 +248,6 @@ describe('setup test', () => {
   });
 
   it('member status', () => {
-    const confirmMock = jest.spyOn(window, 'confirm').mockReturnValue(true);
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();
     expect(mockDispatch).toBeCalledWith({ payload: '1', type: 'group/getGroupDetail' });
@@ -360,7 +359,7 @@ describe('setup test', () => {
   });
 
   // 이하부터 다시
-  it('useEffect ', () => {
+  it('useEffect', () => {
     jest.spyOn(window, 'alert').mockImplementation();
     jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
     const store = setup();

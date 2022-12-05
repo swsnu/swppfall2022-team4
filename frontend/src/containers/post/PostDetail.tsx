@@ -350,7 +350,7 @@ const PostDetail = () => {
       return (
         <FuncBtnWrapper>
           <RedSmallBtn onClick={() => commentEditCancelOnClick(comment)}>취소</RedSmallBtn>
-          <CommentGreenBtn disabled={commentEditInput == ''} onClick={() => commentEditConfirmOnClick(comment)}>
+          <CommentGreenBtn disabled={commentEditInput === ''} onClick={() => commentEditConfirmOnClick(comment)}>
             완료
           </CommentGreenBtn>
         </FuncBtnWrapper>
@@ -366,7 +366,7 @@ const PostDetail = () => {
               답글
             </CommentGreenBtn>
           )}
-          {user?.username == comment?.author.username && (
+          {user?.username === comment?.author.username && (
             <>
               <CommentGreenBtn disabled={editActivated} onClick={() => commentEditOpenOnClick(comment)}>
                 수정
@@ -476,7 +476,7 @@ const PostDetail = () => {
 
   const CreateBtn = <BlueBigBtn onClick={() => navigate(POST_CREATE)}>글 쓰기</BlueBigBtn>;
   const PostAuthorPanel =
-    user?.username == post?.author.username ? (
+    user?.username === post?.author.username ? (
       <PostPanelWrapper>
         {CreateBtn}
         <BlueBigBtn onClick={() => navigate(POST_EDIT)}>글 편집</BlueBigBtn>
@@ -566,6 +566,7 @@ const PostDetail = () => {
                         <PostUploadedImageWrapper key={index}>
                           <img
                             src={process.env.REACT_APP_API_IMAGE + img}
+                            alt="postImage"
                             onClick={() => {
                               setActiveImage(img);
                               setImageModalOpen(true);

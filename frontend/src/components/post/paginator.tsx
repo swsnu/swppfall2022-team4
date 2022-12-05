@@ -26,7 +26,7 @@ export const postPaginator = ({ page, setPage, maxPage }: IProps) => {
         .map(
           p =>
             p <= maxPage && (
-              <PageNumber disabled={p == page} key={p} onClick={() => gotoPage(p)}>
+              <PageNumber disabled={p === page} key={p} onClick={() => gotoPage(p)}>
                 {p}
               </PageNumber>
             ),

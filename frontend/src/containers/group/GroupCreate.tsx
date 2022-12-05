@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -242,13 +243,13 @@ const GroupCreate = () => {
     if (tags.length === 0) setPrimeTag(tag);
 
     setSelectedTags(s => {
-      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
+      if (s.filter(item => item.id === tag.id).length === 0) return [...s, tag];
       else return s;
     });
   };
   const tagOnRemove = (tagId: string) => {
-    setSelectedTags(s => s.filter(item => item.id != tagId));
-    if (primeTag && primeTag.id == tagId) {
+    setSelectedTags(s => s.filter(item => item.id !== tagId));
+    if (primeTag && primeTag.id === tagId) {
       setPrimeTag(undefined);
     }
   };
@@ -256,7 +257,7 @@ const GroupCreate = () => {
     <PostPageWrapper>
       <PostContentWrapper>
         <div></div>
-        <Main_SideWrapper>
+        <MainSideWrapper>
           <ContentWrapper>
             {/* // ------------------------------------------------------------------------------------------------------------------------------ */}
             <CreateWrapper>
@@ -557,7 +558,7 @@ const GroupCreate = () => {
             tagOnRemove={tagOnRemove}
             setPrimeTag={setPrimeTag}
           />
-        </Main_SideWrapper>
+        </MainSideWrapper>
       </PostContentWrapper>
     </PostPageWrapper>
   );
@@ -732,7 +733,7 @@ const WorkoutTypeSelect = styled.select`
 `;
 
 // Layout from PostEditorLayout
-const Main_SideWrapper = styled.div`
+const MainSideWrapper = styled.div`
   display: grid;
   grid-template-columns: 8fr 2fr;
   row-gap: 10px;
