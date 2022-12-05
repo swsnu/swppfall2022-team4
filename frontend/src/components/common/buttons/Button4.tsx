@@ -5,11 +5,12 @@ interface IProps {
   content: string;
   clicked: React.MouseEventHandler<HTMLButtonElement>;
   style?: React.CSSProperties;
+  testId?: string;
 }
 
-const Button4 = ({ content, clicked, style }: IProps) => {
+const Button4 = ({ content, clicked, style, testId }: IProps) => {
   return (
-    <Wrapper onClick={clicked} style={style}>
+    <Wrapper onClick={clicked} style={style} data-testid={testId}>
       <BiArrowBack />
       {content}
     </Wrapper>

@@ -50,7 +50,7 @@ const InformationDetail = () => {
     <PostPageWrapper>
       <PostContentWrapper>
         <InfoDetailHeader>
-          <Button4 content="" clicked={() => navigate(`/information`)} />
+          <Button4 testId="backBtn" content="" clicked={() => navigate(`/information`)} />
           <img
             src={require(`assets/images/workout_log/fitelement_category/${get_image(
               info.contents?.basic.class_name,

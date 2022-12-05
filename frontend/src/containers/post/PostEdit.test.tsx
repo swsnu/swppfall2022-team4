@@ -8,7 +8,8 @@ import { rootReducer } from 'store';
 import PostEdit from './PostEdit';
 import * as tagAPI from '../../store/apis/tag';
 import userEvent from '@testing-library/user-event';
-import { simplePosts, simpleTagVisuals } from 'store/slices/post.test';
+import { simplePosts, simpleTagVisuals, simpleUserInfo } from 'store/slices/post.test';
+import { Post } from 'store/apis/post';
 
 const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
@@ -72,6 +73,44 @@ const setupOthers = () => {
   return store;
 };
 
+const ContentsPost: Post = {
+  post_id: '1',
+  title: 'Compicated Post',
+  author: simpleUserInfo[1],
+  content: 'Post Contents1',
+  created: '2022-12-11',
+  updated: '2022-12-11',
+  like_num: 11,
+  dislike_num: 21,
+  scrap_num: 31,
+  comments_num: 11,
+  tags: [],
+  prime_tag: undefined,
+  has_image: false,
+  liked: false,
+  disliked: false,
+  scraped: false,
+  routine: {
+    id: 3,
+    name: 'routine',
+    fitelements: [],
+  },
+  group: {
+    id: 1,
+    group_name: 'group',
+    number: null,
+    start_date: null,
+    end_date: null,
+    member_number: 3,
+    lat: null,
+    lng: null,
+    address: null,
+    free: false,
+    my_group: 'not mine',
+    tags: [],
+    prime_tag: undefined,
+  },
+};
 describe('[PostEdit Page]', () => {
   test('basic rendering', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
@@ -92,6 +131,16 @@ describe('[PostEdit Page]', () => {
     expect(mockNavigate).toBeCalledTimes(0);
 
     screen.getByDisplayValue('First Post');
+  });
+  test('basic rendering with complex contensts', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/updatePostDetailSuccess',
+        payload: ContentsPost,
+      });
+    });
   });
   test('basic rendering for invalid author', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
@@ -222,5 +271,12 @@ describe('[PostEdit Page]', () => {
 
     expect(mockNavigate).toBeCalledTimes(1);
     expect(mockNavigate).toBeCalledWith(`/post/1`);
+  });
+});
+
+describe('[Group - PostEdit Page]', () => {
+  test('basic rendering', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1', group_id: '1' });
+    setup();
   });
 });

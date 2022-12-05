@@ -192,7 +192,7 @@ describe('[PostDetail Page]', () => {
       type: 'post/deleteComment',
     });
 
-    const backToMainBtn = screen.getByText('◀︎');
+    const backToMainBtn = screen.getByTestId('backBtn');
     fireEvent.click(backToMainBtn);
     expect(mockNavigate).toBeCalledWith('/post');
   });

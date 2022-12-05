@@ -526,7 +526,7 @@ const PostDetail = () => {
               <ArticleItem>
                 <div>
                   <ArticleTitleWrapper>
-                    <Button4 content="" clicked={() => navigate(POST_MAIN)} />
+                    <Button4 testId="backBtn" content="" clicked={() => navigate(POST_MAIN)} />
                     <ArticleTitle>{post.title}</ArticleTitle>
                     <PostWritterWrapper>
                       <PostWritterLeftWrapper>

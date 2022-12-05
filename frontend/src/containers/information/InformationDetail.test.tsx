@@ -166,7 +166,7 @@ describe('[InformationDetail Page]', () => {
     const postItem = screen.getByText('First Post');
     fireEvent.click(postItem);
 
-    fireEvent.click(screen.getByText('◀︎'));
+    fireEvent.click(screen.getByTestId('backBtn'));
   });
   test('basic rendering when params undefined & Info error', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ name: undefined });
