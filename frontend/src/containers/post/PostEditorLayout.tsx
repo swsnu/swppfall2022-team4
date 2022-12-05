@@ -127,7 +127,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     if (postContent.tags.length === 0) setPrimeTag(tag);
 
     setSelectedTags(s => {
-      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
+      if (s.filter(item => item.id === tag.id).length === 0) return [...s, tag];
       else return s;
     });
   };
