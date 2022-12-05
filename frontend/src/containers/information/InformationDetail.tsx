@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -38,7 +39,7 @@ const InformationDetail = () => {
         window.location.href = `https://www.youtube.com/watch?v=${youtube.video_id}`;
       }}
     >
-      <img src={youtube.thumbnail} />
+      <img src={youtube.thumbnail} alt="youtube" />
       <YoutubeTitle>{youtube.title}</YoutubeTitle>
       <div>
         <span>{youtube.channel}</span>
@@ -55,6 +56,7 @@ const InformationDetail = () => {
             src={require(`assets/images/workout_log/fitelement_category/${get_image(
               info.contents?.basic.class_name,
             )}.png`)}
+            alt="category"
           />
           <span>{name}</span>
         </InfoDetailHeader>

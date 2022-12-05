@@ -65,7 +65,7 @@ export const tagSlice = createSlice({
     },
     searchTagSuccess: (state, { payload }) => {
       state.tagSearch = payload.tags;
-      if (state.tagSearch?.length == 0) notificationInfo('Tag', '검색 결과가 없어요.');
+      if (state.tagSearch?.length === 0) notificationInfo('Tag', '검색 결과가 없어요.');
     },
     searchTagFailure: (state, { payload }) => {
       //search failure

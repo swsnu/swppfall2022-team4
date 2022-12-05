@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -48,7 +49,7 @@ const InformationLobby = () => {
           <SectionItemWrapper>
             {tagList?.map(tagClass => {
               return (
-                (tagClass.tags.map(tag => tag.name.includes(search)).includes(true) || search == '') &&
+                (tagClass.tags.map(tag => tag.name.includes(search)).includes(true) || search === '') &&
                 tagClass.class_type === 'workout' && (
                   <WorkoutClassWrapper key={tagClass.id}>
                     <WorkoutClassTitleWrapper>

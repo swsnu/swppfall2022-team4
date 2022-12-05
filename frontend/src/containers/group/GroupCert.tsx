@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -70,9 +71,9 @@ const GroupCert = () => {
       //check already
       let submit = true;
       all_certs?.forEach(m => {
-        if (m.member.username == user.user?.username) {
+        if (m.member.username === user.user?.username) {
           m.certs.forEach(id => {
-            if (id.id == selectedGoal.id) {
+            if (id.id === selectedGoal.id) {
               alert('이미 인증된 목표입니다.');
               submit = false;
             }
@@ -292,7 +293,7 @@ const GroupCert = () => {
                               set={c.set}
                               time={c.time}
                             />
-                            {item.member.username == user.user?.username && (
+                            {item.member.username === user.user?.username && (
                               <span
                                 data-testid="removeGoal"
                                 onClick={() => deleteCert(c.id)}

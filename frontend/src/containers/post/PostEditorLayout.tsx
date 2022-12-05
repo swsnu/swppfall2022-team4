@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -126,13 +127,13 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
     if (postContent.tags.length === 0) setPrimeTag(tag);
 
     setSelectedTags(s => {
-      if (s.filter(item => item.id == tag.id).length === 0) return [...s, tag];
+      if (s.filter(item => item.id === tag.id).length === 0) return [...s, tag];
       else return s;
     });
   };
   const tagOnRemove = (tagId: string) => {
-    setSelectedTags(s => s.filter(item => item.id != tagId));
-    if (postContent.prime_tag && postContent.prime_tag.id == tagId) {
+    setSelectedTags(s => s.filter(item => item.id !== tagId));
+    if (postContent.prime_tag && postContent.prime_tag.id === tagId) {
       setPrimeTag(undefined);
     }
   };
@@ -182,7 +183,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             {postContent.title.length} / {TITLE_CHAR_LIMIT}
           </TitleCharNum>
         </TopElementWrapperWithoutPadding>
-        <Main_SideWrapper>
+        <MainSideWrapper>
           <ContentWrapper>
             <ContentTextWrapper>
               <ContentTextArea
@@ -282,7 +283,7 @@ export const PostEditorLayout = ({ postContent, setPostContent, cancelOnClick, c
             tagOnRemove={tagOnRemove}
             setPrimeTag={setPrimeTag}
           />
-        </Main_SideWrapper>
+        </MainSideWrapper>
       </PostContentWrapper>
     </PostPageWrapper>
   );
@@ -304,7 +305,7 @@ const CreateBtnWrapper = styled.div`
   justify-content: flex-end;
 `;
 
-const Main_SideWrapper = styled.div`
+const MainSideWrapper = styled.div`
   display: grid;
   grid-template-columns: 8fr 2fr;
   row-gap: 10px;

@@ -89,16 +89,16 @@ const Mypage = () => {
           <ProfileInfoWrapper>
             <NicknameWrapper>
               <Nickname>{profile.nickname}</Nickname>
-              {profile.login_method == 'kakao' && (
+              {profile.login_method === 'kakao' && (
                 <SocialLoginIcon src={require('assets/images/main/social_login_icon/kakao.jpg')} alt="kakao" />
               )}
-              {profile.login_method == 'google' && (
+              {profile.login_method === 'google' && (
                 <SocialLoginIcon src={require('assets/images/main/social_login_icon/google.png')} alt="google" />
               )}
-              {profile.login_method == 'facebook' && (
+              {profile.login_method === 'facebook' && (
                 <SocialLoginIcon src={require('assets/images/main/social_login_icon/facebook.png')} alt="facebook" />
               )}
-              {profile.login_method == 'github' && (
+              {profile.login_method === 'github' && (
                 <SocialLoginIcon src={require('assets/images/main/social_login_icon/github.png')} alt="github" />
               )}
             </NicknameWrapper>
