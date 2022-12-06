@@ -264,7 +264,7 @@ const WorkoutLog = () => {
       setIsCopy(true);
       setCopiedRoutine(location.state.copy_routine);
     }
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -775,12 +775,8 @@ const WorkoutLog = () => {
               <LogContentBody>
                 <DragDropContext onDragEnd={onDragEnd}>
                   <Droppable droppableId="Logs">
-                    {(provided) => (
-                      <LogBody
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                      >
+                    {provided => (
+                      <LogBody {...provided.droppableProps} ref={provided.innerRef} {...provided.droppableProps}>
                         {daily_temp.length === 0 ? (
                           <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
                         ) : (

@@ -106,9 +106,7 @@ const Routine = () => {
           <RoutineListWrapper>
             {routines.map((routine, index) => (
               <RoutineName key={index} data-testid="routine_name" onClick={() => routineClick(Number(routine.id))}>
-                <BoxWrapper className={routine.id === routine_id ? 'type1' : ''}>
-                  {routine.name}
-                </BoxWrapper>
+                <BoxWrapper className={routine.id === routine_id ? 'type1' : ''}>{routine.name}</BoxWrapper>
               </RoutineName>
             ))}
           </RoutineListWrapper>
@@ -123,7 +121,7 @@ const Routine = () => {
             <div></div>
           ) : (
             <RoutineHeader>
-                <LogHeader className="title">
+              <LogHeader className="title">
                 {edit_mode ? (
                   <EditInput
                     defaultValue={selected_routine.name}
