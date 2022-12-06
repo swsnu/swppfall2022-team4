@@ -27,12 +27,12 @@ class Command(BaseCommand):
             {
                 "group_name": lambda x: seeder.faker.company(),
                 "group_leader": lambda x: random.choice(all_users),
-                "number": lambda x: random.randint(5,10),
+                "number": lambda x: random.randint(50,100),
                 "start_date": lambda x: seeder.faker.date_between_dates(
                     datetime.datetime(2022, 1, 1), datetime.datetime(2022, 7, 1)
                 ),
                 "end_date": lambda x: seeder.faker.date_between_dates(
-                    datetime.datetime(2022, 7, 2), datetime.datetime(2022, 12, 30)
+                    datetime.datetime(2022, 7, 2), datetime.datetime(2023, 12, 30)
                 ),
                 "description": lambda x: seeder.faker.sentence(),
                 "free": lambda x: bool(random.getrandbits(1)),
@@ -50,26 +50,27 @@ class Command(BaseCommand):
             print(group)
             #members add
             for user in User.objects.order_by("?"):
-                if random.randint(1, 10) <= 5:
+                if random.randint(1, 10) <= 1:
                     group.members.add(user)
-                    group.member_number += 1
-                    group.save()
-                    
 
             #goal add
-            for fit in FitElement.objects.all():
-                if random.randint(1, 100) <= 5:
+            for tag in Tag.objects.all():
+                if random.randint(1, 100) <= 1:
+                    fit = FitElement(
+                            author=group.group_leader,
+                            type='goal',
+                            workout_type=tag,
+                            weight=100,
+                            rep=10,
+                            set=10,
+                            time=10,
+                        )
+                    fit.save()
                     group.goal.add(fit)
-                    group.save()
-                    
 
             #tags
             for tag in Tag.objects.all():
-                if random.randint(1, 100) <= 5:
+                if random.randint(1, 100) <= 3:
                     group.tags.add(tag)
                     group.prime_tag = tag
                     group.save()
-
-
-
-
