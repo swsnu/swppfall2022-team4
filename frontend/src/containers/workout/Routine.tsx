@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { workoutLogActions } from 'store/slices/workout';
 import { FitElement } from 'components/fitelement/FitElement';
 import { getRoutineRequestType } from 'store/apis/workout';
+import { notificationSuccess } from 'utils/sendNotification';
 
 const Routine = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const calendarButtonClick = () => {
-    navigate('/workout');
-  };
 
   const routineClick = (id: number) => {
     setRoutineId(id);
@@ -21,6 +18,8 @@ const Routine = () => {
   const [routine_id, setRoutineId] = useState<number>(-1);
   const [title, setTitle] = useState('');
   const [edit_mode, setMode] = useState<boolean>(false);
+  const [copy_routine, setCopyRoutine] = useState('');
+  const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
 
   const defaultRoutineRequest: getRoutineRequestType = {
     username: user.user?.username!,
@@ -62,6 +61,18 @@ const Routine = () => {
     }
   };
 
+  const copyRoutine = () => {
+    if (selected_routine.fitelements.length > 0) {
+      notificationSuccess('FitElement', '루틴 복사에 성공했어요!');
+      setCopyRoutine(selected_routine.name);
+      setCopiedFitElements(
+        selected_routine.fitelements.map(v => {
+          return Number(v.data.id);
+        }),
+      );
+    }
+  };
+
   useEffect(() => {
     dispatch(workoutLogActions.getRoutine(defaultRoutineRequest));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
@@ -84,18 +95,20 @@ const Routine = () => {
     <Wrapper>
       <LeftWrapper>
         <LeftUpper>
-          <ReturnButtonWrapper onClick={() => calendarButtonClick()}>{'< '}달력으로 돌아가기</ReturnButtonWrapper>
+          <Link
+            to="/workout"
+            state={{ copied_fitelements, copy_routine }}
+            style={{ justifyContent: 'start', display: 'flex', width: '100%' }}
+          >
+            <ReturnButtonWrapper>{'< '}달력으로 돌아가기</ReturnButtonWrapper>
+          </Link>
         </LeftUpper>
         <Frame>
+          <RoutineNameHeader>루틴 목록</RoutineNameHeader>
           <RoutineListWrapper>
             {routines.map((routine, index) => (
-              <RoutineName
-                key={index}
-                data-testid="routine_name"
-                className={routine.id === routine_id ? (index === 0 ? 'type2' : 'type1') : ''}
-                onClick={() => routineClick(Number(routine.id))}
-              >
-                {routine.name}
+              <RoutineName key={index} data-testid="routine_name" onClick={() => routineClick(Number(routine.id))}>
+                <BoxWrapper className={routine.id === routine_id ? 'type1' : ''}>{routine.name}</BoxWrapper>
               </RoutineName>
             ))}
           </RoutineListWrapper>
@@ -139,6 +152,15 @@ const Routine = () => {
                   </AnyButton>
                   <AnyButton
                     className="edit-type"
+                    data-testid="copy_button"
+                    hidden={edit_mode}
+                    disabled={selected_routine.fitelements.length === 0 ? true : false}
+                    onClick={() => copyRoutine()}
+                  >
+                    복사
+                  </AnyButton>
+                  <AnyButton
+                    className="edit-type"
                     data-testid="title_submit_button"
                     hidden={!edit_mode}
                     onClick={() => editRoutineTitle('complete_button')}
@@ -148,12 +170,15 @@ const Routine = () => {
                 </EditButtonWrapper>
               </LogHeader>
               <LogHeader>
-                <LogCategory className="type3"></LogCategory>
-                <LogCategory className="type">종류</LogCategory>
-                <LogCategory className="type2">강도</LogCategory>
-                <LogCategory>반복</LogCategory>
-                <LogCategory>세트</LogCategory>
-                <LogCategory className="type2">시간</LogCategory>
+                <LogCategoryLeft>
+                  <LogCategory className="type3">부위</LogCategory>
+                  <LogCategory className="type">종류</LogCategory>
+                  <LogCategory className="type4">강도</LogCategory>
+                  <LogCategory>반복</LogCategory>
+                  <LogCategory>세트</LogCategory>
+                  <LogCategory className="type2">시간</LogCategory>
+                </LogCategoryLeft>
+                <LogCategoryRight />
               </LogHeader>
             </RoutineHeader>
           )}
@@ -207,30 +232,32 @@ const Wrapper = styled.div`
   display: flex;
 `;
 
-const RoutineName = styled.div`
-  width: 100%;
-  height: 100%;
-  min-height: 10vh;
+const BoxWrapper = styled.div`
+  width: 90%;
+  height: 72px;
   display: flex;
-  flex-wrap: wrap;
+  font-size: 18px;
+  font-weight: 500;
   justify-content: center;
   align-items: center;
-  border-bottom: 1px solid black;
-  font-weight: normal;
-
+  border-radius: 10px;
+  background-color: #f5fffd;
+  border: 1px solid #c0c0c0;
   &&.type1 {
-    background-color: #84e0ed;
+    background-color: #bbdefb;
   }
-
-  &&.type2 {
-    background-color: #84e0ed;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-
   &:hover {
     cursor: pointer;
+    border-color: black;
   }
+`;
+
+const RoutineName = styled.div`
+  width: 100%;
+  min-height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const EditInput = styled.input`
@@ -259,6 +286,27 @@ const RoutineHeader = styled.div`
 const LogHeader = styled.div`
   font-size: 18px;
   width: 100%;
+  border-bottom: 1px solid black;
+  padding: 10px 0px 5px 0px;
+  font-family: IBMPlexSansThaiLooped;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px;
+
+  &&.title {
+    height: 100%;
+    font-size: 18px;
+    font-weight: 600;
+    flex-direction: column;
+    margin-top: 15px;
+  }
+`;
+
+const RoutineNameHeader = styled.div`
+  font-size: 18px;
+  font-weight: 800;
+  width: 100%;
   height: 30%;
   border-bottom: 1px solid black;
   padding: 10px 0px 5px 0px;
@@ -266,12 +314,6 @@ const LogHeader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  &&.title {
-    height: 70%;
-    min-height: 10vh;
-    flex-direction: column;
-  }
 `;
 
 const Content = styled.div`
@@ -286,25 +328,45 @@ const Content = styled.div`
   align-items: center;
 `;
 
+const LogCategoryLeft = styled.div`
+  width: 95%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LogCategoryRight = styled.div`
+  width: 5%;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const LogCategory = styled.div`
-  width: 8%;
+  width: 10%;
   height: 20px;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: IBMPlexSansThaiLooped;
-  cursor: pointer;
   color: black;
 
   &&.type {
-    width: 20%;
+    width: 25%;
   }
+
   &&.type2 {
-    width: 20%;
+    width: 22%;
   }
+
   &&.type3 {
     width: 15%;
+  }
+
+  &&.type4 {
+    width: 18%;
   }
 `;
 
@@ -464,15 +526,16 @@ const AnyButton = styled.button`
   }
 
   &&.edit-type {
-    width: 60px;
-    height: 20px;
+    border-radius: 5px;
+    width: 80px;
+    height: 30px;
   }
 `;
 
 const EditButtonWrapper = styled.div`
   display: flex;
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 50%;
   align-items: end;
   justify-content: end;
   flex-direction: row;

@@ -7,11 +7,6 @@ import { initialState, getMockStore } from 'test-utils/mock';
 import userEvent from '@testing-library/user-event';
 
 const store = getMockStore(initialState);
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
 
 const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
@@ -38,13 +33,6 @@ describe('routine', () => {
   it('render without errors', () => {
     const view = render(component);
     expect(view).toBeTruthy();
-  });
-
-  it('navigate to workout', () => {
-    render(component);
-    const calendarButton = screen.getByText('< 달력으로 돌아가기');
-    fireEvent.click(calendarButton!);
-    expect(mockNavigate).toBeCalledTimes(1);
   });
 
   it('change the state of selected routine2', async () => {

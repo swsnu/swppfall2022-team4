@@ -281,6 +281,7 @@ export const workoutLogSlice = createSlice({
     addFitElementsSuccess: (state, { payload }) => {
       state.add_fit_elements.fitelements = payload;
       state.add_fit_elements.status = true;
+      notificationSuccess('FitElement', '붙여넣기에 성공했어요!');
     },
     createRoutineWithFitElements: (
       state,

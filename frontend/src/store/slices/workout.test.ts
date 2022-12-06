@@ -212,10 +212,8 @@ describe('slices - workout', () => {
         .hasFinalState({
           ...initialState,
           add_fit_elements: {
-            fitelements: {
-              fitelements: [0],
-            },
-            status: true,
+            fitelements: [],
+            status: false,
           },
         })
         .run();
