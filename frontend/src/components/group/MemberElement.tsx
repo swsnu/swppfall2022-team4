@@ -49,12 +49,11 @@ export const MemberElement = (props: IProps) => {
   };
 
   return (
-    <MemberElementWrapper className={props.myself ? 'myself' : 'others'}>
-      <ProfileImage
-        src={process.env.REACT_APP_API_IMAGE + props.image}
-        alt="profile"
-        onClick={() => navigate(`/profile/${props.username}`)}
-      />
+    <MemberElementWrapper
+      className={props.myself ? 'myself' : 'others'}
+      onClick={() => navigate(`/profile/${props.username}`)}
+    >
+      <ProfileImage src={process.env.REACT_APP_API_IMAGE + props.image} alt="profile" />
       <MemberElementLineWrapper>
         <MemberElementLine style={{ fontWeight: '600' }}>
           {props.is_leader ? '👑 ' + props.username : props.username}
@@ -82,6 +81,7 @@ const MemberElementWrapper = styled.div`
   background-color: #e4fff1;
   box-shadow: 1px 1px 1px 1px #d4eee0;
   padding: 15px;
+  cursor: pointer;
 
   &&.myself {
     background-color: #5bc88f;
@@ -94,7 +94,6 @@ const ProfileImage = styled.img`
   border-radius: 10px;
   margin-right: 15px;
   background-color: #ffffff;
-  cursor: pointer;
 `;
 
 const MemberElementLineWrapper = styled.div`
