@@ -10,9 +10,6 @@ import { getRoutineRequestType } from 'store/apis/workout';
 const Routine = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const calendarButtonClick = () => {
-    navigate('/workout');
-  };
 
   const routineClick = (id: number) => {
     setRoutineId(id);

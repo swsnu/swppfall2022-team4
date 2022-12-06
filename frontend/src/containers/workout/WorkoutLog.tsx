@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOnClickOutside } from 'usehooks-ts';
 import styled from 'styled-components';
@@ -59,6 +59,7 @@ const WorkoutLog = () => {
   const [isCopy, setIsCopy] = useState<boolean>(false);
   const [copy_date, setCopyDate] = useState<Date>(new Date());
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
+  const [copied_routine, setCopiedRoutine] = useState('');
   const user = useSelector(({ user }: RootState) => user);
   const imageModalRef = useRef(null);
   const imageModalAnimRef = useRef(null);
@@ -68,6 +69,8 @@ const WorkoutLog = () => {
 
   const imageModalOnClose = () => setImageModalOpen(false);
   useOnClickOutside(imageModalRef, imageModalOnClose, 'mousedown');
+
+  const location = useLocation();
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -136,6 +139,8 @@ const WorkoutLog = () => {
   };
 
   const copyDailyLog = () => {
+    window.history.replaceState({}, document.title);
+    setCopiedRoutine('');
     if (dailyLog.isDailyLog === true && dailyFitElements.length > 0) {
       setIsCopy(true);
       setCopyDate(new Date(year, month, day));
@@ -164,6 +169,7 @@ const WorkoutLog = () => {
 
   const pasteDailyLog = () => {
     setIsCopy(false);
+    console.log(copied_fitelements);
 
     const addFitElementConfig: addFitElementsRequestType = {
       username: user.user?.username!,
@@ -173,6 +179,9 @@ const WorkoutLog = () => {
       specific_date: day,
     };
     dispatch(workoutLogActions.addFitElements(addFitElementConfig));
+    setCopiedFitElements([]);
+    setCopiedRoutine('');
+    window.history.replaceState({}, document.title);
   };
 
   const cancelWorkoutLog = () => {
@@ -240,7 +249,26 @@ const WorkoutLog = () => {
     memoSuccess,
     deleteImageSuccess,
     indexSuccess,
+    copied_routine,
   ]);
+
+  useEffect(() => {
+    console.log(location.state);
+    if (location.state !== null) {
+      setCopiedFitElements(
+        location.state.copied_fitelements.map((v: Array<number>) => {
+          return Number(v);
+        }),
+      );
+      console.log(
+        location.state.copied_fitelements.map((v: Array<number>) => {
+          return Number(v);
+        }),
+      );
+      setIsCopy(true);
+      setCopiedRoutine(location.state.copy_routine);
+    }
+  }, []);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '');
@@ -357,7 +385,7 @@ const WorkoutLog = () => {
   });
 
   const getListStyle = (isDraggingOver: any) => ({
-    background: isDraggingOver ? '#e6e6e6' : '#FFFFFF',
+    background: isDraggingOver ? '#FFFFFF' : '#FFFFFF',
   });
 
   const FitElementList = (fitelement: Fitelement, id: number, index: number) => {
@@ -403,7 +431,9 @@ const WorkoutLog = () => {
         <LeftWrapper>
           <LeftUpper>
             <DateWrapper>
-              {isCopy === true
+              {copied_routine !== ''
+                ? `${copied_routine} 복사중`
+                : isCopy === true
                 ? String(copy_date.getFullYear()) +
                   '.' +
                   String(copy_date.getMonth() + 1) +
@@ -628,7 +658,12 @@ const WorkoutLog = () => {
               >
                 내보내기
               </AnyButton>
-              <AnyButton onClick={() => addRoutineClick()}>루틴추가</AnyButton>
+              <AnyButton
+                disabled={(dailyLog.fit_element === null || dailyLog.fit_element.length) === 0 ? true : false}
+                onClick={() => addRoutineClick()}
+              >
+                루틴추가
+              </AnyButton>
             </LogUpper>
             <Frame className="right">
               <LogHeader>

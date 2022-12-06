@@ -410,7 +410,11 @@ def daily_log(request, year, month, specific_date):
                     fitelement_type = Tag.objects.get(tag_name=fitelement.workout_type)
                     new_daily_log.calories += fitelement_type.calories * fitelement.time
                     list_to_store = []
-                    list_to_store = [fitelement.id]
+                    if new_daily_log.log_index == None:
+                        list_to_store = []
+                    else:
+                        list_to_store = json.loads(new_daily_log.log_index)
+                    list_to_store.append(fitelement.id)
                     new_daily_log.log_index = json.dumps(list_to_store)
             new_daily_log.save()
             return JsonResponse(return_json, safe=False, status=200)
