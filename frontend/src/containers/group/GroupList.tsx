@@ -239,29 +239,33 @@ const GroupList = () => {
         }}
       />
       <GroupListWrapper>
-        {groupListOrdered
-          .filter(groupListOrdered => {
-            if (searchTerm === '') {
-              return groupListOrdered;
-            } else {
-              return groupListOrdered.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
-            }
-          })
-          .map((groupListOrdered, index) => (
-            <GroupElement
-              key={index}
-              id={groupListOrdered.id}
-              group_name={groupListOrdered.group_name}
-              address={groupListOrdered.address}
-              number={groupListOrdered.number}
-              free={groupListOrdered.free}
-              start_date={groupListOrdered.start_date}
-              end_date={groupListOrdered.end_date}
-              member_number={groupListOrdered.member_number}
-              prime_tag={groupListOrdered.prime_tag}
-              clicked={() => navigate(`/group/detail/${groupListOrdered.id}/`)}
-            />
-          ))}
+        {groupListOrdered.length != 0 ? (
+          groupListOrdered
+            .filter(groupListOrdered => {
+              if (searchTerm === '') {
+                return groupListOrdered;
+              } else {
+                return groupListOrdered.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
+              }
+            })
+            .map((groupListOrdered, index) => (
+              <GroupElement
+                key={index}
+                id={groupListOrdered.id}
+                group_name={groupListOrdered.group_name}
+                address={groupListOrdered.address}
+                number={groupListOrdered.number}
+                free={groupListOrdered.free}
+                start_date={groupListOrdered.start_date}
+                end_date={groupListOrdered.end_date}
+                member_number={groupListOrdered.member_number}
+                prime_tag={groupListOrdered.prime_tag}
+                clicked={() => navigate(`/group/detail/${groupListOrdered.id}/`)}
+              />
+            ))
+        ) : (
+          <EmptyWrapper>Empty!</EmptyWrapper>
+        )}
       </GroupListWrapper>
     </Wrapper>
   );
@@ -319,4 +323,11 @@ const UnderSearch = styled.div`
   display: flex;
   justify-content: space-between;
   padding-bottom: 20px;
+`;
+
+const EmptyWrapper = styled.div`
+  font-size: 40px;
+  margin-top: 20%;
+  font-family: 'Press Start 2P', cursive;
+  color: #9b9b9b;
 `;
