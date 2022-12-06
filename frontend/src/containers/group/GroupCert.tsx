@@ -245,7 +245,7 @@ const GroupCert = () => {
               {selected_year}.{selected_month + 1}.{selected_date}
               <select
                 defaultValue="목표를 지정하세요"
-                style={{ height: '40px', fontFamily: 'NanumSquareR' }}
+                style={{ width: '400px', height: '40px', fontFamily: 'NanumSquareR', paddingLeft: '10px' }}
                 onChange={e => setGoal(+e.target.value)}
               >
                 <option disabled>목표를 지정하세요</option>
@@ -277,7 +277,7 @@ const GroupCert = () => {
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <ProfileImage src={process.env.REACT_APP_API_IMAGE + item.member.image} alt="profile" />
                         <div style={{ paddingRight: '10px' }}>{item.member.username}</div>
-                        {item.did && <div style={{ fontFamily: 'FugazOne' }}>Did!</div>}
+                        {item.did && <div style={{ fontFamily: 'FugazOne', color: '#1c6758' }}>Did!</div>}
                       </div>
                       {item.certs &&
                         item.certs.map((c, id) => (
@@ -451,7 +451,7 @@ const LogUpper = styled.div`
   min-height: 10vh;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-evenly;
 `;
 
 const LogWrapper = styled.div`
