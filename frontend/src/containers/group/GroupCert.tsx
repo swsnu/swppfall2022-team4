@@ -56,7 +56,7 @@ const GroupCert = () => {
       };
       dispatch(groupActions.getCerts(dayilycert));
     }
-    if (str_today < year + '-' + (month + 1) + '-' + d) setFuture(true);
+    if (str_today < year + '-' + ('0' + (month + 1)).slice(-2) + '-' + ('0' + d).slice(-2)) setFuture(true);
     else setFuture(false);
   };
   const setGoal = (id: number) => {
@@ -255,7 +255,7 @@ const GroupCert = () => {
                   </option>
                 ))}
               </select>
-              <DidButton className={done || future ? 'disabled' : 'ing'} disabled={done} onClick={submitCert}>
+              <DidButton className={done || future ? 'disabled' : 'ing'} disabled={done || future} onClick={submitCert}>
                 완료
               </DidButton>
             </LogUpper>
