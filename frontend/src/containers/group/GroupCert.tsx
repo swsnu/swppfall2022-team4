@@ -244,6 +244,7 @@ const GroupCert = () => {
             <LogUpper>
               {selected_year}.{selected_month + 1}.{selected_date}
               <select
+                data-testid="selectGoal"
                 defaultValue="목표를 지정하세요"
                 style={{ width: '400px', height: '40px', fontFamily: 'NanumSquareR', paddingLeft: '10px' }}
                 onChange={e => setGoal(+e.target.value)}
@@ -272,8 +273,8 @@ const GroupCert = () => {
               </LogHeader>
               <LogBody>
                 {all_certs &&
-                  all_certs.map(item => (
-                    <div>
+                  all_certs.map((item, index) => (
+                    <div key={index}>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <ProfileImage src={process.env.REACT_APP_API_IMAGE + item.member.image} alt="profile" />
                         <div style={{ paddingRight: '10px' }}>{item.member.username}</div>
@@ -281,7 +282,7 @@ const GroupCert = () => {
                       </div>
                       {item.certs &&
                         item.certs.map((c, id) => (
-                          <div style={{ display: 'flex' }}>
+                          <div key={id} style={{ display: 'flex' }}>
                             <FitElement
                               key={id}
                               id={id + 1}
