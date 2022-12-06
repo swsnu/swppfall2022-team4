@@ -106,7 +106,7 @@ const Routine = () => {
           <RoutineListWrapper>
             {routines.map((routine, index) => (
               <RoutineName key={index} data-testid="routine_name" onClick={() => routineClick(Number(routine.id))}>
-                <BoxWrapper className={routine.id === routine_id ? (index === 0 ? 'type2' : 'type1') : ''}>
+                <BoxWrapper className={routine.id === routine_id ? 'type1' : ''}>
                   {routine.name}
                 </BoxWrapper>
               </RoutineName>
@@ -123,7 +123,7 @@ const Routine = () => {
             <div></div>
           ) : (
             <RoutineHeader>
-              <LogHeader className="title">
+                <LogHeader className="title">
                 {edit_mode ? (
                   <EditInput
                     defaultValue={selected_routine.name}
@@ -254,8 +254,7 @@ const BoxWrapper = styled.div`
 
 const RoutineName = styled.div`
   width: 100%;
-  height: 100%;
-  min-height: 10vh;
+  min-height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -287,20 +286,20 @@ const RoutineHeader = styled.div`
 const LogHeader = styled.div`
   font-size: 18px;
   width: 100%;
-  height: 30%;
   border-bottom: 1px solid black;
   padding: 10px 0px 5px 0px;
   font-family: IBMPlexSansThaiLooped;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0px;
 
   &&.title {
-    height: 70%;
-    min-height: 10vh;
+    height: 100%;
     font-size: 18px;
     font-weight: 600;
     flex-direction: column;
+    margin-top: 15px;
   }
 `;
 
@@ -331,7 +330,6 @@ const Content = styled.div`
 
 const LogCategoryLeft = styled.div`
   width: 95%;
-  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -528,15 +526,16 @@ const AnyButton = styled.button`
   }
 
   &&.edit-type {
-    width: 60px;
-    height: 20px;
+    border-radius: 5px;
+    width: 80px;
+    height: 30px;
   }
 `;
 
 const EditButtonWrapper = styled.div`
   display: flex;
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 50%;
   align-items: end;
   justify-content: end;
   flex-direction: row;
