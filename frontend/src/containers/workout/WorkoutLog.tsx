@@ -254,7 +254,6 @@ const WorkoutLog = () => {
   ]);
 
   useEffect(() => {
-    console.log(location.state);
     if (location.state !== null) {
       setCopiedFitElements(
         location.state.copied_fitelements.map((v: Array<number>) => {
@@ -265,6 +264,7 @@ const WorkoutLog = () => {
       setIsCopy(true);
       setCopiedRoutine(location.state.copy_routine);
     }
+  // eslint-disable-next-line
   }, []);
 
   useEffect(() => {

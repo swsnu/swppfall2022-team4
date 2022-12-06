@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from 'index';
@@ -9,7 +9,6 @@ import { getRoutineRequestType } from 'store/apis/workout';
 
 const Routine = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const routineClick = (id: number) => {
     setRoutineId(id);
@@ -19,7 +18,6 @@ const Routine = () => {
   const [title, setTitle] = useState('');
   const [edit_mode, setMode] = useState<boolean>(false);
   const [copy_routine, setCopyRoutine] = useState('');
-  const [is_copy, setIsCopy] = useState<boolean>(false);
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
 
   const defaultRoutineRequest: getRoutineRequestType = {
@@ -64,7 +62,6 @@ const Routine = () => {
 
   const copyRoutine = () => {
     if (selected_routine.fitelements.length > 0) {
-      setIsCopy(true);
       setCopyRoutine(selected_routine.name);
       setCopiedFitElements(
         selected_routine.fitelements.map(v => {
