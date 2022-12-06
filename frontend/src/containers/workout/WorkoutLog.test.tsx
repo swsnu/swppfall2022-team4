@@ -217,6 +217,7 @@ describe('workout_log', () => {
   });
 
   it('copyDailyLog', () => {
+    console.error = jest.fn().mockImplementation(() => null);
     render(component);
     const button = screen.getByText('내보내기');
     fireEvent.click(button!);
