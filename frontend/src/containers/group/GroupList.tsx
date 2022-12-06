@@ -239,7 +239,7 @@ const GroupList = () => {
         }}
       />
       <GroupListWrapper>
-        {groupListOrdered.length != 0 ? (
+        {groupListOrdered.length !== 0 ? (
           groupListOrdered
             .filter(groupListOrdered => {
               if (searchTerm === '') {
