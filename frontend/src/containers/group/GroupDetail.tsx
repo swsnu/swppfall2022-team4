@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-restricted-globals */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -84,21 +85,23 @@ const GroupDetail = () => {
   };
   const exitOnClick = () => {
     if (group_id) {
-      if (user && socket && group_detail) {
-        socket.send(
-          JSON.stringify({
-            type: 'notification',
-            data: {
-              category: 'group',
-              info: group_detail.group_leader.username,
-              content: `${user.nickname}님이 내 그룹에서 탈퇴했습니다.`,
-              image: user.image,
-              link: `/group/detail/${group_id}/`,
-            },
-          }),
-        );
+      if (confirm('정말 그룹을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        if (user && socket && group_detail) {
+          socket.send(
+            JSON.stringify({
+              type: 'notification',
+              data: {
+                category: 'group',
+                info: group_detail.group_leader.username,
+                content: `${user.nickname}님이 내 그룹에서 탈퇴했습니다.`,
+                image: user.image,
+                link: `/group/detail/${group_id}/`,
+              },
+            }),
+          );
+        }
+        dispatch(groupActions.exitGroup(group_id));
       }
-      dispatch(groupActions.exitGroup(group_id));
     }
   };
   const deleteOnClick = () => {

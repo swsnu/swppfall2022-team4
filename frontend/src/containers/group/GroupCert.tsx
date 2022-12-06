@@ -56,7 +56,7 @@ const GroupCert = () => {
       };
       dispatch(groupActions.getCerts(dayilycert));
     }
-    if (str_today < year + '-' + (month + 1) + '-' + d) setFuture(true);
+    if (str_today < year + '-' + ('0' + (month + 1)).slice(-2) + '-' + ('0' + d).slice(-2)) setFuture(true);
     else setFuture(false);
   };
   const setGoal = (id: number) => {
@@ -244,8 +244,9 @@ const GroupCert = () => {
             <LogUpper>
               {selected_year}.{selected_month + 1}.{selected_date}
               <select
+                data-testid="selectGoal"
                 defaultValue="목표를 지정하세요"
-                style={{ height: '40px', fontFamily: 'NanumSquareR' }}
+                style={{ width: '400px', height: '40px', fontFamily: 'NanumSquareR', paddingLeft: '10px' }}
                 onChange={e => setGoal(+e.target.value)}
               >
                 <option disabled>목표를 지정하세요</option>
@@ -255,7 +256,7 @@ const GroupCert = () => {
                   </option>
                 ))}
               </select>
-              <DidButton className={done || future ? 'disabled' : 'ing'} disabled={done} onClick={submitCert}>
+              <DidButton className={done || future ? 'disabled' : 'ing'} disabled={done || future} onClick={submitCert}>
                 완료
               </DidButton>
             </LogUpper>
@@ -272,16 +273,16 @@ const GroupCert = () => {
               </LogHeader>
               <LogBody>
                 {all_certs &&
-                  all_certs.map(item => (
-                    <div>
+                  all_certs.map((item, index) => (
+                    <div key={index}>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <ProfileImage src={process.env.REACT_APP_API_IMAGE + item.member.image} alt="profile" />
                         <div style={{ paddingRight: '10px' }}>{item.member.username}</div>
-                        {item.did && <div style={{ fontFamily: 'FugazOne' }}>Did!</div>}
+                        {item.did && <div style={{ fontFamily: 'FugazOne', color: '#1c6758' }}>Did!</div>}
                       </div>
                       {item.certs &&
                         item.certs.map((c, id) => (
-                          <div style={{ display: 'flex' }}>
+                          <div key={id} style={{ display: 'flex' }}>
                             <FitElement
                               key={id}
                               id={id + 1}
@@ -451,7 +452,7 @@ const LogUpper = styled.div`
   min-height: 10vh;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-evenly;
 `;
 
 const LogWrapper = styled.div`
