@@ -180,6 +180,7 @@ const WorkoutLog = () => {
     };
     dispatch(workoutLogActions.addFitElements(addFitElementConfig));
     setCopiedFitElements([]);
+    setCopyDate(new Date(1900, 1, 1));
     setCopiedRoutine('');
     window.history.replaceState({}, document.title);
   };
@@ -260,11 +261,7 @@ const WorkoutLog = () => {
           return Number(v);
         }),
       );
-      console.log(
-        location.state.copied_fitelements.map((v: Array<number>) => {
-          return Number(v);
-        }),
-      );
+      setCopyDate(new Date(1900, 1, 1));
       setIsCopy(true);
       setCopiedRoutine(location.state.copy_routine);
     }
