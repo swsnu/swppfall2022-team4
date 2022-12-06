@@ -143,6 +143,7 @@ const WorkoutLog = () => {
     setCopiedRoutine('');
     if (dailyLog.isDailyLog === true && dailyFitElements.length > 0) {
       setIsCopy(true);
+      notificationSuccess('FitElement', '일일 log 복사에 성공했어요!');
       setCopyDate(new Date(year, month, day));
       setCopiedFitElements(
         dailyFitElements.map(v => {

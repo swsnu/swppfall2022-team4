@@ -6,6 +6,7 @@ import { RootState } from 'index';
 import { workoutLogActions } from 'store/slices/workout';
 import { FitElement } from 'components/fitelement/FitElement';
 import { getRoutineRequestType } from 'store/apis/workout';
+import { notificationSuccess } from 'utils/sendNotification';
 
 const Routine = () => {
   const dispatch = useDispatch();
@@ -62,6 +63,7 @@ const Routine = () => {
 
   const copyRoutine = () => {
     if (selected_routine.fitelements.length > 0) {
+      notificationSuccess('FitElement', '루틴 복사에 성공했어요!');
       setCopyRoutine(selected_routine.name);
       setCopiedFitElements(
         selected_routine.fitelements.map(v => {
