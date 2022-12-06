@@ -14,7 +14,7 @@ TAG_TYPE_CHOICES = (
 
 class TagClass(AbstractTimeStampedModel):
 
-    class_name = models.CharField(max_length=30)
+    class_name = models.CharField(max_length=20)
     class_type = models.CharField(max_length=20, choices=TAG_TYPE_CHOICES, default=TAG_TYPE_GENERAL)
     color = models.CharField(max_length=7)
 
@@ -24,7 +24,7 @@ class TagClass(AbstractTimeStampedModel):
 
 
 class Tag(AbstractTimeStampedModel):
-    tag_name = models.CharField(max_length=10)
+    tag_name = models.CharField(max_length=30)
     tag_class = models.ForeignKey(
         TagClass, blank=True, null=True, on_delete=models.CASCADE, related_name="tags"
     )
