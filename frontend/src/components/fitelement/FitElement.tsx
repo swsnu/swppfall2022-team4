@@ -16,7 +16,8 @@ export const get_image = (name: string | null | undefined) => {
   if (name) {
     const tag_class = ['등운동', '가슴운동', '어깨운동', '하체운동', '복근운동', '팔운동', '유산소', '기타운동'];
     const image_names = ['back', 'chest', 'deltoid', 'leg', 'abs', 'arm', 'cardio', 'etc'];
-    return image_names[tag_class.indexOf(name)];
+    if (tag_class.includes(name)) return image_names[tag_class.indexOf(name)];
+    else return 'example';
   } else {
     return 'example';
   }
