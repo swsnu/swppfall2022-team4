@@ -381,10 +381,6 @@ const WorkoutLog = () => {
     ...draggableStyle,
   });
 
-  const getListStyle = (isDraggingOver: any) => ({
-    background: isDraggingOver ? '#FFFFFF' : '#FFFFFF',
-  });
-
   const FitElementList = (fitelement: Fitelement, id: number, index: number) => {
     return (
       <Draggable key={id} draggableId={String(id)} index={index}>
@@ -779,12 +775,11 @@ const WorkoutLog = () => {
               <LogContentBody>
                 <DragDropContext onDragEnd={onDragEnd}>
                   <Droppable droppableId="Logs">
-                    {(provided, snapshot) => (
+                    {(provided) => (
                       <LogBody
                         {...provided.droppableProps}
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        style={getListStyle(snapshot.isDraggingOver)}
                       >
                         {daily_temp.length === 0 ? (
                           <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
