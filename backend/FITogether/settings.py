@@ -120,7 +120,7 @@ DATABASES = {
         'ENGINE': 'mysql.connector.django',
         'NAME': 'fitogether_db',
         'USER': 'fitogether_user',
-        'PASSWORD': 'password',
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': 'mysql',
         'PORT': '3306',
         'OPTIONS': {
