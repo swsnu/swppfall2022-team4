@@ -35,10 +35,11 @@ services:
       - --default-authentication-plugin=mysql_native_password
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 'root_password'
+      # Password is not uploaded on Github.
+      MYSQL_ROOT_PASSWORD: '???'
       MYSQL_DATABASE: 'fitogether_db'
       MYSQL_USER: 'fitogether_user'
-      MYSQL_PASSWORD: 'password'
+      MYSQL_PASSWORD: '???'
     volumes:
       - ./mysqldata:/var/lib/mysql
     ports:
