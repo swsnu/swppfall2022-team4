@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+from threading import Thread
 from django.http import (
     JsonResponse,
 )
@@ -55,10 +56,6 @@ def information_update(target):  # Target Information.
                 thumbnail=video["thumbnail"]["url"],
                 channel=video["channel"],
             )
-    return JsonResponse(
-        {"message": 'End'},
-        status=200,
-    )
 
 
 @require_http_methods(["GET"])
@@ -73,7 +70,8 @@ def information_detail(request, information_name):
             datetime.datetime.now() - target.updated > datetime.timedelta(hours=1)
             or target.youtube.count() == 0
         ):
-            information_update(target)
+            thread = Thread(target=information_update, args=[target])
+            thread.start()
             target.updated = datetime.datetime.now()
             target.save()
 
