@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-secret_key_default = 'default_secret_key_default_secret_key_default_secret_key_default_secret_key_default_secret_key_default_secret_key_default_secret_key_default_secret_key_'
+secret_key_default = 'secret_key_for_development_secret_key_for_development_secret_key_for_development_secret_key_for_development_secret_key_for_development'
 SECRET_KEY = os.environ.get('SECRET_KEY', secret_key_default)
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -61,14 +61,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-REDIS_HOST = os.environ.get('REDIS_HOST')
 ASGI_APPLICATION = 'FITogether.routing.application'
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [(REDIS_HOST, 6379)],
+            'hosts': [('127.0.0.1', 6379)],
             'capacity': 1500,
             'expiry': 300,
         },
@@ -112,6 +111,11 @@ WSGI_APPLICATION = 'FITogether.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3'
+    }
+} if os.environ.get('APP_MODE', 'development') == 'development' else {
     'default': {
         'ENGINE': 'mysql.connector.django',
         'NAME': 'fitogether_db',

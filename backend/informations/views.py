@@ -12,7 +12,7 @@ from groups.views import prepare_compact_groups_response
 
 
 def youtube_search(query, max_result=25):
-    youtube = build("youtube", "v3", developerKey=os.environ.get("YOUTUBE_KEY"))
+    youtube = build("youtube", "v3", developerKey="AIzaSyAscjsrk3F2Kk8MvjorDYTXead9mJNyAUg")
     search_response = (
         youtube.search().list(q=query, part="id,snippet", maxResults=max_result).execute()
     )

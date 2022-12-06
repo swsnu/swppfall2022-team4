@@ -81,7 +81,11 @@ class UserTestCase(TestCase):
         )
         self.assertEqual(res.status_code, 401)
 
-        token = jwt.encode({}, os.environ.get("JWT_SECRET"), os.environ.get("ALGORITHM"))
+        token = jwt.encode(
+            {}, 
+            os.environ.get("JWT_SECRET", "jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development"), 
+            os.environ.get("ALGORITHM", "HS256")
+        )
         client.cookies['access_token'] = token
         res = client.put(
             '/api/user/profile/username/',
