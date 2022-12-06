@@ -55,15 +55,15 @@ const mem: groupApi.MemberCert = {
   member: {
     username: 'username',
     nickname: 'test',
-    image: 'image'
+    image: 'image',
   },
   certs: [fitelement1],
   did: true,
-}
+};
 
 const getCertsResponse: groupApi.getCertsResponseType = {
-  all_certs: [mem]
-}
+  all_certs: [mem],
+};
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -79,17 +79,17 @@ beforeEach(() => jest.clearAllMocks());
 afterAll(() => jest.restoreAllMocks());
 
 const setup = () => {
-    const store = configureStore({ reducer: rootReducer });
-    store.dispatch({
-      type: 'user/setUser',
-      payload: { username: 'username', nickname: 'nickname', image: 'image' },
-    });
-    render(
-      <Provider store={store}>
-        <GroupCert />
-      </Provider>,
-    );
-    return store;
+  const store = configureStore({ reducer: rootReducer });
+  store.dispatch({
+    type: 'user/setUser',
+    payload: { username: 'username', nickname: 'nickname', image: 'image' },
+  });
+  render(
+    <Provider store={store}>
+      <GroupCert />
+    </Provider>,
+  );
+  return store;
 };
 
 describe('group cert', () => {
@@ -127,12 +127,12 @@ describe('group cert', () => {
         payload: groupDetailResponse,
       });
     });
-    const option = screen.getByText('종류 : 벤치프레스 강도 : 10 반복 : 10 시간 : 10')
+    const option = screen.getByText('종류 : 벤치프레스 강도 : 10 반복 : 10 시간 : 10');
     const selectGoal = screen.getByTestId('selectGoal');
     const confirm = screen.getByText('완료');
-    fireEvent.click(option)
+    fireEvent.click(option);
     fireEvent.change(selectGoal, { target: { value: 0 } });
-    fireEvent.click(confirm)
+    fireEvent.click(confirm);
     expect(mockDispatch).toBeCalledTimes(3);
   });
   it('get & remove cert', () => {
@@ -152,4 +152,4 @@ describe('group cert', () => {
     fireEvent.click(remove);
     expect(mockDispatch).toBeCalledTimes(3);
   });
-})
+});

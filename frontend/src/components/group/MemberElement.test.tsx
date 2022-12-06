@@ -98,7 +98,7 @@ describe('<MemberElement/>', () => {
     const leaderChangeBtn = screen.getByText('그룹장 위임');
     fireEvent.click(leaderChangeBtn);
     expect(mockDispatch).toBeCalledTimes(1);
-    expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledTimes(2);
     expect(mockNavigate).toBeCalledWith('/group/detail/1');
   });
   it('group id failure', () => {
