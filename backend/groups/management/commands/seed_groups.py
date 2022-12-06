@@ -6,7 +6,7 @@ from django.contrib.admin.utils import flatten
 from django_seed import Seed
 from users.models import User
 from tags.models import Tag
-from groups.models import Group, GroupCert
+from groups.models import Group, GroupCert, JoinRequest
 from workouts.models import FitElement
 
 class Command(BaseCommand):
@@ -47,15 +47,17 @@ class Command(BaseCommand):
 
         for group_pk in created_groups:
             group = Group.objects.get(pk=group_pk)
-            print(group)
+            join = JoinRequest(group=group)
+            join.save()
+
             #members add
             for user in User.objects.order_by("?"):
                 if random.randint(1, 10) <= 1:
                     group.members.add(user)
 
             #goal add
-            for tag in Tag.objects.all():
-                if random.randint(1, 100) <= 1:
+            for tag in Tag.objects.filter(tag_name='레그 프레스').all():
+                if random.randint(1, 100) <= 100:
                     fit = FitElement(
                             author=group.group_leader,
                             type='goal',
