@@ -176,7 +176,7 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'http://localhost', 
+    'http://localhost',
     'http://ec2-3-37-226-67.ap-northeast-2.compute.amazonaws.com:3000',
     'http://3.37.226.67:3000',
     'https://fitogether.site'
@@ -184,7 +184,7 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'http://localhost', 
+    'http://localhost',
     'http://ec2-3-37-226-67.ap-northeast-2.compute.amazonaws.com:3000',
     'http://3.37.226.67:3000',
     'https://fitogether.site'

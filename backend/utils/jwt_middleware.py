@@ -8,8 +8,8 @@ from users.models import User
 
 def decode_jwt(access_token):
     return jwt.decode(
-        access_token, 
-        os.environ.get("JWT_SECRET", "jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development"), 
+        access_token,
+        os.environ.get("JWT_SECRET", "jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development"),
         os.environ.get("ALGORITHM", "HS256")
     )
 
