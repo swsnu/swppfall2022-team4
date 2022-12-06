@@ -327,6 +327,7 @@ const UnderSearch = styled.div`
 
 const EmptyWrapper = styled.div`
   font-size: 40px;
+  margin-left: 40%;
   margin-top: 20%;
   font-family: 'Press Start 2P', cursive;
   color: #9b9b9b;
