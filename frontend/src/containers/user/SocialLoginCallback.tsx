@@ -18,7 +18,6 @@ import { AxiosError } from 'axios';
 import { AnyAction } from 'redux';
 
 export const KAKAO_REDIRECT_URI = 'http://localhost:3000/oauth/kakao/';
-export const GITHUB_REDIRECT_URI = 'http://localhost:3000/oauth/github/';
 
 type errorIProps = {
   error: string;
