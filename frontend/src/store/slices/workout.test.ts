@@ -211,10 +211,6 @@ describe('slices - workout', () => {
         .dispatch({ type: 'workoutlog/addFitElements', payload: addFitElementsRequest })
         .hasFinalState({
           ...initialState,
-          add_fit_elements: {
-            fitelements: [],
-            status: false,
-          },
         })
         .run();
     });
