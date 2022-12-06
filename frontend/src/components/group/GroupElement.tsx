@@ -21,11 +21,9 @@ export const GroupElement = (props: IProps) => {
     today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
   const image = props.prime_tag?.tag_class ? props.prime_tag.tag_class : null;
 
-  let logo = 'example';
+  let logo = props.prime_tag?.tag_class ? props.prime_tag.tag_class : 'example';
   if (props.end_date && props.end_date < date) {
-    logo = 'end';
-  } else {
-    logo = props.prime_tag?.tag_class ? props.prime_tag.tag_class : 'example';
+    logo = 'end' + logo;
   }
 
   return (
@@ -135,7 +133,39 @@ const LogImage = styled.img`
     border: 2px solid #a46aae;
   }
 
-  &&.end {
+  &&.end등운동 {
+    background-color: #f4d284;
+    border: 2px solid darkgray;
+  }
+  &&.end가슴운동 {
+    background-color: #f9b6a2;
+    border: 2px solid darkgray;
+  }
+  &&.end어깨운동 {
+    background-color: #f9a2b6;
+    border: 2px solid darkgray;
+  }
+  &&.end하체운동 {
+    background-color: #a2cff9;
+    border: 2px solid darkgray;
+  }
+  &&.end복근운동 {
+    background-color: #9fd6cd;
+    border: 2px solid darkgray;
+  }
+  &&.end팔운동 {
+    background-color: #a9f9a2;
+    border: 2px solid darkgray;
+  }
+  &&.end유산소 {
+    background-color: #d3b7d8;
+    border: 2px solid darkgray;
+  }
+  &&.end기타운동 {
+    background-color: #d3b7d8;
+    border: 2px solid darkgray;
+  }
+  &&.endexample {
     border: 2px solid darkgray;
   }
 `;
