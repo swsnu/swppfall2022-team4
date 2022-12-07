@@ -38,7 +38,16 @@ export const GroupElement = (props: IProps) => {
           className={logo}
         />
         <GroupElementMiddleLeft>
-          <GroupMiddleLine style={{ fontSize: '24px', marginBottom: '15px' }}>
+          <GroupMiddleLine
+            style={{
+              fontSize: '21px',
+              marginBottom: '12px',
+              height: '28px',
+              lineHeight: '28px',
+              maxHeight: '28px',
+              overflow: 'hidden',
+            }}
+          >
             {props.group_name.length > 10 ? ' ' + props.group_name.slice(0, 10) + '...' : ' ' + props.group_name}
           </GroupMiddleLine>
           <GroupMiddleLine>
