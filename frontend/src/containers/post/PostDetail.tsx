@@ -767,8 +767,7 @@ const PostTimeText = styled.span`
   margin-bottom: 2px;
 `;
 
-const ArticleBodyContent = styled.div`
-  display: flex;
+const ArticleBodyContent = styled.span`
   width: 100%;
   height: 100%;
   padding: 10px 20px;
@@ -777,6 +776,7 @@ const ArticleBodyContent = styled.div`
   font-family: 'Noto Sans KR';
   word-wrap: break-word;
   word-break: break-all;
+  white-space: pre-line;
 `;
 
 // Article Comment List
