@@ -68,7 +68,7 @@ describe('[SocialLoginCallback Page]', () => {
       setup();
     });
     expect(mockClientGet).toBeCalledWith(
-      `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=Hi&redirect_uri=http://localhost:3000/oauth/kakao/&code=CODECODE`,
+      `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=Hi&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT}&code=CODECODE`,
       { headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' } },
     );
     const signupBtn = screen.getByText('Sign up');
@@ -82,7 +82,7 @@ describe('[SocialLoginCallback Page]', () => {
       setup();
     });
     expect(mockClientGet).toBeCalledWith(
-      `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=Hi&redirect_uri=http://localhost:3000/oauth/kakao/&code=CODECODE`,
+      `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=Hi&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT}&code=CODECODE`,
       { headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' } },
     );
   });
