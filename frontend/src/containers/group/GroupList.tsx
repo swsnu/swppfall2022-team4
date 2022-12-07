@@ -222,7 +222,7 @@ const GroupList = () => {
           </SortButton>
           <SortButton
             onClick={myGroupClicked}
-            style={mygroup ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+            style={mygroup ? { fontWeight: 'bold', color: '#003ba7' } : { fontWeight: 'normal', color: '#5689e7' }}
           >
             나의그룹
           </SortButton>

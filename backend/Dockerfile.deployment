@@ -1,0 +1,12 @@
+FROM python:3.9.5
+
+VOLUME /app
+WORKDIR /app
+
+COPY . .
+
+# ENV is not uploaded on Github.
+
+RUN pip install -r requirements.txt
+RUN pip install uwsgi
+RUN pip install mysql-connector-python==8.0.26

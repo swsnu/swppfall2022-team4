@@ -273,6 +273,7 @@ const TagBubbleWrapper = styled.div`
 const TagTitle = styled.span`
   margin: 10px 0px;
   font-size: 18px;
+  font-family: NanumSquareR;
   text-align: center;
   width: 100%;
 `;
@@ -305,6 +306,7 @@ const PrimeTagDivWrapper = styled.div`
 const PrimeTagNotSpecified = styled.span`
   text-align: center;
   font-size: 12px;
+  font-family: 'Noto Sans KR';
 `;
 const PrimeTagWrapper = styled(ColumnFlex)`
   justify-content: space-between;

@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+from threading import Thread
 from django.http import (
     JsonResponse,
 )
@@ -12,7 +13,7 @@ from groups.views import prepare_compact_groups_response
 
 
 def youtube_search(query, max_result=25):
-    youtube = build("youtube", "v3", developerKey=os.environ.get("YOUTUBE_KEY"))
+    youtube = build("youtube", "v3", developerKey="AIzaSyAscjsrk3F2Kk8MvjorDYTXead9mJNyAUg")
     search_response = (
         youtube.search().list(q=query, part="id,snippet", maxResults=max_result).execute()
     )
@@ -55,10 +56,6 @@ def information_update(target):  # Target Information.
                 thumbnail=video["thumbnail"]["url"],
                 channel=video["channel"],
             )
-    return JsonResponse(
-        {"message": 'End'},
-        status=200,
-    )
 
 
 @require_http_methods(["GET"])
@@ -73,7 +70,8 @@ def information_detail(request, information_name):
             datetime.datetime.now() - target.updated > datetime.timedelta(hours=1)
             or target.youtube.count() == 0
         ):
-            information_update(target)
+            thread = Thread(target=information_update, args=[target])
+            thread.start()
             target.updated = datetime.datetime.now()
             target.save()
 

@@ -70,7 +70,10 @@ const Header = () => {
   }, [dispatch, location]);
   const ws: React.MutableRefObject<WebSocket | null> = useRef(null);
   useEffect(() => {
-    ws.current = new WebSocket(`ws://${process.env.REACT_APP_API_SOCKET_URL}/ws/chat/${user && user.username}/`);
+    ws.current = new WebSocket(
+      (process.env.REACT_APP_MODE === 'development' ? `ws` : `wss`) +
+        `://${process.env.REACT_APP_API_SOCKET_URL}/ws/chat/${user && user.username}/`,
+    );
     ws.current.onopen = () => dispatch(chatActions.setSocket(ws.current));
     ws.current.onmessage = onMessage;
     return () => {

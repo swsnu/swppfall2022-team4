@@ -727,6 +727,7 @@ const ArticleTitleWrapper = styled.div`
 const ArticleTitle = styled.h1`
   width: fit-content;
   font-size: 24px;
+  font-family: NanumSquareR;
   word-wrap: break-word;
   word-break: break-all;
 `;
@@ -756,11 +757,13 @@ const PostWritterAvatar = styled(RowCenterFlex)`
 const PostWritterText = styled.span`
   width: 100%;
   font-size: 16px;
+  font-family: 'Noto Sans KR';
   margin-bottom: 3px;
 `;
 
 const PostTimeText = styled.span`
   font-size: 13px;
+  font-family: 'Noto Sans KR';
   margin-bottom: 2px;
 `;
 
@@ -771,6 +774,7 @@ const ArticleBodyContent = styled.div`
   padding: 10px 20px;
   min-height: 360px;
   font-size: 16px;
+  font-family: 'Noto Sans KR';
   word-wrap: break-word;
   word-break: break-all;
 `;
@@ -825,6 +829,7 @@ const UserAvatar = styled.img`
 
 const CommentWritterText = styled.span`
   font-size: 12px;
+  font-family: 'Noto Sans KR';
   width: fit-content;
   white-space: nowrap;
 `;
@@ -875,6 +880,7 @@ export const CommentFuncTimeIndicator = styled.span`
 
 const CommentNumIndicator = styled.span`
   font-size: 15px;
+  font-family: 'Noto Sans KR';
   width: 50px;
   margin-right: 5px;
   white-space: nowrap;

@@ -142,19 +142,23 @@ const UserLevelWrapper = styled(ColumnCenterFlex)`
 
 const Username = styled.span`
   font-size: 18px;
+  font-family: NanumSquareR;
   color: var(--fit-disabled-gray);
 `;
 const Nickname = styled.span`
   font-size: 26px;
+  font-family: NanumSquareR;
   margin-bottom: 5px;
 `;
 
 const Level = styled.span`
   font-size: 18px;
+  font-family: 'Noto Sans KR';
   margin-bottom: 8px;
 `;
 const Exp = styled.span`
   font-size: 16px;
+  font-family: 'Noto Sans KR';
 `;
 
 const UserAvatar = styled.img`
@@ -312,17 +316,21 @@ const HorizontalRightWrapper = styled(ColumnCenterFlex)`
 
 const UserNameHorizontal = styled.span`
   font-size: 15px;
+  font-family: 'Noto Sans KR';
   color: var(--fit-disabled-gray);
 `;
 const NickNameHorizontal = styled.span`
   font-size: 25px;
+  font-family: NanumSquareR;
   margin-bottom: 5px;
 `;
 
 const LevelHorizontal = styled.span`
   font-size: 15px;
+  font-family: 'Noto Sans KR';
   margin-bottom: 8px;
 `;
 const ExpHorizontal = styled.span`
   font-size: 13px;
+  font-family: 'Noto Sans KR';
 `;

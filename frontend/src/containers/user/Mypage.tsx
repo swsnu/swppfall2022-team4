@@ -92,15 +92,6 @@ const Mypage = () => {
               {profile.login_method === 'kakao' && (
                 <SocialLoginIcon src={require('assets/images/main/social_login_icon/kakao.jpg')} alt="kakao" />
               )}
-              {profile.login_method === 'google' && (
-                <SocialLoginIcon src={require('assets/images/main/social_login_icon/google.png')} alt="google" />
-              )}
-              {profile.login_method === 'facebook' && (
-                <SocialLoginIcon src={require('assets/images/main/social_login_icon/facebook.png')} alt="facebook" />
-              )}
-              {profile.login_method === 'github' && (
-                <SocialLoginIcon src={require('assets/images/main/social_login_icon/github.png')} alt="github" />
-              )}
             </NicknameWrapper>
             <Username>{profile.username}</Username>
             <Gender>{profile.gender === 'male' ? '남성' : '여성'}</Gender>

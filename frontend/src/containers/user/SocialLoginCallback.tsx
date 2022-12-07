@@ -17,8 +17,7 @@ import { notificationFailure } from 'utils/sendNotification';
 import { AxiosError } from 'axios';
 import { AnyAction } from 'redux';
 
-export const KAKAO_REDIRECT_URI = 'http://localhost:3000/oauth/kakao/';
-export const GITHUB_REDIRECT_URI = 'http://localhost:3000/oauth/github/';
+export const KAKAO_REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT;
 
 type errorIProps = {
   error: string;
