@@ -427,7 +427,7 @@ const WorkoutLog = () => {
             <DateWrapper>
               {copied_routine !== ''
                 ? `${copied_routine} 복사중`
-                : isCopy === true
+                : isCopy === true && copy_date.getFullYear() !== 1900
                 ? String(copy_date.getFullYear()) +
                   '.' +
                   String(copy_date.getMonth() + 1) +
@@ -883,7 +883,6 @@ const LeftWrapper = styled.div`
 const CalendarWrapper = styled.div`
   width: 100%;
   height: 80%;
-  min-height: 500px;
   max-height: 500px;
   min-width: 480px;
   max-width: 480px;
