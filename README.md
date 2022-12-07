@@ -29,8 +29,10 @@ https://fitogether.site/
     
 ## Testing  
 ### Test frontend
+    cd frontend
     yarn test --coverage --watchAll=false
 ### Test backend
+    cd backend
     coverage run --source='.' manage.py test
     coverage report
 ------------------
