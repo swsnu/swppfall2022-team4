@@ -185,6 +185,7 @@ describe('[PostDetail Page]', () => {
     });
 
     const commentDeleteBtn = screen.getByText('삭제');
+    global.confirm = () => true;
     fireEvent.click(commentDeleteBtn);
 
     expect(mockDispatch).toBeCalledWith({
@@ -290,6 +291,7 @@ describe('[PostDetail Page]', () => {
     expect(mockNavigate).toBeCalledWith(`/post/${simplePosts[0].post_id}/edit`);
 
     const postDeleteBtn = screen.getByText('글 삭제');
+    global.confirm = () => true;
     fireEvent.click(postDeleteBtn);
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/deletePost' });
 

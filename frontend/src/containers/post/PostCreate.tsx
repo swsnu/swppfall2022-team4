@@ -23,7 +23,9 @@ const PostCreate = () => {
     : `/post/${postCreateStatus.post_id}`;
 
   const cancelOnClick = () => {
-    navigate(POST_MAIN);
+    if (window.confirm('정말 작성을 취소하시겠습니까?')) {
+      navigate(POST_MAIN);
+    }
   };
   useEffect(() => {
     dispatch(tagActions.getTags());

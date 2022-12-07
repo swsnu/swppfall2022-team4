@@ -186,6 +186,7 @@ describe('[PostEdit Page]', () => {
   });
   test('edit cancle button', () => {
     jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
+    global.confirm = () => true;
     setup();
     const cancelBtn = screen.getByText('취소');
     fireEvent.click(cancelBtn);

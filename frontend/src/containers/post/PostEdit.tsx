@@ -80,8 +80,9 @@ const PostEdit = () => {
   const navigate = useNavigate();
 
   const cancelOnClick = () => {
-    // alert('are you sure?');
-    navigate(POST_DETAIL);
+    if (window.confirm('정말 편집을 취소하시겠습니까?')) {
+      navigate(POST_DETAIL);
+    }
   };
   const confirmOnClick = () => {
     if (user && post_id) {

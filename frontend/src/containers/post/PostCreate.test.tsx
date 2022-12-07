@@ -123,6 +123,7 @@ describe('[PostCreate Page]', () => {
   });
   test('write cancle button', () => {
     setup();
+    global.confirm = () => true;
     const cancelBtn = screen.getByText('취소');
     fireEvent.click(cancelBtn);
     expect(mockNavigate).toBeCalledTimes(1);
