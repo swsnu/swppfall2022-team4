@@ -483,5 +483,8 @@ const ContentGroupSection = styled.div`
 `;
 
 const OtherContentSelect = styled.select`
-  padding: 4px 14px;
+  width: 360px;
+  text-align: center;
+  padding: 4px 0px;
+  border-radius: 10px;
 `;

@@ -324,6 +324,8 @@ const TagInput = styled.input`
 const TagSelect = styled.select`
   padding: 5px 8px;
   margin: 6px 10px;
+  text-align: center;
+  border-radius: 10px;
 `;
 
 const TagSubWrapper = styled(ColumnFlex)``;
