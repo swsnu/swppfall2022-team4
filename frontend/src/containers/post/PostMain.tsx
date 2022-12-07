@@ -123,7 +123,12 @@ const PostMain = () => {
         <TagBubbleWrapper>
           {popularTags &&
             popularTags.map(tag => (
-              <TagBubble key={tag.id} color={tag.color}>
+              <TagBubble
+                key={tag.id}
+                color={tag.color}
+                onClick={() => dispatch(postActions.toggleFilterTag(tag))}
+                style={{ cursor: 'pointer' }}
+              >
                 {tag.name}
               </TagBubble>
             ))}

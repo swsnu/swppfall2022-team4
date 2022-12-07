@@ -175,6 +175,7 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                                     ? UNSELECTED
                                     : tag.color
                                 }
+                                style={{ cursor: 'pointer' }}
                                 onClick={() => dispatch(postActions.toggleFilterTag(tag))}
                               >
                                 {tagClass.class_type === 'workout'
@@ -193,6 +194,7 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                                   setNewTagInput('');
                                   setCreateCategory(tagClass.id);
                                 }}
+                                style={{ cursor: 'pointer' }}
                               >
                                 눌러서 추가
                               </TagBubble>
@@ -263,7 +265,12 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                           <TagRankingItem key={index}>
                             <span>{index + 1} 위</span>
                             <div>
-                              <TagBubble key={tag.id} color={tag.color}>
+                              <TagBubble
+                                key={tag.id}
+                                color={tag.color}
+                                onClick={() => dispatch(postActions.toggleFilterTag(tag))}
+                                style={{ cursor: 'pointer' }}
+                              >
                                 {tag.name} | 글 {tag.posts} 개
                               </TagBubble>
                             </div>
