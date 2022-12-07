@@ -34,18 +34,16 @@ const InformationDetail = () => {
       );
   }, []);
   const InfoPageYoutubeItem = ({ youtube }: InfoPageYoutubeIprops) => (
-    <YoutubeItem
-      onClick={() => {
-        window.location.href = `https://www.youtube.com/watch?v=${youtube.video_id}`;
-      }}
-    >
-      <img src={youtube.thumbnail} alt="youtube" />
-      <YoutubeTitle>{youtube.title}</YoutubeTitle>
-      <div>
-        <span>{youtube.channel}</span>
-        <span>{timeAgoFormat(new Date(), new Date(youtube.published))}</span>
-      </div>
-    </YoutubeItem>
+    <a target="_blank" href={`https://www.youtube.com/watch?v=${youtube.video_id}`}>
+      <YoutubeItem>
+        <img src={youtube.thumbnail} alt="youtube" />
+        <YoutubeTitle>{youtube.title}</YoutubeTitle>
+        <div>
+          <span>{youtube.channel}</span>
+          <span>{timeAgoFormat(new Date(), new Date(youtube.published))}</span>
+        </div>
+      </YoutubeItem>
+    </a>
   );
   return (
     <PostPageWrapper>
