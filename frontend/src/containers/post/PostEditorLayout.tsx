@@ -346,6 +346,7 @@ const TitleInput = styled.input`
   height: 100%;
   padding: 8px 30px;
   font-size: 23px;
+  font-family: NanumSquareR;
   border: none;
   border-radius: 15px;
 `;
@@ -367,6 +368,7 @@ const ContentTextArea = styled.textarea`
   height: 100%;
   padding: 16px 30px;
   font-size: 20px;
+  font-family: NanumSquareR;
   resize: none;
   border: none;
   border-top-left-radius: 15px;
@@ -408,6 +410,7 @@ const PostImageBtn = styled(ColumnCenterFlex)`
 const SectionTitle = styled.span<IPropsContentActive>`
   width: 100%;
   font-size: 22px;
+  font-family: NanumSquareR;
   color: var(--fit-support-gray);
   ${({ isActive }) =>
     isActive &&

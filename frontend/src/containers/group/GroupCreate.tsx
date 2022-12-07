@@ -473,7 +473,9 @@ const GroupCreate = () => {
                         placeholder="장소 검색"
                       />
                       {clickedAddress && (
-                        <div style={{ marginTop: '10px' }}>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>
+                        <div
+                          style={{ marginTop: '10px', fontFamily: 'Noto Sans KR' }}
+                        >{`그룹 장소를 ${clickedAddress} 로 합니다.`}</div>
                       )}
                       <Map // 로드뷰를 표시할 Container
                         center={{
@@ -530,7 +532,7 @@ const GroupCreate = () => {
                         {currentLocation.errMsg && (
                           <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>
                         )}
-                        <div>
+                        <div style={{ fontFamily: 'Noto Sans KR' }}>
                           {currentLocation.isLoading
                             ? '현위치를 불러오는 중입니다.'
                             : '현위치를 성공적으로 불렀습니다.'}

@@ -196,7 +196,8 @@ const GroupMiddleLine = styled.div`
   display: flex;
   width: 100%;
   height: 20px;
-  font-family: Acme;
+  font-family: 'Noto Sans KR';
+  font-size: 14px;
   margin: 3px 0;
 `;
 const GroupElementHeader = styled.div`

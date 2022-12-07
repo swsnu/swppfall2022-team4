@@ -321,7 +321,7 @@ const SideWrapper = styled.div`
 
 const GroupDate = styled.div`
   font-size: 20px;
-  font-family: FugazOne;
+  font-family: 'Noto Sans KR', sans-serif;
   margin-bottom: 20px;
 `;
 const GroupNumber = styled.div`

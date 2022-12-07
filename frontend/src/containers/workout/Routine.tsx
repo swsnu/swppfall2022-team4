@@ -506,9 +506,8 @@ const AnyButton = styled.button`
   background-color: #d7efe3;
   border: 0;
   border-radius: 8px;
-  font-family: FugazOne;
-  font-size: 12px;
-  font-weight: 600;
+  font-family: 'Noto Sans KR';
+  font-size: 13px;
   cursor: pointer;
   transition: background-color 0.15s linear;
   &:hover {
