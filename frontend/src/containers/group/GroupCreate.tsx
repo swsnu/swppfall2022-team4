@@ -53,6 +53,7 @@ const GroupCreate = () => {
   // goal
   const [workout_category, setWorkoutCategory] = useState('등운동');
   const [workout_type, setWorkoutType] = useState<string | null>(null);
+  const visible_input = workout_category === '기타운동' || workout_category === '유산소' ? 'hidden' : 'visible';
   const [weight, setWeight] = useState<number | null>(null);
   const [rep, setRep] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
@@ -82,7 +83,7 @@ const GroupCreate = () => {
   };
 
   const createGoal = () => {
-    if (workout_type && weight && rep && set && wtime) {
+    if (workout_category && workout_type && wtime) {
       const goal: FitelementRequestType = {
         type: 'goal',
         category: workout_category,
@@ -395,6 +396,7 @@ const GroupCreate = () => {
                       className="type2"
                       type="number"
                       min="0"
+                      disabled={visible_input == 'hidden'}
                       value={weight || ''}
                       onChange={e => setWeight(Number(e.target.value))}
                     />
@@ -403,6 +405,7 @@ const GroupCreate = () => {
                       className="type2"
                       type="number"
                       min="0"
+                      disabled={visible_input == 'hidden'}
                       value={rep || ''}
                       onChange={e => setRep(Number(e.target.value))}
                     />
@@ -411,6 +414,7 @@ const GroupCreate = () => {
                       className="type2"
                       type="number"
                       min="0"
+                      disabled={visible_input == 'hidden'}
                       value={set || ''}
                       onChange={e => setSet(Number(e.target.value))}
                     />

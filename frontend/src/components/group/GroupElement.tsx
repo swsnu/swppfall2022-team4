@@ -48,7 +48,7 @@ export const GroupElement = (props: IProps) => {
               overflow: 'hidden',
             }}
           >
-            {props.group_name.length > 10 ? ' ' + props.group_name.slice(0, 10) + '...' : ' ' + props.group_name}
+            {props.group_name.length > 7 ? ' ' + props.group_name.slice(0, 7) + '...' : ' ' + props.group_name}
           </GroupMiddleLine>
           <GroupMiddleLine>
             <BsFillPersonFill />
