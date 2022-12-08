@@ -264,11 +264,11 @@ const GroupCert = () => {
               <LogHeader>
                 <div style={{ marginRight: '20px' }}></div>
                 <LogCategory>부위</LogCategory>
-                <LogCategory className="type">종류</LogCategory>
-                <LogCategory>강도</LogCategory>
-                <LogCategory>반복</LogCategory>
-                <LogCategory className="type">세트</LogCategory>
-                <LogCategory className="type">시간(분)</LogCategory>
+                <LogCategory className="type3">종류</LogCategory>
+                <LogCategory className="type">강도</LogCategory>
+                <LogCategory className="type2">반복</LogCategory>
+                <LogCategory>세트</LogCategory>
+                <LogCategory className="type4">시간(분)</LogCategory>
                 <div style={{ marginRight: '40px' }}></div>
               </LogHeader>
               <LogBody>
@@ -488,8 +488,21 @@ const LogCategory = styled.div`
   font-family: IBMPlexSansThaiLooped;
   color: black;
 
-  .type && {
+  &&.type {
+    padding-left: 65px;
+  }
+
+  &&.type2 {
+    padding-left: 55px;
+  }
+
+  &&.type3 {
     padding-left: 10px;
+    margin-right: 10px;
+  }
+
+  &&.type4 {
+    padding-right: 5px;
   }
 `;
 
