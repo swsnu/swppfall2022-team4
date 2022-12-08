@@ -21,10 +21,9 @@ https://fitogether.site/
     python manage.py migrate
     python manage.py runserver 0.0.0.0:8000
 ### Websocket setting
-    # redis-server should be installed. (apt-get install redis-server)
+    # redis-server should be running in the background.
     
     cd backend
-    /etc/init.d/redis-server start
     daphne -b 0.0.0.0 -p 8001 FITogether.asgi:application
     
 ## Testing  
