@@ -102,9 +102,9 @@ export type FitelementRequestType = {
   type: string;
   workout_type: string;
   category: string;
-  weight: number;
-  rep: number;
-  set: number;
+  weight: number | null;
+  rep: number | null;
+  set: number | null;
   time: number;
 };
 
