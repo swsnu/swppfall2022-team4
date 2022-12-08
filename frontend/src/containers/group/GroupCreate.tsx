@@ -69,7 +69,10 @@ const GroupCreate = () => {
     errMsg: null,
     isLoading: true,
   });
-  const [clickedPosition, setClickedPosition] = useState<coordinateType>({ lat: null, lng: null });
+  const [clickedPosition, setClickedPosition] = useState<coordinateType>({
+    lat: null,
+    lng: null,
+  });
   const [clickedAddress, setClickedAddress] = useState('');
   const [searchResult, setSearchResult] = useState<keywordSearchResultType[]>([]);
   const [map, setMap] = useState<kakao.maps.Map>();
@@ -396,7 +399,7 @@ const GroupCreate = () => {
                       className="type2"
                       type="number"
                       min="0"
-                      disabled={visible_input == 'hidden'}
+                      disabled={visible_input === 'hidden'}
                       value={weight || ''}
                       onChange={e => setWeight(Number(e.target.value))}
                     />
@@ -405,7 +408,7 @@ const GroupCreate = () => {
                       className="type2"
                       type="number"
                       min="0"
-                      disabled={visible_input == 'hidden'}
+                      disabled={visible_input === 'hidden'}
                       value={rep || ''}
                       onChange={e => setRep(Number(e.target.value))}
                     />
@@ -414,7 +417,7 @@ const GroupCreate = () => {
                       className="type2"
                       type="number"
                       min="0"
-                      disabled={visible_input == 'hidden'}
+                      disabled={visible_input === 'hidden'}
                       value={set || ''}
                       onChange={e => setSet(Number(e.target.value))}
                     />
@@ -478,7 +481,10 @@ const GroupCreate = () => {
                       />
                       {clickedAddress && (
                         <div
-                          style={{ marginTop: '10px', fontFamily: 'Noto Sans KR' }}
+                          style={{
+                            marginTop: '10px',
+                            fontFamily: 'Noto Sans KR',
+                          }}
                         >{`그룹 장소를 ${clickedAddress} 로 합니다.`}</div>
                       )}
                       <Map // 로드뷰를 표시할 Container
@@ -501,9 +507,19 @@ const GroupCreate = () => {
                         }}
                         onCreate={setMap}
                       >
-                        <MapMarker position={{ lat: currentLocation.center.lat, lng: currentLocation.center.lng }} />
+                        <MapMarker
+                          position={{
+                            lat: currentLocation.center.lat,
+                            lng: currentLocation.center.lng,
+                          }}
+                        />
                         {clickedPosition.lat && clickedPosition.lng && (
-                          <MapMarker position={{ lat: clickedPosition.lat, lng: clickedPosition.lng }} />
+                          <MapMarker
+                            position={{
+                              lat: clickedPosition.lat,
+                              lng: clickedPosition.lng,
+                            }}
+                          />
                         )}
                         {searchResult.map(marker => (
                           <MapMarker
@@ -511,7 +527,10 @@ const GroupCreate = () => {
                             position={marker.position}
                             onClick={() => {
                               setMarkerInfo(marker.content);
-                              setClickedPosition({ lat: marker.position.lat, lng: marker.position.lng });
+                              setClickedPosition({
+                                lat: marker.position.lat,
+                                lng: marker.position.lng,
+                              });
                             }}
                           >
                             {markerInfo === marker.content && (
