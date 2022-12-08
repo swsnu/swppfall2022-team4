@@ -243,11 +243,13 @@ const PostDetail = () => {
 
   const postDeleteOnClick = () => {
     if (post_id) {
-      dispatch(
-        postActions.deletePost({
-          post_id,
-        }),
-      );
+      if (window.confirm('정말 글을 삭제하시겠습니까?')) {
+        dispatch(
+          postActions.deletePost({
+            post_id,
+          }),
+        );
+      }
     }
   };
 
@@ -331,16 +333,18 @@ const PostDetail = () => {
 
   const commentDeleteOnClick = (target_id: string) => {
     if (target_id && post_id) {
-      dispatch(
-        postActions.deleteComment({
-          comment_id: target_id,
-        }),
-      );
-      dispatch(
-        postActions.getPostComment({
-          post_id,
-        }),
-      );
+      if (window.confirm('정말 댓글을 삭제하시겠습니까?')) {
+        dispatch(
+          postActions.deleteComment({
+            comment_id: target_id,
+          }),
+        );
+        dispatch(
+          postActions.getPostComment({
+            post_id,
+          }),
+        );
+      }
     }
     changeCommentNum(Date.now());
   };
@@ -767,8 +771,7 @@ const PostTimeText = styled.span`
   margin-bottom: 2px;
 `;
 
-const ArticleBodyContent = styled.div`
-  display: flex;
+const ArticleBodyContent = styled.span`
   width: 100%;
   height: 100%;
   padding: 10px 20px;
@@ -777,6 +780,7 @@ const ArticleBodyContent = styled.div`
   font-family: 'Noto Sans KR';
   word-wrap: break-word;
   word-break: break-all;
+  white-space: pre-line;
 `;
 
 // Article Comment List

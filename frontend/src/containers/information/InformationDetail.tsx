@@ -34,18 +34,16 @@ const InformationDetail = () => {
       );
   }, []);
   const InfoPageYoutubeItem = ({ youtube }: InfoPageYoutubeIprops) => (
-    <YoutubeItem
-      onClick={() => {
-        window.location.href = `https://www.youtube.com/watch?v=${youtube.video_id}`;
-      }}
-    >
-      <img src={youtube.thumbnail} alt="youtube" />
-      <YoutubeTitle>{youtube.title}</YoutubeTitle>
-      <div>
-        <span>{youtube.channel}</span>
-        <span>{timeAgoFormat(new Date(), new Date(youtube.published))}</span>
-      </div>
-    </YoutubeItem>
+    <a target="_blank" href={`https://www.youtube.com/watch?v=${youtube.video_id}`}>
+      <YoutubeItem>
+        <img src={youtube.thumbnail} alt="youtube" />
+        <YoutubeTitle>{youtube.title}</YoutubeTitle>
+        <div>
+          <span>{youtube.channel}</span>
+          <span>{timeAgoFormat(new Date(), new Date(youtube.published))}</span>
+        </div>
+      </YoutubeItem>
+    </a>
   );
   return (
     <PostPageWrapper>
@@ -110,11 +108,19 @@ const InformationDetail = () => {
                 )}
               </ArticleItemWrapper>
             </SectionSubWrapper>
-            <YoutubeItemWrapper>
-              {info.contents?.youtubes.map(youtube => (
-                <InfoPageYoutubeItem key={youtube.video_id} youtube={youtube} />
-              ))}
-            </YoutubeItemWrapper>
+            {info.contents?.youtubes.length !== 0 ? (
+              <YoutubeItemWrapper>
+                {info.contents?.youtubes.map(youtube => (
+                  <InfoPageYoutubeItem key={youtube.video_id} youtube={youtube} />
+                ))}
+              </YoutubeItemWrapper>
+            ) : (
+              <YoutubeEmptyWrapper>
+                <EmptyContent>
+                  유튜브 영상이 아직 없어요! <br /> <br /> 잠시 기다리신 후 새로고침해보세요!
+                </EmptyContent>
+              </YoutubeEmptyWrapper>
+            )}
           </SectionWrapper>
         )}
       </PostContentWrapper>
@@ -226,6 +232,15 @@ const YoutubeItemWrapper = styled(ScrollShadow)`
   @media all and (max-width: 700px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const YoutubeEmptyWrapper = styled(ScrollShadow)`
+  height: 100%;
+  width: 100%;
+  padding: 15px 10px;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
+  background-color: #ffffff;
 `;
 
 const YoutubeItem = styled.div`
