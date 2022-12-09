@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -7,19 +8,26 @@ import { useNavigate } from 'react-router-dom';
 import { tagActions } from 'store/slices/tag';
 import { TagBubble } from 'components/tag/tagbubble';
 import SearchBar from 'components/common/SearchBar';
+import { get_image } from 'components/fitelement/FitElement';
+import { ScrollShadow } from 'components/common/ScrollShadow';
 
 const InformationLobby = () => {
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { info, tagList } = useSelector(({ info, tag }: RootState) => ({
+  const { info, tagList, user } = useSelector(({ info, tag, user }: RootState) => ({
     info: info,
     tagList: tag.tagList,
+    user: user.user,
   }));
   useEffect(() => {
     dispatch(infoActions.initializeInformation());
     dispatch(tagActions.getTags());
   }, []);
+
+  useEffect(() => {
+    if (user && info.error !== 'NotFound') navigate(`/information/${search}`);
+  }, [info.contents]);
 
   return (
     <PostPageWrapper>
@@ -28,13 +36,6 @@ const InformationLobby = () => {
           <SearchBar
             onSubmit={e => {
               e.preventDefault();
-              if (info.contents?.basic.name !== search)
-                dispatch(
-                  infoActions.getInformation({
-                    information_name: search,
-                  }),
-                );
-              navigate(`/information/${search}`);
             }}
             onClear={() => {
               setSearch('');
@@ -46,28 +47,37 @@ const InformationLobby = () => {
 
         <SectionWrapper>
           <SectionItemWrapper>
-            <span>즐겨찾기</span>
-            <br />
-            <span>검색기록</span>
-          </SectionItemWrapper>
-          <SectionItemWrapper>
-            <span>운동 태그 목록</span>
-            <br />
             {tagList?.map(tagClass => {
               return (
-                tagClass.class_type === 'workout' &&
-                tagClass.tags.map(tag => {
-                  return (
-                    <TagBubble
-                      style={{ cursor: 'pointer' }}
-                      key={tag.id}
-                      color={tag.color}
-                      onClick={() => navigate(`/information/${tag.name}`)}
-                    >
-                      {tag.name}
-                    </TagBubble>
-                  );
-                })
+                (tagClass.tags.map(tag => tag.name.includes(search)).includes(true) || search === '') &&
+                tagClass.class_type === 'workout' && (
+                  <WorkoutClassWrapper key={tagClass.id}>
+                    <WorkoutClassTitleWrapper>
+                      <TagClassImg
+                        src={require(`assets/images/workout_log/fitelement_category/${get_image(
+                          tagClass.class_name,
+                        )}.png`)}
+                      />
+                      <span>{tagClass.class_name}</span>
+                    </WorkoutClassTitleWrapper>
+                    <WorkoutClassTagWrapper>
+                      {tagClass.tags.map(tag => {
+                        return (
+                          (tag.name.includes(search) || search === '') && (
+                            <TagBubble
+                              style={{ cursor: 'pointer' }}
+                              key={tag.id}
+                              color={tag.color}
+                              onClick={() => navigate(`/information/${tag.name}`)}
+                            >
+                              {tag.name}
+                            </TagBubble>
+                          )
+                        );
+                      })}
+                    </WorkoutClassTagWrapper>
+                  </WorkoutClassWrapper>
+                )
               );
             })}
           </SectionItemWrapper>
@@ -78,7 +88,7 @@ const InformationLobby = () => {
 };
 
 const PostPageWrapper = styled.div`
-  background-color: #d7efe3;
+  background-color: var(--fit-green-back);
   width: 100%;
   height: 100%;
   min-height: 100vh;
@@ -105,25 +115,62 @@ const PostContentWrapper = styled.div`
 const TopElementWrapperWithoutPadding = styled.div`
   margin: 40px 0px 15px 0px;
   width: 100%;
+  border-radius: 15px;
   background-color: #ffffff;
+`;
+
+const TagClassImg = styled.img`
+  max-width: 40px;
 `;
 
 const SectionWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr;
-  row-gap: 10px;
-  column-gap: 10px;
   width: 100%;
-  min-height: 600px;
-  height: 70vh;
+  min-height: 875px;
+  max-height: 875px;
 `;
 
-const SectionItemWrapper = styled.div`
+const SectionItemWrapper = styled(ScrollShadow)`
   width: 100%;
   padding: 15px 20px;
-  border: 1px solid black;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
   background-color: #ffffff;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  > div:last-child,
+  > div:nth-last-child(2) {
+    margin-bottom: 10px;
+  }
 `;
 
+const WorkoutClassWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+`;
+
+const WorkoutClassTitleWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  > span {
+    font-size: 22px;
+    margin-left: 10px;
+  }
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--fit-support-gray-bright);
+`;
+const WorkoutClassTagWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 8px;
+`;
 export default InformationLobby;

@@ -1,37 +1,42 @@
 from django.test import TestCase, Client
-from .models import Group, GroupCert
+from groups.models import Group, GroupCert, JoinRequest
 from users.models import User
 from workouts.models import FitElement
 from tags.models import Tag, TagClass
 import bcrypt
 import json
-from datetime import datetime, date
+from datetime import datetime
+
 
 class GroupTestCase(TestCase):
     def setUp(self):
         user1 = User.objects.create(
-                username='user1',
-                hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
-                nickname='user2',
-                gender='male',
-                age=23,
-                height=180,
-                weight=75,
-                image="profile_default.png",
-                exp=0,
-                level=1
+            username='user1',
+            hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode(
+                'utf-8'
+            ),
+            nickname='user2',
+            gender='male',
+            age=23,
+            height=180,
+            weight=75,
+            image="profile_default.png",
+            exp=0,
+            level=1,
         )
         user2 = User.objects.create(
-                username='user2',
-                hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
-                nickname='user2',
-                gender='male',
-                age=23,
-                height=180,
-                weight=75,
-                image="profile_default.png",
-                exp=0,
-                level=1
+            username='user2',
+            hashed_password=bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt()).decode(
+                'utf-8'
+            ),
+            nickname='user2',
+            gender='male',
+            age=23,
+            height=180,
+            weight=75,
+            image="profile_default.png",
+            exp=0,
+            level=1,
         )
         tag_class1 = TagClass.objects.create(class_name="workout", color="#101010")
         tag1 = Tag.objects.create(tag_name="deadlift", tag_class=tag_class1)
@@ -54,8 +59,10 @@ class GroupTestCase(TestCase):
             description='Testing',
             free=True,
         )
-        gr1.members.set([user1,user2])
+        gr1.members.set([user1, user2])
         gr1.goal.add(fit1)
+        JoinRequest.objects.create(group=gr1)
+
         gr2 = Group.objects.create(
             group_name='group2',
             group_leader=user2,
@@ -64,10 +71,12 @@ class GroupTestCase(TestCase):
             start_date='2022-01-01',
             end_date='2022-12-01',
             description='Testing2',
-            free=True
+            free=True,
         )
-        gr2.members.set([user1,user2])
+        gr2.members.set([user1, user2])
         gr2.goal.add(fit1)
+        JoinRequest.objects.create(group=gr2)
+
         gr3 = Group.objects.create(
             group_name='group3',
             group_leader=user2,
@@ -76,14 +85,13 @@ class GroupTestCase(TestCase):
             start_date='2022-01-01',
             end_date='2022-12-01',
             description='Testing2',
-            free=True
+            free=True,
         )
         gr3.members.set([user2])
         gr3.goal.add(fit1)
+        JoinRequest.objects.create(group=gr3)
         cert1 = GroupCert.objects.create(
-            group=gr1,
-            member=user1,
-            date=datetime(2019, 12, 12).date()
+            group=gr1, member=user1, date=datetime(2019, 12, 12).date()
         )
         cert1.fit_element.add(fit1)
 
@@ -93,12 +101,9 @@ class GroupTestCase(TestCase):
         csrftoken = token_response.cookies['csrftoken'].value
         client.post(
             '/api/user/login/',
-            {
-                'username': 'user1',
-                'password': 'password'
-            },
+            {'username': 'user1', 'password': 'password'},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         return client, csrftoken
 
@@ -111,155 +116,187 @@ class GroupTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
 
         ## 정상 create
-        res = client.post('/api/group/',{
-            'group_name': 'test1',
-            'number': 100,
-            'start_date': '2019-01-01',
-            'end_date':'2019-12-01',
-            'description':'Testing',
-            'free':True,
-            'goal':[{
-               'type':'goal',
-               'workout_type': 'deadlift',
-               'category':'etc',
-               'weight':100,
-               'rep':10,
-               'set':10,
-               'time':30
-                }],
-            'lat': 31,
-            'lng': 126,
-            'address': 'jeju',
+        res = client.post(
+            '/api/group/',
+            {
+                'group_name': 'test1',
+                'number': 100,
+                'start_date': '2019-01-01',
+                'end_date': '2019-12-01',
+                'description': 'Testing',
+                'free': True,
+                'goal': [
+                    {
+                        'type': 'goal',
+                        'workout_type': 'deadlift',
+                        'category': 'etc',
+                        'weight': 100,
+                        'rep': 10,
+                        'set': 10,
+                        'time': 30,
+                    }
+                ],
+                'lat': 31,
+                'lng': 126,
+                'address': 'jeju',
+                'tags': [],
+                'prime_tag': None,
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
-            )
-        self.assertEqual(res.status_code, 201)
-
-        res = client.post('/api/group/',{
-            'group_name': 'test2',
-            'number': 100,
-            'description':'Testing',
-            'start_date': None,
-            'end_date': None,
-            'free':True,
-            'goal':[{
-               'type':'goal',
-               'workout_type':'deadlift',
-               'category':'etc',
-               'weight':100,
-               'rep':10,
-               'set':10,
-               'time':30
-                }],
-            'lat': 31,
-            'lng': 126,
-            'address': 'jeju',
-            },
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 201)
 
-        res = client.post('/api/group/',{
-            'group_name': 'test2',
-            'description':'Testing',
-            'free':True,
-            'start_date': None,
-            'end_date': None,
-            'number': None,
-            'goal':[{
-               'type':'goal',
-               'workout_type':'deadlift',
-               'category':'etc',
-               'weight':100,
-               'rep':10,
-               'set':10,
-               'time':30
-                }],
-            'lat': 31,
-            'lng': 126,
-            'address': 'jeju',
+        res = client.post(
+            '/api/group/',
+            {
+                'group_name': 'test2',
+                'number': 100,
+                'description': 'Testing',
+                'start_date': None,
+                'end_date': None,
+                'free': True,
+                'goal': [
+                    {
+                        'type': 'goal',
+                        'workout_type': 'deadlift',
+                        'category': 'etc',
+                        'weight': 100,
+                        'rep': 10,
+                        'set': 10,
+                        'time': 30,
+                    }
+                ],
+                'lat': 31,
+                'lng': 126,
+                'address': 'jeju',
+                'tags': [],
+                'prime_tag': None,
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
+        )
+        self.assertEqual(res.status_code, 201)
+
+        res = client.post(
+            '/api/group/',
+            {
+                'group_name': 'test2',
+                'description': 'Testing',
+                'free': True,
+                'start_date': None,
+                'end_date': None,
+                'number': None,
+                'goal': [
+                    {
+                        'type': 'goal',
+                        'workout_type': 'deadlift',
+                        'category': 'etc',
+                        'weight': 100,
+                        'rep': 10,
+                        'set': 10,
+                        'time': 30,
+                    }
+                ],
+                'lat': 31,
+                'lng': 126,
+                'address': 'jeju',
+                'tags': [],
+                'prime_tag': None,
+            },
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 201)
 
         ## body 값이 이상할 때
-        res = client.post('/api/group/',{
-            'group_name': 'test2',
-            'free':True,
-            'start_date': None,
-            'end_date': None,
-            'number': None,
-            'goal':[{
-               'type':'goal',
-               'workout_type':'deadlift',
-               'category':'etc',
-               'weight':100,
-               'rep':10,
-               'set':10,
-               'time':30
-                }],
+        res = client.post(
+            '/api/group/',
+            {
+                'group_name': 'test2',
+                'free': True,
+                'start_date': None,
+                'end_date': None,
+                'number': None,
+                'goal': [
+                    {
+                        'type': 'goal',
+                        'workout_type': 'deadlift',
+                        'category': 'etc',
+                        'weight': 100,
+                        'rep': 10,
+                        'set': 10,
+                        'time': 30,
+                    }
+                ],
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 400)
 
-        res = client.post('/api/group/',{
-            'group_name': 'test2',
-            'description':'Testing',
-            'free':True,
-            'start_date': None,
-            'end_date': None,
-            'number': None,
-            'goal':[{
-               'workout_type':'deadlift',
-               'category':'etc',
-               'weight':100,
-               'rep':10,
-               'set':10,
-               'time':30
-                }],
+        res = client.post(
+            '/api/group/',
+            {
+                'group_name': 'test2',
+                'description': 'Testing',
+                'free': True,
+                'start_date': None,
+                'end_date': None,
+                'number': None,
+                'goal': [
+                    {
+                        'workout_type': 'deadlift',
+                        'category': 'etc',
+                        'weight': 100,
+                        'rep': 10,
+                        'set': 10,
+                        'time': 30,
+                    }
+                ],
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 400)
 
-        res = client.post('/api/group/',{
-            'group_name': 'test2',
-            'free':True,
-            'description':'Testing',
-            'start_date': None,
-            'end_date': None,
-            'number': None,
+        res = client.post(
+            '/api/group/',
+            {
+                'group_name': 'test2',
+                'free': True,
+                'description': 'Testing',
+                'start_date': None,
+                'end_date': None,
+                'number': None,
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 400)
 
-        res = client.post('/api/group/',{
-            'group_name': 'test2',
-            'free':True,
-            'description':'Testing',
-            'start_date': None,
-            'number': None,
-            'goal':[{
-               'type':'goal',
-               'workout_type':'deadlift',
-               'category':'etc',
-               'weight':100,
-               'rep':10,
-               'set':10,
-               'time':30
-                }],
+        res = client.post(
+            '/api/group/',
+            {
+                'group_name': 'test2',
+                'free': True,
+                'description': 'Testing',
+                'start_date': None,
+                'number': None,
+                'goal': [
+                    {
+                        'type': 'goal',
+                        'workout_type': 'deadlift',
+                        'category': 'etc',
+                        'weight': 100,
+                        'rep': 10,
+                        'set': 10,
+                        'time': 30,
+                    }
+                ],
             },
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 400)
 
@@ -274,21 +311,18 @@ class GroupTestCase(TestCase):
         res = client.get('/api/group/10000/')
         self.assertEqual(res.status_code, 404)
 
-        res = client.delete('/api/group/1/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.delete(
+            '/api/group/1/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 204)
 
-        res = client.delete('/api/group/2/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.delete(
+            '/api/group/2/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 403)
 
-        res = client.delete('/api/group/10000/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.delete(
+            '/api/group/10000/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 404)
 
@@ -309,39 +343,33 @@ class GroupTestCase(TestCase):
         res = client.get('/api/group/10000/member/')
         self.assertEqual(res.status_code, 404)
 
-        res = client.post('/api/group/3/member/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.post(
+            '/api/group/3/member/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 204)
 
-        res = client.post('/api/group/1/member/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.post(
+            '/api/group/1/member/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 400)
 
-        res = client.post('/api/group/10000/member/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.post(
+            '/api/group/10000/member/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 404)
 
-        res = client.delete('/api/group/3/member/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.delete(
+            '/api/group/3/member/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 204)
 
-        res = client.delete('/api/group/3/member/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.delete(
+            '/api/group/3/member/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 400)
 
-        res = client.delete('/api/group/10000/member/',
-            content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+        res = client.delete(
+            '/api/group/10000/member/', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken
         )
         self.assertEqual(res.status_code, 404)
 
@@ -368,24 +396,27 @@ class GroupTestCase(TestCase):
         token_response = client.get('/api/user/token/')
         csrftoken = token_response.cookies['csrftoken'].value
 
-        res = client.post('/api/group/10000/leader_change/',
+        res = client.post(
+            '/api/group/10000/leader_change/',
             {'username': 'user2'},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 404)
 
-        res = client.post('/api/group/1/leader_change/',
+        res = client.post(
+            '/api/group/1/leader_change/',
             {'username': 'user3'},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 400)
 
-        res = client.post('/api/group/1/leader_change/',
+        res = client.post(
+            '/api/group/1/leader_change/',
             {'username': 'user2'},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 204)
 
@@ -400,16 +431,18 @@ class GroupTestCase(TestCase):
         res = client.get('/api/group/3/cert/2020/9/9/')
         self.assertEqual(res.status_code, 200)
 
-        res = client.post('/api/group/3/cert/2019/12/11/',
+        res = client.post(
+            '/api/group/3/cert/2019/12/11/',
             {'fitelement_id': 1},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 200)
 
-        res = client.post('/api/group/3/cert/2019/12/11/',
+        res = client.post(
+            '/api/group/3/cert/2019/12/11/',
             {'fitelement_id': 1},
             content_type='application/json',
-            HTTP_X_CSRFTOKEN=csrftoken
+            HTTP_X_CSRFTOKEN=csrftoken,
         )
         self.assertEqual(res.status_code, 200)

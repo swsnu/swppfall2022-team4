@@ -2,6 +2,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
+import Router from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
 import { rootReducer } from 'store';
 import PostCreate from './PostCreate';
@@ -12,6 +13,8 @@ import userEvent from '@testing-library/user-event';
 
 import { Store } from 'react-notifications-component';
 import client from 'store/apis/client';
+import { RoutineType } from 'store/slices/workout';
+import { Group } from 'store/apis/group';
 
 const originalEnv = process.env;
 
@@ -114,12 +117,13 @@ describe('[PostCreate Page]', () => {
         payload: getTagsResponse,
       });
     });
-    expect(mockDispatch).toBeCalledTimes(1); // getTags
+    expect(mockDispatch).toBeCalledTimes(3); // getTags, getRoutine, getGroups
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/getTags' });
     expect(mockNavigate).toBeCalledTimes(0);
   });
   test('write cancle button', () => {
     setup();
+    global.confirm = () => true;
     const cancelBtn = screen.getByText('취소');
     fireEvent.click(cancelBtn);
     expect(mockNavigate).toBeCalledTimes(1);
@@ -129,7 +133,7 @@ describe('[PostCreate Page]', () => {
     setup();
     const confirmBtn = screen.getByText('완료');
     fireEvent.click(confirmBtn); // cannot click.
-    expect(mockDispatch).toBeCalledTimes(1); // getTags
+    expect(mockDispatch).toBeCalledTimes(3); // getTags
   });
   test('write confirm button after typing', () => {
     setup();
@@ -139,7 +143,7 @@ describe('[PostCreate Page]', () => {
     userEvent.type(titleInput, 'Rullu');
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
-    expect(mockDispatch).toBeCalledTimes(2);
+    expect(mockDispatch).toBeCalledTimes(4);
     expect(mockDispatch).toBeCalledWith({
       payload: {
         title: 'Rullu',
@@ -148,6 +152,8 @@ describe('[PostCreate Page]', () => {
         tags: [],
         images: [],
         prime_tag: undefined,
+        routine: '',
+        group: '',
       },
       type: 'post/createPost',
     });
@@ -160,7 +166,7 @@ describe('[PostCreate Page]', () => {
     userEvent.type(titleInput, 'Rullu');
     userEvent.type(contentInput, 'Ralla');
     fireEvent.click(confirmBtn);
-    expect(mockDispatch).toBeCalledTimes(1);
+    expect(mockDispatch).toBeCalledTimes(3);
   });
   test('post creation success', () => {
     const store = setup();
@@ -170,7 +176,7 @@ describe('[PostCreate Page]', () => {
         payload: createPostResponse,
       });
     });
-    expect(mockDispatch).toBeCalledTimes(3);
+    expect(mockDispatch).toBeCalledTimes(5);
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'post/stateRefresh' });
     expect(mockDispatch).toBeCalledWith({ payload: undefined, type: 'tag/clearTagState' });
 
@@ -179,7 +185,7 @@ describe('[PostCreate Page]', () => {
   });
 });
 
-describe('[PostEditor Page - Tag]', () => {
+describe('[PostEditor Page - Tag, Image]', () => {
   test('set tag', () => {
     const store = setup();
     act(() => {
@@ -323,36 +329,6 @@ describe('[PostEditor Page - Tag]', () => {
     const deleteImageBtn = await screen.findByText('삭제');
     expect(deleteImageBtn).toBeInTheDocument();
   });
-  test('create tag class', () => {
-    const store = setup();
-    act(() => {
-      store.dispatch({
-        type: 'tag/getTagsSuccess',
-        payload: getTagsResponse,
-      });
-    });
-
-    const tagClassOption = screen.getByRole('option', { name: '- 태그 카테고리 생성 -' }); // Tag Class Create
-    userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
-    expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
-
-    const newTagClassInput = screen.getByPlaceholderText('카테고리 이름');
-    userEvent.type(newTagClassInput, 'HumorHumorHumor');
-    userEvent.clear(newTagClassInput);
-    userEvent.type(newTagClassInput, 'Humor');
-
-    const randColorDice = screen.getByTestId('randColorDice');
-    fireEvent.click(randColorDice);
-
-    const newTagClassBtn = screen.getByText('분류 생성');
-    fireEvent.click(newTagClassBtn);
-
-    expect(mockDispatch).toBeCalledTimes(5);
-    expect(mockDispatch).toBeCalledWith({
-      payload: { name: 'Humor', color: expect.anything() },
-      type: 'tag/createTagClass',
-    });
-  });
   test('search tag', () => {
     const store = setup();
     act(() => {
@@ -421,5 +397,136 @@ describe('[PostEditor Page - Tag]', () => {
     const tagClassOption = screen.getByRole('option', { name: '- 태그 검색 -' }); // Tag Class
     userEvent.selectOptions(screen.getByTestId('tagClassSelect'), tagClassOption);
     expect((tagClassOption as HTMLOptionElement).selected).toBeTruthy();
+  });
+});
+
+const routineMock: RoutineType[] = [
+  {
+    id: 1,
+    name: 'routine1',
+    fitelements: [],
+  },
+  {
+    id: 2,
+    name: 'routine2',
+    fitelements: [],
+  },
+];
+
+const groupMock: Group[] = [
+  {
+    id: 1,
+    group_name: 'group',
+    number: null,
+    start_date: null,
+    end_date: null,
+    member_number: 3,
+    lat: null,
+    lng: null,
+    address: null,
+    free: false,
+    my_group: 'not mine',
+    tags: [],
+    prime_tag: undefined,
+  },
+  {
+    id: 2,
+    group_name: 'grou2',
+    number: null,
+    start_date: null,
+    end_date: null,
+    member_number: 3,
+    lat: null,
+    lng: null,
+    address: null,
+    free: false,
+    my_group: 'not mine',
+    tags: [],
+    prime_tag: undefined,
+  },
+];
+
+describe('[PostEditor Page - Group, Routine]', () => {
+  test('set tag', () => {
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'tag/getTagsSuccess',
+        payload: getTagsResponse,
+      });
+      store.dispatch({
+        type: 'workoutlog/getRoutineSuccess',
+        payload: routineMock,
+      });
+      store.dispatch({
+        type: 'group/getGroupsSuccess',
+        payload: {
+          groups: groupMock,
+        },
+      });
+    });
+
+    const routineOption = screen.getByRole('option', { name: routineMock[0].name }); // Routine
+    expect((routineOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('routineSelect'), routineOption);
+    expect((routineOption as HTMLOptionElement).selected).toBeTruthy();
+
+    const groupOption = screen.getByRole('option', { name: groupMock[0].group_name }); // Group
+    expect((groupOption as HTMLOptionElement).selected).not.toBeTruthy();
+    userEvent.selectOptions(screen.getByTestId('groupSelect'), groupOption);
+    expect((groupOption as HTMLOptionElement).selected).toBeTruthy();
+  });
+});
+
+describe('[Group - PostCreate Page]', () => {
+  test('basic rendering', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    setup();
+  });
+  test('write cancle button', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    setup();
+    const cancelBtn = screen.getByText('취소');
+    fireEvent.click(cancelBtn);
+    expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledWith('/group/detail/1/post');
+  });
+  test('write confirm button after typing', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    setup();
+    const confirmBtn = screen.getByText('완료');
+    const titleInput = screen.getByPlaceholderText('제목');
+    const contentInput = screen.getByPlaceholderText('내용');
+    userEvent.type(titleInput, 'Rullu');
+    userEvent.type(contentInput, 'Ralla');
+    fireEvent.click(confirmBtn);
+    expect(mockDispatch).toBeCalledTimes(4);
+    expect(mockDispatch).toBeCalledWith({
+      payload: {
+        title: 'Rullu',
+        content: 'Ralla',
+        author_name: 'username',
+        tags: [],
+        images: [],
+        prime_tag: undefined,
+        routine: '',
+        group: '',
+        group_id: '1',
+      },
+      type: 'post/createPost',
+    });
+  });
+  test('post creation success', () => {
+    jest.spyOn(Router, 'useParams').mockReturnValue({ group_id: '1' });
+    const store = setup();
+    act(() => {
+      store.dispatch({
+        type: 'post/createPostSuccess',
+        payload: createPostResponse,
+      });
+    });
+
+    expect(mockNavigate).toBeCalledTimes(1);
+    expect(mockNavigate).toBeCalledWith(`/group/detail/1/post/${createPostResponse.post_id}`);
   });
 });

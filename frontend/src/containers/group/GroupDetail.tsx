@@ -1,4 +1,6 @@
-import { useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-restricted-globals */
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -6,21 +8,30 @@ import { RootState } from 'index';
 import { groupActions } from 'store/slices/group';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
-import Button1 from 'components/common/buttons/Button1';
 import Button4 from 'components/common/buttons/Button4';
 import Loading from 'components/common/Loading';
 import { FitElement } from 'components/fitelement/FitElement';
+import GroupButton1 from 'components/group/GroupButton1';
+import GroupButton2 from 'components/group/GroupButton2';
+import { TagBubble } from 'components/tag/tagbubble';
 
 const GroupDetail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { group_id } = useParams<{ group_id: string }>();
+  const user = useSelector(({ user }: RootState) => user.user);
+  const socket = useSelector(({ chat }: RootState) => chat.socket);
   const groupActionStatus = useSelector(({ group }: RootState) => group.groupAction.status);
   const group_detail = useSelector(({ group }: RootState) => group.groupDetail.group);
   const group_detail_error = useSelector(({ group }: RootState) => group.groupDetail.error);
   const member_status = useSelector(({ group }: RootState) => group.groupMemberStatus.member_status);
   const groupDeleteStatus = useSelector(({ group }: RootState) => group.groupDelete);
+
+  const [done, setDone] = useState(false);
+  const today = new Date();
+  const date =
+    today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
 
   useEffect(() => {
     if (group_id) {
@@ -39,6 +50,7 @@ const GroupDetail = () => {
   useEffect(() => {
     if (group_id && group_detail) {
       dispatch(groupActions.checkMemberStatus(group_id));
+      if (group_detail.end_date && group_detail.end_date < date) setDone(true);
     }
   }, [group_detail]);
   useEffect(() => {
@@ -51,153 +63,265 @@ const GroupDetail = () => {
   }, [groupDeleteStatus]);
 
   const joinOnClick = () => {
-    if (group_detail?.number == group_detail?.member_number) {
+    if (group_detail?.number === group_detail?.member_number) {
       alert('정원이 모두 찬 그룹입니다.');
     } else if (group_id) {
+      if (user && socket && group_detail) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'group',
+              info: group_detail.group_leader.username,
+              content: `${user.nickname}님이 내 그룹에 참여를 신청했습니다.`,
+              image: user.image,
+              link: `/group/detail/${group_id}/`,
+            },
+          }),
+        );
+      }
       dispatch(groupActions.joinGroup(group_id));
     }
   };
   const exitOnClick = () => {
     if (group_id) {
-      dispatch(groupActions.exitGroup(group_id));
+      if (confirm('정말 그룹을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        if (user && socket && group_detail) {
+          socket.send(
+            JSON.stringify({
+              type: 'notification',
+              data: {
+                category: 'group',
+                info: group_detail.group_leader.username,
+                content: `${user.nickname}님이 내 그룹에서 탈퇴했습니다.`,
+                image: user.image,
+                link: `/group/detail/${group_id}/`,
+              },
+            }),
+          );
+        }
+        dispatch(groupActions.exitGroup(group_id));
+      }
+    }
+  };
+  const deleteOnClick = () => {
+    // eslint-disable-next-line no-restricted-globals
+    if (
+      // eslint-disable-next-line no-restricted-globals
+      confirm('정말 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')
+    ) {
+      if (group_id) dispatch(groupActions.deleteGroup(group_id));
     }
   };
 
   if (!group_id || !group_detail) return <Loading />;
   return (
     <Wrapper>
-      <GroupDetailHeader>
-        <Button4 content="Back" clicked={() => navigate(`/group`)} style={{ alignSelf: 'start' }} />
-        <GroupName>{group_detail.group_name}</GroupName>
-        {group_detail.start_date ? (
-          <GroupDate>{`${group_detail.start_date} ~ ${group_detail.end_date}`}</GroupDate>
-        ) : (
-          <GroupDate>기간 없음</GroupDate>
+      <Button4 content="" clicked={() => navigate(`/group`)} style={{ alignSelf: 'start' }} />
+      <MainWrapper>
+        <GroupWrapper className={done ? 'end' : 'ing'}>
+          <GroupContentWrapper>
+            <GroupAboutText>{group_detail.group_name}</GroupAboutText>
+            {group_detail.start_date ? (
+              <GroupDate>{`${group_detail.start_date} ~ ${group_detail.end_date}`}</GroupDate>
+            ) : (
+              <GroupDate>기간 없음</GroupDate>
+            )}
+            {group_detail.number ? (
+              <GroupNumber>{`인원수: ${group_detail.member_number}명 / ${group_detail.number}명`}</GroupNumber>
+            ) : (
+              <GroupNumber>{`인원수: ${group_detail.member_number}명`}</GroupNumber>
+            )}
+            {group_detail.address ? (
+              <GroupPlace>{`장소: ${group_detail.address}`}</GroupPlace>
+            ) : (
+              <GroupPlace>{`장소: 장소 없음`}</GroupPlace>
+            )}
+            {group_detail.free ? <GroupFree>자유가입 O</GroupFree> : <GroupFree>자유가입 X</GroupFree>}
+            <span>
+              {group_detail.tags.map(tags => {
+                return (
+                  <TagBubble
+                    key={tags.id}
+                    color={tags.color}
+                    isPrime={group_detail.prime_tag && tags.id === group_detail.prime_tag.id}
+                  >
+                    {tags.name}
+                  </TagBubble>
+                );
+              })}
+            </span>
+          </GroupContentWrapper>
+          <GroupContentWrapper>
+            <ProfileImage
+              src={process.env.REACT_APP_API_IMAGE + group_detail.group_leader.image}
+              alt="profile"
+              style={{ marginTop: '20%' }}
+              onClick={() => navigate(`/profile/${group_detail.group_leader.username}`)}
+            />
+            <div style={{ display: 'flex' }}>
+              <GroupAboutSmallText>그룹장 👑 :</GroupAboutSmallText>
+              <GroupAboutNickname>{group_detail.group_leader.username}</GroupAboutNickname>
+            </div>
+            <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
+          </GroupContentWrapper>
+        </GroupWrapper>
+
+        {group_detail.lat && group_detail.lng && group_detail.address && (
+          <GroupWrapper>
+            <GroupContentWrapper1>
+              <GroupAboutText>Place</GroupAboutText>
+              <GroupDetailDate>장소 : {group_detail.address}</GroupDetailDate>
+            </GroupContentWrapper1>
+            <GroupContentWrapper2>
+              <Map // 로드뷰를 표시할 Container
+                center={{
+                  lat: group_detail.lat,
+                  lng: group_detail.lng,
+                }}
+                style={{
+                  width: '100%',
+                  height: '350px',
+                }}
+                level={3}
+              >
+                <MapMarker
+                  position={{
+                    lat: group_detail.lat,
+                    lng: group_detail.lng,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '13px',
+                      backgroundColor: 'white',
+                      padding: '3px',
+                      textAlign: 'center',
+                      borderRadius: '4px',
+                      fontFamily: 'NanumSquareR',
+                      border: '1px solid',
+                    }}
+                  >
+                    {group_detail.address}
+                  </div>
+                </MapMarker>
+              </Map>
+            </GroupContentWrapper2>
+          </GroupWrapper>
         )}
-        {group_detail.number ? (
-          <GroupNumber>{`인원수: ${group_detail.member_number}명 / ${group_detail.number}명`}</GroupNumber>
-        ) : (
-          <GroupNumber>{`인원수: ${group_detail.member_number}명`}</GroupNumber>
-        )}
-        {group_detail.address ? (
-          <GroupPlace>{`장소: ${group_detail.address}`}</GroupPlace>
-        ) : (
-          <GroupPlace>{`장소: 장소 없음`}</GroupPlace>
-        )}
-      </GroupDetailHeader>
-      <div style={{ display: 'flex', gap: '15px', paddingLeft: '60%', paddingTop: '15px' }}>
+
+        <GroupWrapper2>
+          <GroupContentWrapper1>
+            <GroupAboutText>Goal</GroupAboutText>
+            <GroupDetailDate>시작일 : {group_detail.start_date ?? '기한없음'}</GroupDetailDate>
+            <GroupDetailDate>마감일 : {group_detail.end_date ?? '기한없음'}</GroupDetailDate>
+          </GroupContentWrapper1>
+          <GroupContentWrapper2>
+            <GoalListWrapper>
+              <FitHeader>
+                <div style={{ paddingLeft: '5%' }}>부위</div>
+                <div style={{ paddingLeft: '15%' }}>종류</div>
+                <div style={{ paddingLeft: '16%' }}>강도</div>
+                <div style={{ paddingLeft: '10%' }}>반복</div>
+                <div style={{ paddingLeft: '6%' }}>세트</div>
+                <div style={{ paddingLeft: '10%' }}>시간</div>
+              </FitHeader>
+              {group_detail.goal.map((goal, index) => {
+                return (
+                  <FitElement
+                    key={index}
+                    id={index + 1}
+                    type={goal.type}
+                    workout_type={goal.workout_type}
+                    category={goal.category}
+                    weight={goal.weight}
+                    rep={goal.rep}
+                    set={goal.set}
+                    time={goal.time}
+                  />
+                );
+              })}
+            </GoalListWrapper>
+          </GroupContentWrapper2>
+        </GroupWrapper2>
+      </MainWrapper>
+      <SideWrapper>
         {member_status === 'group_leader' && (
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
-            <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
-            <Button1 content="Delete" clicked={() => dispatch(groupActions.deleteGroup(group_id))} />
-          </div>
+          <>
+            <GroupButton2 content="운동 인증" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <GroupButton2 content="그룹 채팅" end={done} clicked={() => navigate(`/group/chat/${group_id}`)} />
+            <GroupButton2 content="그룹 멤버" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <GroupButton2 content="커뮤니티" end={done} clicked={() => navigate(`/group/detail/${group_id}/post`)} />
+            <GroupButton2
+              content="멤버 요청"
+              end={done}
+              clicked={() => navigate(`/group/detail/${group_id}/joinReq`)}
+            />
+            <GroupButton2 content="그룹 삭제" end={done} clicked={deleteOnClick} />
+          </>
         )}
         {member_status === 'group_member' && (
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <Button1 content="Cert" clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
-            <Button1 content="Member" clicked={() => navigate(`/group/detail/${group_id}/member`)} />
-            <Button1 content="Leave" clicked={exitOnClick} />
-          </div>
+          <>
+            <GroupButton2 content="운동 인증" end={done} clicked={() => navigate(`/group/detail/${group_id}/cert`)} />
+            <GroupButton2 content="그룹 채팅" end={done} clicked={() => navigate(`/group/chat/${group_id}`)} />
+            <GroupButton2 content="그룹 멤버" end={done} clicked={() => navigate(`/group/detail/${group_id}/member`)} />
+            <GroupButton2 content="커뮤니티" end={done} clicked={() => navigate(`/group/detail/${group_id}/post`)} />
+            <GroupButton2 content="그룹 탈퇴" end={done} clicked={exitOnClick} />
+          </>
         )}
-        {member_status === 'not_member' && <Button1 content="Join" clicked={joinOnClick} />}
-      </div>
-      <GroupAboutWrapper>
-        <GroupAboutText>About</GroupAboutText>
-        <ProfileImage src={process.env.REACT_APP_API_IMAGE + group_detail.group_leader.image} alt="profile" />
-        <div style={{ display: 'flex' }}>
-          <GroupAboutSmallText>그룹장:</GroupAboutSmallText>
-          <GroupAboutNickname>{group_detail.group_leader.nickname}</GroupAboutNickname>
-        </div>
-        <GroupAboutDescription>{group_detail.description}</GroupAboutDescription>
-      </GroupAboutWrapper>
-
-      {group_detail.lat && group_detail.lng && (
-        <GroupAboutWrapper>
-          <GroupAboutText>Place</GroupAboutText>
-          <GroupDetailDate>장소 : {group_detail.address || '주소명을 불러오지 못했습니다.'}</GroupDetailDate>
-          <Map // 로드뷰를 표시할 Container
-            center={{
-              lat: group_detail.lat,
-              lng: group_detail.lng,
-            }}
-            style={{
-              width: '60%',
-              height: '350px',
-            }}
-            level={3}
-          >
-            <MapMarker position={{ lat: group_detail.lat, lng: group_detail.lng }}>
-              {group_detail.address && <div style={{ color: '#000' }}>{group_detail.address}</div>}
-            </MapMarker>
-          </Map>
-        </GroupAboutWrapper>
-      )}
-
-      <GroupSpecificationWrapper>
-        <GroupAboutText>Specification</GroupAboutText>
-        <GroupDetailDate>시작일 : {group_detail.start_date ?? '기한없음'}</GroupDetailDate>
-        <GroupDetailDate>마감일 : {group_detail.end_date ?? '기한없음'}</GroupDetailDate>
-        <GoalListWrapper>
-          <FitHeader>
-            <div style={{ paddingLeft: '5%' }}>WorkoutCategory</div>
-            <div style={{ paddingLeft: '6%' }}>WorkoutType</div>
-            <div style={{ paddingLeft: '16%' }}>Weight</div>
-            <div style={{ paddingLeft: '12%' }}>Rep</div>
-            <div style={{ paddingLeft: '8%' }}>Set</div>
-            <div style={{ paddingLeft: '12%' }}>Time</div>
-          </FitHeader>
-          {group_detail.goal.map((goal, index) => {
-            console.log(goal);
-            return (
-              <FitElement
-                key={index}
-                id={index + 1}
-                type={goal.type}
-                workout_type={goal.workout_type}
-                category={goal.category}
-                weight={goal.weight}
-                rep={goal.rep}
-                set={goal.set}
-                time={goal.time}
-              />
-            );
-          })}
-        </GoalListWrapper>
-      </GroupSpecificationWrapper>
+        {member_status === 'not_member' && (
+          <>
+            <GroupButton1 content="그룹 가입" clicked={joinOnClick} disable={done} />
+          </>
+        )}
+        {member_status === 'request_member' && (
+          <>
+            <GroupButton1 content="승인 대기" clicked={joinOnClick} disable={true} />
+          </>
+        )}
+      </SideWrapper>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   height: 100%;
+  margin-top: 5%;
   min-height: calc(100vh - 60px);
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: start;
+  justify-content: center;
   padding: 0 0 50px 0;
 `;
 
-const GroupDetailHeader = styled.div`
-  width: 100%;
-  height: 245px;
+const MainWrapper = styled.div`
+  width: 85%;
+  height: 100%;
+  margin-left: 60px;
+  margin-right: 15px;
+  background-color: #eafff5;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: #d7efe3;
-  padding: 15px 15px 40px 15px;
+  justify-content: start;
+  align-items: start;
+  border-radius: 10px;
 `;
-const GroupName = styled.div`
-  font-size: 40px;
-  font-weight: 600;
-  font-family: NanumSquareR;
-  margin-bottom: 35px;
+
+const SideWrapper = styled.div`
+  width: 10%;
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  gap: 15px;
 `;
+
 const GroupDate = styled.div`
   font-size: 20px;
-  font-family: FugazOne;
+  font-family: 'Noto Sans KR', sans-serif;
   margin-bottom: 20px;
 `;
 const GroupNumber = styled.div`
@@ -212,14 +336,48 @@ const GroupPlace = styled.div`
   margin-bottom: 20px;
 `;
 
-const GroupAboutWrapper = styled.div`
+const GroupFree = styled.div`
+  font-size: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  margin-bottom: 20px;
+`;
+
+const GroupWrapper = styled.div`
   width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #727272;
+`;
+const GroupWrapper2 = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+`;
+const GroupContentWrapper = styled.div`
+  width: 50%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 15px 20px 15px;
-  border-bottom: 1px solid #727272;
+  padding: 40px;
+`;
+const GroupContentWrapper1 = styled.div`
+  width: 30%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 40px;
+`;
+const GroupContentWrapper2 = styled.div`
+  width: 70%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 40px;
 `;
 const GroupAboutText = styled.div`
   font-size: 45px;
@@ -230,6 +388,7 @@ const GroupAboutText = styled.div`
 const ProfileImage = styled.img`
   width: 80px;
   height: 80px;
+  cursor: pointer;
   border: 2px solid black;
   border-radius: 30px;
   margin-bottom: 15px;
@@ -252,27 +411,8 @@ const GroupAboutDescription = styled.div`
   border: 2px solid #d1d1d1;
   border-radius: 20px;
   padding: 20px;
-`;
-
-const GroupDetailWrapper = styled.div`
-  width: 80%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 15px 50px 15px;
-  border-bottom: 1px solid #727272;
-  margin-bottom: 40px;
-`;
-
-const GroupSpecificationWrapper = styled.div`
-  width: 80%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 15px 50px 15px;
-  margin-bottom: 40px;
+  line-height: normal;
+  background-color: #ffffff;
 `;
 
 const FitHeader = styled.div`
@@ -285,8 +425,9 @@ const FitHeader = styled.div`
 const GoalListWrapper = styled.div`
   margin-top: 10px;
   padding: 10px;
-  border: 1px solid #d1d1d1;
+  border: 3px solid #d1d1d1;
   border-radius: 20px;
+  background-color: #ffffff;
 `;
 
 const GroupDetailDate = styled.div`

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -46,7 +47,7 @@ const PostMain = () => {
     if (selected.length > 0) {
       const defaultPageConfig: getPostsRequestType = {
         pageNum: page,
-        pageSize: 15,
+        pageSize: 20,
         searchKeyword: searchKeyword ? searchKeyword : undefined,
         tags: selected,
       };
@@ -73,7 +74,7 @@ const PostMain = () => {
     if (!tagModalOpen) {
       const defaultPageConfig: getPostsRequestType = {
         pageNum: page,
-        pageSize: 15,
+        pageSize: 20,
         searchKeyword: searchKeyword ? searchKeyword : undefined,
         tags: selected,
       };
@@ -122,7 +123,12 @@ const PostMain = () => {
         <TagBubbleWrapper>
           {popularTags &&
             popularTags.map(tag => (
-              <TagBubble key={tag.id} color={tag.color}>
+              <TagBubble
+                key={tag.id}
+                color={tag.color}
+                onClick={() => dispatch(postActions.toggleFilterTag(tag))}
+                style={{ cursor: 'pointer' }}
+              >
                 {tag.name}
               </TagBubble>
             ))}
@@ -137,7 +143,6 @@ const PostMain = () => {
           {recentCommentPost &&
             recentCommentPost.map(comment => (
               <SideBarCommentItem key={comment.comment_id} onClick={() => navigate(`/post/${comment.post_id}`)}>
-                •
                 <SideBarCommentTitle>
                   {comment.content.length > 12 ? comment.content.slice(0, 12) + '...' : comment.content}
                 </SideBarCommentTitle>
@@ -150,7 +155,7 @@ const PostMain = () => {
   );
 
   const MainContent = (
-    <ArticleListWrapper>
+    <ArticleListWrapper className={`${postList?.length === 20 && 'full'}`}>
       <ArticleHeader />
       {postList ? (
         postList.map(post => {
@@ -161,7 +166,7 @@ const PostMain = () => {
       ) : (
         <LoadingWithoutMinHeight />
       )}
-      {maxPage ? postPaginator({ page, setPage, maxPage }) : postPaginator({ page, setPage, maxPage: 1 })}
+      {postPaginator({ page, setPage, maxPage: maxPage ? maxPage : 1 })}
     </ArticleListWrapper>
   );
 
@@ -230,8 +235,9 @@ const SideBarSubtitle = styled.span`
 
 const SideBarCommentItem = styled.div`
   width: 100%;
-  padding: 3px 8px 3px 6px;
+  padding: 5px 8px 5px 20px;
   margin-bottom: 3px;
+  border-bottom: 0.2px solid var(--fit-support-gray-bright);
   cursor: pointer;
 `;
 const SideBarContentWrapper = styled.div`
@@ -254,12 +260,19 @@ const TagBubbleWrapper = styled.div`
 `;
 
 const ArticleListWrapper = styled.div`
-  border: 1px solid black;
+  border: 0px solid black;
   width: 100%;
   height: 100%;
   min-height: 100%;
   background-color: #ffffff;
   position: relative;
+
+  border-radius: 15px;
+  &.full > div:nth-last-child(2) {
+    border-bottom: none;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
 `;
 
 const SideBarItem = styled(ColumnFlex)`
@@ -269,7 +282,8 @@ const SideBarItem = styled(ColumnFlex)`
   background-color: var(--fit-white);
   justify-content: flex-start;
   align-items: center;
-  padding: 10px 0px;
+  padding: 14px 2px;
+  border-radius: 20px;
 `;
 
 const PostPanelWrapper = styled(ColumnFlex)`

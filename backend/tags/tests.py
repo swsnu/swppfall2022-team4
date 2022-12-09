@@ -24,7 +24,9 @@ class TagTestCase(TestCase):
             level=1,
         )
 
-        tag_class1 = TagClass.objects.create(class_name="workout", color="#101010")
+        tag_class1 = TagClass.objects.create(
+            class_name="workout", class_type="workout", color="#101010"
+        )
         self.assertEqual(str(tag_class1), 'workout')
 
         TagClass.objects.create(class_name="place", color="#111111")
@@ -68,6 +70,17 @@ class TagTestCase(TestCase):
             {
                 'name': 'tagname',
                 'classId': '1',
+            },
+            content_type='application/json',
+            HTTP_X_CSRFTOKEN=csrftoken,
+        )
+        self.assertEqual(res.status_code, 201)
+
+        res = client.post(
+            '/api/tag/',
+            {
+                'name': 'tagnnotworkout',
+                'classId': '2',
             },
             content_type='application/json',
             HTTP_X_CSRFTOKEN=csrftoken,

@@ -1,4 +1,9 @@
 from django.contrib import admin
-from .models import Group
+from groups.models import Group
 
-admin.site.register(Group)
+
+@admin.register(Group)
+class GroupAdmin(admin.ModelAdmin):
+    """Group admin definition"""
+
+    list_display = ("pk", "group_name", "group_leader", "address")

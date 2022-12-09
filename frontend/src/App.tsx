@@ -39,9 +39,11 @@ import GroupDetail from 'containers/group/GroupDetail';
 import GroupCreate from 'containers/group/GroupCreate';
 import GroupMembers from 'containers/group/GroupMembers';
 import GroupCert from 'containers/group/GroupCert';
+import GroupJoinReq from 'containers/group/GroupJoinReq';
 import { KakaoLoginCallback } from 'containers/user/SocialLoginCallback';
 import GroupChat from 'containers/group/GroupChat';
 import InformationDetail from 'containers/information/InformationDetail';
+import GroupPosts from 'containers/group/GroupPosts';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -157,8 +159,8 @@ const InsideComponent = () => {
               <Route path="post/*">
                 <Route path="" element={<PostMain />} />
                 <Route path="create" element={<PostCreate />} />
-                <Route path=":id" element={<PostDetail />} />
-                <Route path=":id/edit" element={<PostEdit />} />
+                <Route path=":post_id" element={<PostDetail />} />
+                <Route path=":post_id/edit" element={<PostEdit />} />
               </Route>
 
               <Route path="workout" element={<WorkoutLog />} />
@@ -168,6 +170,11 @@ const InsideComponent = () => {
                 <Route path="" element={<GroupList />} />
                 <Route path="detail/:group_id" element={<GroupDetail />} />
                 <Route path="detail/:group_id/member" element={<GroupMembers />} />
+                <Route path="detail/:group_id/joinReq" element={<GroupJoinReq />} />
+                <Route path="detail/:group_id/post" element={<GroupPosts />} />
+                <Route path="detail/:group_id/post/create" element={<PostCreate />} />
+                <Route path="detail/:group_id/post/:post_id" element={<PostDetail />} />
+                <Route path="detail/:group_id/post/:post_id/edit" element={<PostEdit />} />
                 <Route path="create" element={<GroupCreate />} />
                 <Route path="detail/:group_id/cert" element={<GroupCert />} />
                 <Route path="chat/:group_id" element={<GroupChat />} />

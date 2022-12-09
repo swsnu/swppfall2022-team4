@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { infoActions } from 'store/slices/information';
 import { RootState } from 'index';
-import NotFound from 'components/common/NotFound';
 import { useNavigate, useParams } from 'react-router-dom';
 import { timeAgoFormat } from 'utils/datetime';
 import { Youtube } from 'store/apis/information';
-import SearchBar from 'components/common/SearchBar';
 import { ArticleItemCompact } from 'components/post/ArticleItem';
 import { ScrollShadow } from 'components/common/ScrollShadow';
+import { get_image } from 'components/fitelement/FitElement';
+import { BsFillPersonFill } from 'react-icons/bs';
+import { TagBubble } from 'components/tag/tagbubble';
+import Button4 from 'components/common/buttons/Button4';
 
 interface InfoPageYoutubeIprops {
   youtube: Youtube;
@@ -17,79 +20,107 @@ interface InfoPageYoutubeIprops {
 
 const InformationDetail = () => {
   const { name } = useParams<{ name: string }>();
-  const [search, setSearch] = useState(name ? name : '');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { info } = useSelector(({ info }: RootState) => ({
     info: info,
   }));
   useEffect(() => {
-    dispatch(
-      infoActions.getInformation({
-        information_name: search,
-      }),
-    );
+    if (name)
+      dispatch(
+        infoActions.getInformation({
+          information_name: name,
+        }),
+      );
   }, []);
   const InfoPageYoutubeItem = ({ youtube }: InfoPageYoutubeIprops) => (
-    <YoutubeItem
-      onClick={() => {
-        window.location.href = `https://www.youtube.com/watch?v=${youtube.video_id}`;
-      }}
-    >
-      <img src={youtube.thumbnail} />
-      <YoutubeTitle>{youtube.title}</YoutubeTitle>
-      <div>
-        <span>{youtube.channel}</span>
-        <span>{timeAgoFormat(new Date(), new Date(youtube.published))}</span>
-      </div>
-    </YoutubeItem>
+    <a target="_blank" href={`https://www.youtube.com/watch?v=${youtube.video_id}`}>
+      <YoutubeItem>
+        <img src={youtube.thumbnail} alt="youtube" />
+        <YoutubeTitle>{youtube.title}</YoutubeTitle>
+        <div>
+          <span>{youtube.channel}</span>
+          <span>{timeAgoFormat(new Date(), new Date(youtube.published))}</span>
+        </div>
+      </YoutubeItem>
+    </a>
   );
   return (
     <PostPageWrapper>
       <PostContentWrapper>
-        <TopElementWrapperWithoutPadding>
-          <SearchBar
-            onSubmit={e => {
-              e.preventDefault();
-              if (info.contents?.basic.name !== search)
-                dispatch(
-                  infoActions.getInformation({
-                    information_name: search,
-                  }),
-                );
-              navigate(`/information/${search}`);
-            }}
-            onClear={() => {
-              setSearch('');
-              navigate(`/information`);
-            }}
-            search={search}
-            setSearch={setSearch}
+        <InfoDetailHeader>
+          <Button4 testId="backBtn" content="" clicked={() => navigate(`/information`)} />
+          <img
+            src={require(`assets/images/workout_log/fitelement_category/${get_image(
+              info.contents?.basic.class_name,
+            )}.png`)}
+            alt="category"
           />
-        </TopElementWrapperWithoutPadding>
+          <span>{name}</span>
+        </InfoDetailHeader>
 
-        {info.error === 'NOTFOUND' && <NotFound />}
         {info.error === 'NOTERROR' && (
           <SectionWrapper>
             <SectionSubWrapper>
               <BasicItemWrapper>
-                <span>1</span>
+                {info.contents?.groups.length !== 0 ? (
+                  info.contents?.groups.map((group, index) => (
+                    <GroupItemWrapper key={index} onClick={() => navigate(`/group/detail/${group.id}`)}>
+                      <GroupName>
+                        <span>{group.group_name}</span>
+                        {group.prime_tag ? (
+                          <TagBubble color={group.prime_tag.color}>{group.prime_tag.name}</TagBubble>
+                        ) : (
+                          <TagBubble color={'#dbdbdb'}>None</TagBubble>
+                        )}
+                      </GroupName>
+                      <GroupSmallWrapper>
+                        <div style={{ display: 'flex' }}>
+                          <BsFillPersonFill />
+                          <div style={{ fontSize: '15px', fontFamily: 'Noto Sans KR' }}>
+                            {group.number
+                              ? `멤버 ${group.member_number}명 / ${group.number}명`
+                              : `멤버 ${group.member_number}명`}
+                          </div>
+                        </div>
+
+                        <div style={{ fontSize: '15px', fontFamily: 'Noto Sans KR' }}>
+                          {group.start_date ? `${group.start_date} ~ ${group.end_date}` : ``}
+                        </div>
+                      </GroupSmallWrapper>
+                    </GroupItemWrapper>
+                  ))
+                ) : (
+                  <EmptyContent>태그된 그룹이 없습니다.</EmptyContent>
+                )}
               </BasicItemWrapper>
               <ArticleItemWrapper>
-                {info.contents?.posts.map(post => (
-                  <ArticleItemCompact
-                    key={post.post_id}
-                    post={post}
-                    onClick={() => navigate(`/post/${post.post_id}`)}
-                  />
-                ))}
+                {info.contents?.posts.length !== 0 ? (
+                  info.contents?.posts.map(post => (
+                    <ArticleItemCompact
+                      key={post.post_id}
+                      post={post}
+                      onClick={() => navigate(`/post/${post.post_id}`)}
+                    />
+                  ))
+                ) : (
+                  <EmptyContent>태그된 게시물이 없습니다.</EmptyContent>
+                )}
               </ArticleItemWrapper>
             </SectionSubWrapper>
-            <YoutubeItemWrapper>
-              {info.contents?.youtubes.map(youtube => (
-                <InfoPageYoutubeItem key={youtube.video_id} youtube={youtube} />
-              ))}
-            </YoutubeItemWrapper>
+            {info.contents?.youtubes.length !== 0 ? (
+              <YoutubeItemWrapper>
+                {info.contents?.youtubes.map(youtube => (
+                  <InfoPageYoutubeItem key={youtube.video_id} youtube={youtube} />
+                ))}
+              </YoutubeItemWrapper>
+            ) : (
+              <YoutubeEmptyWrapper>
+                <EmptyContent>
+                  유튜브 영상이 아직 없어요! <br /> <br /> 잠시 기다리신 후 새로고침해보세요!
+                </EmptyContent>
+              </YoutubeEmptyWrapper>
+            )}
           </SectionWrapper>
         )}
       </PostContentWrapper>
@@ -98,7 +129,7 @@ const InformationDetail = () => {
 };
 
 const PostPageWrapper = styled.div`
-  background-color: #d7efe3;
+  background-color: var(--fit-green-back);
   width: 100%;
   height: 100%;
   min-height: 100vh;
@@ -122,10 +153,29 @@ const PostContentWrapper = styled.div`
   }
 `;
 
-const TopElementWrapperWithoutPadding = styled.div`
+const InfoDetailHeader = styled.div`
   margin: 40px 0px 15px 0px;
+  padding: 10px 25px;
+  border-radius: 20px;
   width: 100%;
   background-color: #ffffff;
+  display: flex;
+  align-items: center;
+
+  > span:first-child {
+    margin-top: 3px;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  > img {
+    max-width: 36px;
+    margin-left: 4px;
+  }
+  > span:last-child {
+    margin-left: 12px;
+    margin-top: 3px;
+    font-size: 24px;
+  }
 `;
 
 const SectionWrapper = styled.div`
@@ -136,6 +186,7 @@ const SectionWrapper = styled.div`
   width: 100%;
   min-height: 600px;
   height: 70vh;
+  /* border-radius: 15px; */
 `;
 
 const SectionSubWrapper = styled.div`
@@ -149,14 +200,16 @@ const SectionSubWrapper = styled.div`
 const BasicItemWrapper = styled.div`
   width: 100%;
   padding: 15px 20px;
-  border: 1px solid black;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
   background-color: #ffffff;
 `;
 
 const ArticleItemWrapper = styled.div`
   width: 100%;
   padding: 15px 20px;
-  border: 1px solid black;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
   background-color: #ffffff;
 `;
 
@@ -169,7 +222,8 @@ const YoutubeItemWrapper = styled(ScrollShadow)`
 
   width: 100%;
   padding: 15px 10px;
-  border: 1px solid black;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
   background-color: #ffffff;
   overflow-y: auto;
   &::-webkit-scrollbar {
@@ -178,6 +232,15 @@ const YoutubeItemWrapper = styled(ScrollShadow)`
   @media all and (max-width: 700px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const YoutubeEmptyWrapper = styled(ScrollShadow)`
+  height: 100%;
+  width: 100%;
+  padding: 15px 10px;
+  border: 1px solid var(--fit-support-gray-bright);
+  border-radius: 20px;
+  background-color: #ffffff;
 `;
 
 const YoutubeItem = styled.div`
@@ -253,6 +316,62 @@ const YoutubeTitle = styled.span`
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
   white-space: normal;
+`;
+
+const EmptyContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: var(--fit-support-gray);
+`;
+
+const GroupItemWrapper = styled.div`
+  background-color: #f5fffd;
+  width: 100%;
+  height: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-family: NanumSquareR;
+  border: 1px solid #dbdbdb;
+  border-radius: 15px;
+  padding: 10px;
+  transition: border 0.15s linear;
+  margin-bottom: 10px;
+  cursor: pointer;
+  &:hover {
+    border: 1px solid #757575;
+  }
+`;
+const GroupName = styled.div`
+  width: 100%;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: normal;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > button {
+    margin-left: 12px;
+  }
+`;
+const GroupSmallWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  svg {
+    color: #2da782;
+    margin-right: 3px;
+  }
 `;
 
 export default InformationDetail;

@@ -2,7 +2,8 @@ from django.db import models
 from utils.models import AbstractTimeStampedModel
 from users.models import User
 from tags.models import Tag
-
+from groups.models import Group
+from workouts.models import Routine
 
 class Post(AbstractTimeStampedModel):
     """Post model definition"""
@@ -11,6 +12,9 @@ class Post(AbstractTimeStampedModel):
     title = models.CharField(max_length=60, null=False)
 
     content = models.TextField()
+    group = models.ForeignKey(Group, related_name='tagged_posts', on_delete=models.SET_NULL, blank=True, null=True)
+    routine = models.ForeignKey(Routine, related_name='tagged_posts', on_delete=models.SET_NULL, blank=True, null=True)
+
 
     liker = models.ManyToManyField(User, related_name="liked_posts", blank=True)
     disliker = models.ManyToManyField(User, related_name="disliked_posts", blank=True)
@@ -21,6 +25,9 @@ class Post(AbstractTimeStampedModel):
         Tag, related_name="prime_tagged_posts", on_delete=models.SET_NULL, blank=True, null=True
     )
 
+    in_group = models.ForeignKey(
+        Group, on_delete=models.CASCADE, related_name="posts", blank=True, null=True
+    )
     # Related_name : comments <- comments.Comment
     def get_like_num(self):
         """Get number of like"""

@@ -20,7 +20,7 @@ const ImageDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, activeIma
     <CSSTransition in={isActive} nodeRef={modalAnimRef} timeout={110} classNames="modal" unmountOnExit>
       <ModalOverlay ref={modalAnimRef}>
         <ModalContent className="modal" ref={modalRef}>
-          <img src={process.env.REACT_APP_API_IMAGE + activeImage} />
+          <img src={process.env.REACT_APP_API_IMAGE + activeImage} alt="ModalContent" />
           <ModalExitWrapper>
             <ModalCloseBtn onClick={closeHandler} data-testid="tagModalCloseBtn">
               <FontAwesomeIcon icon={faX} />

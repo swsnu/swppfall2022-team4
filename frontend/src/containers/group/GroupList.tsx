@@ -1,4 +1,5 @@
 /*global kakao*/
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -21,12 +22,15 @@ const GroupList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const user = useSelector((rootState: RootState) => rootState.user.user);
   const groupList = useSelector((rootState: RootState) => rootState.group.groupList.groups);
 
   const [groupListOrdered, setGroupListOrdered] = useState<Group[] | null>(null);
   const [recent, setRecent] = useState<boolean>(true);
   const [old, setOld] = useState<boolean>(false);
   const [close, setClose] = useState<boolean>(false);
+  const [mygroup, setMyGroup] = useState<boolean>(false);
+  const [freeGroup, setFreeGroup] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentLocation, setCurrentLocation] = useState<listGeoStateType>({
     center: {
@@ -97,30 +101,34 @@ const GroupList = () => {
   }, [currentLocation]);
 
   const orderRecentClicked = () => {
-    if (groupListOrdered) {
-      const newGroupOrdered: Group[] = [...groupListOrdered];
+    if (groupList) {
+      const newGroupOrdered: Group[] = [...groupList];
       newGroupOrdered.sort((a, b) => b.id - a.id);
       setGroupListOrdered(newGroupOrdered);
       setRecent(true);
       setOld(false);
       setClose(false);
+      setMyGroup(false);
+      setFreeGroup(false);
     }
   };
 
   const orderOldClicked = () => {
-    if (groupListOrdered) {
-      const newGroupOrdered: Group[] = [...groupListOrdered];
+    if (groupList) {
+      const newGroupOrdered: Group[] = [...groupList];
       newGroupOrdered.sort((a, b) => a.id - b.id);
       setGroupListOrdered(newGroupOrdered);
       setRecent(false);
       setOld(true);
       setClose(false);
+      setMyGroup(false);
+      setFreeGroup(false);
     }
   };
 
   const orderCloseClicked = () => {
-    if (groupListOrdered) {
-      const newGroupOrdered: Group[] = [...groupListOrdered];
+    if (groupList) {
+      const newGroupOrdered: Group[] = [...groupList];
       newGroupOrdered.sort((a, b) => {
         return (
           distance(b.lat, b.lng, currentLocation.center.lat, currentLocation.center.lng) -
@@ -131,9 +139,36 @@ const GroupList = () => {
       setRecent(false);
       setOld(false);
       setClose(true);
+      setMyGroup(false);
+      setFreeGroup(false);
     }
   };
 
+  const freeGroupClicked = () => {
+    if (groupList) {
+      const newGroupOrdered: Group[] = [...groupList];
+      setGroupListOrdered(newGroupOrdered.filter(gr_obj => gr_obj.free));
+      setRecent(false);
+      setOld(false);
+      setClose(false);
+      setMyGroup(false);
+      setFreeGroup(true);
+    }
+  };
+
+  const myGroupClicked = () => {
+    if (groupList) {
+      const newGroupOrdered: Group[] = [...groupList];
+      setGroupListOrdered(newGroupOrdered.filter(gr_obj => gr_obj.my_group !== 'not_member'));
+      setRecent(false);
+      setOld(false);
+      setClose(false);
+      setMyGroup(true);
+      setFreeGroup(false);
+    }
+  };
+
+  if (!user) return <div>no user</div>;
   if (!groupListOrdered) return <Loading />;
   return (
     <Wrapper>
@@ -147,49 +182,90 @@ const GroupList = () => {
         />
       </SearchWrapper>
       <UnderSearch>
-        <div style={{ paddingLeft: '30px' }}>
+        <div>
           {currentLocation.errMsg && <div>{`${currentLocation.errMsg}`}</div>}
-          {currentAddressName && <div>{`유저의 위치는 ${currentAddressName} 입니다`}</div>}
+          {currentAddressName && (
+            <div
+              style={{
+                fontSize: '18px',
+                fontFamily: 'NanumSquareR',
+              }}
+            >
+              {`${user.nickname}님의 현위치는 "${currentAddressName}" 입니다.`}
+            </div>
+          )}
         </div>
-        <div style={{ display: 'flex', paddingRight: '30px' }}>
-          <SortButton onClick={orderRecentClicked} style={recent ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+        <div style={{ display: 'flex' }}>
+          <SortButton
+            onClick={orderRecentClicked}
+            style={recent ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
             최신순
           </SortButton>
-          <SortButton onClick={orderOldClicked} style={old ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+          <SortButton
+            onClick={orderOldClicked}
+            style={old ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
             오래된순
           </SortButton>
-          <SortButton onClick={orderCloseClicked} style={close ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
+          <SortButton
+            onClick={orderCloseClicked}
+            style={close ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
             가까운순
+          </SortButton>
+          <SortButton
+            onClick={freeGroupClicked}
+            style={freeGroup ? { fontWeight: 'bold', color: '#000000' } : { fontWeight: 'normal' }}
+          >
+            자유가입
+          </SortButton>
+          <SortButton
+            onClick={myGroupClicked}
+            style={mygroup ? { fontWeight: 'bold', color: '#003ba7' } : { fontWeight: 'normal', color: '#5689e7' }}
+          >
+            나의그룹
           </SortButton>
         </div>
       </UnderSearch>
       <Button1
-        content="Create Group"
+        content="그룹 만들기"
         clicked={() => navigate('/group/create')}
-        style={{ width: '180px', alignSelf: 'end', marginRight: '10px' }}
+        style={{
+          width: '130px',
+          alignSelf: 'end',
+          marginRight: '15px',
+          fontFamily: 'NanumSquareR',
+        }}
       />
       <GroupListWrapper>
-        {groupListOrdered
-          .filter(groupListOrdered => {
-            if (searchTerm == '') {
-              return groupListOrdered;
-            } else {
-              return groupListOrdered.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
-            }
-          })
-          .map((groupListOrdered, index) => (
-            <GroupElement
-              key={index}
-              id={groupListOrdered.id}
-              group_name={groupListOrdered.group_name}
-              address={groupListOrdered.address}
-              number={groupListOrdered.number}
-              start_date={groupListOrdered.start_date}
-              end_date={groupListOrdered.end_date}
-              member_number={groupListOrdered.member_number}
-              clicked={() => navigate(`/group/detail/${groupListOrdered.id}/`)}
-            />
-          ))}
+        {groupListOrdered.length !== 0 ? (
+          groupListOrdered
+            .filter(groupListOrdered => {
+              if (searchTerm === '') {
+                return groupListOrdered;
+              } else {
+                return groupListOrdered.group_name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
+              }
+            })
+            .map((groupListOrdered, index) => (
+              <GroupElement
+                key={index}
+                id={groupListOrdered.id}
+                group_name={groupListOrdered.group_name}
+                address={groupListOrdered.address}
+                number={groupListOrdered.number}
+                free={groupListOrdered.free}
+                start_date={groupListOrdered.start_date}
+                end_date={groupListOrdered.end_date}
+                member_number={groupListOrdered.member_number}
+                prime_tag={groupListOrdered.prime_tag}
+                clicked={() => navigate(`/group/detail/${groupListOrdered.id}/`)}
+              />
+            ))
+        ) : (
+          <EmptyWrapper>Empty!</EmptyWrapper>
+        )}
       </GroupListWrapper>
     </Wrapper>
   );
@@ -235,8 +311,11 @@ const GroupListWrapper = styled.div`
 `;
 
 const SortButton = styled.div`
+  cursor: pointer;
   padding: 5px;
-  font-size: 16px;
+  font-size: 17px;
+  font-family: 'Noto Sans KR';
+  color: #606060;
 `;
 
 const UnderSearch = styled.div`
@@ -244,4 +323,12 @@ const UnderSearch = styled.div`
   display: flex;
   justify-content: space-between;
   padding-bottom: 20px;
+`;
+
+const EmptyWrapper = styled.div`
+  font-size: 40px;
+  margin-left: 40%;
+  margin-top: 20%;
+  font-family: 'Press Start 2P', cursive;
+  color: #9b9b9b;
 `;

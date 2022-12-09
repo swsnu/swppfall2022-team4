@@ -124,7 +124,7 @@ const setup = async () => {
 
 describe('[PostDetail Page]', () => {
   test('basic rendering my comment', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
     expect(mockDispatch).toBeCalledTimes(2); // resetPost, updatePostDetail
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/updatePostDetail' });
@@ -185,6 +185,7 @@ describe('[PostDetail Page]', () => {
     });
 
     const commentDeleteBtn = screen.getByText('삭제');
+    global.confirm = () => true;
     fireEvent.click(commentDeleteBtn);
 
     expect(mockDispatch).toBeCalledWith({
@@ -192,13 +193,13 @@ describe('[PostDetail Page]', () => {
       type: 'post/deleteComment',
     });
 
-    const backToMainBtn = screen.getByText('◀︎');
+    const backToMainBtn = screen.getByTestId('backBtn');
     fireEvent.click(backToMainBtn);
     expect(mockNavigate).toBeCalledWith('/post');
   });
   test('useOnclickOutside', async () => {
     // Failed to cover callback function
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     jest.mock('usehooks-ts', () => ({
       ...jest.requireActual('usehooks-ts'),
       useOnClickOutside: (ref: any, callback: any) => callback(),
@@ -207,7 +208,7 @@ describe('[PostDetail Page]', () => {
   });
 
   test('basic rendering not my comment', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
 
     expect(mockDispatch).toBeCalledTimes(2); // resetPost, updatePostDetail
@@ -267,7 +268,7 @@ describe('[PostDetail Page]', () => {
   });
 
   test('basic rendering my post - edit, delete', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
 
     act(() => {
@@ -290,6 +291,7 @@ describe('[PostDetail Page]', () => {
     expect(mockNavigate).toBeCalledWith(`/post/${simplePosts[0].post_id}/edit`);
 
     const postDeleteBtn = screen.getByText('글 삭제');
+    global.confirm = () => true;
     fireEvent.click(postDeleteBtn);
     expect(mockDispatch).toBeCalledWith({ payload: { post_id: '1' }, type: 'post/deletePost' });
 
@@ -304,7 +306,7 @@ describe('[PostDetail Page]', () => {
   });
 
   test('basic rendering not my post', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '2' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '2' });
     const store = await setup();
 
     act(() => {
@@ -412,7 +414,7 @@ describe('[PostDetail Page]', () => {
     });
   });
   test('basic rendering with invalid id', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: undefined });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: undefined });
     const store = await setup();
 
     act(() => {
@@ -450,7 +452,7 @@ describe('[PostDetail Page]', () => {
   });
 
   test('multiple comment', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
 
     expect(mockDispatch).toBeCalledTimes(2); // resetPost, updatePostDetail
@@ -470,7 +472,7 @@ describe('[PostDetail Page]', () => {
   });
 
   test('search', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
     act(() => {
       store.dispatch({
@@ -489,7 +491,7 @@ describe('[PostDetail Page]', () => {
   });
 
   test('modal test', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
     act(() => {
       store.dispatch({
@@ -512,7 +514,7 @@ describe('[PostDetail Page]', () => {
     fireEvent.click(commentAvatar);
   });
   test('image modal test', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
     act(() => {
       store.dispatch({
@@ -529,7 +531,7 @@ describe('[PostDetail Page]', () => {
     fireEvent.click(postImage);
   });
   test('socket', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
     const mockSend = jest.fn();
 
@@ -572,7 +574,7 @@ describe('[PostDetail Page]', () => {
   });
 
   test('chat navigate', async () => {
-    jest.spyOn(Router, 'useParams').mockReturnValue({ id: '1' });
+    jest.spyOn(Router, 'useParams').mockReturnValue({ post_id: '1' });
     const store = await setup();
 
     act(() => {

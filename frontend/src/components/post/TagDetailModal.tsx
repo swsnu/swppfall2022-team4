@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { ColumnCenterFlex } from './layout';
 import { TagBubble } from 'components/tag/tagbubble';
-import { TAG_CLASS_LIMIT, TAG_NAME_LIMIT } from 'containers/post/PostEditorLayout';
+import { TAG_CLASS_LIMIT, TAG_NAME_LIMIT } from 'components/tag/TagSelector';
 import { tagActions } from 'store/slices/tag';
 import { GreenBigBtn, GreenBigSpanBtn } from './button';
 import { getRandomHex } from 'utils/color';
@@ -58,11 +58,12 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
   const [caloriesOfUser, setCaloriesOfUser] = useState<boolean>(true);
 
   const [newCategoryColor, setNewCategoryColor] = useState<string>('#000000');
-  const [colorPicker, setColorPicker] = useState<boolean>(false);
+  const [newCategoryMode, setNewCategoryMode] = useState<boolean>(false);
   const [newCategoryInput, setNewCategoryInput] = useState<string>('');
 
   useEffect(() => {
     dispatch(tagActions.getTags());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagClassCreate, tagCreate]);
   useEffect(() => {
     setCreateCategory(-1);
@@ -104,46 +105,102 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                           >
                             모드 전환
                           </GreenBigBtn>
+                          <GreenBigBtn onClick={() => setNewCategoryMode(state => !state)}>새로운 카테고리</GreenBigBtn>
                         </div>
                       </ModalDescriptionSection>
+                      {newCategoryMode && (
+                        <TagClassSection>
+                          <div>
+                            <h1>{newCategoryInput === '' ? '새로운 카테고리' : newCategoryInput}</h1>
+                            <div
+                              style={{
+                                backgroundColor: newCategoryColor,
+                              }}
+                            ></div>
+                          </div>
+                          <NewCategoryForm
+                            onSubmit={async e => {
+                              e.preventDefault();
+                              dispatch(
+                                tagActions.createTagClass({
+                                  name: newCategoryInput,
+                                  color: newCategoryColor,
+                                }),
+                              );
+                              setNewCategoryInput('');
+                            }}
+                          >
+                            <ChromePicker color={newCategoryColor} onChange={color => setNewCategoryColor(color.hex)} />
+                            <div>
+                              <GreenBigSpanBtn onClick={() => setNewCategoryColor(getRandomHex())}>
+                                랜덤 색상 <FontAwesomeIcon icon={faDice} />
+                              </GreenBigSpanBtn>
+                              <div>
+                                <input
+                                  placeholder="새로운 카테고리 이름"
+                                  value={newCategoryInput}
+                                  onChange={e => {
+                                    const charInput = e.target.value;
+                                    if (charInput.length <= TAG_CLASS_LIMIT) setNewCategoryInput(charInput);
+                                  }}
+                                />
+                                <TagCharNum isFull={newCategoryInput.length >= TAG_CLASS_LIMIT}>
+                                  {newCategoryInput.length} / {TAG_CLASS_LIMIT}
+                                </TagCharNum>
+                              </div>
+                              <GreenBigBtn disabled={newCategoryInput === ''} data-testid="tagModalCategoryCreate">
+                                생성
+                              </GreenBigBtn>
+                            </div>
+                          </NewCategoryForm>
+                        </TagClassSection>
+                      )}
+
                       {tagList?.map(tagClass => (
                         <TagClassSection key={tagClass.id}>
                           <div>
                             <h1>{tagClass.class_name}</h1>
-                            <div style={{ backgroundColor: tagClass.color }}></div>
+                            <div
+                              style={{
+                                backgroundColor: tagClass.color,
+                              }}
+                            ></div>
                           </div>
                           <div>
                             {tagClass.tags.map(tag => (
                               <TagBubble
                                 key={tag.id}
                                 color={
-                                  selected.length > 0 && selected.filter(item => item.id == tag.id).length === 0
+                                  selected.length > 0 && selected.filter(item => item.id === tag.id).length === 0
                                     ? UNSELECTED
                                     : tag.color
                                 }
+                                style={{ cursor: 'pointer' }}
                                 onClick={() => dispatch(postActions.toggleFilterTag(tag))}
                               >
-                                {tagClass.class_type === 'workout' &&
-                                  weight &&
-                                  tag.calories &&
-                                  (caloriesOfUser
-                                    ? `${tag.name} | ${(tag.calories * weight).toFixed(2)}`
-                                    : `${tag.name} | ${tag.calories.toFixed(4)}`)}
+                                {tagClass.class_type === 'workout'
+                                  ? weight &&
+                                    tag.calories &&
+                                    (caloriesOfUser
+                                      ? `${tag.name} | ${(tag.calories * weight).toFixed(2)}`
+                                      : `${tag.name} | ${tag.calories.toFixed(4)}`)
+                                  : `${tag.name}`}
                               </TagBubble>
                             ))}
-                            {selected.length == 0 && tagClass.class_type !== 'place' && createCategory !== tagClass.id && (
+                            {selected.length === 0 && createCategory !== tagClass.id && (
                               <TagBubble
                                 color={tagClass.color}
                                 onClick={() => {
                                   setNewTagInput('');
                                   setCreateCategory(tagClass.id);
                                 }}
+                                style={{ cursor: 'pointer' }}
                               >
                                 눌러서 추가
                               </TagBubble>
                             )}
                           </div>
-                          {selected.length == 0 && createCategory === tagClass.id && (
+                          {selected.length === 0 && createCategory === tagClass.id && (
                             <NewTagFormDiv>
                               <div>
                                 <input
@@ -196,52 +253,6 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                           )}
                         </TagClassSection>
                       ))}
-                      <TagClassSection>
-                        <div>
-                          <h1>새로운 카테고리</h1>
-                          <div style={{ backgroundColor: newCategoryColor }}></div>
-                        </div>
-                        <NewCategoryForm
-                          onSubmit={async e => {
-                            e.preventDefault();
-                            dispatch(
-                              tagActions.createTagClass({
-                                name: newCategoryInput,
-                                color: newCategoryColor,
-                              }),
-                            );
-                            setNewCategoryInput('');
-                          }}
-                        >
-                          <div>
-                            <GreenBigSpanBtn onClick={() => setColorPicker(state => !state)}>
-                              색상 직접 설정
-                            </GreenBigSpanBtn>
-                            <GreenBigSpanBtn onClick={() => setNewCategoryColor(getRandomHex())}>
-                              색상 임의 설정 <FontAwesomeIcon icon={faDice} />
-                            </GreenBigSpanBtn>
-                            <div>
-                              <input
-                                placeholder="새로운 카테고리 이름"
-                                value={newCategoryInput}
-                                onChange={e => {
-                                  const charInput = e.target.value;
-                                  if (charInput.length <= TAG_CLASS_LIMIT) setNewCategoryInput(charInput);
-                                }}
-                              />
-                              <TagCharNum isFull={newCategoryInput.length >= TAG_CLASS_LIMIT}>
-                                {newCategoryInput.length} / {TAG_CLASS_LIMIT}
-                              </TagCharNum>
-                            </div>
-                            <GreenBigBtn disabled={newCategoryInput == ''} data-testid="tagModalCategoryCreate">
-                              생성
-                            </GreenBigBtn>
-                          </div>
-                          {colorPicker && (
-                            <ChromePicker color={newCategoryColor} onChange={color => setNewCategoryColor(color.hex)} />
-                          )}
-                        </NewCategoryForm>
-                      </TagClassSection>
                     </ColumnCenterFlex>
                   ),
                   1: (
@@ -249,16 +260,23 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
                       <ModalDescriptionSection>
                         <span>태그로 설정한 글의 개수 순위입니다.</span>
                       </ModalDescriptionSection>
-                      <TagClassSection>
+                      <TagRankingSection>
                         {popularTags?.map((tag, index) => (
                           <TagRankingItem key={index}>
                             <span>{index + 1} 위</span>
-                            <TagBubble key={tag.id} color={tag.color}>
-                              {tag.name} | 글 {tag.posts} 개
-                            </TagBubble>
+                            <div>
+                              <TagBubble
+                                key={tag.id}
+                                color={tag.color}
+                                onClick={() => dispatch(postActions.toggleFilterTag(tag))}
+                                style={{ cursor: 'pointer' }}
+                              >
+                                {tag.name} | 글 {tag.posts} 개
+                              </TagBubble>
+                            </div>
                           </TagRankingItem>
                         ))}
-                      </TagClassSection>
+                      </TagRankingSection>
                     </ColumnCenterFlex>
                   ),
                 }[type]
@@ -274,7 +292,7 @@ const TagDetailModal = ({ isActive, onClose, modalRef, modalAnimRef, dispatch }:
 
 const NewCategoryForm = styled.form`
   display: flex;
-  > div:first-child {
+  > div:nth-child(2) {
     margin: 5px 10px;
     min-height: 240px;
     display: flex;
@@ -286,15 +304,17 @@ const NewCategoryForm = styled.form`
       flex-direction: column;
       input {
         width: auto;
-        padding: 5px 6px;
+        padding: 7px 6px;
         border: 1px solid green;
         border-radius: 10px;
+        margin-top: 10px;
       }
       span {
         width: 100%;
         text-align: right;
         margin-top: 5px;
         padding-right: 6px;
+        margin-bottom: 5px;
       }
     }
     > span {
@@ -365,7 +385,7 @@ const ModalDescriptionSection = styled.div`
   margin-top: 5px;
   padding: 0px 20px 10px 20px;
 
-  > span {
+  span {
     font-size: 15px;
     text-align: left;
   }
@@ -402,6 +422,34 @@ const TagClassSection = styled.div`
     min-height: 40px;
     flex-direction: row;
     overflow-x: auto;
+  }
+`;
+
+const TagRankingSection = styled.div`
+  display: flex;
+  width: 1000px;
+  flex-direction: column;
+  align-items: flex-start;
+  > div:first-child {
+    border-top: 0.2px solid var(--fit-support-gray-bright);
+  }
+`;
+const TagRankingItem = styled.div`
+  display: grid;
+  grid-template-columns: 10fr 80fr;
+  align-items: center;
+  justify-content: space-around;
+  border-bottom: 0.2px solid var(--fit-support-gray-bright);
+  width: 100%;
+  padding: 15px 10px 15px 100px;
+  > span:first-child {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  > div:last-child {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 `;
 
@@ -452,18 +500,18 @@ const ModalCloseBtn = styled.div`
   cursor: pointer;
 `;
 
-const TagRankingItem = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 5px 10px;
-`;
-
 const CategoryWrapper = styled.div`
   position: fixed;
   display: flex;
   width: 100%;
   align-items: center;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-color: var(--fit-white);
+
+  div:nth-child(2) {
+    border-left: 1px solid black;
+  }
 `;
 const Category = styled.div<{ active: boolean }>`
   width: 100%;
@@ -475,9 +523,6 @@ const Category = styled.div<{ active: boolean }>`
   font-weight: ${props => (props.active ? '600' : '400')};
   font-family: NanumSquareR;
   border-bottom: 1px solid black;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  background-color: var(--fit-white);
 
   cursor: pointer;
   &:hover {

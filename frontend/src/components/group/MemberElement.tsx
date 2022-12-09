@@ -1,14 +1,16 @@
 import styled from 'styled-components';
 import Button1 from 'components/common/buttons/Button1';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { groupActions } from 'store/slices/group';
+import { RootState } from 'index';
 export interface IProps {
   id: number;
   image: string;
   username: string;
   cert_days: number;
   level: number;
+  is_leader: boolean;
   leader: boolean;
   myself: boolean;
 }
@@ -17,9 +19,25 @@ export const MemberElement = (props: IProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { group_id } = useParams<{ group_id: string }>();
+  const user = useSelector(({ user }: RootState) => user.user);
+  const socket = useSelector(({ chat }: RootState) => chat.socket);
 
   const leaderChangeClick = () => {
     if (group_id) {
+      if (user && socket) {
+        socket.send(
+          JSON.stringify({
+            type: 'notification',
+            data: {
+              category: 'group',
+              info: props.username,
+              content: `그룹장을 위임받았습니다.`,
+              image: user.image,
+              link: `/group/detail/${group_id}/`,
+            },
+          }),
+        );
+      }
       dispatch(
         groupActions.leaderChange({
           group_id: group_id,
@@ -31,15 +49,20 @@ export const MemberElement = (props: IProps) => {
   };
 
   return (
-    <MemberElementWrapper>
+    <MemberElementWrapper
+      className={props.myself ? 'myself' : 'others'}
+      onClick={() => navigate(`/profile/${props.username}`)}
+    >
       <ProfileImage src={process.env.REACT_APP_API_IMAGE + props.image} alt="profile" />
       <MemberElementLineWrapper>
-        <MemberElementLine style={{ fontWeight: '600' }}>{props.username}</MemberElementLine>
-        <MemberElementLine>Cert_days: {props.cert_days}</MemberElementLine>
+        <MemberElementLine style={{ fontWeight: '600' }}>
+          {props.is_leader ? '👑 ' + props.username : props.username}
+        </MemberElementLine>
+        <CertElementLine>{props.cert_days} 일째 인증 중!</CertElementLine>
         <MemberElementLine>Level: {props.level}</MemberElementLine>
       </MemberElementLineWrapper>
       {props.leader && !props.myself && (
-        <Button1 style={{ fontSize: '15px' }} content="그룹장 위임" clicked={leaderChangeClick} />
+        <Button1 content="그룹장 위임" style={{ fontSize: '15px' }} clicked={leaderChangeClick} />
       )}
     </MemberElementWrapper>
   );
@@ -58,6 +81,11 @@ const MemberElementWrapper = styled.div`
   background-color: #e4fff1;
   box-shadow: 1px 1px 1px 1px #d4eee0;
   padding: 15px;
+  cursor: pointer;
+
+  &&.myself {
+    background-color: #5bc88f;
+  }
 `;
 const ProfileImage = styled.img`
   width: 80px;
@@ -65,6 +93,7 @@ const ProfileImage = styled.img`
   border: 2px solid #00000032;
   border-radius: 10px;
   margin-right: 15px;
+  background-color: #ffffff;
 `;
 
 const MemberElementLineWrapper = styled.div`
@@ -76,4 +105,8 @@ const MemberElementLineWrapper = styled.div`
 const MemberElementLine = styled.div`
   font-size: 18px;
   font-family: IBMPlexSansThaiLooped;
+`;
+const CertElementLine = styled.div`
+  font-size: 16px;
+  font-family: 'Noto Sans KR';
 `;

@@ -7,6 +7,8 @@ import { notificationFailure, notificationInfo, notificationSuccess } from 'util
 import { TagVisual } from 'store/apis/tag';
 
 interface PostState {
+  main: postAPI.Post[] | null;
+
   postList: {
     posts: postAPI.Post[] | null;
     pageNum: number | null;
@@ -37,6 +39,8 @@ interface PostState {
   filterTag: TagVisual[];
 }
 export const initialState: PostState = {
+  main: null,
+
   postList: {
     posts: null,
     pageNum: null,
@@ -86,6 +90,16 @@ export const postSlice = createSlice({
   reducers: {
     /* eslint-disable @typescript-eslint/no-unused-vars */
     // getPosts ------------------------------------------------------------------------
+    getPostsMain: state => {
+      state.main = null;
+    },
+    getPostsMainSuccess: (state, { payload }) => {
+      state.main = payload.posts;
+    },
+    getPostsMainFailure: (state, { payload }) => {
+      state.main = null;
+    },
+
     getPosts: (state, action: PayloadAction<postAPI.getPostsRequestType>) => {
       state.postList.posts = null;
       state.postList.error = null;
@@ -100,7 +114,7 @@ export const postSlice = createSlice({
     },
     getPostsFailure: (state, { payload }) => {
       state.postList.error = payload;
-      alert(payload.response?.data.message);
+      notificationFailure('Post', '글을 불러올 수 없어요.');
     },
     getRecentComments: state => {
       state.recentComments.comments = null;
@@ -110,7 +124,6 @@ export const postSlice = createSlice({
     },
     getRecentCommentsFailure: (state, { payload }) => {
       state.recentComments.comments = null;
-      alert(payload.response?.data.message);
     },
     // createPost ------------------------------------------------------------------------
     createPost: (state, action: PayloadAction<postAPI.createPostRequestType>) => {
@@ -123,18 +136,19 @@ export const postSlice = createSlice({
     },
     createPostFailure: (state, { payload }) => {
       state.postCreate.status = false;
-      alert(payload.response?.data.message);
+      notificationFailure('Post', '글 쓰기에 실패했어요.');
     },
     // getPostDetail ------------------------------------------------------------------------
     updatePostDetail: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
       // Empty body : for update minimization.
+      state.postDetail.error = null;
     },
     updatePostDetailSuccess: (state, { payload }) => {
       state.postDetail.post = payload;
     },
     updatePostDetailFailure: (state, { payload }) => {
       state.postDetail.error = payload;
-      alert(payload.response?.data.message);
+      notificationFailure('Post', '글을 불러올 수 없어요.');
     },
     // deletePost ------------------------------------------------------------------------
     deletePost: (state, action: PayloadAction<postAPI.postIdentifyingType>) => {
@@ -170,7 +184,6 @@ export const postSlice = createSlice({
     },
     getPostCommentFailure: (state, { payload }) => {
       state.postComment.error = payload;
-      alert(payload.response?.data.message);
     },
     // createComment ------------------------------------------------------------------------
     createComment: (state, action: PayloadAction<commentAPI.createCommentRequestType>) => {
@@ -209,7 +222,7 @@ export const postSlice = createSlice({
     // filterTag ---------------------------------------------------------------------------
     toggleFilterTag: (state, action: PayloadAction<postAPI.filterTagRequestType>) => {
       const target = action.payload;
-      if (state.filterTag.filter(item => item.id == target.id).length === 0) {
+      if (state.filterTag.filter(item => item.id === target.id).length === 0) {
         state.filterTag = [...state.filterTag, target];
       } else {
         state.filterTag = state.filterTag.filter(item => item.id !== target.id);
@@ -221,12 +234,27 @@ export const postSlice = createSlice({
     clearFilterTag: state => {
       state.filterTag = [];
     },
+    // groupPosts ---------------------------------------------------------------------------
+    getGroupPosts: (state, action: PayloadAction<postAPI.getGroupPostsRequestType>) => {
+      state.postList.posts = null;
+      state.postList.error = null;
+    },
+    getGroupPostsSuccess: (state, { payload }) => {
+      state.postList.posts = payload.posts;
+    },
+    getGroupPostsFailure: (state, { payload }) => {
+      state.postList.error = payload;
+      notificationFailure('Post', '글을 불러올 수 없어요.');
+    },
     // utils --------------------------------------------------------------------------------
     stateRefresh: state => {
       state.postCreate.status = false;
       state.postEdit = false;
       state.postDelete = false;
       state.postFunc = false;
+
+      state.postDetail.error = null;
+      state.postDetail.post = null;
     },
     toggleCommentReply: (state, action: PayloadAction<commentAPI.createCommentReplyType>) => {
       if (state.postComment.comments)
@@ -248,9 +276,6 @@ export const postSlice = createSlice({
           }
         });
       }
-    },
-    resetPost: state => {
-      state.postDetail.post = null;
     },
     postFunc: (state, action: PayloadAction<postAPI.postFuncRequestType>) => {
       state.postFunc = false;
@@ -279,12 +304,28 @@ export const postSlice = createSlice({
 });
 export const postActions = postSlice.actions;
 
+function* getPostsMainSaga() {
+  try {
+    const response: AxiosResponse = yield call(postAPI.getPostsMain);
+    yield put(postActions.getPostsMainSuccess(response));
+  } catch (error) {
+    yield put(postActions.getPostsMainFailure(error));
+  }
+}
 function* getPostsSaga(action: PayloadAction<postAPI.getPostsRequestType>) {
   try {
     const response: AxiosResponse = yield call(postAPI.getPosts, action.payload);
     yield put(postActions.getPostsSuccess(response));
   } catch (error) {
     yield put(postActions.getPostsFailure(error));
+  }
+}
+function* getGroupPostsSaga(action: PayloadAction<postAPI.getGroupPostsRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(postAPI.getGroupPosts, action.payload);
+    yield put(postActions.getGroupPostsSuccess(response));
+  } catch (error) {
+    yield put(postActions.getGroupPostsFailure(error));
   }
 }
 function* getRecentCommentsSaga() {
@@ -388,7 +429,10 @@ function* commentFuncSaga(action: PayloadAction<commentAPI.commentFuncRequestTyp
 }
 
 export default function* postSaga() {
+  yield takeLatest(postActions.getPostsMain, getPostsMainSaga);
+
   yield takeLatest(postActions.getPosts, getPostsSaga);
+  yield takeLatest(postActions.getGroupPosts, getGroupPostsSaga);
   yield takeLatest(postActions.getRecentComments, getRecentCommentsSaga);
   yield takeLatest(postActions.createPost, createPostSaga);
   yield takeLatest(postActions.updatePostDetail, updatePostDetailSaga);

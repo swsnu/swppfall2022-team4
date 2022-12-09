@@ -21,18 +21,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+secret_key_default = 'secret_key_for_development_secret_key_for_development_secret_key_for_development_secret_key_for_development_secret_key_for_development'
+SECRET_KEY = os.environ.get('SECRET_KEY', secret_key_default)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'ec2-3-37-226-67.ap-northeast-2.compute.amazonaws.com', '3.37.226.67', 'fitogether.site']
+
+SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', 31536000))
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False') == 'True'
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False') == 'True'
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'False') == 'True'
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'False') == 'True'
+SECURE_HSTS_PRELOAD = os.environ.get('SECURE_HSTS_PRELOAD', 'False') == 'True'
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
+    'channels',
     'chats',
     'chatrooms',
     'notifications',
@@ -53,16 +61,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-REDIS_HOST = os.environ.get("REDIS_HOST")
-ASGI_APPLICATION = 'FITogether.asgi.application'
+ASGI_APPLICATION = 'FITogether.routing.application'
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(REDIS_HOST, 6379)],
-            "capacity": 1500,
-            "expiry": 300,
+            'hosts': [('127.0.0.1', 6379)],
+            'capacity': 1500,
+            'expiry': 300,
         },
     },
 }
@@ -106,7 +113,19 @@ WSGI_APPLICATION = 'FITogether.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3'
+    }
+} if os.environ.get('APP_MODE', 'development') == 'development' else {
+    'default': {
+        'ENGINE': 'mysql.connector.django',
+        'NAME': 'fitogether_db',
+        'USER': 'fitogether_user',
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': 'mysql',
+        'PORT': '3306',
+        'OPTIONS': {
+            'auth_plugin': 'mysql_native_password'
+        }
     }
 }
 
@@ -152,11 +171,26 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8000/", "http://localhost", "http://127.0.0.1:8000/"]
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost"]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost',
+    'http://ec2-3-37-226-67.ap-northeast-2.compute.amazonaws.com:3000',
+    'http://3.37.226.67:3000',
+    'https://fitogether.site'
+]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost',
+    'http://ec2-3-37-226-67.ap-northeast-2.compute.amazonaws.com:3000',
+    'http://3.37.226.67:3000',
+    'https://fitogether.site'
+]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = 'true'
+os.environ['DJANGO_ALLOW_ASYNC_UNSAFE'] = 'true'

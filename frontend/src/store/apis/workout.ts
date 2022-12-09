@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { List } from 'reselect/es/types';
 import client from './client';
 import { TagClass } from 'store/apis/tag';
@@ -86,6 +87,12 @@ export type editMemoRequestType = {
   specific_date: number;
 };
 
+export type editRoutineTitleRequestType = {
+  username: string;
+  routine_id: number;
+  title: string;
+};
+
 export type getCalendarInfoRequestType = {
   username: string;
   year: number;
@@ -106,6 +113,23 @@ export type editImageRequestType = {
   specific_date: number;
   username: string;
   image: string;
+};
+
+export type editIndexRequestType = {
+  year: number;
+  month: number;
+  specific_date: number;
+  username: string;
+  log_index: number[];
+};
+
+export type deleteImageRequestType = {
+  year: number;
+  month: number;
+  specific_date: number;
+  username: string;
+  image: string;
+  delete: true;
 };
 
 export type getCalendarInfoResponseType = {
@@ -158,6 +182,11 @@ export type deleteFitElementRequestType = {
   username: string;
 };
 
+export type exchangeFitElementsRequestType = {
+  fitelement1_id: number;
+  fitelement2_id: number;
+};
+
 export const getFitElement = async (payload: getFitElementRequestType) => {
   const response = await client.get<getFitElementResponseType>(`/api/fitelement/${payload.fitelement_id}/`);
   return response.data;
@@ -177,6 +206,22 @@ export const getDailyLog = async (payload: getDailyLogRequestType) => {
 
 export const editImage = async (payload: editImageRequestType) => {
   const response = await client.put<editImageRequestType>(
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
+    payload,
+  );
+  return response.data;
+};
+
+export const editIndex = async (payload: editIndexRequestType) => {
+  const response = await client.put(
+    `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
+    payload,
+  );
+  return response.data;
+};
+
+export const deleteImage = async (payload: deleteImageRequestType) => {
+  const response = await client.put<deleteImageRequestType>(
     `/api/fitelement/dailylog/${payload.year}/${payload.month}/${payload.specific_date}/?&username=${payload.username}`,
     payload,
   );
@@ -218,6 +263,14 @@ export const editMemo = async (payload: editMemoRequestType) => {
   return response.data;
 };
 
+export const editRoutineTitle = async (payload: editRoutineTitleRequestType) => {
+  const response = await client.put(
+    `/api/fitelement/routine/${payload.routine_id}/?&username=${payload.username}`,
+    payload,
+  );
+  return response.data;
+};
+
 export const getCalendarInfo = async (payload: getCalendarInfoRequestType) => {
   const response = await client.get<getCalendarInfoResponseType>(
     `/api/fitelement/${payload.year}/${payload.month}/?&username=${payload.username}`,
@@ -239,10 +292,7 @@ export const addFitElements = async (payload: addFitElementsRequestType) => {
 };
 
 export const createRoutineWithFitElements = async (payload: createRoutineWithFitElementsRequestType) => {
-  const response = await client.post<createRoutineWithFitElementsRequestType>(
-    `/api/fitelement/routine/?&username=${payload.username}`,
-    payload,
-  );
+  const response = await client.post(`/api/fitelement/routine/?&username=${payload.username}`, payload);
   return response.data;
 };
 

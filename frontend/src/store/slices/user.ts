@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import * as userAPI from 'store/apis/user';
+import { notificationSuccess } from 'utils/sendNotification';
 
 interface UserState {
   user: userAPI.userType | null;
@@ -104,7 +105,6 @@ export const userSlice = createSlice({
       state.loading = false;
       state.profile = null;
       state.profileError = payload;
-      alert(payload.response?.data.message);
     },
     editProfile: (state, action: PayloadAction<{ username: string; data: userAPI.editProfileRequestType }>) => {
       state.loading = true;
@@ -116,6 +116,7 @@ export const userSlice = createSlice({
       state.user = payload;
       state.editProfile = true;
       state.profileError = null;
+      notificationSuccess('정보 수정', '유저 정보를 성공적으로 수정했습니다.');
     },
     editProfileFailure: (state, { payload }) => {
       state.loading = false;
@@ -133,6 +134,7 @@ export const userSlice = createSlice({
       state.loading = false;
       state.deleteProfile = true;
       state.profileError = null;
+      notificationSuccess('회원 탈퇴', '계정을 성공적으로 삭제했습니다.');
     },
     signoutFailure: (state, { payload }) => {
       state.loading = false;

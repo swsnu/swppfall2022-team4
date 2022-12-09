@@ -27,7 +27,7 @@ const simpleSearch = {
 const getPostsResponse: postAPI.getPostsResponseType = {
   posts: simplePosts,
   page: 5,
-  page_size: 15,
+  page_size: 20,
   page_total: 5,
 };
 
@@ -83,7 +83,7 @@ const setup = () => {
 
 const defaultPageConfig: postAPI.getPostsRequestType = {
   pageNum: 1,
-  pageSize: 15,
+  pageSize: 20,
   searchKeyword: undefined,
   tags: [],
 };

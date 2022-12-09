@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import styled from 'styled-components';
 import { useRef, MouseEvent, useState } from 'react';
 import {
@@ -20,7 +21,6 @@ export interface IProps {
 export const WorkoutChart = (props: IProps) => {
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
   const chartRef = useRef<ChartJS<'line'>>(null);
-  // eslint-disable-next-line no-unused-vars
   const [index, setIndex] = useState(0);
   const data = {
     labels: props.info!.map(data => data.date.substr(3, 5)),
@@ -45,7 +45,7 @@ export const WorkoutChart = (props: IProps) => {
         position: 'top' as const,
       },
       title: {
-        display: true,
+        display: false,
         font: {
           size: 18,
           family: 'IBMPlexSansThaiLooped',
@@ -54,7 +54,25 @@ export const WorkoutChart = (props: IProps) => {
       },
     },
     scales: {
+      x: {
+        title: {
+          display: true,
+          text: '일자',
+          font: {
+            size: 15,
+            family: 'Noto Sans KR',
+          },
+        },
+      },
       y: {
+        title: {
+          display: true,
+          text: '칼로리',
+          font: {
+            size: 15,
+            family: 'Noto Sans KR',
+          },
+        },
         min: 0,
       },
     },

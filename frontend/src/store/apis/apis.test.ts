@@ -147,27 +147,34 @@ const postGroupRequest: groupAPI.postGroupRequestType = {
   lat: 31,
   lng: 126,
   address: 'jeju',
+  tags: [],
+  prime_tag: undefined,
 };
 
 const leaderChangeRequest: groupAPI.leaderChangeRequestType = {
   group_id: '1',
   username: 'test',
-}
+};
 
 const getCertsRequest: groupAPI.getCertsRequestType = {
   group_id: '1',
   year: 2022,
   month: 12,
   specific_date: 12,
-}
+};
 
-const createCertRequest: groupAPI.createCertRequestType = {
+const certRequest: groupAPI.certRequestType = {
   group_id: '1',
   year: 2022,
   month: 12,
   specific_date: 12,
   fitelement_id: 1,
-}
+};
+
+const joinReqReqeust: groupAPI.joinReqLeaderRequestType = {
+  group_id: '1',
+  username: 'user',
+};
 
 // Workout dummy.
 const getFitElementRequest: workoutAPI.getFitElementRequestType = {
@@ -202,7 +209,7 @@ const createworkoutLogRequest: workoutAPI.createWorkoutLogRequestType = {
   rep: 0,
   set: 0,
   time: 0,
-  date: '2022-10-01'
+  date: '2022-10-01',
 };
 
 const createDailyLogRequest: workoutAPI.createDailyLogRequestType = {
@@ -221,6 +228,12 @@ const editMemoRequest: workoutAPI.editMemoRequestType = {
   year: 2022,
   month: 10,
   specific_date: 1,
+};
+
+const editRoutineTitleRequest: workoutAPI.editRoutineTitleRequestType = {
+  username: 'user',
+  routine_id: 1,
+  title: 'new_title',
 };
 
 const getCalendarInfoRequest: workoutAPI.getCalendarInfoRequestType = {
@@ -249,6 +262,36 @@ const addFitElementsRequest: workoutAPI.addFitElementsRequestType = {
 const createRoutineWithFitElementsRequest: workoutAPI.createRoutineWithFitElementsRequestType = {
   username: 'user',
   fitelements: [],
+};
+
+const deleteFitElementRequest: workoutAPI.deleteFitElementRequestType = {
+  username: 'user',
+  fitelement_id: 0,
+};
+
+const editImageRequest: workoutAPI.editImageRequestType = {
+  year: 2022,
+  month: 10,
+  specific_date: 2,
+  username: 'user',
+  image: 'test.jpg',
+};
+
+const editIndexRequest: workoutAPI.editIndexRequestType = {
+  year: 2022,
+  month: 10,
+  specific_date: 2,
+  username: 'user',
+  log_index: [1],
+};
+
+const deleteImageRequest: workoutAPI.deleteImageRequestType = {
+  year: 2022,
+  month: 10,
+  specific_date: 2,
+  username: 'user',
+  image: 'test.jpg',
+  delete: true,
 };
 
 describe('API TEST', () => {
@@ -331,9 +374,17 @@ describe('API TEST', () => {
     });
   });
   describe('Post', () => {
+    test('getPostsMain', async () => {
+      const result = await postAPI.getPostsMain();
+      expect(result).toBe(`/api/post/main/hot/`);
+    });
     test('getPosts', async () => {
       const result = await postAPI.getPosts(getPostsRequest);
       expect(result).toBe(`/api/post/?page=1&pageSize=15`);
+    });
+    test('getPosts with group', async () => {
+      const result = await postAPI.getGroupPosts({ group_id: '1' });
+      expect(result).toBe(`/api/group/1/post/`);
     });
     test('searchPosts', async () => {
       const result = await postAPI.getPosts(searchPostsRequest);
@@ -445,6 +496,12 @@ describe('API TEST', () => {
         `/api/fitelement/dailylog/${editMemoRequest.year}/${editMemoRequest.month}/${editMemoRequest.specific_date}/?&username=${editMemoRequest.username}`,
       );
     });
+    test('editRoutineTitle', async () => {
+      const result = await workoutAPI.editRoutineTitle(editRoutineTitleRequest);
+      expect(result).toBe(
+        `/api/fitelement/routine/${editRoutineTitleRequest.routine_id}/?&username=${editRoutineTitleRequest.username}`,
+      );
+    });
     test('getCalendarInfo', async () => {
       const result = await workoutAPI.getCalendarInfo(getCalendarInfoRequest);
       expect(result).toBe(
@@ -474,6 +531,32 @@ describe('API TEST', () => {
     test('getSpecificRoutineFitElements', async () => {
       const result = await workoutAPI.getSpecificRoutineFitElements(getSpecificRoutineFitElementsRequest);
       expect(result).toStrictEqual([{ data: '/api/fitelement/0/' }]);
+    });
+    test('deleteFitelement', async () => {
+      const result = await workoutAPI.deleteFitElement(deleteFitElementRequest);
+      expect(result).toBe(`/api/fitelement/0/?&username=${deleteFitElementRequest.username}`);
+    });
+    test('editImage', async () => {
+      const result = await workoutAPI.editImage(editImageRequest);
+      expect(result).toBe(
+        `/api/fitelement/dailylog/${editImageRequest.year}/${editImageRequest.month}/${editImageRequest.specific_date}/?&username=${editImageRequest.username}`,
+      );
+    });
+    test('editIndex', async () => {
+      const result = await workoutAPI.editIndex(editIndexRequest);
+      expect(result).toBe(
+        `/api/fitelement/dailylog/${editIndexRequest.year}/${editIndexRequest.month}/${editIndexRequest.specific_date}/?&username=${editIndexRequest.username}`,
+      );
+    });
+    test('deleteImage', async () => {
+      const result = await workoutAPI.deleteImage(deleteImageRequest);
+      expect(result).toBe(
+        `/api/fitelement/dailylog/${deleteImageRequest.year}/${deleteImageRequest.month}/${deleteImageRequest.specific_date}/?&username=${deleteImageRequest.username}`,
+      );
+    });
+    test('getfitelementtypes', async () => {
+      const result = await workoutAPI.getFitelementTypes();
+      expect(result).toBe('/api/fitelement/type/');
     });
   });
 });
@@ -525,8 +608,26 @@ describe('Group API TEST', () => {
       expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
     });
     it('createCert', async () => {
-      const res = await groupAPI.createCert(createCertRequest);
+      const res = await groupAPI.createCert(certRequest);
       expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
     });
-  })
+    it('deleteCert', async () => {
+      const res = await groupAPI.deleteCert(certRequest);
+      expect(res).toBe(`/api/group/1/cert/2022/12/12/`);
+    });
+  });
+  describe('Group Join Request', () => {
+    it('getRequests', async () => {
+      const res = await groupAPI.getRequests('1');
+      expect(res).toBe(`/api/group/1/join_permission/`);
+    });
+    it('postRequests', async () => {
+      const res = await groupAPI.postRequest(joinReqReqeust);
+      expect(res).toBe(`/api/group/1/join_permission/`);
+    });
+    it('deleteRequests', async () => {
+      const res = await groupAPI.deleteRequest(joinReqReqeust);
+      expect(res).toBe(`/api/group/1/join_permission/`);
+    });
+  });
 });

@@ -5,35 +5,23 @@ import { AiOutlineEdit } from 'react-icons/ai';
 import { BsChatDots } from 'react-icons/bs';
 import { FaHeart, FaHeartBroken } from 'react-icons/fa';
 import styled from 'styled-components';
-import { faThumbsDown, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 import { RootState } from 'index';
 import { userActions } from 'store/slices/user';
 import { chatActions } from 'store/slices/chat';
-import { dateDiff, timeAgoFormat } from 'utils/datetime';
+import { dateDiff } from 'utils/datetime';
 
 import Loading from 'components/common/Loading';
 import Button3 from 'components/common/buttons/Button3';
-import {
-  CommentContent,
-  CommentContentWrapper,
-  FuncBtn,
-  CommentFuncNumIndicator,
-  CommentFuncTimeIndicator,
-  CommentFuncWrapper,
-  FuncType,
-  IPropsComment,
-} from 'containers/post/PostDetail';
 import UserItem from 'components/user/UserItem';
-import { Comment } from 'store/apis/comment';
-import { ArticleItemDefault } from 'components/post/ArticleItem';
+import {
+  ArticleHeader,
+  ArticleItemDefault,
+  ArticleItemMyPage,
+  ArticleItemMyPageHeader,
+} from 'components/post/ArticleItem';
 import { ScrollShadow } from 'components/common/ScrollShadow';
-
-interface MyPageCommentIprops {
-  comment: Comment;
-}
+import { CommentItemHeader, CommentItemMyPage } from 'components/post/CommentItem';
 
 const CATEGORY = ['게시글', '댓글', '스크랩', '팔로잉'];
 
@@ -54,6 +42,7 @@ const Mypage = () => {
 
   useEffect(() => {
     dispatch(userActions.getProfile(username || ''));
+    setType(0);
     return () => {
       dispatch(userActions.resetProfile());
       dispatch(chatActions.resetCreate());
@@ -90,34 +79,6 @@ const Mypage = () => {
     }
   };
 
-  const MyPageCommentItem = ({ comment }: MyPageCommentIprops) => (
-    <CommentItem
-      key={comment.comment_id}
-      isChild={comment.parent_comment !== null}
-      onClick={() => navigate(`/post/${comment.post_id}`)}
-    >
-      {comment.parent_comment !== null && (
-        <CommentChildIndicator>
-          <FontAwesomeIcon icon={faArrowRight} />
-        </CommentChildIndicator>
-      )}
-      <CommentContentWrapper>
-        <CommentContent>{comment.content}</CommentContent>
-      </CommentContentWrapper>
-      <CommentFuncWrapper>
-        <FuncBtn color={comment.liked ? FuncType.Like : FuncType.None}>
-          <FontAwesomeIcon icon={faThumbsUp} />
-        </FuncBtn>
-        <CommentFuncNumIndicator>{comment.like_num}</CommentFuncNumIndicator>
-        <FuncBtn color={comment.disliked ? FuncType.Dislike : FuncType.None}>
-          <FontAwesomeIcon icon={faThumbsDown} />
-        </FuncBtn>
-        <CommentFuncNumIndicator>{comment.dislike_num}</CommentFuncNumIndicator>
-        <CommentFuncTimeIndicator> {timeAgoFormat(new Date(), new Date(comment.created))} </CommentFuncTimeIndicator>
-      </CommentFuncWrapper>
-    </CommentItem>
-  );
-
   if (!user || !username) return <div>no user</div>;
   if (loading || !profile) return <Loading />;
   return (
@@ -128,17 +89,8 @@ const Mypage = () => {
           <ProfileInfoWrapper>
             <NicknameWrapper>
               <Nickname>{profile.nickname}</Nickname>
-              {profile.login_method == 'kakao' && (
+              {profile.login_method === 'kakao' && (
                 <SocialLoginIcon src={require('assets/images/main/social_login_icon/kakao.jpg')} alt="kakao" />
-              )}
-              {profile.login_method == 'google' && (
-                <SocialLoginIcon src={require('assets/images/main/social_login_icon/google.png')} alt="google" />
-              )}
-              {profile.login_method == 'facebook' && (
-                <SocialLoginIcon src={require('assets/images/main/social_login_icon/facebook.png')} alt="facebook" />
-              )}
-              {profile.login_method == 'github' && (
-                <SocialLoginIcon src={require('assets/images/main/social_login_icon/github.png')} alt="github" />
               )}
             </NicknameWrapper>
             <Username>{profile.username}</Username>
@@ -159,7 +111,13 @@ const Mypage = () => {
           <DateDiffText>일 째</DateDiffText>
           {user.username === profile.username ? (
             <>
-              <Button3 content="프로필 수정" clicked={() => navigate('/edit_profile')} style={{ marginTop: '20px' }} />
+              <EditButtonWrapper>
+                <Button3
+                  content="프로필 수정"
+                  clicked={() => navigate('/edit_profile')}
+                  style={{ marginTop: '20px' }}
+                />
+              </EditButtonWrapper>
               <EditIcon onClick={() => navigate('/edit_profile')} data-testid="editProfileIcon" />
             </>
           ) : (
@@ -202,8 +160,13 @@ const Mypage = () => {
             {
               0: (
                 <ProfileContentWrapper>
+                  <FollowCountWrapper>
+                    <FollowCountText>게시글</FollowCountText>
+                    <FollowCountNumber>{profile.information.post.length}</FollowCountNumber>
+                  </FollowCountWrapper>
+                  <ArticleItemMyPageHeader />
                   {profile.information.post.map(post => (
-                    <ArticleItemDefault
+                    <ArticleItemMyPage
                       key={post.post_id}
                       post={post}
                       onClick={() => navigate(`/post/${post.post_id}`)}
@@ -213,13 +176,27 @@ const Mypage = () => {
               ),
               1: (
                 <ProfileContentWrapper>
+                  <FollowCountWrapper>
+                    <FollowCountText>댓글</FollowCountText>
+                    <FollowCountNumber>{profile.information.comment.length}</FollowCountNumber>
+                  </FollowCountWrapper>
+                  <CommentItemHeader />
                   {profile.information.comment.map(comment => (
-                    <MyPageCommentItem key={comment.comment_id} comment={comment} />
+                    <CommentItemMyPage
+                      key={comment.comment_id}
+                      comment={comment}
+                      onClick={() => navigate(`/post/${comment.post_id}`)}
+                    />
                   ))}
                 </ProfileContentWrapper>
               ),
               2: (
                 <ProfileContentWrapper>
+                  <FollowCountWrapper>
+                    <FollowCountText>스크랩</FollowCountText>
+                    <FollowCountNumber>{profile.information.scrap.length}</FollowCountNumber>
+                  </FollowCountWrapper>
+                  <ArticleHeader />
                   {profile.information.scrap.map(post => (
                     <ArticleItemDefault
                       key={post.post_id}
@@ -236,18 +213,32 @@ const Mypage = () => {
                     <FollowCountNumber>{profile.information.follower.length}</FollowCountNumber>
                   </FollowCountWrapper>
                   <FollowUserWrapper>
-                    {profile.information.follower.map(user => (
-                      <UserItem key={user.username} user={user} clicked={() => navigate(`/profile/${user.username}`)} />
-                    ))}
+                    <>
+                      {profile.information.follower.map(user => (
+                        <UserItem
+                          key={user.username}
+                          user={user}
+                          clicked={() => navigate(`/profile/${user.username}`)}
+                        />
+                      ))}
+                      {profile.information.follower.length === 0 && <NoFollowText>팔로워가 없습니다.</NoFollowText>}
+                    </>
                   </FollowUserWrapper>
                   <FollowCountWrapper>
                     <FollowCountText>Following</FollowCountText>
                     <FollowCountNumber>{profile.information.following.length}</FollowCountNumber>
                   </FollowCountWrapper>
                   <FollowUserWrapper>
-                    {profile.information.following.map(user => (
-                      <UserItem key={user.username} user={user} clicked={() => navigate(`/profile/${user.username}`)} />
-                    ))}
+                    <>
+                      {profile.information.following.map(user => (
+                        <UserItem
+                          key={user.username}
+                          user={user}
+                          clicked={() => navigate(`/profile/${user.username}`)}
+                        />
+                      ))}
+                      {profile.information.following.length === 0 && <NoFollowText>팔로잉이 없습니다.</NoFollowText>}
+                    </>
                   </FollowUserWrapper>
                 </FollowContentWrapper>
               ),
@@ -598,25 +589,9 @@ const ProfileContentWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+  background-color: #f5f5f5;
 `;
-const CommentItem = styled.div<IPropsComment>`
-  padding: 5px 30px;
-  font-size: 14px;
-  display: flex;
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  border-bottom: 1px solid gray;
-  cursor: pointer;
-  ${({ isChild }) =>
-    isChild &&
-    `
-    padding-left: 30px;
-  `}
-`;
-const CommentChildIndicator = styled.div`
-  margin-right: 12px;
-`;
+
 const FollowContentWrapper = styled.div`
   width: 100%;
   min-height: 551.3px;
@@ -627,11 +602,14 @@ const FollowContentWrapper = styled.div`
 `;
 const FollowCountWrapper = styled.div`
   width: 100%;
-  height: 50px;
+  min-height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-bottom: 1px solid #d1d1d1;
+  padding: 15px 0;
+  border-top: 1px solid black;
+  background-color: #ffffff;
 `;
 const FollowCountText = styled.div`
   font-size: 20px;
@@ -652,4 +630,18 @@ const FollowUserWrapper = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  min-height: 195.65px;
+  background-color: #f5f5f5;
+`;
+const NoFollowText = styled.div`
+  font-size: 24px;
+  font-family: NanumSquareR;
+  height: 150px;
+  padding-top: 68px;
+`;
+
+const EditButtonWrapper = styled.div`
+  @media all and (max-width: 600px) {
+    display: none;
+  }
 `;

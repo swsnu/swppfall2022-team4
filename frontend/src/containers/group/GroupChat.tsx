@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { BsFillPencilFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { chatActions } from 'store/slices/chat';
 import { RootState } from 'index';
 import { MyMessage, OtherGroupMessage } from 'components/chat/Message';
+import Button4 from 'components/common/buttons/Button4';
 
 const GroupChat = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const chatRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
   const { group_id } = useParams<{ group_id: string }>();
@@ -53,6 +55,11 @@ const GroupChat = () => {
   if (!user) return <div>no user</div>;
   return (
     <Wrapper>
+      <TitleWrapper>
+        <Button4 content="" clicked={() => navigate(`/group/detail/${group_id}`)} />
+        <Title>Group Chat</Title>
+        <div style={{ width: '40px' }} />
+      </TitleWrapper>
       <ChatroomWrapper>
         <ChatWrapper ref={chatRef}>
           {messageList.map(message => (
@@ -87,17 +94,40 @@ export default GroupChat;
 
 const Wrapper = styled.div`
   width: 100%;
-  max-width: 800px;
-  height: calc(100vh - 60px);
-  min-height: 400px;
+  max-width: 1200px;
+  height: 100%;
+  min-height: calc(100vh - 60px);
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 40px;
+`;
+const TitleWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 0;
+  padding: 0 20px;
+  @media all and (max-width: 620px) {
+    margin: 40px 0 20px 0;
+  }
+`;
+const Title = styled.div`
+  margin-top: 20px;
+  font-size: 45px;
+  font-family: NanumSquareR;
+  @media all and (max-width: 620px) {
+    display: none;
+  }
 `;
 const ChatroomWrapper = styled.div`
   width: 100%;
-  height: calc(100vh - 60px);
-  min-height: 400px;
+  max-width: 1100px;
+  height: calc(100vh - 255px);
+  min-height: 461px;
+  max-height: 1000px;
   background-color: #fbfff8;
-  border-right: 1px solid #d1d1d1;
+  border: 1px solid #b9b9b9;
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;

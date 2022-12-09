@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Dispatch, useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
@@ -16,8 +17,7 @@ import { notificationFailure } from 'utils/sendNotification';
 import { AxiosError } from 'axios';
 import { AnyAction } from 'redux';
 
-export const KAKAO_REDIRECT_URI = 'http://localhost:3000/oauth/kakao/';
-export const GITHUB_REDIRECT_URI = 'http://localhost:3000/oauth/github/';
+export const KAKAO_REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT;
 
 type errorIProps = {
   error: string;
@@ -74,7 +74,7 @@ const SocialLoginCallback = ({
       weight: parseFloat(state.weight),
       age: parseFloat(state.age),
     };
-
+    console.log(request);
     dispatch(userActions.socialSignup(request));
   };
 

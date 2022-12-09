@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,11 +13,21 @@ import {
   co2addResponseType,
   keywordSearchResultType,
 } from 'assets/types/group';
-import Button1 from 'components/common/buttons/Button1';
-import Button4 from 'components/common/buttons/Button4';
 import { FitelementRequestType } from 'store/apis/group';
-import { FitElement } from 'components/fitelement/FitElement';
 import { workoutLogActions } from 'store/slices/workout';
+import { PostContentWrapper, PostPageWrapper } from 'components/post/layout';
+import { TagVisual } from 'store/apis/tag';
+import { tagActions } from 'store/slices/tag';
+import { GreenBigBtn, RedBtn } from 'components/post/button';
+import TagSelector from 'components/tag/TagSelector';
+import { get_image } from 'components/fitelement/FitElement';
+
+interface IPropsCharNum {
+  isFull: boolean;
+}
+
+const TITLE_CHAR_LIMIT = 20;
+const CONTENT_CHAR_LIMIT = 400;
 
 const GroupCreate = () => {
   const dispatch = useDispatch();
@@ -25,18 +36,24 @@ const GroupCreate = () => {
   const user = useSelector(({ user }: RootState) => user.user);
   const groupCreateStatus = useSelector(({ group }: RootState) => group.groupCreate);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
+  const { tagList, tagSearch } = useSelector(({ tag }: RootState) => ({
+    tagList: tag.tagList,
+    tagSearch: tag.tagSearch,
+    tagCreate: tag.tagCreate,
+  }));
 
   const [group_name, setGroupName] = useState('');
   const [max_num, setMaxNum] = useState(true);
-  const [group_num, setGroupNum] = useState(0);
+  const [group_num, setGroupNum] = useState(1);
   const [set_date, setSetDate] = useState(true);
   const [start_date, setStartDate] = useState('');
   const [end_date, setEndDate] = useState('');
   const [description, setDescription] = useState('');
   const [free, setFree] = useState(true);
   // goal
-  const [workout_category, setWorkoutCategory] = useState('back');
+  const [workout_category, setWorkoutCategory] = useState('등운동');
   const [workout_type, setWorkoutType] = useState<string | null>(null);
+  const visible_input = workout_category === '기타운동' || workout_category === '유산소' ? 'hidden' : 'visible';
   const [weight, setWeight] = useState<number | null>(null);
   const [rep, setRep] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
@@ -52,7 +69,10 @@ const GroupCreate = () => {
     errMsg: null,
     isLoading: true,
   });
-  const [clickedPosition, setClickedPosition] = useState<coordinateType>({ lat: null, lng: null });
+  const [clickedPosition, setClickedPosition] = useState<coordinateType>({
+    lat: null,
+    lng: null,
+  });
   const [clickedAddress, setClickedAddress] = useState('');
   const [searchResult, setSearchResult] = useState<keywordSearchResultType[]>([]);
   const [map, setMap] = useState<kakao.maps.Map>();
@@ -66,7 +86,7 @@ const GroupCreate = () => {
   };
 
   const createGoal = () => {
-    if (workout_type && weight && rep && set && wtime) {
+    if (workout_category && workout_type && wtime) {
       const goal: FitelementRequestType = {
         type: 'goal',
         category: workout_category,
@@ -77,7 +97,8 @@ const GroupCreate = () => {
         time: wtime,
       };
       setGoalList([...goal_list, goal]);
-      setWorkoutType('');
+      setWorkoutCategory('back');
+      setWorkoutType(null);
       setWeight(null);
       setRep(null);
       setSet(null);
@@ -96,6 +117,8 @@ const GroupCreate = () => {
     if (group_name === '') {
       alert('그룹명을 입력해 주세요.');
       return;
+    } else if (description === '') {
+      alert('그룹에 대한 설명을 작성해야 합니다.');
     } else if (set_date && (start_date === '' || end_date === '')) {
       alert('기간을 설정해 주세요.');
       return;
@@ -105,8 +128,8 @@ const GroupCreate = () => {
     } else if (goal_list.length === 0) {
       alert('목표는 하나 이상이어야 합니다.');
       return;
-    } else if (description === '') {
-      alert('그룹에 대한 설명을 작성해야 합니다.');
+    } else if (place && clickedAddress === '') {
+      alert('그룹에 대한 장소를 설정해야 합니다.');
       return;
     }
 
@@ -130,12 +153,15 @@ const GroupCreate = () => {
         lng: param_lng,
         address: param_address,
         goal: goal_list,
+        tags,
+        prime_tag: primeTag,
       }),
     );
   };
 
   useEffect(() => {
     dispatch(workoutLogActions.getFitElementsType());
+    dispatch(tagActions.getTags());
     return () => {
       dispatch(groupActions.stateRefresh());
     };
@@ -188,7 +214,7 @@ const GroupCreate = () => {
       map.setBounds(bounds);
     }
     const ps = new kakao.maps.services.Places();
-    ps.keywordSearch(keyword, (data, status, _pagination) => {
+    ps.keywordSearch(keyword, (data, status) => {
       if (status === kakao.maps.services.Status.OK) {
         const bounds = new kakao.maps.LatLngBounds();
         const psResults = [];
@@ -209,266 +235,359 @@ const GroupCreate = () => {
   }, [map, keyword]);
 
   const fitElementTarget = fitElementTypes.filter(item => item.class_name === workout_category);
+  // MODIFIED
+  const [tags, setTags] = useState<TagVisual[]>([]);
+  const [primeTag, setPrimeTag] = useState<TagVisual>();
+
+  // Event Handlers ------------------------------------------------------------------
+  const setSelectedTags = (callback: (sim: TagVisual[]) => TagVisual[]) => {
+    setTags(callback(tags));
+  };
+  const tagOnChange = (tag: TagVisual) => {
+    if (tags.length === 0) setPrimeTag(tag);
+
+    setSelectedTags(s => {
+      if (s.filter(item => item.id === tag.id).length === 0) return [...s, tag];
+      else return s;
+    });
+  };
+  const tagOnRemove = (tagId: string) => {
+    setSelectedTags(s => s.filter(item => item.id !== tagId));
+    if (primeTag && primeTag.id === tagId) {
+      setPrimeTag(undefined);
+    }
+  };
   return (
-    <Wrapper>
-      <TitleWrapper>
-        <Button4 content="Back" clicked={() => navigate(`/group`)} />
-        <Title>그룹 생성</Title>
-        <div style={{ width: '136px' }} />
-      </TitleWrapper>
-
-      <CreateWrapper>
-        <CreateText style={{ marginTop: '10px' }}>그룹명</CreateText>
-        <CreateInput
-          type="text"
-          value={group_name}
-          onChange={e => setGroupName(e.target.value)}
-          placeholder="그룹의 이름"
-        />
-
-        <CreateText>최대 인원</CreateText>
-        <div style={{ display: 'flex' }}>
-          <CreateSmallText>최대 인원 설정</CreateSmallText>
-          <CreateCheck
-            data-testid="maxNumCheck"
-            type="checkbox"
-            checked={max_num}
-            onChange={() => setMaxNum(!max_num)}
-          />
-          <CreateInput
-            data-testid="maxNum"
-            type="number"
-            disabled={!max_num}
-            value={group_num}
-            max="100"
-            onChange={e => setGroupNum(e.target.valueAsNumber)}
-            style={{ width: '90px' }}
-          />
-        </div>
-
-        <CreateText>기간</CreateText>
-        <div style={{ display: 'flex' }}>
-          <CreateSmallText>기간 설정</CreateSmallText>
-          <CreateCheck
-            data-testid="setDate"
-            type="checkbox"
-            checked={set_date}
-            onChange={() => setSetDate(!set_date)}
-          />
-          <DateWrapper>
-            <input
-              data-testid="start_date"
-              type="date"
-              className="input-date"
-              disabled={!set_date}
-              onChange={e => setStartDate(e.target.value)}
-            />
-            <input
-              data-testid="end_date"
-              type="date"
-              className="input-date"
-              disabled={!set_date}
-              onChange={e => setEndDate(e.target.value)}
-            />
-          </DateWrapper>
-        </div>
-
-        <CreateText>목표</CreateText>
-        <div style={{ display: 'flex', width: '63%', fontSize: '14px' }}>
-          <div style={{ paddingLeft: '0%' }}>WorkoutCategory</div>
-          <div style={{ paddingLeft: '7%' }}>WorkoutType</div>
-          <div style={{ paddingLeft: '8%' }}>Weight</div>
-          <div style={{ paddingLeft: '8%' }}>Rep</div>
-          <div style={{ paddingLeft: '9%' }}>Set</div>
-          <div style={{ paddingLeft: '10%' }}>Time</div>
-        </div>
-        <LogInputBody>
-          <WorkoutTypeSelect
-            data-testid="category"
-            defaultValue="선택"
-            className="type2"
-            onChange={e => setWorkoutCategory(e.target.value)}
-          >
-            <option disabled>선택</option>
-            {fitElementTypes.map((fitelement_category, index) => (
-              <option key={index}>{fitelement_category.class_name}</option>
-            ))}
-          </WorkoutTypeSelect>
-          <WorkoutTypeSelect
-            data-testid="workoutType"
-            defaultValue="종류 선택"
-            onChange={e => setWorkoutType(e.target.value)}
-          >
-            <option disabled>종류 선택</option>
-            {fitElementTarget.length === 1 &&
-              fitElementTarget[0].tags.map((fitelement, index) => <option key={index}>{fitelement.name}</option>)}
-          </WorkoutTypeSelect>
-          <WorkoutTypeInput
-            data-testid="weight"
-            className="type2"
-            type="number"
-            min="0"
-            value={weight || ''}
-            onChange={e => setWeight(Number(e.target.value))}
-          />
-          <WorkoutTypeInput
-            data-testid="rep"
-            className="type2"
-            type="number"
-            min="0"
-            value={rep || ''}
-            onChange={e => setRep(Number(e.target.value))}
-          />
-          <WorkoutTypeInput
-            data-testid="set"
-            className="type2"
-            type="number"
-            min="0"
-            value={set || ''}
-            onChange={e => setSet(Number(e.target.value))}
-          />
-          <WorkoutTypeInput
-            data-testid="time"
-            className="type2"
-            type="number"
-            min="0"
-            value={wtime || ''}
-            onChange={e => setWTime(Number(e.target.value))}
-          />
-          <Button1 content="추가" clicked={createGoal} />
-        </LogInputBody>
-        {goal_list.map((go_obj, index) => (
-          <div key={index} style={{ display: 'flex', width: '70%', height: '10%' }}>
-            <FitElement
-              key={index}
-              id={index + 1}
-              type={go_obj.type}
-              workout_type={go_obj.workout_type}
-              category={go_obj.category}
-              weight={go_obj.weight}
-              rep={go_obj.rep}
-              set={go_obj.set}
-              time={go_obj.time}
-            />
-            <div
-              data-testid="removeGoal"
-              onClick={() => removeGoal(goal_list.indexOf(go_obj))}
-              style={{
-                paddingLeft: '40px',
-                paddingRight: '40px',
-                paddingTop: '33px',
-                fontSize: '18px',
-                cursor: 'pointer',
-                color: 'gray',
-              }}
-            >
-              X
-            </div>
-          </div>
-        ))}
-        <CreateText>그룹 설명</CreateText>
-        <CreateTextArea
-          rows={10}
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          placeholder="그룹의 설명"
-        />
-
-        <CreateText>그룹 공개 설정</CreateText>
-        <CreateCheck data-testid="freeCheck" type="checkbox" checked={free} onChange={() => setFree(!free)} />
-
-        <CreateText>그룹 장소 설정</CreateText>
-        <CreateCheck data-testid="placeCheck" type="checkbox" checked={place} onChange={() => setPlace(!place)} />
-        {place && (
-          <>
-            <CreateInput
-              type="text"
-              value={keyword}
-              onChange={e => setKeyword(e.target.value)}
-              placeholder="장소 검색"
-            />
-            {clickedAddress && <div>{`그룹 장소로 ${clickedAddress} 로 합니다.`}</div>}
-            <Map // 로드뷰를 표시할 Container
-              center={{
-                lat: currentLocation.center.lat || 37.480966,
-                lng: currentLocation.center.lng || 126.952317,
-              }}
-              style={{
-                width: '60%',
-                height: '350px',
-              }}
-              level={3}
-              onClick={(_t, mouseEvent) => {
-                setClickedPosition({
-                  lat: mouseEvent.latLng.getLat(),
-                  lng: mouseEvent.latLng.getLng(),
-                });
-                setMarkerInfo(null);
-              }}
-              onCreate={setMap}
-            >
-              <MapMarker position={{ lat: currentLocation.center.lat, lng: currentLocation.center.lng }} />
-              {clickedPosition.lat && clickedPosition.lng && (
-                <MapMarker position={{ lat: clickedPosition.lat, lng: clickedPosition.lng }} />
-              )}
-              {searchResult.map(marker => (
-                <MapMarker
-                  key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
-                  position={marker.position}
-                  onClick={() => {
-                    setMarkerInfo(marker.content);
-                    setClickedPosition({ lat: marker.position.lat, lng: marker.position.lng });
+    <PostPageWrapper>
+      <PostContentWrapper>
+        <div></div>
+        <MainSideWrapper>
+          <ContentWrapper>
+            {/* // ------------------------------------------------------------------------------------------------------------------------------ */}
+            <CreateWrapper>
+              <CreateSectionInline>
+                <CreateSectionTitle>그룹 이름</CreateSectionTitle>
+                <GroupNameInput
+                  type="text"
+                  value={group_name}
+                  onChange={e => {
+                    const charInput = e.target.value;
+                    if (charInput.length <= TITLE_CHAR_LIMIT) setGroupName(charInput);
                   }}
-                >
-                  {markerInfo === marker.content && <div style={{ color: '#000' }}>{marker.content}</div>}
-                </MapMarker>
-              ))}
-            </Map>
-            <div style={{ paddingTop: '15px', fontFamily: 'FugazOne' }}>
-              {currentLocation.isLoading && <div>{'현위치를 불러오는 중입니다.'}</div>}
-              {currentLocation.errMsg && <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>}
-              {currentLocation.center.lat && <div>{`현위치를 성공적으로 불렀습니다.`}</div>}
-            </div>
-          </>
-        )}
-      </CreateWrapper>
+                  placeholder="그룹의 이름"
+                />
+                <CharNumIndicator isFull={group_name.length >= TITLE_CHAR_LIMIT}>
+                  {group_name.length} / {TITLE_CHAR_LIMIT}
+                </CharNumIndicator>
+              </CreateSectionInline>
+              <CreateSection>
+                <CreateSectionTitle>그룹 설명</CreateSectionTitle>
+                <CreateSectionBody>
+                  <CreateSectionTitleArea
+                    rows={10}
+                    value={description}
+                    onChange={e => {
+                      const charInput = e.target.value;
+                      if (charInput.length <= CONTENT_CHAR_LIMIT) setDescription(charInput);
+                    }}
+                    placeholder="그룹의 설명"
+                  />
+                  <ContentNumIndicator isFull={description.length >= CONTENT_CHAR_LIMIT}>
+                    {description.length} / {CONTENT_CHAR_LIMIT}
+                  </ContentNumIndicator>
+                </CreateSectionBody>
+              </CreateSection>
+              <CreateSectionInline>
+                <CreateSectionTitle>
+                  <CreateCheck
+                    data-testid="maxNumCheck"
+                    type="checkbox"
+                    checked={max_num}
+                    onChange={() => setMaxNum(!max_num)}
+                  />
+                  최대 인원 설정{' '}
+                </CreateSectionTitle>
+                <CreateSectionBody>
+                  <div style={{ display: 'flex' }}>
+                    <GroupNumberInput
+                      data-testid="maxNum"
+                      type="number"
+                      disabled={!max_num}
+                      value={group_num}
+                      min="1"
+                      max="100"
+                      onChange={e => setGroupNum(e.target.valueAsNumber)}
+                    />
+                  </div>
+                </CreateSectionBody>
+              </CreateSectionInline>
+              <CreateSectionInline>
+                <CreateSectionTitle>
+                  <CreateCheck
+                    data-testid="setDate"
+                    type="checkbox"
+                    checked={set_date}
+                    onChange={() => setSetDate(!set_date)}
+                  />
+                  기간 설정
+                </CreateSectionTitle>
+                <CreateSectionBody>
+                  <div style={{ display: 'flex' }}>
+                    <DateWrapper>
+                      <input
+                        data-testid="start_date"
+                        type="date"
+                        className="input-date"
+                        disabled={!set_date}
+                        onChange={e => setStartDate(e.target.value)}
+                      />
+                      <input
+                        data-testid="end_date"
+                        type="date"
+                        className="input-date"
+                        disabled={!set_date}
+                        onChange={e => setEndDate(e.target.value)}
+                      />
+                    </DateWrapper>
+                  </div>
+                </CreateSectionBody>
+              </CreateSectionInline>
+              <CreateSectionInline>
+                <CreateSectionTitle>
+                  <CreateCheck data-testid="freeCheck" type="checkbox" checked={free} onChange={() => setFree(!free)} />
+                  그룹 공개 설정
+                </CreateSectionTitle>
+              </CreateSectionInline>
+              <CreateSection>
+                <CreateSectionTitle>목표</CreateSectionTitle>
+                <CreateSectionBodyColumn>
+                  <GoalGridWrapper className="index">
+                    <span></span>
+                    <div>WorkoutCategory</div>
+                    <div>WorkoutType</div>
+                    <div>Weight</div>
+                    <div>Rep</div>
+                    <div>Set</div>
+                    <div>Time</div>
+                  </GoalGridWrapper>
+                  <GoalGridWrapper>
+                    <span></span>
+                    <WorkoutTypeSelect
+                      data-testid="category"
+                      defaultValue="선택"
+                      className="type2"
+                      onChange={e => setWorkoutCategory(e.target.value)}
+                    >
+                      <option disabled>선택</option>
+                      {fitElementTypes.map((fitelement_category, index) => (
+                        <option key={index}>{fitelement_category.class_name}</option>
+                      ))}
+                    </WorkoutTypeSelect>
+                    <WorkoutTypeSelect
+                      data-testid="workoutType"
+                      defaultValue="종류 선택"
+                      onChange={e => setWorkoutType(e.target.value)}
+                    >
+                      <option disabled>종류 선택</option>
+                      {fitElementTarget.length === 1 &&
+                        fitElementTarget[0].tags.map((fitelement, index) => (
+                          <option key={index}>{fitelement.name}</option>
+                        ))}
+                    </WorkoutTypeSelect>
+                    <WorkoutTypeInput
+                      data-testid="weight"
+                      className="type2"
+                      type="number"
+                      min="0"
+                      disabled={visible_input === 'hidden'}
+                      value={weight || ''}
+                      onChange={e => setWeight(Number(e.target.value))}
+                    />
+                    <WorkoutTypeInput
+                      data-testid="rep"
+                      className="type2"
+                      type="number"
+                      min="0"
+                      disabled={visible_input === 'hidden'}
+                      value={rep || ''}
+                      onChange={e => setRep(Number(e.target.value))}
+                    />
+                    <WorkoutTypeInput
+                      data-testid="set"
+                      className="type2"
+                      type="number"
+                      min="0"
+                      disabled={visible_input === 'hidden'}
+                      value={set || ''}
+                      onChange={e => setSet(Number(e.target.value))}
+                    />
+                    <WorkoutTypeInput
+                      data-testid="time"
+                      className="type2"
+                      type="number"
+                      min="0"
+                      value={wtime || ''}
+                      onChange={e => setWTime(Number(e.target.value))}
+                    />
+                    <GreenBigBtn onClick={createGoal}>추가</GreenBigBtn>
+                  </GoalGridWrapper>
 
-      <Button1 content="Create" clicked={saveOnClick} />
-    </Wrapper>
+                  {goal_list.map((go_obj, index) => (
+                    <GoalGridWrapper key={index} className="goals">
+                      <span className="type3">{index + 1}</span>
+                      <GoalGridImg
+                        src={require(`assets/images/workout_log/fitelement_category/${get_image(go_obj.category)}.png`)}
+                      />
+                      <span className="type">{go_obj.workout_type}</span>
+                      <span className="type2">{go_obj.weight}</span>
+                      <span>{go_obj.rep}</span>
+                      <span>{go_obj.set}</span>
+                      <span className="type2">
+                        <span>{go_obj.time}</span>
+                      </span>
+
+                      <div
+                        data-testid="removeGoal"
+                        onClick={() => removeGoal(goal_list.indexOf(go_obj))}
+                        style={{
+                          cursor: 'pointer',
+                          color: 'gray',
+                        }}
+                      >
+                        X
+                      </div>
+                    </GoalGridWrapper>
+                  ))}
+                </CreateSectionBodyColumn>
+              </CreateSection>
+              <CreateSection>
+                <CreateSectionTitle>
+                  <CreateCheck
+                    data-testid="placeCheck"
+                    type="checkbox"
+                    checked={place}
+                    onChange={() => setPlace(!place)}
+                  />
+                  그룹 장소 설정{' '}
+                </CreateSectionTitle>
+                <MapSectionBody>
+                  {place && (
+                    <>
+                      <MapSearchInput
+                        type="text"
+                        value={keyword}
+                        onChange={e => setKeyword(e.target.value)}
+                        placeholder="장소 검색"
+                      />
+                      {clickedAddress && (
+                        <div
+                          style={{
+                            marginTop: '10px',
+                            fontFamily: 'Noto Sans KR',
+                          }}
+                        >{`그룹 장소를 ${clickedAddress} 로 합니다.`}</div>
+                      )}
+                      <Map // 로드뷰를 표시할 Container
+                        center={{
+                          lat: currentLocation.center.lat || 37.480966,
+                          lng: currentLocation.center.lng || 126.952317,
+                        }}
+                        style={{
+                          marginTop: '10px',
+                          width: '80%',
+                          height: '350px',
+                        }}
+                        level={3}
+                        onClick={(_t, mouseEvent) => {
+                          setClickedPosition({
+                            lat: mouseEvent.latLng.getLat(),
+                            lng: mouseEvent.latLng.getLng(),
+                          });
+                          setMarkerInfo(null);
+                        }}
+                        onCreate={setMap}
+                      >
+                        <MapMarker
+                          position={{
+                            lat: currentLocation.center.lat,
+                            lng: currentLocation.center.lng,
+                          }}
+                        />
+                        {clickedPosition.lat && clickedPosition.lng && (
+                          <MapMarker
+                            position={{
+                              lat: clickedPosition.lat,
+                              lng: clickedPosition.lng,
+                            }}
+                          />
+                        )}
+                        {searchResult.map(marker => (
+                          <MapMarker
+                            key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
+                            position={marker.position}
+                            onClick={() => {
+                              setMarkerInfo(marker.content);
+                              setClickedPosition({
+                                lat: marker.position.lat,
+                                lng: marker.position.lng,
+                              });
+                            }}
+                          >
+                            {markerInfo === marker.content && (
+                              <div
+                                style={{
+                                  fontSize: '13px',
+                                  backgroundColor: 'white',
+                                  padding: '3px',
+                                  textAlign: 'center',
+                                  borderRadius: '4px',
+                                  fontFamily: 'NanumSquareR',
+                                  border: '1px solid',
+                                }}
+                              >
+                                {marker.content}
+                              </div>
+                            )}
+                          </MapMarker>
+                        ))}
+                      </Map>
+                      <div style={{ paddingTop: '15px', fontFamily: 'FugazOne' }}>
+                        {currentLocation.errMsg && (
+                          <div>{`${'현위치를 불러오지 못해 서울대입구역을 기본 위치로 합니다.'}`}</div>
+                        )}
+                        <div style={{ fontFamily: 'Noto Sans KR' }}>
+                          {currentLocation.isLoading
+                            ? '현위치를 불러오는 중입니다.'
+                            : '현위치를 성공적으로 불렀습니다.'}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </MapSectionBody>
+              </CreateSection>
+              <GroupCreateBtn>
+                <RedBtn onClick={() => navigate(`/group`)}>Cancel</RedBtn>
+                <GreenBigBtn onClick={saveOnClick}>Create</GreenBigBtn>
+              </GroupCreateBtn>
+            </CreateWrapper>
+            {/* // ------------------------------------------------------------------------------------------------------------------------------ */}
+          </ContentWrapper>
+          <TagSelector
+            tagContent={{
+              tags,
+              primeTag,
+              tagList,
+              tagSearch,
+            }}
+            tagOnChange={tagOnChange}
+            tagOnRemove={tagOnRemove}
+            setPrimeTag={setPrimeTag}
+          />
+        </MainSideWrapper>
+      </PostContentWrapper>
+    </PostPageWrapper>
   );
 };
-
-const Wrapper = styled.div`
-  width: 100%;
-  max-width: 1200px;
-  height: 100%;
-  min-height: calc(100vh - 60px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 20px 50px 20px;
-`;
-
-const TitleWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin: 40px 0;
-  padding: 0 20px;
-
-  @media all and (max-width: 560px) {
-    margin: 40px 0 20px 0;
-  }
-`;
-const Title = styled.div`
-  margin-top: 20px;
-  font-size: 45px;
-  font-family: NanumSquareR;
-
-  @media all and (max-width: 560px) {
-    display: none;
-  }
-`;
 
 const CreateWrapper = styled.div`
   width: 100%;
@@ -483,98 +602,200 @@ const CreateWrapper = styled.div`
   align-items: center;
   margin-bottom: 40px;
 `;
-const CreateText = styled.div`
-  font-size: 21px;
-  font-weight: 600;
-  font-family: NanumSquareR;
-  margin-top: 40px;
-  margin-bottom: 15px;
+
+const CreateSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 `;
-const CreateInput = styled.input`
-  width: 240px;
-  height: 36px;
-  font-size: 21px;
+
+const CreateSectionTitle = styled.div`
+  font-size: 20px;
+  font-weight: 500;
+  font-family: NanumSquareR;
+  margin: 10px 0px 10px 40px;
+`;
+
+const CreateSectionBody = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding: 5px 10px;
+  position: relative;
+`;
+const CreateSectionBodyColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+`;
+const MapSectionBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+`;
+
+const CreateSectionInline = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  position: relative;
+`;
+
+const GoalGridWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 5fr 15fr 15fr 10fr 10fr 10fr 10fr 12fr;
+  column-gap: 10px;
+  margin-left: 40px;
+  place-items: center;
+
+  &.index {
+    margin-bottom: 10px;
+  }
+  &.goals {
+    margin-top: 10px;
+  }
+`;
+
+const GoalGridImg = styled.img`
+  max-width: 40px;
+`;
+
+const GroupNameInput = styled.input`
+  width: 75%;
+  font-size: 18px;
+  font-family: NanumSquareR;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1.8px solid #929292;
+  margin-left: 30px;
+`;
+const GroupNumberInput = styled.input`
+  width: 90px;
+  font-size: 20px;
+  font-family: NanumSquareR;
+  text-align: center;
+  padding-left: -10px;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1.8px solid #929292;
+  margin-left: 30px;
+`;
+
+const MapSearchInput = styled.input`
+  width: 80%;
+  font-size: 18px;
   font-family: NanumSquareR;
   text-align: center;
   background-color: transparent;
   border: none;
   border-bottom: 2px solid #929292;
-  padding-bottom: 10px;
-  margin: 15px 0;
+  padding-bottom: 0px;
+  margin-bottom: 10px;
 `;
-const CreateSmallText = styled.div`
-  height: 66px;
-  padding-top: 18px;
-  font-size: 18px;
-  font-family: NanumSquareR;
-  margin-right: 10px;
-`;
+
 const CreateCheck = styled.input`
-  width: 24px;
-  height: 24px;
-  margin: 15px 10px 15px 0;
+  width: 18px;
+  height: 18px;
+  margin: 0px 10px 0px -30px;
 `;
+
 const DateWrapper = styled.div`
-  height: 66px;
   gap: 4px;
   padding-top: 3px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   font-size: 18px;
   font-family: NanumSquareR;
 `;
-const CreateTextArea = styled.textarea`
+
+const CreateSectionTitleArea = styled.textarea`
   width: 100%;
-  max-width: 600px;
+  max-height: 230px;
+  margin: 0px 0px 0px 15px;
   padding: 15px;
   font-size: 18px;
   font-family: NanumSquareR;
-  border: 3px solid #c5e7cb;
+  border: 2px solid #c5e7cb;
   border-radius: 10px;
   background-color: #ffffff;
   resize: none;
 `;
 
 const WorkoutTypeInput = styled.input`
-  width: 40%;
+  width: 100%;
   height: 100%;
-  padding: 8px 20px;
+  padding: 4px 20px;
   font-size: 14px;
-  margin: 7px;
 
-  &&.type1 {
-    width: 10%;
+  /* Chrome, Safari, Edge, Opera */
+  ::-webkit-outer-spin-button,
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
-  &&.type2 {
-    width: 10%;
-  }
+
+  /* Firefox */
+  -moz-appearance: textfield;
 `;
 
-const LogInputBody = styled.div`
-  padding-left: 30px;
-  width: 70%;
-  height: 10%;
-  max-height: 90px;
+const GroupCreateBtn = styled.div`
   display: flex;
-  font-weight: normal;
-`;
-
-const deleteGoal = styled.div`
-  padding-top: 33px;
-  font-size: 20px;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-end;
 `;
 
 const WorkoutTypeSelect = styled.select`
-  width: 20%;
+  width: 100%;
   height: 100%;
-  padding: 8px 10px;
+  padding: 4px 10px;
   font-size: 14px;
   margin: 5px;
   margin-top: 7px;
+`;
 
-  &&.type2 {
-    width: 15%;
-  }
+// Layout from PostEditorLayout
+const MainSideWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  row-gap: 10px;
+  column-gap: 10px;
+  width: 100%;
+  min-height: 800px;
+  margin-bottom: 50px;
+`;
+
+const ContentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
+
+const CharNumIndicator = styled.span<IPropsCharNum>`
+  position: absolute;
+  right: 5px;
+  bottom: 3px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
+`;
+
+const ContentNumIndicator = styled.span<IPropsCharNum>`
+  position: absolute;
+  right: 22px;
+  bottom: 12px;
+  color: var(--fit-support-gray);
+  ${({ isFull }) =>
+    isFull &&
+    `
+      color: var(--fit-red-neg-hover);
+    `}
 `;
 
 export default GroupCreate;

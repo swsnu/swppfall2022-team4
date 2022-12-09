@@ -41,6 +41,7 @@ def prepare_comment_response(comment, is_detail=False, username=''):
     if is_detail:
         response["liked"] = comment.liker.all().filter(username=username).exists()
         response["disliked"] = comment.disliker.all().filter(username=username).exists()
+        response["post_title"] = comment.post.title
     return response
 
 
@@ -74,7 +75,7 @@ def comment_home(request):
                 author=author, post=post, content=content, parent_comment=parent_comment
             )
 
-        add_exp(request.user.username, 15)
+        add_exp(request.user.username, 5)
 
         return JsonResponse({"message": "Success!"}, status=201)
     except (

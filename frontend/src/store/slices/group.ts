@@ -28,10 +28,15 @@ interface GroupState {
   };
   groupMembers: {
     members: groupAPI.Member[] | null;
+    group_leader: string | null;
     error: AxiosError | null;
   };
   groupCerts: {
     all_certs: groupAPI.MemberCert[] | null;
+    error: AxiosError | null;
+  };
+  reqMembers: {
+    requests: groupAPI.MemberReq[] | null;
     error: AxiosError | null;
   };
 }
@@ -60,10 +65,15 @@ export const initialState: GroupState = {
   },
   groupMembers: {
     members: [],
+    group_leader: null,
     error: null,
   },
   groupCerts: {
     all_certs: [],
+    error: null,
+  },
+  reqMembers: {
+    requests: [],
     error: null,
   },
 };
@@ -85,7 +95,6 @@ export const groupSlice = createSlice({
     getGroupsFailure: (state, { payload }) => {
       state.groupList.groups = null;
       state.groupList.error = payload;
-      alert(payload.response?.data.message);
     },
     createGroup: (state, action: PayloadAction<groupAPI.postGroupRequestType>) => {
       state.groupCreate.group_id = null;
@@ -98,7 +107,6 @@ export const groupSlice = createSlice({
     createGroupFailure: (state, { payload }) => {
       state.groupCreate.group_id = null;
       state.groupCreate.error = payload;
-      alert(payload.response?.data.message);
     },
     getGroupDetail: (state, action: PayloadAction<string>) => {
       state.groupDetail.group = null;
@@ -111,7 +119,6 @@ export const groupSlice = createSlice({
     getGroupDetailFailure: (state, { payload }) => {
       state.groupDetail.group = null;
       state.groupDetail.error = payload;
-      alert(payload.response?.data.message);
     },
     deleteGroup: (state, action: PayloadAction<string>) => {
       state.groupDelete = false;
@@ -121,7 +128,6 @@ export const groupSlice = createSlice({
     },
     deleteGroupFailure: (state, { payload }) => {
       state.groupDelete = false;
-      alert(payload.response?.data.message);
     },
     checkMemberStatus: (state, action: PayloadAction<string>) => {
       state.groupMemberStatus.member_status = null;
@@ -134,17 +140,20 @@ export const groupSlice = createSlice({
     checkMemberStatusFailure: (state, { payload }) => {
       state.groupMemberStatus.member_status = null;
       state.groupMemberStatus.error = payload;
-      alert(payload.response?.data.message);
     },
     getGroupMembers: (state, action: PayloadAction<string>) => {
       state.groupMembers.members = null;
+      state.groupMembers.group_leader = null;
       state.groupMembers.error = null;
     },
     getGroupMembersSuccess: (state, { payload }) => {
       state.groupMembers.members = payload.members;
+      state.groupMembers.group_leader = payload.group_leader;
       state.groupMembers.error = null;
     },
     getGroupMembersFailure: (state, { payload }) => {
+      state.groupMembers.members = null;
+      state.groupMembers.group_leader = null;
       state.groupMembers.error = payload;
     },
     joinGroup: (state, action: PayloadAction<string>) => {
@@ -158,7 +167,6 @@ export const groupSlice = createSlice({
     joinGroupFailure: (state, { payload }) => {
       state.groupAction.status = false;
       state.groupAction.error = payload;
-      alert(payload.response?.data.message);
     },
     exitGroup: (state, action: PayloadAction<string>) => {
       state.groupAction.status = false;
@@ -171,7 +179,6 @@ export const groupSlice = createSlice({
     exitGroupFailure: (state, { payload }) => {
       state.groupAction.status = false;
       state.groupAction.error = payload;
-      alert(payload.response?.data.message);
     },
     leaderChange: (state, action: PayloadAction<groupAPI.leaderChangeRequestType>) => {
       state.groupAction.status = false;
@@ -196,7 +203,7 @@ export const groupSlice = createSlice({
     getCertsFailure: (state, { payload }) => {
       state.groupCerts.error = payload;
     },
-    createCert: (state, action: PayloadAction<groupAPI.createCertRequestType>) => {
+    createCert: (state, action: PayloadAction<groupAPI.certRequestType>) => {
       state.groupCerts.all_certs = null;
       state.groupCerts.error = null;
     },
@@ -206,6 +213,54 @@ export const groupSlice = createSlice({
     },
     createCertFailure: (state, { payload }) => {
       state.groupCerts.error = payload;
+    },
+    deleteCert: (state, action: PayloadAction<groupAPI.certRequestType>) => {
+      state.groupCerts.all_certs = null;
+      state.groupCerts.error = null;
+    },
+    deleteCertSuccess: (state, { payload }) => {
+      state.groupCerts.all_certs = payload.all_certs;
+      state.groupCerts.error = null;
+    },
+    deleteCertFailure: (state, { payload }) => {
+      state.groupCerts.error = payload;
+    },
+    getRequests: (state, action: PayloadAction<string>) => {
+      state.reqMembers.requests = null;
+      state.reqMembers.error = null;
+    },
+    getRequestsSuccess: (state, { payload }) => {
+      state.reqMembers.requests = payload.requests;
+      state.reqMembers.error = null;
+    },
+    getRequestsFailure: (state, { payload }) => {
+      state.reqMembers.requests = null;
+      state.reqMembers.error = payload;
+    },
+    postRequest: (state, action: PayloadAction<groupAPI.joinReqLeaderRequestType>) => {
+      state.groupAction.status = false;
+      state.groupAction.error = null;
+    },
+    postRequestSuccess: state => {
+      state.groupAction.status = true;
+      state.groupAction.error = null;
+    },
+    postRequestFailure: (state, { payload }) => {
+      state.groupAction.status = false;
+      state.groupAction.error = payload;
+      alert(payload.response?.data.message);
+    },
+    deleteRequest: (state, action: PayloadAction<groupAPI.joinReqLeaderRequestType>) => {
+      state.groupAction.status = false;
+      state.groupMemberStatus.error = null;
+    },
+    deleteRequestSuccess: state => {
+      state.groupAction.status = true;
+      state.groupAction.error = null;
+    },
+    deleteRequestFailure: (state, { payload }) => {
+      state.groupAction.status = false;
+      state.groupAction.error = payload;
     },
   },
 });
@@ -283,7 +338,7 @@ function* leaderChangeSaga(action: PayloadAction<groupAPI.leaderChangeRequestTyp
     yield put(groupActions.leaderChangeFailure(error));
   }
 }
-function* createCertSaga(action: PayloadAction<groupAPI.createCertRequestType>) {
+function* createCertSaga(action: PayloadAction<groupAPI.certRequestType>) {
   try {
     const response: AxiosResponse = yield call(groupAPI.createCert, action.payload);
     yield put(groupActions.createCertSuccess(response));
@@ -299,6 +354,40 @@ function* getCertsSaga(action: PayloadAction<groupAPI.getCertsRequestType>) {
     yield put(groupActions.getCertsFailure(error));
   }
 }
+function* deleteCertSaga(action: PayloadAction<groupAPI.certRequestType>) {
+  // console.log('delete saga');
+  try {
+    const response: AxiosResponse = yield call(groupAPI.deleteCert, action.payload);
+    // console.log('before put');
+    yield put(groupActions.deleteCertSuccess(response));
+  } catch (error) {
+    yield put(groupActions.deleteCertFailure(error));
+  }
+}
+function* getRequestsSaga(action: PayloadAction<string>) {
+  try {
+    const response: AxiosResponse = yield call(groupAPI.getRequests, action.payload);
+    yield put(groupActions.getRequestsSuccess(response));
+  } catch (error) {
+    yield put(groupActions.getRequestsFailure(error));
+  }
+}
+function* postRequestSaga(action: PayloadAction<groupAPI.joinReqLeaderRequestType>) {
+  try {
+    yield call(groupAPI.postRequest, action.payload);
+    yield put(groupActions.postRequestSuccess());
+  } catch (error) {
+    yield put(groupActions.postRequestFailure(error));
+  }
+}
+function* deleteRequestSaga(action: PayloadAction<groupAPI.joinReqLeaderRequestType>) {
+  try {
+    yield call(groupAPI.deleteRequest, action.payload);
+    yield put(groupActions.deleteRequestSuccess());
+  } catch (error) {
+    yield put(groupActions.deleteRequestFailure(error));
+  }
+}
 
 export default function* groupSaga() {
   yield takeLatest(groupActions.getGroups, getGroupsSaga);
@@ -312,4 +401,8 @@ export default function* groupSaga() {
   yield takeLatest(groupActions.leaderChange, leaderChangeSaga);
   yield takeLatest(groupActions.createCert, createCertSaga);
   yield takeLatest(groupActions.getCerts, getCertsSaga);
+  yield takeLatest(groupActions.deleteCert, deleteCertSaga);
+  yield takeLatest(groupActions.getRequests, getRequestsSaga);
+  yield takeLatest(groupActions.postRequest, postRequestSaga);
+  yield takeLatest(groupActions.deleteRequest, deleteRequestSaga);
 }

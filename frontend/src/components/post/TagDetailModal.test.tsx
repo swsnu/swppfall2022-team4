@@ -179,11 +179,11 @@ describe('[TagDetailModal Component]', () => {
     setup();
 
     // Filtering Test
-    const pickColorBtn = screen.getByText('색상 직접 설정');
-    fireEvent.click(pickColorBtn);
+    const newCateogryBtn = screen.getByText('새로운 카테고리');
+    fireEvent.click(newCateogryBtn);
     const chromePicker = screen.getByTestId('chromePicker');
     fireEvent.click(chromePicker);
-    const randColorBtn = screen.getByText('색상 임의 설정');
+    const randColorBtn = screen.getByText('랜덤 색상');
     fireEvent.click(randColorBtn);
     const newCategoryNameInput = screen.getByPlaceholderText('새로운 카테고리 이름');
     userEvent.type(newCategoryNameInput, '123456789101112');

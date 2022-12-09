@@ -28,7 +28,7 @@ const getTagsResponse: tagAPI.getTagListResponseType = {
   tags: [
     {
       id: 1,
-      class_name: 'workout',
+      class_name: '등운동',
       class_type: 'workout',
       color: '#101010',
       tags: simpleTagVisuals,
@@ -57,6 +57,10 @@ const setup = () => {
     type: 'user/setUser',
     payload: { username: 'username', nickname: 'nickname', image: 'image' },
   });
+  store.dispatch({
+    type: 'tag/getTagsSuccess',
+    payload: getTagsResponse,
+  });
   render(
     <Provider store={store}>
       <InformationLobby />
@@ -73,10 +77,6 @@ describe('[InformationLobby Page]', () => {
         type: 'info/getInformationSuccess',
         payload: getInformationResponse,
       });
-      store.dispatch({
-        type: 'tag/getTagsSuccess',
-        payload: getTagsResponse,
-      });
     });
 
     const searchInput = screen.getByPlaceholderText('Search keyword');
@@ -85,7 +85,7 @@ describe('[InformationLobby Page]', () => {
     const searchClearBtn = screen.getByText('Clear');
     fireEvent.click(searchClearBtn);
     expect(searchInput).toHaveValue('');
-    userEvent.type(searchInput, 'sssss');
+    userEvent.type(searchInput, 'interesting');
     fireEvent.submit(searchInput);
 
     const tagBubble = screen.getByText('interesting');

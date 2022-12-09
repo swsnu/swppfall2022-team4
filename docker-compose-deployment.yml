@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      dockerfile: Dockerfile.deployment
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - 443:443
+    volumes:
+      - /etc/letsencrypt/archive/fitogether.site/fullchain1.pem:/usr/app/ssl/fullchain.pem
+      - /etc/letsencrypt/archive/fitogether.site/privkey1.pem:/usr/app/ssl/privkey.pem
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      dockerfile: Dockerfile.deployment
+      context: ./backend
+    container_name: backend
+    ports:
+      - 8000:8000
+      - 8001:8001
+    depends_on:
+      - mysql
+    stdin_open: true
+    tty: true
+
+  mysql:
+    image: mysql:8.0
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    container_name: mysql
+    environment:
+      # Password is not uploaded on Github.
+      MYSQL_ROOT_PASSWORD: '???'
+      MYSQL_DATABASE: 'fitogether_db'
+      MYSQL_USER: 'fitogether_user'
+      MYSQL_PASSWORD: '???'
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+    ports:
+      - 3306:3306

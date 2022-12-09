@@ -11,16 +11,11 @@ class Comment(AbstractTimeStampedModel):
     content = models.TextField()
 
     liker = models.ManyToManyField(User, related_name="liked_comments", blank=True)
-    disliker = models.ManyToManyField(
-        User, related_name="disliked_comments", blank=True
-    )
-    scraper = models.ManyToManyField(User, related_name="scraped_comments", blank=True)
+    disliker = models.ManyToManyField(User, related_name="disliked_comments", blank=True)
 
     # Related_name : comments <- comments.Comment
 
-    parent_comment = models.ForeignKey(
-        "self", on_delete=models.CASCADE, blank=True, null=True
-    )
+    parent_comment = models.ForeignKey("self", on_delete=models.CASCADE, blank=True, null=True)
 
     def get_like_num(self):
         """Get number of like"""

@@ -16,8 +16,8 @@ NO_USER = "존재하지 않는 유저입니다."
 def prepare_login_response(username, nickname, image, response_status=200):
     token = jwt.encode(
         {'username': username},
-        os.environ.get("JWT_SECRET"),
-        os.environ.get("ALGORITHM"),
+        os.environ.get("JWT_SECRET", "jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development_jwt_secret_for_development"),
+        os.environ.get("ALGORITHM", "HS256"),
     )
     response = JsonResponse(
         {
@@ -140,7 +140,7 @@ def profile(request, user_id):
 
     if request.method == 'GET':
         posts_serial = prepare_posts_response(user.posts.all())
-        comments_serial = prepare_comments_response(user.comments.all())
+        comments_serial = prepare_comments_response(user.comments.all(), is_detail=True, username=user_id)
         scraps_serial = prepare_posts_response(user.scraped_posts.all())
 
         follower_datas = user.follower.all()
@@ -341,6 +341,7 @@ def validate_social_account(request):
     data = json.loads(request.body.decode())
     try:
         user = User.objects.get(username=data["username"])
+        user.nickname = data["nickname"]
         user.gender = data["gender"]
         user.height = data["height"]
         user.weight = data["weight"]

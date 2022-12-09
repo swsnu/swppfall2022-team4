@@ -24,6 +24,8 @@ export const initialState: PreloadedState<RootState> = {
     notificationList: [],
   },
   post: {
+    main: null,
+
     postList: {
       posts: null,
       pageNum: null,
@@ -77,12 +79,17 @@ export const initialState: PreloadedState<RootState> = {
     },
     groupMembers: {
       members: [],
+      group_leader: null,
       error: null,
     },
     groupCerts: {
       all_certs: [],
       error: null,
-    }
+    },
+    reqMembers: {
+      requests: [],
+      error: null,
+    },
   },
   tag: {
     tagList: null,
@@ -124,7 +131,22 @@ export const initialState: PreloadedState<RootState> = {
       {
         id: 0,
         name: 'test_routine',
-        fitelements: [],
+        fitelements: [
+          {
+            data: {
+              id: 0,
+              type: 'log',
+              workout_type: '데드리프트',
+              period: null,
+              category: '등운동',
+              weight: null,
+              rep: null,
+              set: null,
+              time: 20,
+              date: null,
+            },
+          },
+        ],
       },
       {
         id: 1,
@@ -185,19 +207,34 @@ export const initialState: PreloadedState<RootState> = {
         month: 10,
         date: 1,
         workouts: [],
-        calories: 0
+        calories: 0,
       },
       {
         year: 2022,
         month: 10,
         date: 2,
         workouts: [],
-        calories: 0
-      }
+        calories: 0,
+      },
     ],
     selected_routine: {
-      name: 'test_routine2',
-      fitelements: [],
+      name: 'test_routine',
+      fitelements: [
+        {
+          data: {
+            id: 0,
+            type: 'log',
+            workout_type: '데드리프트',
+            period: null,
+            category: '등운동',
+            weight: null,
+            rep: null,
+            set: null,
+            time: 20,
+            date: null,
+          },
+        },
+      ],
     },
     add_fit_elements: {
       fitelements: [],
@@ -208,9 +245,43 @@ export const initialState: PreloadedState<RootState> = {
       calories: 0,
       category: '',
     },
-    fitelement_types: [],
-    imageSuccess: "",
-    memoSuccess: "",
+    fitelement_types: [
+      {
+        id: 0,
+        class_name: '등운동',
+        class_type: '데드리프트',
+        color: '#FFFFFF',
+        tags: [
+          {
+            id: '0',
+            name: '데드리프트',
+            color: '#FFFFFF',
+          },
+        ],
+      },
+      {
+        id: 1,
+        class_name: '유산소',
+        class_type: '수영',
+        color: '#FFFFFF',
+        tags: [
+          {
+            id: '1',
+            name: '수영',
+            color: '#FFFFFF',
+          },
+        ],
+      },
+    ],
+    imageSuccess: '',
+    memoSuccess: '',
+    create_routine_id: null,
+    deleteImageSuccess: '',
+    indexSuccess: [],
+    edit_routine_success: {
+      id: null,
+      content: '',
+    },
   },
 };
 

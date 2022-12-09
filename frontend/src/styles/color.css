@@ -1,11 +1,15 @@
 :root {
     /* White */
     --fit-white: #ffffff;
+    --fit-white-green: #bbffbb;
+    --fit-black: #000000;
 
     /* Gray */
+    --fit-gray: #f4f4f4;
     --fit-disabled-gray: #9b9b9b;
     --fit-disabled-gray-deep: #5b5b5b;
     --fit-support-gray: #939393;
+    --fit-support-gray-bright: #d3d3d3;
     --fit-modal-background: rgba(0, 0, 0, 0.3);
     --fit-unselected-tag: #dbdbdb;
 
@@ -15,7 +19,9 @@
     --fit-red-neg-active: #bf3434;
 
     /* Green */
-    --fit-green-back: #d7efe3;
+    --fit-green-back: #deefde;
+    /* --fit-green-back: #d7efe3; */
+    --fit-green-paginator: #18ad49;
     --fit-green-text: #008e2f;
     --fit-green-pos-big-btn1: #00be5f;
     --fit-green-small-btn1: #54dd6d;
@@ -28,7 +34,7 @@
     
     --fit-green-deep: #60bf43; /* Used in Paginator */
     /* Blue */
-    --fit-blue-pos: #35c9ea;
+    --fit-blue-pos: #38B8F1;
     --fit-blue-pos-hover: #45d9fa;
     --fit-blue-pos-active: #25a9da;
 }

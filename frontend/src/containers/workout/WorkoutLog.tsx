@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useOnClickOutside } from 'usehooks-ts';
 import styled from 'styled-components';
 import { RootState } from 'index';
 import { FitElement } from 'components/fitelement/FitElement';
+import { RedSmallBtn } from 'components/post/button';
 import { Hover } from 'components/fitelement/Hover';
-import { workoutLogActions } from 'store/slices/workout';
+import { Fitelement, workoutLogActions } from 'store/slices/workout';
 import { userActions } from 'store/slices/user';
+import ImageDetailModal from 'components/post/ImageDetailModal';
+import { notificationSuccess } from 'utils/sendNotification';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import {
   getDailyLogRequestType,
   createWorkoutLogRequestType,
@@ -14,6 +20,8 @@ import {
   addFitElementsRequestType,
   createRoutineWithFitElementsRequestType,
   editImageRequestType,
+  deleteImageRequestType,
+  editIndexRequestType,
 } from 'store/apis/workout';
 import client from 'store/apis/client';
 
@@ -42,7 +50,7 @@ const WorkoutLog = () => {
   const [weight, setWeight] = useState<number | null>(null);
   const [set, setSet] = useState<number | null>(null);
   const [workout_time, setWorkoutTime] = useState<number | null>(null);
-  const [workout_category, setWorkoutCategory] = useState('back');
+  const [workout_category, setWorkoutCategory] = useState('');
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const [workout_period, setWorkoutPeriod] = useState<number | null>(null);
   const [memo_write_mode, setMemoWriteMode] = useState<boolean>(false);
@@ -51,7 +59,18 @@ const WorkoutLog = () => {
   const [isCopy, setIsCopy] = useState<boolean>(false);
   const [copy_date, setCopyDate] = useState<Date>(new Date());
   const [copied_fitelements, setCopiedFitElements] = useState<number[]>([]);
+  const [copied_routine, setCopiedRoutine] = useState('');
   const user = useSelector(({ user }: RootState) => user);
+  const imageModalRef = useRef(null);
+  const imageModalAnimRef = useRef(null);
+  const [activeImage, setActiveImage] = useState('');
+
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+
+  const imageModalOnClose = () => setImageModalOpen(false);
+  useOnClickOutside(imageModalRef, imageModalOnClose, 'mousedown');
+
+  const location = useLocation();
 
   function getStartDayOfMonth(date: Date) {
     const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -99,6 +118,8 @@ const WorkoutLog = () => {
   const createWorkoutLog = () => {
     if (workout_type === '') {
       alert('운동종류를 입력해주세요.');
+    } else if (workout_time === null || workout_time <= 0) {
+      alert('시간을 입력해야 해요.');
     } else {
       const newLogConfig: createWorkoutLogRequestType = {
         username: user.user?.username!,
@@ -113,17 +134,16 @@ const WorkoutLog = () => {
         date: String(year) + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0'),
       };
       dispatch(workoutLogActions.createWorkoutLog(newLogConfig));
-      setWorkoutType('');
-      setRep(0);
-      setWeight(0);
-      setSet(0);
-      setWorkoutTime(0);
+      cancelWorkoutLog();
     }
   };
 
   const copyDailyLog = () => {
+    window.history.replaceState({}, document.title);
+    setCopiedRoutine('');
     if (dailyLog.isDailyLog === true && dailyFitElements.length > 0) {
       setIsCopy(true);
+      notificationSuccess('FitElement', '일일 log 복사에 성공했어요!');
       setCopyDate(new Date(year, month, day));
       setCopiedFitElements(
         dailyFitElements.map(v => {
@@ -150,6 +170,7 @@ const WorkoutLog = () => {
 
   const pasteDailyLog = () => {
     setIsCopy(false);
+    console.log(copied_fitelements);
 
     const addFitElementConfig: addFitElementsRequestType = {
       username: user.user?.username!,
@@ -159,6 +180,19 @@ const WorkoutLog = () => {
       specific_date: day,
     };
     dispatch(workoutLogActions.addFitElements(addFitElementConfig));
+    setCopiedFitElements([]);
+    setCopyDate(new Date(1900, 1, 1));
+    setCopiedRoutine('');
+    window.history.replaceState({}, document.title);
+  };
+
+  const cancelWorkoutLog = () => {
+    setWorkoutCategory('');
+    setWorkoutType('');
+    setWeight(null);
+    setRep(null);
+    setSet(null);
+    setWorkoutTime(null);
   };
 
   const memoOnClick = (click_type: string) => {
@@ -198,17 +232,52 @@ const WorkoutLog = () => {
   const imageSuccess = useSelector((rootState: RootState) => rootState.workout_log.imageSuccess);
   const memoSuccess = useSelector((rootState: RootState) => rootState.workout_log.memoSuccess);
   const fitElementTypes = useSelector((rootState: RootState) => rootState.workout_log.fitelement_types);
+  const visible_input = workout_category === '기타운동' || workout_category === '유산소' ? 'hidden' : 'visible';
+  const deleteImageSuccess = useSelector((rootState: RootState) => rootState.workout_log.deleteImageSuccess);
+  const indexSuccess = useSelector((rootState: RootState) => rootState.workout_log.indexSuccess);
+
+  const daily_ref = useRef<Fitelement[]>([]);
+  const [daily_temp, setDailyTemp] = useState<Fitelement[]>([]);
+  daily_ref.current = dailyFitElements;
 
   useEffect(() => {
     dispatch(workoutLogActions.getDailyLog(defaultDailyLogConfig));
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [createDailyLogStatus, pasteStatus, deleteFitElementStatus, imageSuccess, memoSuccess]);
+  }, [
+    createDailyLogStatus,
+    pasteStatus,
+    deleteFitElementStatus,
+    imageSuccess,
+    memoSuccess,
+    deleteImageSuccess,
+    indexSuccess,
+    copied_routine,
+  ]);
+
+  useEffect(() => {
+    if (location.state !== null) {
+      setCopiedFitElements(
+        location.state.copied_fitelements.map((v: Array<number>) => {
+          return Number(v);
+        }),
+      );
+      setCopyDate(new Date(1900, 1, 1));
+      setIsCopy(true);
+      setCopiedRoutine(location.state.copy_routine);
+    }
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     setMemo(dailyLog.memo || '');
     setImage(dailyLog.images || ['default-upload-image.png']);
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [dailyLog]);
+
+  useEffect(() => {
+    setDailyTemp(dailyFitElements);
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [dailyFitElements]);
 
   useEffect(() => {
     dispatch(
@@ -237,8 +306,12 @@ const WorkoutLog = () => {
 
   const days = isLeapYear(date.getFullYear()) ? DAYS_LEAP : DAYS;
 
-  const onChangeProfileImage = async (e: any) => {
+  const onChangeDailyLogImage = async (e: any) => {
     const file = e.target.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert('5MB 이하의 파일만 업로드가 가능합니다.');
+      return;
+    }
     const formData = new FormData();
     formData.append('image', file);
     try {
@@ -251,10 +324,100 @@ const WorkoutLog = () => {
         specific_date: day,
       };
       dispatch(workoutLogActions.editImage(editImageConfig));
+      const input = document.getElementById('FileInput_DailyLog') as HTMLInputElement;
+      input.value = '';
     } catch (error) {
       alert('이미지 업로드 오류');
     }
   };
+
+  const removeImages = (targetImage: string) => {
+    const deleteImageConfig: deleteImageRequestType = {
+      username: user.user?.username!,
+      image: targetImage,
+      year: year,
+      month: month + 1,
+      specific_date: day,
+      delete: true,
+    };
+    dispatch(workoutLogActions.deleteImage(deleteImageConfig));
+    notificationSuccess('Image', '이미지 삭제에 성공했어요!');
+  };
+
+  const onDragEnd = (res: DropResult) => {
+    const { source, destination } = res;
+    console.log(res);
+
+    if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+    let index_list = [...dailyLog.fit_element!];
+
+    const _fit_list = [...dailyFitElements];
+    const [target_fit] = _fit_list.splice(source.index, 1);
+    _fit_list.splice(destination.index, 0, target_fit);
+    setDailyTemp(_fit_list);
+
+    const temp_index = [...dailyLog.fit_element!];
+    const [target_index] = temp_index.splice(source.index, 1);
+    temp_index.splice(destination.index, 0, target_index);
+    index_list = temp_index;
+
+    const editIndexConfig: editIndexRequestType = {
+      username: user.user?.username!,
+      log_index: index_list,
+      year: year,
+      month: month + 1,
+      specific_date: day,
+    };
+    dispatch(workoutLogActions.editIndex(editIndexConfig));
+  };
+  const grid = 8;
+  const getItemStyle = (isDragging: any, draggableStyle: any) => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: 'none',
+    // change background colour if dragging
+    background: isDragging ? '#d7efe3' : '#FFFFFF',
+
+    // styles we need to apply on draggables
+    ...draggableStyle,
+  });
+
+  const FitElementList = (fitelement: Fitelement, id: number, index: number) => {
+    return (
+      <Draggable key={id} draggableId={String(id)} index={index}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+          >
+            <FitElementWrapper>
+              <FitElement
+                key={fitelement.data.id}
+                id={index + 1}
+                type={fitelement.data.type}
+                workout_type={fitelement.data.workout_type}
+                category={fitelement.data.category}
+                weight={fitelement.data.weight}
+                rep={fitelement.data.rep}
+                set={fitelement.data.set}
+                time={fitelement.data.time}
+              />
+              <DeleteButton>
+                <DeleteEmoji
+                  data-testid="delete-fitelement"
+                  src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
+                  onClick={() => fitelementDeleteOnClick(fitelement.data.id)}
+                />
+              </DeleteButton>
+            </FitElementWrapper>
+          </div>
+        )}
+      </Draggable>
+    );
+  };
+
   const fitElementTarget = fitElementTypes.filter(item => item.class_name === workout_category);
   return (
     <Wrapper>
@@ -262,7 +425,9 @@ const WorkoutLog = () => {
         <LeftWrapper>
           <LeftUpper>
             <DateWrapper>
-              {isCopy === true
+              {copied_routine !== ''
+                ? `${copied_routine} 복사중`
+                : isCopy === true && copy_date.getFullYear() !== 1900
                 ? String(copy_date.getFullYear()) +
                   '.' +
                   String(copy_date.getMonth() + 1) +
@@ -277,6 +442,7 @@ const WorkoutLog = () => {
             <Frame>
               <CalendarHeader>
                 <Button
+                  data-testid="left_button"
                   onClick={() => {
                     dispatch(
                       workoutLogActions.getCalendarInfo({
@@ -296,6 +462,7 @@ const WorkoutLog = () => {
                 </YearMonth>
 
                 <Button
+                  data-testid="right_button"
                   onClick={() => {
                     dispatch(
                       workoutLogActions.getCalendarInfo({
@@ -372,39 +539,51 @@ const WorkoutLog = () => {
               <CalendarFooter>
                 <>
                   {image!.map((v, index) => (
-                    <WorkoutImage key={index} src={process.env.REACT_APP_API_IMAGE + v} alt="workout_image" />
+                    <WorkoutImageWrapper key={index}>
+                      <WorkoutImage
+                        src={process.env.REACT_APP_API_IMAGE + v}
+                        alt="workout_image"
+                        onClick={() => {
+                          setActiveImage(v);
+                          setImageModalOpen(true);
+                        }}
+                      />
+                      <RedSmallBtn onClick={() => removeImages(v)}>삭제</RedSmallBtn>
+                    </WorkoutImageWrapper>
                   ))}
                 </>
                 {image!.length + 1 > CONTENT_IMAGE_LIMIT ? (
                   ''
                 ) : (
-                  <>
+                  <WorkoutImageWrapper>
                     <WorkoutImage
+                      data-testid="FileInput_DailyLog"
                       src={process.env.REACT_APP_API_IMAGE + 'default-upload-image.png'}
                       alt="workout_image"
                       onClick={() => {
                         document.getElementById('FileInput_DailyLog')?.click();
                       }}
                     />
-                    <FileInput type="file" id="FileInput_DailyLog" onChange={onChangeProfileImage} />
-                  </>
+                    <FileInput
+                      type="file"
+                      accept="image/*"
+                      data-testid="dailylog_upload"
+                      id="FileInput_DailyLog"
+                      onChange={onChangeDailyLogImage}
+                    />
+                  </WorkoutImageWrapper>
                 )}
               </CalendarFooter>
             </Frame>
           </CalendarWrapper>
           <MemoWrapper>
             <Frame className="memo">
-              <MemoTitleWrapper>
-                Notes
-                <MemoEditButton
-                  data-testid="memo_edit"
-                  src={require('assets/images/workout_log/memo/memo_edit.png')}
-                ></MemoEditButton>
-              </MemoTitleWrapper>
+              <MemoTitleWrapper>Notes</MemoTitleWrapper>
               <MemoContentWrapper>
                 {memo_write_mode ? (
                   <MemoInput
                     value={memo}
+                    data-testid="memo_input"
                     placeholder="수정 버튼을 눌러 메모를 추가해 보세요."
                     onChange={e => setMemo(e.target.value)}
                   />
@@ -419,16 +598,23 @@ const WorkoutLog = () => {
                 <MemoButtonWrapper>
                   <AnyButton
                     className="memo-type"
+                    data-testid="memo_cancel_button"
                     hidden={!memo_write_mode}
                     onClick={() => memoOnClick('cancel_button')}
                   >
                     취소
                   </AnyButton>
-                  <AnyButton className="memo-type" hidden={memo_write_mode} onClick={() => memoOnClick('edit_button')}>
+                  <AnyButton
+                    className="memo-type"
+                    data-testid="memo_edit_button"
+                    hidden={memo_write_mode}
+                    onClick={() => memoOnClick('edit_button')}
+                  >
                     수정
                   </AnyButton>
                   <AnyButton
                     className="memo-type"
+                    data-testid="memo_submit_button"
                     hidden={!memo_write_mode}
                     onClick={() => memoOnClick('complete_button')}
                   >
@@ -447,7 +633,6 @@ const WorkoutLog = () => {
               </DateWrapper>
               <AnyButton onClick={() => routineClick()}>루틴</AnyButton>
               <AnyButton
-                className="disable-type"
                 disabled={
                   isCopy
                     ? copy_date.getFullYear() === selected_year &&
@@ -461,52 +646,107 @@ const WorkoutLog = () => {
               >
                 불러오기
               </AnyButton>
-              <AnyButton onClick={() => copyDailyLog()}>내보내기</AnyButton>
-              <AnyButton>저장</AnyButton>
-              <AnyButton onClick={() => addRoutineClick()}>루틴추가</AnyButton>
+              <AnyButton
+                disabled={(dailyLog.fit_element === null || dailyLog.fit_element.length) === 0 ? true : false}
+                onClick={() => copyDailyLog()}
+              >
+                내보내기
+              </AnyButton>
+              <AnyButton
+                disabled={(dailyLog.fit_element === null || dailyLog.fit_element.length) === 0 ? true : false}
+                onClick={() => addRoutineClick()}
+              >
+                루틴추가
+              </AnyButton>
             </LogUpper>
             <Frame className="right">
               <LogHeader>
                 <LogCategory>부위</LogCategory>
                 <LogCategory className="type">종류</LogCategory>
-                <LogCategory>강도</LogCategory>
-                <LogCategory>반복</LogCategory>
-                <LogCategory>세트</LogCategory>
+                <LogCategory
+                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                >
+                  강도
+                </LogCategory>
+                <LogCategory
+                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                >
+                  반복
+                </LogCategory>
+                <LogCategory
+                  className={workout_category === '기타운동' || workout_category === '유산소' ? 'hide' : 'no_hide'}
+                >
+                  세트
+                </LogCategory>
                 <LogCategory>시간(분)</LogCategory>
               </LogHeader>
               <LogInputBody>
                 <LogInputBodyInput>
                   <WorkoutTypeSelect
-                    defaultValue="선택"
+                    value={workout_category || '선택'}
                     className="type2"
+                    data-testid="select_category"
                     onChange={e => setWorkoutCategory(e.target.value)}
                   >
                     <option disabled>선택</option>
                     {fitElementTypes.map((fitelement_category, index) => (
-                      <option key={index}>{fitelement_category.class_name}</option>
+                      <option data-testid="select-option-category" key={index}>
+                        {fitelement_category.class_name}
+                      </option>
                     ))}
                   </WorkoutTypeSelect>
-                  <WorkoutTypeSelect defaultValue="종류 선택" onChange={e => setWorkoutType(e.target.value)}>
+                  <WorkoutTypeSelect
+                    value={workout_type || '종류 선택'}
+                    data-testid="select_type"
+                    onChange={e => setWorkoutType(e.target.value)}
+                  >
                     <option disabled>종류 선택</option>
                     {fitElementTarget.length === 1 &&
-                      fitElementTarget[0].tags.map((fitelement, index) => (
-                        <option key={index}>{fitelement.name}</option>
+                      fitElementTarget[0].tags.map((fitelement, index: number) => (
+                        <option data-testid="select-option-type" key={index}>
+                          {fitelement.name}
+                        </option>
                       ))}
                   </WorkoutTypeSelect>
                   <WorkoutTypeInput
+                    pattern="[0-9]+"
+                    data-testid="type_input"
                     type="number"
+                    onKeyPress={event => {
+                      if (!(48 <= event.charCode && event.charCode <= 57)) {
+                        event.preventDefault();
+                      }
+                    }}
+                    className={visible_input}
+                    disabled={visible_input === 'hidden' ? true : false}
                     min="0"
                     value={weight || ''}
                     onChange={e => setWeight(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
                     type="number"
+                    data-testid="type_input"
+                    onKeyPress={event => {
+                      if (!(48 <= event.charCode && event.charCode <= 57)) {
+                        event.preventDefault();
+                      }
+                    }}
+                    className={visible_input}
+                    disabled={visible_input === 'hidden' ? true : false}
                     min="0"
                     value={rep || ''}
                     onChange={e => setRep(Number(e.target.value))}
                   />
                   <WorkoutTypeInput
                     type="number"
+                    data-testid="type_input"
+                    onKeyPress={event => {
+                      if (!(48 <= event.charCode && event.charCode <= 57)) {
+                        event.preventDefault();
+                      }
+                    }}
+                    className={visible_input}
+                    disabled={visible_input === 'hidden' ? true : false}
                     min="0"
                     value={set || ''}
                     onChange={e => setSet(Number(e.target.value))}
@@ -514,45 +754,43 @@ const WorkoutLog = () => {
                   <WorkoutTypeInput
                     type="number"
                     min="0"
+                    data-testid="workout_time"
+                    onKeyPress={event => {
+                      if (!(48 <= event.charCode && event.charCode <= 57)) {
+                        event.preventDefault();
+                      }
+                    }}
                     value={workout_time || ''}
                     onChange={e => setWorkoutTime(Number(e.target.value))}
                   />
                 </LogInputBodyInput>
                 <LogInputBodyButton>
-                  <AnyButton className="type1">취소</AnyButton>
+                  <AnyButton className="type1" onClick={() => cancelWorkoutLog()}>
+                    초기화
+                  </AnyButton>
                   <AnyButton className="type1" onClick={() => createWorkoutLog()}>
                     완료
                   </AnyButton>
                 </LogInputBodyButton>
               </LogInputBody>
-              <LogBody>
-                {dailyFitElements.length === 0 ? (
-                  <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
-                ) : (
-                  dailyFitElements.map((fitelement, index) => (
-                    <FitElementWrapper key={index}>
-                      <FitElement
-                        key={fitelement.data.id}
-                        id={index + 1}
-                        type={fitelement.data.type}
-                        workout_type={fitelement.data.workout_type}
-                        category={fitelement.data.category}
-                        weight={fitelement.data.weight}
-                        rep={fitelement.data.rep}
-                        set={fitelement.data.set}
-                        time={fitelement.data.time}
-                      />
-                      <DeleteButton>
-                        <DeleteEmoji
-                          data-testid="delete-fitelement"
-                          src={require('assets/images/workout_log/fitelement_delete/delete_button.png')}
-                          onClick={() => fitelementDeleteOnClick(fitelement.data.id)}
-                        />
-                      </DeleteButton>
-                    </FitElementWrapper>
-                  ))
-                )}
-              </LogBody>
+              <LogContentBody>
+                <DragDropContext onDragEnd={onDragEnd}>
+                  <Droppable droppableId="Logs">
+                    {provided => (
+                      <LogBody {...provided.droppableProps} ref={provided.innerRef} {...provided.droppableProps}>
+                        {daily_temp.length === 0 ? (
+                          <CenterContentWrapper>운동 기록을 추가하세요!</CenterContentWrapper>
+                        ) : (
+                          daily_temp.map((fitelement: Fitelement, index: number) =>
+                            FitElementList(fitelement, fitelement.data.id, index),
+                          )
+                        )}
+                        {provided.placeholder}
+                      </LogBody>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </LogContentBody>
               <LogFooter>
                 <FooterItem>{dailyLog.fit_element?.length}종류</FooterItem>
                 <FooterItem>{dailyLog.calories * (user.profile?.weight || 1)} kcal</FooterItem>
@@ -561,6 +799,13 @@ const WorkoutLog = () => {
           </LogWrapper>
         </RightWrapper>
       </InnerWrapper>
+      {ImageDetailModal({
+        isActive: imageModalOpen,
+        onClose: imageModalOnClose,
+        modalRef: imageModalRef,
+        modalAnimRef: imageModalAnimRef,
+        activeImage,
+      })}
     </Wrapper>
   );
 };
@@ -579,17 +824,36 @@ const Wrapper = styled.div`
   align-items: start;
 `;
 
-const WorkoutImage = styled.img`
+const WorkoutImageWrapper = styled.div`
   width: 120px;
-  height: 120px;
-  border: 1px solid #727272;
+  height: 110px;
   border-radius: 15px;
-  margin: 5px;
+  margin: 3px;
+  margin-top: 35px;
   cursor: pointer;
   transition: border 0.15s linear;
-  &:hover {
-    border: 2px solid #000000;
+  position: relative;
+  button {
+    display: none;
   }
+  &:hover button {
+    display: block;
+    width: 40px;
+    height: 20px;
+    position: absolute;
+    top: 20%;
+    left: 85%;
+    margin-left: -30px;
+    margin-top: -15px;
+  }
+`;
+
+const WorkoutImage = styled.img`
+  width: 120px;
+  height: 110px;
+  background-color: var(--fit-disabled-gray);
+  border-radius: 15px;
+  object-fit: cover;
 `;
 const FileInput = styled.input`
   display: none;
@@ -619,7 +883,6 @@ const LeftWrapper = styled.div`
 const CalendarWrapper = styled.div`
   width: 100%;
   height: 80%;
-  min-height: 500px;
   max-height: 500px;
   min-width: 480px;
   max-width: 480px;
@@ -644,7 +907,7 @@ const Frame = styled.div`
   }
 
   &&.memo {
-    min-height: 120px;
+    min-height: 100px;
   }
 `;
 
@@ -675,7 +938,7 @@ const Month = styled.div`
 const CalendarHeader = styled.div`
   font-size: 18px;
   width: 50%;
-  height: 20%;
+  height: 15%;
   padding: 20px 10px 0px 10px;
   font-family: IBMPlexSansThaiLooped;
   border-radius: 10px;
@@ -829,25 +1092,19 @@ const DayContent = styled.div<{ visibility_boolean: boolean }>`
 const MemoWrapper = styled.div`
   width: 100%;
   height: 20%;
-  min-height: 200px;
+  min-height: 30px;
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
 `;
 
-const MemoEditButton = styled.img`
-  display: flex;
-  height: 75%;
-  margin-left: 3px;
-  align-items: center;
-  justify-content: center;
-`;
-
 const MemoInput = styled.input`
   width: 400px;
-  height: 50%;
-  padding: 8px 20px;
-  font-size: 10px;
+  height: 80%;
+  padding: 5px 15px 5px 15px;
+  font-size: 14px;
+  font-weight: normal;
+  font-family: IBMPlexSansThaiLooped;
 `;
 
 const MemoTitleWrapper = styled.div`
@@ -916,9 +1173,8 @@ const AnyButton = styled.button`
   background-color: #d7efe3;
   border: 0;
   border-radius: 8px;
-  font-family: FugazOne;
-  font-size: 12px;
-  font-weight: 600;
+  font-family: 'Noto Sans KR';
+  font-size: 13px;
   cursor: pointer;
   transition: background-color 0.15s linear;
   &:hover {
@@ -930,8 +1186,9 @@ const AnyButton = styled.button`
     height: 20px;
   }
 
-  &&.disable-type {
+  &:disabled {
     background-color: #d7efe3;
+    cursor: default;
   }
 
   &&.memo-type {
@@ -1016,6 +1273,10 @@ const LogCategory = styled.div`
   &&.type {
     width: 20%;
   }
+
+  &&.hide {
+    color: #dcdcdc;
+  }
 `;
 
 const LogInputBodyInput = styled.div`
@@ -1033,6 +1294,17 @@ const WorkoutTypeInput = styled.input`
   font-size: 14px;
   margin: 5px;
   margin-top: 7px;
+
+  &&.hidden {
+    disabled: true;
+    readonly: true;
+    background: #f0f0f0;
+    border: #dcdcdc;
+  }
+
+  &:invalid {
+    border: 1px solid red;
+  }
 `;
 
 const WorkoutTypeSelect = styled.select`
@@ -1068,9 +1340,15 @@ const LogInputBody = styled.div`
 `;
 
 const LogBody = styled.div`
+  height: 100%;
+  width: 100%;
+`;
+
+const LogContentBody = styled.div`
+  overflow: auto;
   width: 100%;
   height: 90%;
-  min-height: 62vh;
+  height: 64vh;
   flex-wrap: wrap;
   display: flex;
   flex-direction: column;
@@ -1112,18 +1390,9 @@ const MemoFooter = styled.div`
   flex-direction: row;
 `;
 
-const ImageWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: start;
-`;
-
 const CalendarFooter = styled.div`
-  width: 90%;
-  height: 30%;
+  width: 88%;
+  height: 35%;
   display: flex;
   justify-content: start;
   align-items: start;

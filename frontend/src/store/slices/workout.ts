@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
+import { Id } from 'react-beautiful-dnd';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { TagClass } from 'store/apis/tag';
 import * as workoutLogAPI from 'store/apis/workout';
@@ -25,6 +26,21 @@ export type RoutineType = {
   id: number | null;
   name: string;
   fitelements: Fitelement[];
+};
+
+export type FitelementDirect = {
+  workout_type: string | null;
+  workout_name: string | null;
+  weight: number | null;
+  rep: number | null;
+  set: number | null;
+  time: number | null;
+};
+
+export type RoutineTypeInPost = {
+  id: number | null;
+  name: string;
+  fitelements: FitelementDirect[];
 };
 
 export interface WorkoutLogState {
@@ -77,6 +93,13 @@ export interface WorkoutLogState {
   fitelementDelete: number;
   imageSuccess: string;
   memoSuccess: string;
+  create_routine_id: number | null;
+  deleteImageSuccess: string;
+  indexSuccess: number[];
+  edit_routine_success: {
+    id: number | null;
+    content: string;
+  };
 }
 
 export const initialState: WorkoutLogState = {
@@ -129,6 +152,13 @@ export const initialState: WorkoutLogState = {
   fitelementDelete: 0,
   imageSuccess: '',
   memoSuccess: '',
+  create_routine_id: null,
+  deleteImageSuccess: '',
+  indexSuccess: [],
+  edit_routine_success: {
+    id: null,
+    content: '',
+  },
 };
 
 export const workoutLogSlice = createSlice({
@@ -196,11 +226,30 @@ export const workoutLogSlice = createSlice({
     editMemoSuccess: (state, { payload }) => {
       state.memoSuccess = payload.memo;
     },
+    editRoutineTitle: (state, action: PayloadAction<workoutLogAPI.editRoutineTitleRequestType>) => {
+      // Empty function
+    },
+    editRoutineTitleSuccess: (state, { payload }) => {
+      state.edit_routine_success.id = payload.id;
+      state.edit_routine_success.content = payload.content;
+    },
     editImage: (state, action: PayloadAction<workoutLogAPI.editImageRequestType>) => {
       // Empty function
     },
     editImageSuccess: (state, { payload }) => {
       state.imageSuccess = payload.image;
+    },
+    editIndex: (state, action: PayloadAction<workoutLogAPI.editIndexRequestType>) => {
+      // Empty function
+    },
+    editIndexSuccess: (state, { payload }) => {
+      state.indexSuccess = payload.log_index;
+    },
+    deleteImage: (state, action: PayloadAction<workoutLogAPI.deleteImageRequestType>) => {
+      // Empty function
+    },
+    deleteImageSuccess: (state, { payload }) => {
+      state.deleteImageSuccess = payload.image;
     },
     getCalendarInfo: (state, action: PayloadAction<workoutLogAPI.getCalendarInfoRequestType>) => {
       // Empty function
@@ -232,12 +281,16 @@ export const workoutLogSlice = createSlice({
     addFitElementsSuccess: (state, { payload }) => {
       state.add_fit_elements.fitelements = payload;
       state.add_fit_elements.status = true;
+      notificationSuccess('FitElement', '붙여넣기에 성공했어요!');
     },
     createRoutineWithFitElements: (
       state,
       action: PayloadAction<workoutLogAPI.createRoutineWithFitElementsRequestType>,
     ) => {
       // Empty function
+    },
+    createRoutineWithFitElementsSuccess: (state, { payload }) => {
+      state.create_routine_id = payload.id;
     },
     getFitElements: (state, { payload }) => {
       getFitElementsSaga(payload.fitelements);
@@ -327,10 +380,37 @@ function* editMemoLogSaga(action: PayloadAction<workoutLogAPI.editMemoRequestTyp
   }
 }
 
+function* editRoutineTitleSaga(action: PayloadAction<workoutLogAPI.editRoutineTitleRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.editRoutineTitle, action.payload);
+    yield put(workoutLogActions.editRoutineTitleSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
+}
+
 function* editImageSaga(action: PayloadAction<workoutLogAPI.editImageRequestType>) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.editImage, action.payload);
     yield put(workoutLogActions.editImageSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
+}
+
+function* editIndexSaga(action: PayloadAction<workoutLogAPI.editIndexRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.editIndex, action.payload);
+    yield put(workoutLogActions.editIndexSuccess(response));
+  } catch (error) {
+    // Empty function
+  }
+}
+
+function* deleteImageSaga(action: PayloadAction<workoutLogAPI.deleteImageRequestType>) {
+  try {
+    const response: AxiosResponse = yield call(workoutLogAPI.deleteImage, action.payload);
+    yield put(workoutLogActions.deleteImageSuccess(response));
   } catch (error) {
     // Empty function
   }
@@ -378,6 +458,7 @@ function* createRoutineWithFitElementsSaga(
 ) {
   try {
     const response: AxiosResponse = yield call(workoutLogAPI.createRoutineWithFitElements, action.payload);
+    yield put(workoutLogActions.createRoutineWithFitElementsSuccess(response));
   } catch (error) {
     // Empty function
   }
@@ -410,6 +491,7 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.createWorkoutLog, createWorkoutLogSaga);
   yield takeLatest(workoutLogActions.editMemo, editMemoLogSaga);
   yield takeLatest(workoutLogActions.editImage, editImageSaga);
+  yield takeLatest(workoutLogActions.editIndex, editIndexSaga);
   yield takeLatest(workoutLogActions.getCalendarInfo, getCalendarInfoSaga);
   yield takeLatest(workoutLogActions.getRoutine, getRoutineSaga);
   yield takeLatest(workoutLogActions.getSpecificRoutine, getSpecificRoutineSaga);
@@ -419,4 +501,6 @@ export default function* workoutLogSaga() {
   yield takeLatest(workoutLogActions.getSpecificRoutineFitElements, getSpecificRoutineFitElementsSaga);
   yield takeLatest(workoutLogActions.getFitElementsType, getFitElementTypesSaga);
   yield takeLatest(workoutLogActions.deleteFitElement, deleteFitElementSaga);
+  yield takeLatest(workoutLogActions.deleteImage, deleteImageSaga);
+  yield takeLatest(workoutLogActions.editRoutineTitle, editRoutineTitleSaga);
 }
