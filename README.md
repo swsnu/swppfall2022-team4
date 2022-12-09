@@ -39,4 +39,4 @@ https://fitogether.site/
     cd backend
     python manage.py seed_users -n 10
     ...
-You can find commands to add dummy data at https://github.com/swsnu/swppfall2022-team4/wiki.
+You can find commands to add dummy data at [here](https://github.com/swsnu/swppfall2022-team4/wiki).
